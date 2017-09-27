@@ -1,0 +1,8 @@
+SensorSuite-Types DEFINITIONS ::=
+BEGIN
+IMPORTS T-Int32, T-UInt32, T-Int8, T-UInt8, T-Boolean FROM TASTE-BasicTypes
+Time FROM Time-Types;
+
+Foo ::= T-Int32
+
+END
