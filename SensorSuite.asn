@@ -3,6 +3,7 @@ BEGIN
 IMPORTS T-Int32, T-UInt32, T-Int8, T-UInt8, T-Boolean FROM TASTE-BasicTypes
 T-Int64, T-UInt16, T-Double, T-Float, T-UInt64, T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types
+Vector2d, Vector3d, Quaterniond FROM Eigen-Types
 Temperature FROM Temperature-Types
 Point FROM Point-Types;
 
@@ -11,7 +12,7 @@ SensorState  ::=  ENUMERATED {inactive, standby, operational, failure}
 StateCommand ::= ENUMERATED { activate, start, stop, deactivate}
 
 -- Sensor rate given as seconds between periodic samples (inverse of frequency).
-SensorRate ::= REAL(0.0 .. 1.0e9)
+SensorRate ::= REAL(0.0 .. 3.402823466e+38)
 
 --  Sensor status messages.
 SensorStatus ::= SEQUENCE{
@@ -19,6 +20,23 @@ SensorStatus ::= SEQUENCE{
     device-state SensorState,
     device-temperature Temperature,
     debug-message T-String
+}
+
+--- Sample attribute
+Attribute-value-t ::=
+CHOICE
+{
+   boolean-value        T-Boolean,
+   discrete-value       T-Int64,
+   real-value           T-Double,
+   string-value         T-String
+}
+
+Sample-attribute-t ::=
+SEQUENCE
+{
+    attribute-name      T-String,
+    attribute-value     Attribute-value-t
 }
 
 --- Definition of frame modes from SARGON
@@ -50,14 +68,6 @@ Frame-status-t ::= ENUMERATED
      status-invalid
 }
 
---- Modified frame attribute definition from SARGON.
-Frame-attrib-t   ::=
-SEQUENCE
-{
-    attribute           T-String,
-    value               T-String
-}
-
 --- Definition from SARGON.
 Frame-size-t   ::=
 SEQUENCE
@@ -67,26 +77,27 @@ SEQUENCE
 }
 
 --- Modified generic frame definition from SARGON.
-Frame{T-Uint32: frameMaxBytes, T-Uint16: frameMaxAttributes}   ::=
+Frame{T-Uint32: maxBytes, T-Uint16: maxAttributes}   ::=
 SEQUENCE
 {
     timestamp           Time,
-    image               OCTET STRING (SIZE(0..frameMaxBytes)),
-    attributes          SEQUENCE (SIZE(0..frameMaxAttributes)) OF Frame-attrib-t,
+    image               OCTET STRING (SIZE(0..maxBytes)),
+    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
     datasize            Frame-size-t,
     data-depth          T-UInt32,
     pixel-size          T-UInt32,
     row-size            T-UInt32,
     frame-mode          Frame-mode-t,
-    frame-status                Frame-status-t
+    frame-status        Frame-status-t
 }
 
 --- Modified generic point-cloud definition from SARGON.
-Pointcloud{T-Uint32: maxPointCloudSize}   ::=
+Pointcloud{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes}   ::=
 SEQUENCE
 {
     timestamp           Time,
-    points              SEQUENCE (SIZE(1..maxPointcloudSize)) OF Point
+    points              SEQUENCE (SIZE(1..maxPointcloudSize)) OF Point,
+    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t
 }
 
 --- Camera command
@@ -106,7 +117,8 @@ CameraCommand ::= CHOICE{
     activate-flash-illumination         BOOLEAN,
     set-flash-strength                  FlashStrength,
     activate-pattern-illumination       BOOLEAN,
-    set-illumination-pattern            IlluminationPattern
+    set-illumination-pattern            IlluminationPattern,
+    trigger                             T-Boolean
 }
 
 END
