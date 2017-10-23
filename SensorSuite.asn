@@ -1,7 +1,7 @@
 SensorSuite-Types DEFINITIONS ::=
 BEGIN
 IMPORTS T-Int32, T-UInt32, T-Int8, T-UInt8, T-Boolean FROM TASTE-BasicTypes
-T-Int64, T-UInt16, T-Double, T-Float, T-UInt64, T-String FROM TASTE-ExtendedTypes
+T-Int64, T-Int16, T-UInt16, T-Double, T-Float, T-UInt64, T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types
 Vector2d, Vector3d, Quaterniond FROM Eigen-Types
 Temperature FROM Temperature-Types
@@ -15,11 +15,13 @@ StateCommand ::= ENUMERATED { activate, start, stop, deactivate}
 SensorRate ::= REAL(0.0 .. 3.402823466e+38)
 
 --  Sensor status messages.
-SensorStatus ::= SEQUENCE{
-    timestamp Time,
-    device-state SensorState,
-    device-temperature Temperature,
-    debug-message T-String
+SensorStatus ::=
+SEQUENCE
+{
+    timestamp           Time,
+    device-state        SensorState,
+    device-temperature  Temperature,
+    debug-message       T-String
 }
 
 --- Sample attribute
@@ -39,8 +41,28 @@ SEQUENCE
     attribute-value     Attribute-value-t
 }
 
+--- Region Of Interest (ROI) unit either pixels or polar coordinates in degrees.
+ROI-unit-t ::=
+ENUMERATED
+{
+    roi-planar,
+    roi-polar
+}
+
+-- Region Of Interest (ROI) definition.
+ROI-t ::=
+SEQUENCE
+{
+    offset-x T-Int16,
+    offset-y T-Int16,
+    size-x   T-UInt16,
+    size-y   T-UInt16,
+    unit     ROI-unit-t
+}
+
 --- Definition of frame modes from SARGON
-Frame-mode-t ::= ENUMERATED
+Frame-mode-t ::=
+ENUMERATED
 {
      mode-undefined,
      mode-grayscale,
@@ -68,14 +90,6 @@ Frame-status-t ::= ENUMERATED
      status-invalid
 }
 
---- Definition from SARGON.
-Frame-size-t   ::=
-SEQUENCE
-{
-    width               T-UInt16,
-    height              T-UInt16
-}
-
 --- Modified generic frame definition from SARGON.
 Frame{T-Uint32: maxBytes, T-Uint16: maxAttributes}   ::=
 SEQUENCE
@@ -83,30 +97,54 @@ SEQUENCE
     timestamp           Time,
     image               OCTET STRING (SIZE(0..maxBytes)),
     attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    datasize            Frame-size-t,
+    roi                 ROI-t,
     data-depth          T-UInt32,
     pixel-size          T-UInt32,
-    row-size            T-UInt32,
     frame-mode          Frame-mode-t,
     frame-status        Frame-status-t
 }
 
+--- Depth measurement validity adapted from SARGON.
+Depth-validity-t ::=
+ENUMERATED
+{
+   valid-measurement,
+   too-far,
+   too-near,
+   measurement-error
+}
+
 --- Modified generic point-cloud definition from SARGON.
-Pointcloud{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes}   ::=
+Pointcloud{T-Uint32: maxPointcloudSize, T-Uint16: maxAttributes}   ::=
 SEQUENCE
 {
     timestamp           Time,
     points              SEQUENCE (SIZE(1..maxPointcloudSize)) OF Point,
-    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t
+    validity            SEQUENCE (SIZE(1..maxPointcloudSize)) OF Depth-validity-t,
+    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi                 ROI-t
+}
+
+--- Modified generic depth-map definition from SARGON
+DepthMap{T-UInt32: maxDepthMapSize, T-Uint16: maxAttributes}   ::=
+SEQUENCE
+{
+    timestamp           Time,
+    distances           SEQUENCE (SIZE(1..maxDepthMapSize)) OF T-Float,
+    validity            SEQUENCE (SIZE(1..maxDepthMapSize)) OF Depth-validity-t,
+    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi                 ROI-t
 }
 
 --- Camera command
-ExposureTime            ::= REAL(1.0e-9 .. 1.0e9)
+ExposureTime            ::= REAL(1.0e-9 .. 1.0e12)
 SensorGain              ::= REAL(1.0 .. 1.0e6)
 FlashStrength           ::= REAL(0.0 .. 1.0)
-IlluminationPattern     ::= INTEGER(0..255)
+IlluminationPattern     ::= T-UInt16
 
-CameraCommand ::= CHOICE{
+CameraCommand ::=
+CHOICE
+{
     set-state                           StateCommand,
     set-rate                            SensorRate,
     set-exposure                        ExposureTime,
@@ -114,11 +152,119 @@ CameraCommand ::= CHOICE{
     set-auto-exposure                   BOOLEAN,
     set-exposure-limit                  ExposureTime,
     set-gain-limit                      SensorGain,
+    set-roi                             ROI-t,
     activate-flash-illumination         BOOLEAN,
     set-flash-strength                  FlashStrength,
     activate-pattern-illumination       BOOLEAN,
     set-illumination-pattern            IlluminationPattern,
     trigger                             T-Boolean
+}
+
+--- ToF command
+ToFCommand ::=
+CHOICE
+{
+   set-state                           StateCommand,
+   set-rate                            SensorRate,
+   set-exposure                        ExposureTime,
+   set-auto-exposure                   BOOLEAN,
+   set-exposure-limit                  ExposureTime,
+   set-roi                             ROI-t,
+   trigger                             T-Boolean
+}
+
+--- LIDAR command
+LIDARCommand ::=
+CHOICE
+{
+   set-state                           StateCommand,
+   set-rate                            SensorRate,
+   set-roi                             ROI-t,
+   trigger                             T-Boolean
+}
+
+--- Radar command
+RadarCommand ::=
+CHOICE
+{
+   set-state                           StateCommand,
+   set-rate                            SensorRate,
+   set-roi                             ROI-t,
+   trigger                             T-Boolean
+}
+
+--- Radar measurement is 121x121 depth map.
+RadarMeasurement ::= DepthMap{14641, 5}
+
+--- Star tracker command definition
+StarTrackerCommand ::=
+CHOICE
+{
+   set-state                           StateCommand,
+   set-rate                            SensorRate
+}
+
+--- Star tracker mesurement definition
+StarTrackerMeasurement ::=
+SEQUENCE
+{
+   timestamp Time,
+   position Quaterniond
+}
+
+--- IMU command
+IMUCommand ::=
+CHOICE
+{
+   set-state                           StateCommand,
+   set-rate                            SensorRate
+}
+
+--- IMU measurement definition
+IMUMeasurement ::=
+SEQUENCE
+{
+   timestamp Time,
+   linear-accel Vector3d,
+   angular-rate Vector3d
+}
+
+--- Sample mode
+SampleMode-t ::=
+ENUMERATED
+{
+   sample-mode-batch,
+   sample-mode-trigger-up,
+   sample-mode-trigger-down,
+   sample-mode-trigger-any
+}
+
+SampleTrigger-t ::=
+ENUMERATED
+{
+   sample-trigger-time,
+   sample-trigger-up,
+   sample-trigger-down
+}
+
+--- Analogue command
+AnalogueCommand ::=
+CHOICE
+{
+   set-state        StateCommand,
+   set-rate         SensorRate,
+   set-batch-size   T-UInt16,
+   set-mode         SampleMode-t,
+   set-trigger      T-UInt32
+}
+
+--- Analogue measurement
+AnalogueMeasurement{T-UInt16: maxSamples} ::=
+SEQUENCE
+{
+   timestamp Time,
+   samples   SEQUENCE (SIZE(1..maxSamples)) OF T-UInt32,
+   trigger   SampleTrigger-t
 }
 
 END
