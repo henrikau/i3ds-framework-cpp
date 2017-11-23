@@ -65,21 +65,19 @@ Frame-mode-t ::=
 ENUMERATED
 {
      mode-undefined,
-     mode-grayscale,
-     mode-rgb,
-     mode-uyvy,
-     mode-bgr,
-     mode-rgb32,
-     raw-modes,
-     mode-bayer,
-     mode-bayer-rggb,
-     mode-bayer-grbg,
-     mode-bayer-bggr,
-     mode-bayer-gbrg,
-     compressed-modes,
-     mode-pjpg,
-     mode-jpeg,
-     mode-png
+     mode-mono, -- Grayscale image
+     mode-rgb, -- Colour image in RGB format
+     mode-bgr, -- Colour image in BGR format
+     mode-uyvy, -- Colour image in UYVY format
+     mode-rgba, -- Colour image in RGBA format (RGB32)
+     mode-bayer-rggb, -- RAW image with RGGB bayer layout
+     mode-bayer-grbg, -- RAW image with GRBG bayer layout
+     mode-bayer-bggr, -- RAW image with BGGR bayer layout
+     mode-bayer-gbrg, -- RAW image with GBRG bayer layout
+     mode-pjpg, -- Compressed image in PJPG format
+     mode-jpeg, -- Compressed image in JPEG format
+     mode-png, -- Compressed image in PNG format
+     mode-tiff -- Image in TIFF format
 }
 
 --- Definition of frame status from SARGON.
