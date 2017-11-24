@@ -1,0 +1,19 @@
+DepthMap-Types DEFINITIONS ::=
+BEGIN
+IMPORTS Depth-validity-t, Sample-attribute-t, ROI-t FROM SensorSuite-Types
+T-UInt32 FROM TASTE-BasicTypes
+T-UInt16, T-Double FROM TASTE-ExtendedTypes
+Time FROM Time-Types;
+
+--- Modified generic depth-map definition from SARGON
+DepthMap{T-UInt32: maxDepthMapSize, T-Uint16: maxAttributes} ::=
+SEQUENCE
+{
+    timestamp  Time,
+    distances  SEQUENCE (SIZE(1..maxDepthMapSize)) OF T-Double,
+    validity   SEQUENCE (SIZE(1..maxDepthMapSize)) OF Depth-validity-t,
+    attributes SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi        ROI-t
+}
+
+END

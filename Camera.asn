@@ -1,0 +1,38 @@
+Camera-Types DEFINITIONS ::=
+BEGIN
+IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
+T-Boolean FROM TASTE-BasicTypes
+T-UInt16 FROM TASTE-ExtendedTypes;
+
+--- Exposure time in seconds
+ExposureTime ::= REAL(1.0e-9 .. 1.0e12)
+
+--- Camera sensor gain, max value depends on sensor
+SensorGain ::= REAL(1.0 .. 1.0e6)
+
+--- Flash strength if supported, range from 0 (off) to 1 (full)
+FlashStrength ::= REAL(0.0 .. 1.0)
+
+--- Illumination pattern if supported, range depends on camera
+IlluminationPattern ::= T-UInt16
+
+--- Camera command
+CameraCommand ::=
+CHOICE
+{
+    set-state                           StateCommand,
+    set-rate                            SensorRate,
+    set-exposure                        ExposureTime,
+    set-gain                            SensorGain,
+    set-auto-exposure                   T-Boolean,
+    set-exposure-limit                  ExposureTime,
+    set-gain-limit                      SensorGain,
+    set-roi                             ROI-t,
+    activate-flash-illumination         T-Boolean,
+    set-flash-strength                  FlashStrength,
+    activate-pattern-illumination       T-Boolean,
+    set-illumination-pattern            IlluminationPattern,
+    trigger                             T-Boolean
+}
+
+END

@@ -1,0 +1,50 @@
+Frame-Types DEFINITIONS ::=
+BEGIN
+IMPORTS Sample-attribute-t, ROI-t FROM SensorSuite-Types
+T-UInt32 FROM TASTE-BasicTypes
+T-UInt16 FROM TASTE-ExtendedTypes
+Time FROM Time-Types;
+
+--- Definition of frame status from SARGON.
+Frame-status-t ::= ENUMERATED
+{
+     status-empty,
+     status-valid,
+     status-invalid
+}
+
+--- Definition of frame modes from SARGON
+Frame-mode-t ::=
+ENUMERATED
+{
+     mode-undefined,
+     mode-mono, -- Grayscale image
+     mode-rgb, -- Colour image in RGB format
+     mode-bgr, -- Colour image in BGR format
+     mode-uyvy, -- Colour image in UYVY format
+     mode-rgba, -- Colour image in RGBA format (RGB32)
+     mode-bayer-rggb, -- RAW image with RGGB bayer layout
+     mode-bayer-grbg, -- RAW image with GRBG bayer layout
+     mode-bayer-bggr, -- RAW image with BGGR bayer layout
+     mode-bayer-gbrg, -- RAW image with GBRG bayer layout
+     mode-pjpg, -- Compressed image in PJPG format
+     mode-jpeg, -- Compressed image in JPEG format
+     mode-png, -- Compressed image in PNG format
+     mode-tiff -- Image in TIFF format
+}
+
+--- Modified generic frame definition from SARGON.
+Frame{T-Uint32: maxBytes, T-Uint16: maxAttributes}   ::=
+SEQUENCE
+{
+    timestamp           Time,
+    image               OCTET STRING (SIZE(0..maxBytes)),
+    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi                 ROI-t,
+    data-depth          T-UInt16,
+    pixel-size          T-UInt16,
+    frame-status        Frame-status-t,
+    frame-mode          Frame-mode-t
+}
+
+END

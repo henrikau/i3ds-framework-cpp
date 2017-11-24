@@ -10,6 +10,15 @@ BASE="$ROOT/esrocos/types-base/asn/Eigen.asn \
     $ROOT/esrocos/types-base/asn/Time.asn"
 
 export FILES="$BASE \
-$ROOT/SensorSuite.asn"
+$ROOT/Analog.asn \
+$ROOT/DepthMap.asn \
+$ROOT/IMU.asn \
+$ROOT/PointCloud.asn \
+$ROOT/SensorSuite.asn \
+$ROOT/Camera.asn \
+$ROOT/Frame.asn \
+$ROOT/LIDAR.asn \
+$ROOT/Radar.asn \
+$ROOT/StarTracker.asn"
 
 taste-update-data-view $FILES

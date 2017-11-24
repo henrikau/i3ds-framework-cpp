@@ -1,0 +1,16 @@
+Radar-Types DEFINITIONS ::=
+BEGIN
+IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
+T-Boolean FROM TASTE-BasicTypes;
+
+--- Radar command
+RadarCommand ::=
+CHOICE
+{
+   set-state StateCommand,
+   set-rate  SensorRate,
+   set-roi   ROI-t,
+   trigger   T-Boolean
+}
+
+END

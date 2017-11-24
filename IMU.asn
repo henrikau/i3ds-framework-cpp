@@ -1,0 +1,24 @@
+IMU-Types DEFINITIONS ::=
+BEGIN
+IMPORTS StateCommand, SensorRate FROM SensorSuite-Types
+Time FROM Time-Types
+Vector3d FROM Eigen-Types;
+
+--- IMU command
+IMUCommand ::=
+CHOICE
+{
+   set-state StateCommand,
+   set-rate SensorRate
+}
+
+--- IMU measurement definition
+IMUMeasurement ::=
+SEQUENCE
+{
+   timestamp Time,
+   linear-accel Vector3d,
+   angular-rate Vector3d
+}
+
+END

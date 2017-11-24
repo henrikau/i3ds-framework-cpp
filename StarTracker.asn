@@ -1,0 +1,23 @@
+StarTracker-Types DEFINITIONS ::=
+BEGIN
+IMPORTS StateCommand, SensorRate FROM SensorSuite-Types
+Time FROM Time-Types
+Quaterniond FROM Eigen-Types;
+
+--- Star tracker command definition
+StarTrackerCommand ::=
+CHOICE
+{
+   set-state StateCommand,
+   set-rate  SensorRate
+}
+
+--- Star tracker mesurement definition
+StarTrackerMeasurement ::=
+SEQUENCE
+{
+   timestamp Time,
+   position Quaterniond
+}
+
+END

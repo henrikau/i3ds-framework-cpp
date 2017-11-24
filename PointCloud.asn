@@ -1,0 +1,18 @@
+PointCloud-Types DEFINITIONS ::=
+BEGIN
+IMPORTS Depth-validity-t, Sample-attribute-t, ROI-t FROM SensorSuite-Types
+Time FROM Time-Types
+Point FROM Point-Types;
+
+--- Modified generic point-cloud definition from SARGON.
+Pointcloud{T-Uint32: maxPointcloudSize, T-Uint16: maxAttributes}   ::=
+SEQUENCE
+{
+    timestamp           Time,
+    points              SEQUENCE (SIZE(1..maxPointcloudSize)) OF Point,
+    validity            SEQUENCE (SIZE(1..maxPointcloudSize)) OF Depth-validity-t,
+    attributes          SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi                 ROI-t
+}
+
+END
