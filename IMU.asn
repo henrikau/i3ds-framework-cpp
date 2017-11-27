@@ -8,17 +8,25 @@ Vector3d FROM Eigen-Types;
 IMUCommand ::=
 CHOICE
 {
-   set-state StateCommand,
-   set-rate SensorRate
+   set-state   StateCommand,
+   set-rate    SensorRate
+}
+
+--- IMU configuration
+IMUConfiguration ::=
+SEQUENCE
+{
+   state   StateCommand,
+   rate    SensorRate
 }
 
 --- IMU measurement definition
 IMUMeasurement ::=
 SEQUENCE
 {
-   timestamp Time,
-   linear-accel Vector3d,
-   angular-rate Vector3d
+   timestamp      Time,
+   linear-accel   Vector3d,
+   angular-rate   Vector3d
 }
 
 END

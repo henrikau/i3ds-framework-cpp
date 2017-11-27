@@ -13,4 +13,23 @@ CHOICE
    trigger   T-Boolean
 }
 
+--- Radar configuration
+RadarConfiguration ::=
+CHOICE
+{
+   state StateCommand,
+   rate  SensorRate,
+   roi   ROI-t
+}
+
+--- Radar measurement
+RadarMeasurement{T-Uint32: maxDepthMapSize, T-Uint16: maxAttributes} ::=
+SEQUENCE
+{
+    timestamp  Time,
+    depth      DepthMap{maxDepthMapSize},
+    attributes SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi        ROI-t
+}
+
 END

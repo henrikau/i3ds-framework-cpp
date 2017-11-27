@@ -2,7 +2,8 @@ Camera-Types DEFINITIONS ::=
 BEGIN
 IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
 T-Boolean FROM TASTE-BasicTypes
-T-UInt16 FROM TASTE-ExtendedTypes;
+T-UInt16 FROM TASTE-ExtendedTypes
+Frame FROM Frame-Types;
 
 --- Exposure time in seconds
 ExposureTime ::= REAL(1.0e-9 .. 1.0e12)
@@ -33,6 +34,45 @@ CHOICE
     activate-pattern-illumination       T-Boolean,
     set-illumination-pattern            IlluminationPattern,
     trigger                             T-Boolean
+}
+
+--- Camera configuration
+CameraConfiguration ::=
+SEQUENCE
+{
+    state                           StateCommand,
+    rate                            SensorRate,
+    exposure                        ExposureTime,
+    gain                            SensorGain,
+    auto-exposure                   T-Boolean,
+    exposure-limit                  ExposureTime,
+    gain-limit                      SensorGain,
+    roi                             ROI-t,
+    active-flash-illumination       T-Boolean,
+    flash-strength                  FlashStrength,
+    active-pattern-illumination     T-Boolean,
+    illumination-pattern            IlluminationPattern
+}
+
+--- Camera measurement
+CameraMeasurement{T-Uint32: maxImageBytes, T-Uint16: maxAttributes} ::=
+SEQUENCE
+{
+    timestamp    Time,
+    image        Frame{maxImageBytes},
+    attributes   SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi          ROI-t
+}
+
+--- Stereo camera measurement
+StereoCameraMeasurement{T-Uint32: maxImageBytes, T-Uint16: maxAttributes} ::=
+SEQUENCE
+{
+    timestamp     Time,
+    image-left    Frame{maxImageBytes},
+    image-right   Frame{maxImageBytes},
+    attributes    SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi           ROI-t
 }
 
 END

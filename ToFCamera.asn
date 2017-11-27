@@ -1,11 +1,11 @@
-LIDAR-Types DEFINITIONS ::=
+ToFCamera-Types DEFINITIONS ::=
 BEGIN
 IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
 PointCloud FROM PointCloud-Types
 T-Boolean FROM TASTE-BasicTypes;
 
---- LIDAR command
-LIDARCommand ::=
+--- ToF camera command
+ToFCameraCommand ::=
 CHOICE
 {
    set-state StateCommand,
@@ -14,17 +14,17 @@ CHOICE
    trigger   T-Boolean
 }
 
---- LIDAR configuration
-LIDARConfiguration ::=
-SEQUENCE
+--- ToF camera configuration
+ToFCameraConfiguration ::=
+CHOICE
 {
    state StateCommand,
    rate  SensorRate,
    roi   ROI-t
 }
 
---- LIDAR measurement
-LIDARMeasurement{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes} ::=
+--- ToF camera measurement
+ToFCameraMeasurement{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes} ::=
 SEQUENCE
 {
     timestamp  Time,
@@ -32,7 +32,6 @@ SEQUENCE
     attributes SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
     roi        ROI-t
 }
-
 
 END
 

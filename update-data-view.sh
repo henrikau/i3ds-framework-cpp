@@ -19,6 +19,7 @@ $ROOT/Camera.asn \
 $ROOT/Frame.asn \
 $ROOT/LIDAR.asn \
 $ROOT/Radar.asn \
-$ROOT/StarTracker.asn"
+$ROOT/StarTracker.asn \
+$ROOT/ToFCamera.asn"
 
 taste-update-data-view $FILES

@@ -12,6 +12,9 @@ StateCommand ::= ENUMERATED { activate, start, stop, deactivate}
 -- Sensor rate given as seconds between periodic samples (inverse of frequency).
 SensorRate ::= REAL(0.0 .. 3.402823466e+38)
 
+--- Short string
+T-String16 ::= OCTET STRING (SIZE(0..16))
+
 --  Sensor status messages.
 SensorStatus ::=
 SEQUENCE
@@ -29,13 +32,13 @@ CHOICE
    boolean-value        T-Boolean,
    discrete-value       T-Int64,
    real-value           T-Double,
-   string-value         T-String
+   string-value         T-String16
 }
 
 Sample-attribute-t ::=
 SEQUENCE
 {
-    attribute-name      T-String,
+    attribute-name      T-String16,
     attribute-value     Attribute-value-t
 }
 
@@ -57,17 +60,6 @@ SEQUENCE
     size-y   T-UInt16,
     unit     ROI-unit-t
 }
-
---- Depth measurement validity adapted from SARGON.
-Depth-validity-t ::=
-ENUMERATED
-{
-   valid-measurement,
-   too-far,
-   too-near,
-   measurement-error
-}
-
 
 END
 

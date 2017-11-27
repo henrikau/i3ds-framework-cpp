@@ -8,16 +8,24 @@ Quaterniond FROM Eigen-Types;
 StarTrackerCommand ::=
 CHOICE
 {
-   set-state StateCommand,
-   set-rate  SensorRate
+   set-state   StateCommand,
+   set-rate    SensorRate
+}
+
+--- Star tracker configuration
+StarTrackerConfiguration ::=
+SEQUENCE
+{
+   state   StateCommand,
+   rate    SensorRate
 }
 
 --- Star tracker mesurement definition
 StarTrackerMeasurement ::=
 SEQUENCE
 {
-   timestamp Time,
-   position Quaterniond
+   timestamp   Time,
+   position    Quaterniond
 }
 
 END
