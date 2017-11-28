@@ -5,14 +5,27 @@ T-Int64, T-Int16, T-UInt16, T-Double, T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types
 Temperature FROM Temperature-Types;
 
---  State of operation for sensors and corresponding commands.
+--------------------------------------------------------------------------------
+---  State of operation for sensors and corresponding commands and _events_
+--------------------------------------------------------------------------------
+---
+---  SENSOR      = INACTIVE,
+---  INACTIVE    = (activate   -> STANDBY),
+---  STANDBY     = (start      -> OPERATIONAL
+---                |deactivate -> INACTIVE
+---                |_failure_  -> FAILURE),
+---  OPERATIONAL = (stop       -> STANDBY
+---                |_failure_  -> FAILURE),
+---  FAILURE     = (_restore_  -> STANDBY
+---                |deactivate -> INACTIVE).
+
 SensorState  ::=  ENUMERATED {inactive, standby, operational, failure}
-StateCommand ::= ENUMERATED { activate, start, stop, deactivate}
+StateCommand ::= ENUMERATED {activate, start, stop, deactivate}
 
 -- Sensor rate given as seconds between periodic samples (inverse of frequency).
 SensorRate ::= REAL(0.0 .. 3.402823466e+38)
 
---- Short string
+--- Short string for keys and attributes
 T-String16 ::= OCTET STRING (SIZE(0..16))
 
 --  Sensor status messages.
@@ -62,5 +75,3 @@ SEQUENCE
 }
 
 END
-
-
