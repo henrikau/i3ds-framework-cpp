@@ -2,24 +2,25 @@
 
 ROOT=$(pwd)
 
-BASE="$ROOT/esrocos/types-base/asn/Eigen.asn \
-    $ROOT/esrocos/types-base/asn/Point.asn \
-    $ROOT/esrocos/types-base/asn/taste-extended.asn \
-    $ROOT/esrocos/types-base/asn/taste-types.asn \
-    $ROOT/esrocos/types-base/asn/Temperature.asn \
-    $ROOT/esrocos/types-base/asn/Time.asn"
+ESROCOS="$ROOT/esrocos/types-base/asn"
+I3DS="$ROOT/i3ds/types-base/asn"
 
-export FILES="$BASE \
-$ROOT/Analog.asn \
-$ROOT/DepthMap.asn \
-$ROOT/IMU.asn \
-$ROOT/PointCloud.asn \
-$ROOT/SensorSuite.asn \
-$ROOT/Camera.asn \
-$ROOT/Frame.asn \
-$ROOT/LIDAR.asn \
-$ROOT/Radar.asn \
-$ROOT/StarTracker.asn \
-$ROOT/ToFCamera.asn"
+export FILES="$ESROCOS/Eigen.asn \
+$ESROCOS/Point.asn \
+$ESROCOS/taste-extended.asn \
+$ESROCOS/taste-types.asn \
+$ESROCOS/Temperature.asn \
+$ESROCOS/Time.asn
+$I3DS/Analog.asn \
+$I3DS/DepthMap.asn \
+$I3DS/IMU.asn \
+$I3DS/PointCloud.asn \
+$I3DS/SensorSuite.asn \
+$I3DS/Camera.asn \
+$I3DS/Frame.asn \
+$I3DS/LIDAR.asn \
+$I3DS/Radar.asn \
+$I3DS/StarTracker.asn \
+$I3DS/ToFCamera.asn"
 
 taste-update-data-view $FILES
