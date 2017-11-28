@@ -1,25 +1,28 @@
 Radar-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
-T-Boolean FROM TASTE-BasicTypes;
+IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
+T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes;
 
---- Radar command
-RadarCommand ::=
+--- Radar config request
+RadarConfigRequest ::=
 CHOICE
 {
-   set-state StateCommand,
-   set-rate  SensorRate,
-   set-roi   ROI-t,
-   trigger   T-Boolean
+   command    StateCommand,
+   trigger    T-Boolean,
+   set-rate   SensorRate,
+   set-roi    ROI-t
 }
 
---- Radar configuration
-RadarConfiguration ::=
-CHOICE
+--- Radar config response
+RadarConfigResponse ::=
+SEQUENCE
 {
-   state StateCommand,
-   rate  SensorRate,
-   roi   ROI-t
+   success         T-Boolean,
+   error-message   T-String,
+   sensor-state    SensorState,
+   config-rate     SensorRate,
+   config-roi      ROI-t
 }
 
 --- Radar measurement

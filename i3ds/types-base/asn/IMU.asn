@@ -1,23 +1,27 @@
 IMU-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate FROM SensorSuite-Types
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
 Time FROM Time-Types
-Vector3d FROM Eigen-Types;
+Vector3d FROM Eigen-Types
+T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes;
 
---- IMU command
-IMUCommand ::=
+--- IMU config request
+IMUConfigRequest ::=
 CHOICE
 {
-   set-state   StateCommand,
-   set-rate    SensorRate
+   command    StateCommand,
+   set-rate   SensorRate
 }
 
---- IMU configuration
+--- IMU config response
 IMUConfiguration ::=
 SEQUENCE
 {
-   state   StateCommand,
-   rate    SensorRate
+   success         T-Boolean,
+   error-message   T-String,
+   sensor-state    SensorState,
+   config-rate     SensorRate
 }
 
 --- IMU measurement definition

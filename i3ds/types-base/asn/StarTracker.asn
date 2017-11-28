@@ -1,26 +1,30 @@
 StarTracker-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate FROM SensorSuite-Types
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
 Time FROM Time-Types
-Quaterniond FROM Eigen-Types;
+Quaterniond FROM Eigen-Types
+T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes;
 
---- Star tracker command definition
-StarTrackerCommand ::=
+--- Star tracker config request
+StarTrackerConfigRequest ::=
 CHOICE
 {
-   set-state   StateCommand,
-   set-rate    SensorRate
+   command    StateCommand,
+   set-rate   SensorRate
 }
 
---- Star tracker configuration
-StarTrackerConfiguration ::=
+--- Star tracker config response
+StarTrackerConfigResponse ::=
 SEQUENCE
 {
-   state   StateCommand,
-   rate    SensorRate
+   success         T-Boolean,
+   error-message   T-String,
+   sensor-state    SensorState,
+   config-rate     SensorRate
 }
 
---- Star tracker mesurement definition
+--- Star tracker mesurement
 StarTrackerMeasurement ::=
 SEQUENCE
 {

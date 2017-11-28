@@ -1,26 +1,29 @@
 LIDAR-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
+IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
 PointCloud FROM PointCloud-Types
-T-Boolean FROM TASTE-BasicTypes;
+T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes;
 
---- LIDAR command
-LIDARCommand ::=
+--- LIDAR config request
+LIDARConfigRequest ::=
 CHOICE
 {
-   set-state StateCommand,
+   command   StateCommand,
+   trigger   T-Boolean,
    set-rate  SensorRate,
-   set-roi   ROI-t,
-   trigger   T-Boolean
+   set-roi   ROI-t
 }
 
---- LIDAR configuration
-LIDARConfiguration ::=
+--- LIDAR config response
+LIDARConfigResponse ::=
 SEQUENCE
 {
-   state StateCommand,
-   rate  SensorRate,
-   roi   ROI-t
+   success         T-Boolean,
+   error-message   T-String,
+   sensor-state    SensorState,
+   config-rate     SensorRate,
+   config-roi      ROI-t
 }
 
 --- LIDAR measurement
@@ -33,6 +36,4 @@ SEQUENCE
     roi        ROI-t
 }
 
-
 END
-

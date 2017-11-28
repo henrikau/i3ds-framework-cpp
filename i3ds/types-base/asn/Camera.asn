@@ -1,8 +1,8 @@
 Camera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
+IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
 T-Boolean FROM TASTE-BasicTypes
-T-UInt16 FROM TASTE-ExtendedTypes
+T-UInt16, T-String FROM TASTE-ExtendedTypes
 Frame FROM Frame-Types;
 
 --- Exposure time in seconds
@@ -14,44 +14,46 @@ SensorGain ::= REAL(1.0 .. 1.0e6)
 --- Flash strength if supported, range from 0 (off) to 1 (full)
 FlashStrength ::= REAL(0.0 .. 1.0)
 
---- Illumination pattern if supported, range depends on camera
+--- Illumination pattern if supported, 0 is none, range depends on camera
 IlluminationPattern ::= T-UInt16
 
---- Camera command
-CameraCommand ::=
+--- Camera config request
+CameraConfigRequest ::=
 CHOICE
 {
-    set-state                           StateCommand,
-    set-rate                            SensorRate,
-    set-exposure                        ExposureTime,
-    set-gain                            SensorGain,
-    set-auto-exposure                   T-Boolean,
-    set-exposure-limit                  ExposureTime,
-    set-gain-limit                      SensorGain,
-    set-roi                             ROI-t,
-    activate-flash-illumination         T-Boolean,
-    set-flash-strength                  FlashStrength,
-    activate-pattern-illumination       T-Boolean,
-    set-illumination-pattern            IlluminationPattern,
-    trigger                             T-Boolean
+    command                    StateCommand,
+    trigger                    T-Boolean,
+    set-rate                   SensorRate,
+    set-exposure               ExposureTime,
+    set-gain                   SensorGain,
+    set-auto-exposure          T-Boolean,
+    set-exposure-limit         ExposureTime,
+    set-gain-limit             SensorGain,
+    set-roi                    ROI-t,
+    set-flash-illumination     T-Boolean,
+    set-flash-strength         FlashStrength,
+    set-pattern-illumination   T-Boolean,
+    set-illumination-pattern   IlluminationPattern
 }
 
---- Camera configuration
-CameraConfiguration ::=
+--- Camera config response
+CameraConfigResponse ::=
 SEQUENCE
 {
-    state                           StateCommand,
-    rate                            SensorRate,
-    exposure                        ExposureTime,
-    gain                            SensorGain,
-    auto-exposure                   T-Boolean,
-    exposure-limit                  ExposureTime,
-    gain-limit                      SensorGain,
-    roi                             ROI-t,
-    active-flash-illumination       T-Boolean,
-    flash-strength                  FlashStrength,
-    active-pattern-illumination     T-Boolean,
-    illumination-pattern            IlluminationPattern
+   success                       T-Boolean,
+   error-message                 T-String,
+   sensor-state                  SensorState,
+   config-rate                   SensorRate,
+   config-exposure               ExposureTime,
+   config-gain                   SensorGain,
+   config-auto-exposure          T-Boolean,
+   config-exposure-limit         ExposureTime,
+   config-gain-limit             SensorGain,
+   config-roi                    ROI-t,
+   config-flash-illumination     T-Boolean,
+   config-flash-strength         FlashStrength,
+   config-pattern-illumination   T-Boolean,
+   config-illumination-pattern   IlluminationPattern
 }
 
 --- Camera measurement

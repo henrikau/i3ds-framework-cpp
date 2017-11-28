@@ -1,36 +1,39 @@
 ToFCamera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate, ROI-t FROM SensorSuite-Types
+IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
 PointCloud FROM PointCloud-Types
-T-Boolean FROM TASTE-BasicTypes;
+T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes;
 
---- ToF camera command
-ToFCameraCommand ::=
+--- ToF config request
+ToFConfigRequest ::=
 CHOICE
 {
-   set-state StateCommand,
+   command   StateCommand,
+   trigger   T-Boolean,
    set-rate  SensorRate,
-   set-roi   ROI-t,
-   trigger   T-Boolean
+   set-roi   ROI-t
 }
 
---- ToF camera configuration
-ToFCameraConfiguration ::=
+--- ToF config response
+ToFConfigResponse ::=
 CHOICE
 {
-   state StateCommand,
-   rate  SensorRate,
-   roi   ROI-t
+   success         T-Boolean,
+   error-message   T-String,
+   sensor-state    SensorState,
+   config-rate     SensorRate,
+   config-roi      ROI-t
 }
 
---- ToF camera measurement
-ToFCameraMeasurement{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes} ::=
+--- ToF measurement
+ToFMeasurement{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes} ::=
 SEQUENCE
 {
-    timestamp  Time,
-    points     PointCloud{maxPointCloudSize},
-    attributes SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    roi        ROI-t
+    timestamp    Time,
+    points       PointCloud{maxPointCloudSize},
+    attributes   SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
+    roi          ROI-t
 }
 
 END

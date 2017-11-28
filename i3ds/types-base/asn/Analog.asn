@@ -1,8 +1,8 @@
 Analog-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorRate FROM SensorSuite-Types
-T-UInt32 FROM TASTE-BasicTypes
-T-UInt16, T-Float FROM TASTE-ExtendedTypes
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+T-UInt32, T-Boolean FROM TASTE-BasicTypes
+T-UInt16, T-Float, T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types;
 
 --- Sample mode
@@ -24,26 +24,28 @@ ENUMERATED
    sample-trigger-down
 }
 
---- Analog command
-AnalogCommand ::=
+--- Analog config request
+AnalogConfigRequest ::=
 CHOICE
 {
-   set-state           StateCommand,
+   command             StateCommand,
    set-rate            SensorRate,
    set-mode            SampleMode-t,
    set-batch-size      T-UInt16,
-   set-trigger-value   T-Float
+   set-trigger-level   T-Float
 }
 
---- Analog configuration
-AnalogConfiguration ::=
+--- Analog config response
+AnalogConfigResponse ::=
 SEQUENCE
 {
-   state           StateCommand,
-   rate            SensorRate,
-   mode            SampleMode-t,
-   batch-size      T-UInt16,
-   trigger-value   T-Float
+   success                T-Boolean,
+   error-message          T-String,
+   sensor-state           SensorState,
+   config-rate            SensorRate,
+   config-mode            SampleMode-t,
+   config-batch-size      T-UInt16,
+   config-trigger-level   T-Float
 }
 
 --- Analog measurement
