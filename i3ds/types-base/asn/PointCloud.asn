@@ -1,13 +1,9 @@
 PointCloud-Types DEFINITIONS ::=
 BEGIN
-IMPORTS Point FROM Point-Types;
+IMPORTS T-UInt32 FROM TASTE-BasicTypes
+Point FROM Point-Types;
 
---- Point-cloud in meters relative to sensor.
-PointCloud{T-Uint32: maxPointCloudSize} ::=
-SEQUENCE
-{
-    points   SEQUENCE (SIZE(1..maxPointCloudSize)) OF Point,
-    size     T-Uint32
-}
+--- Point-cloud in meters relative to sensor right-hand XYZ
+PointCloud{T-UInt32: maxPointCloudSize} ::= SEQUENCE (SIZE(1..maxPointCloudSize)) OF Point
 
 END

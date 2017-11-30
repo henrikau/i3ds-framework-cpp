@@ -1,7 +1,6 @@
 SensorSuite-Types DEFINITIONS ::=
 BEGIN
-IMPORTS T-Boolean FROM TASTE-BasicTypes
-T-Int64, T-Int16, T-UInt16, T-Double, T-String FROM TASTE-ExtendedTypes
+IMPORTS T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types
 Temperature FROM Temperature-Types;
 
@@ -18,15 +17,12 @@ Temperature FROM Temperature-Types;
 ---                |_failure_  -> FAILURE),
 ---  FAILURE     = (_restore_  -> STANDBY
 ---                |deactivate -> INACTIVE).
-
-SensorState  ::=  ENUMERATED {inactive, standby, operational, failure}
+--------------------------------------------------------------------------------
+SensorState  ::= ENUMERATED {inactive, standby, operational, failure}
 StateCommand ::= ENUMERATED {activate, start, stop, deactivate}
 
 -- Sensor rate given as seconds between periodic samples (inverse of frequency).
 SensorRate ::= REAL(0.0 .. 3.402823466e+38)
-
---- Short string for keys and attributes
-T-String16 ::= OCTET STRING (SIZE(0..16))
 
 --  Sensor status messages.
 SensorStatus ::=
@@ -36,42 +32,6 @@ SEQUENCE
     device-state        SensorState,
     device-temperature  Temperature,
     debug-message       T-String
-}
-
---- Sample attribute
-Attribute-value-t ::=
-CHOICE
-{
-   boolean-value        T-Boolean,
-   discrete-value       T-Int64,
-   real-value           T-Double,
-   string-value         T-String16
-}
-
-Sample-attribute-t ::=
-SEQUENCE
-{
-    attribute-name      T-String16,
-    attribute-value     Attribute-value-t
-}
-
---- Region Of Interest (ROI) unit either pixels or polar coordinates in degrees.
-ROI-unit-t ::=
-ENUMERATED
-{
-    roi-planar, -- Planar units given in pixels.
-    roi-polar -- Polar units given in degrees.
-}
-
--- Region Of Interest (ROI) definition.
-ROI-t ::=
-SEQUENCE
-{
-    offset-x T-Int16,
-    offset-y T-Int16,
-    size-x   T-UInt16,
-    size-y   T-UInt16,
-    unit     ROI-unit-t
 }
 
 END

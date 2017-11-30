@@ -1,17 +1,21 @@
 Radar-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
-T-Boolean FROM TASTE-BasicTypes
-T-String FROM TASTE-ExtendedTypes;
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+SampleValidity, SampleAttributeList FROM SampleAttribute-Types
+PlanarRegion FROM Region-Types
+T-UInt32, T-Boolean FROM TASTE-BasicTypes
+T-UInt16, T-String FROM TASTE-ExtendedTypes
+DepthMap, DepthValidityList FROM DepthMap-Types
+Time FROM Time-Types;
 
 --- Radar config request
 RadarConfigRequest ::=
 CHOICE
 {
-   command    StateCommand,
-   trigger    T-Boolean,
-   set-rate   SensorRate,
-   set-roi    ROI-t
+   command     StateCommand,
+   trigger     T-Boolean,
+   set-rate    SensorRate,
+   set-region  PlanarRegion
 }
 
 --- Radar config response
@@ -22,17 +26,19 @@ SEQUENCE
    error-message   T-String,
    sensor-state    SensorState,
    config-rate     SensorRate,
-   config-roi      ROI-t
+   config-region   PlanarRegion
 }
 
 --- Radar measurement
-RadarMeasurement{T-Uint32: maxDepthMapSize, T-Uint16: maxAttributes} ::=
+RadarMeasurement{T-UInt32: maxDepthMapSize, T-UInt32: maxAttributes} ::=
 SEQUENCE
 {
-    timestamp  Time,
-    depth      DepthMap{maxDepthMapSize},
-    attributes SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    roi        ROI-t
+    timestamp        Time,
+    distances        DepthMap{maxDepthMapSize},
+    depth-validity   DepthValidityList{maxDepthMapSize},
+    region           PlanarRegion,
+    attributes       SampleAttributeList{maxAttributes},
+    validity         SampleValidity
 }
 
 END

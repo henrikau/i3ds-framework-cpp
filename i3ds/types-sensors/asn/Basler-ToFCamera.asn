@@ -1,0 +1,12 @@
+Basler-ToFCamera-Types DEFINITIONS ::=
+BEGIN
+IMPORTS ToFMeasurement FROM ToFCamera-Types
+T-UInt32 FROM TASTE-BasicTypes;
+
+--- Basler ToF point cloud is at most 640 * 480 = 307200
+basler-ToFResolution T-UInt32 ::= 307200
+
+--- Basler ToF measurement
+Basler-ToFMeasurement ::= ToFMeasurement{basler-ToFResolution, 1}
+
+END

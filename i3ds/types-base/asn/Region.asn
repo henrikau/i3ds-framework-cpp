@@ -1,0 +1,45 @@
+Region-Types DEFINITIONS ::=
+BEGIN
+IMPORTS T-UInt16, T-Float FROM TASTE-ExtendedTypes;
+
+--------------------------------------------------------------------------------
+--- Planar region definition in pixels
+--------------------------------------------------------------------------------
+--- Relative to upper left corner of image that is (0,0)
+---
+--- (0,0) -x->
+---   |
+---   y
+---   |
+---   v
+--------------------------------------------------------------------------------
+PlanarRegion ::=
+SEQUENCE
+{
+    offset-x T-UInt16,
+    offset-y T-UInt16,
+    size-x   T-UInt16,
+    size-y   T-UInt16
+}
+
+--------------------------------------------------------------------------------
+--- Polar region definition in radians
+--------------------------------------------------------------------------------
+--- Relative to the defined center of the sensor that is (0,0)
+---
+--- (0,0) -x->
+---   |
+---   y
+---   |
+---   v
+--------------------------------------------------------------------------------
+PolarRegion ::=
+SEQUENCE
+{
+    offset-x T-Float,
+    offset-y T-Float,
+    size-x   T-Float,
+    size-y   T-Float
+}
+
+END

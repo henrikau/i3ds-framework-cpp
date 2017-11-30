@@ -1,0 +1,14 @@
+Hertz-Radar-Types DEFINITIONS ::=
+BEGIN
+IMPORTS RadarMeasurement FROM Radar-Types
+T-UInt32 FROM TASTE-BasicTypes;
+
+--- Hertz HF radar depthmap is 121 * 121 = 14641
+hertz-RadarDepthMapWidth  T-UInt32 ::= 121
+hertz-RadarDepthMapHeight T-UInt32 ::= 121
+hertz-RadarResolution     T-UInt32 ::= 14641
+
+--- Hertz HF radar measurement
+Hertz-RadarMeasurement ::= RadarMeasurement{hertz-RadarResolution, 4}
+
+END

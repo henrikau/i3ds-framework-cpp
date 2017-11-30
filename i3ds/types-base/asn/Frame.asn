@@ -3,15 +3,7 @@ BEGIN
 IMPORTS T-UInt32 FROM TASTE-BasicTypes
 T-UInt16 FROM TASTE-ExtendedTypes;
 
---- Definition of frame status from SARGON.
-Frame-status-t ::= ENUMERATED
-{
-     status-empty,
-     status-valid,
-     status-invalid
-}
-
---- Definition of frame modes from SARGON
+--- Legal frame modes adapted from SARGON
 Frame-mode-t ::=
 ENUMERATED
 {
@@ -31,17 +23,7 @@ ENUMERATED
      mode-tiff -- Image in TIFF format
 }
 
---- Modified generic frame definition from SARGON.
-Frame{T-UInt32: maxImageBytes} ::=
-SEQUENCE
-{
-    image          OCTET STRING (SIZE(0..maxImageBytes)),
-    image-height   T-UInt16,
-    image-width    T-UInt16,
-    data-depth     T-UInt16,
-    pixel-size     T-UInt16,
-    frame-status   Frame-status-t,
-    frame-mode     Frame-mode-t
-}
+--- Image frame is an octet string
+ImageFrame{T-UInt32: maxImageBytes} ::= OCTET STRING (SIZE(0..maxImageBytes))
 
 END

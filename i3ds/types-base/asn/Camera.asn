@@ -1,9 +1,12 @@
 Camera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
-T-Boolean FROM TASTE-BasicTypes
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+SampleValidity, SampleAttributeList FROM SampleAttribute-Types
+PlanarRegion FROM Region-Types
+T-UInt8, T-UInt32, T-Boolean FROM TASTE-BasicTypes
 T-UInt16, T-String FROM TASTE-ExtendedTypes
-Frame FROM Frame-Types;
+Frame-mode-t, ImageFrame FROM Frame-Types
+Time FROM Time-Types;
 
 --- Exposure time in seconds
 ExposureTime ::= REAL(1.0e-9 .. 1.0e12)
@@ -29,7 +32,7 @@ CHOICE
     set-auto-exposure          T-Boolean,
     set-exposure-limit         ExposureTime,
     set-gain-limit             SensorGain,
-    set-roi                    ROI-t,
+    set-region                 PlanarRegion,
     set-flash-illumination     T-Boolean,
     set-flash-strength         FlashStrength,
     set-pattern-illumination   T-Boolean,
@@ -49,7 +52,7 @@ SEQUENCE
    config-auto-exposure          T-Boolean,
    config-exposure-limit         ExposureTime,
    config-gain-limit             SensorGain,
-   config-roi                    ROI-t,
+   config-region                 PlanarRegion,
    config-flash-illumination     T-Boolean,
    config-flash-strength         FlashStrength,
    config-pattern-illumination   T-Boolean,
@@ -57,24 +60,32 @@ SEQUENCE
 }
 
 --- Camera measurement
-CameraMeasurement{T-Uint32: maxImageBytes, T-Uint16: maxAttributes} ::=
+CameraMeasurement{T-UInt32: maxImageBytes, T-UInt32: maxAttributes} ::=
 SEQUENCE
 {
-    timestamp    Time,
-    image        Frame{maxImageBytes},
-    attributes   SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    roi          ROI-t
+   timestamp      Time,
+   image          ImageFrame{maxImageBytes},
+   frame-mode     Frame-mode-t,
+   region         PlanarRegion,
+   data-depth     T-UInt8,
+   pixel-size     T-UInt8,
+   attributes     SampleAttributeList{maxAttributes},
+   validity       SampleValidity
 }
 
 --- Stereo camera measurement
-StereoCameraMeasurement{T-Uint32: maxImageBytes, T-Uint16: maxAttributes} ::=
+StereoCameraMeasurement{T-UInt32: maxImageBytes, T-UInt32: maxAttributes} ::=
 SEQUENCE
 {
-    timestamp     Time,
-    image-left    Frame{maxImageBytes},
-    image-right   Frame{maxImageBytes},
-    attributes    SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    roi           ROI-t
+   timestamp      Time,
+   image-left     ImageFrame{maxImageBytes},
+   image-right    ImageFrame{maxImageBytes},
+   frame-mode     Frame-mode-t,
+   region         PlanarRegion,
+   data-depth     T-UInt8,
+   pixel-size     T-UInt8,
+   attributes     SampleAttributeList{maxAttributes},
+   validity       SampleValidity
 }
 
 END

@@ -1,0 +1,40 @@
+SampleAttribute-Types DEFINITIONS ::=
+BEGIN
+IMPORTS T-Boolean FROM TASTE-BasicTypes
+T-Int64, T-Int16, T-UInt16, T-Double, T-String FROM TASTE-ExtendedTypes
+Time FROM Time-Types
+Temperature FROM Temperature-Types;
+
+--- Sample validity
+SampleValidity ::= ENUMERATED
+{
+     sample-empty,
+     sample-valid,
+     sample-invalid
+}
+
+--- Short string for keys
+Attribute-key-t ::= OCTET STRING (SIZE(0..16))
+
+--- Sample attribute value
+Attribute-value-t ::=
+CHOICE
+{
+   boolean-value    T-Boolean,
+   discrete-value   T-Int64,
+   real-value       T-Double,
+   string-value     T-String
+}
+
+--- Sample attribute name/value pair
+Sample-attribute-t ::=
+SEQUENCE
+{
+    attribute-key     Attribute-key-t,
+    attribute-value   Attribute-value-t
+}
+
+--- Sample attribute list
+SampleAttributeList{T-UInt32: maxSize} ::= SEQUENCE (SIZE(1..maxSize)) OF Sample-attribute-t
+
+END

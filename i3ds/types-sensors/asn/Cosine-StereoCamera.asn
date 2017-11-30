@@ -1,0 +1,17 @@
+Cosine-StereoCamera-Types DEFINITIONS ::=
+BEGIN
+IMPORTS StereoCameraMeasurement FROM Camera-Types
+T-UInt32 FROM TASTE-BasicTypes
+T-UInt16 FROM TASTE-ExtendedTypes;
+
+--- Cosine stereo camera is 16 bits * 2048 * 2048 = 8388608 Bytes = 8 MiB
+cosine-StereoImageWidth  T-UInt16 ::= 2048
+cosine-StereoImageHeight T-UInt16 ::= 2048
+cosine-StereoDataDepth   T-UInt16 ::= 12
+cosine-StereoPixelSize   T-UInt16 ::= 2
+cosine-StereoImageSize   T-UInt32 ::= 8388608
+
+--- Cosine stereo camera measurement
+Cosine-StereoCameraMeasurement ::= StereoCameraMeasurement{cosine-StereoImageSize, 4}
+
+END

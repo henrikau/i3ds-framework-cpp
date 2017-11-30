@@ -1,0 +1,17 @@
+Cosine-TIRCamera-Types DEFINITIONS ::=
+BEGIN
+IMPORTS CameraMeasurement FROM Camera-Types
+T-UInt32 FROM TASTE-BasicTypes
+T-UInt16 FROM TASTE-ExtendedTypes;
+
+--- Cosine TIR camera is 16 bits * 640 * 480 = 614400 Bytes
+cosine-TIRImageWidth T-UInt16  ::= 640
+cosine-TIRImageHeight T-UInt16 ::= 480
+cosine-TIRDataDepth T-UInt16   ::= 16
+cosine-TIRPixelSize T-UInt16   ::= 2
+cosine-TIRImageSize T-UInt32   ::= 614400
+
+--- Cosine TIR camera measurement
+Cosine-TIRMeasurement ::= CameraMeasurement{cosine-TIRImageSize, 1}
+
+END

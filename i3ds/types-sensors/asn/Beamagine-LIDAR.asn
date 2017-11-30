@@ -1,0 +1,15 @@
+Beamagine-LIDAR-Types DEFINITIONS ::=
+BEGIN
+IMPORTS LIDARMeasurement FROM LIDAR-Types
+T-UInt32 FROM TASTE-BasicTypes
+T-UInt16 FROM TASTE-ExtendedTypes;
+
+--- Beamagine LIDAR resolution point cloud is at most 400 * 400 = 160,000
+beamagine-LIDARWidth      T-UInt16 ::= 400
+beamagine-LIDARHeight     T-UInt16 ::= 400
+beamagine-LIDARResolution T-UInt32 ::= 160000
+
+--- Beamagine LIDAR measurement
+Beamagine-LIDARMeasurement ::= LIDARMeasurement{beamagine-LIDARResolution, 1}
+
+END

@@ -1,18 +1,21 @@
 LIDAR-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+SampleValidity, SampleAttributeList FROM SampleAttribute-Types
+PolarRegion FROM Region-Types
 PointCloud FROM PointCloud-Types
-T-Boolean FROM TASTE-BasicTypes
-T-String FROM TASTE-ExtendedTypes;
+T-UInt32, T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes
+Time FROM Time-Types;
 
 --- LIDAR config request
 LIDARConfigRequest ::=
 CHOICE
 {
-   command   StateCommand,
-   trigger   T-Boolean,
-   set-rate  SensorRate,
-   set-roi   ROI-t
+   command      StateCommand,
+   trigger      T-Boolean,
+   set-rate     SensorRate,
+   set-region   PolarRegion
 }
 
 --- LIDAR config response
@@ -23,17 +26,18 @@ SEQUENCE
    error-message   T-String,
    sensor-state    SensorState,
    config-rate     SensorRate,
-   config-roi      ROI-t
+   config-region   PolarRegion
 }
 
 --- LIDAR measurement
-LIDARMeasurement{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes} ::=
+LIDARMeasurement{T-UInt32: maxPointCloudSize, T-UInt32: maxAttributes} ::=
 SEQUENCE
 {
-    timestamp  Time,
-    points     PointCloud{maxPointCloudSize},
-    attributes SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    roi        ROI-t
+    timestamp    Time,
+    points       PointCloud{maxPointCloudSize},
+    region       PolarRegion,
+    attributes   SampleAttributeList{maxAttributes},
+    validity     SampleValidity
 }
 
 END

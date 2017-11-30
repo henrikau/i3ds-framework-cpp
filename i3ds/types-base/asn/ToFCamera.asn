@@ -1,18 +1,21 @@
 ToFCamera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate, ROI-t FROM SensorSuite-Types
-PointCloud FROM PointCloud-Types
-T-Boolean FROM TASTE-BasicTypes
-T-String FROM TASTE-ExtendedTypes;
+IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+SampleValidity, SampleAttributeList FROM SampleAttribute-Types
+PlanarRegion FROM Region-Types
+DepthValidityList, DepthMap FROM DepthMap-Types
+T-UInt32, T-Boolean FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes
+Time FROM Time-Types;
 
 --- ToF config request
 ToFConfigRequest ::=
 CHOICE
 {
-   command   StateCommand,
-   trigger   T-Boolean,
-   set-rate  SensorRate,
-   set-roi   ROI-t
+   command      StateCommand,
+   trigger      T-Boolean,
+   set-rate     SensorRate,
+   set-region   PlanarRegion
 }
 
 --- ToF config response
@@ -23,17 +26,19 @@ CHOICE
    error-message   T-String,
    sensor-state    SensorState,
    config-rate     SensorRate,
-   config-roi      ROI-t
+   config-region   PlanarRegion
 }
 
 --- ToF measurement
-ToFMeasurement{T-Uint32: maxPointCloudSize, T-Uint16: maxAttributes} ::=
+ToFMeasurement{T-UInt32: maxDepthMapSize, T-UInt32: maxAttributes} ::=
 SEQUENCE
 {
-    timestamp    Time,
-    points       PointCloud{maxPointCloudSize},
-    attributes   SEQUENCE (SIZE(0..maxAttributes)) OF Sample-attribute-t,
-    roi          ROI-t
+    timestamp        Time,
+    distances        DepthMap{maxDepthMapSize},
+    depth-validity   DepthValidityList{maxDepthMapSize},
+    region           PlanarRegion,
+    attributes       SampleAttributeList{maxAttributes},
+    validity         SampleValidity
 }
 
 END

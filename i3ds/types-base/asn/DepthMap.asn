@@ -13,14 +13,10 @@ ENUMERATED
    measurement-error
 }
 
---- Depth map with distances in meter relative to sensor.
-DepthMap{T-UInt32: maxDepthMapSize} ::=
-SEQUENCE
-{
-    distances    SEQUENCE (SIZE(1..maxDepthMapSize)) OF T-Float,
-    validity     SEQUENCE (SIZE(1..maxDepthMapSize)) OF Depth-validity-t,
-    map-height   T-UInt16,
-    map-width    T-UInt16
-}
+--- List of depth measurement validities.
+DepthValidityList{T-UInt32: maxSize} ::= SEQUENCE (SIZE(1..maxSize)) OF Depth-validity-t
+
+--- Depth map with distances in meters relative to sensor.
+DepthMap{T-UInt32: maxSize} ::= SEQUENCE (SIZE(1..maxSize)) OF T-Float
 
 END
