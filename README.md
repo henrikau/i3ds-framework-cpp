@@ -1,3 +1,4 @@
-** I3DS Interface **
+# I3DS Interface
 
-These are the I3DS interfaces as defined in TASTE.
+ASN.1 message defintions for the I3DS sensor suite.
+To be used with ESROCOS and the TASTE framework.
