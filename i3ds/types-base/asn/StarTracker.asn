@@ -35,7 +35,7 @@ CHOICE
 StarTrackerConfiguration ::=
 SEQUENCE
 {
-   config-sensor   SensorConfiguration
+   config-sensor  SensorConfiguration
 }
 
 --- Star tracker mesurement.

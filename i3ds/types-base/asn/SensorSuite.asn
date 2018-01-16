@@ -92,9 +92,9 @@ SEQUENCE
 SensorConfiguration ::=
 SEQUENCE
 {
-   sensor-state   SensorState, -- Current state of the sensor.
-   config-rate    SensorRate,  -- Rate of sampling when operational.
-   config-count   T-UInt32     -- Number of samples, where 0 is infinite.
+   sensor-state  SensorState, -- Current state of the sensor.
+   config-rate   SensorRate,  -- Rate of sampling when operational.
+   config-count  T-UInt32     -- Number of samples, where 0 is infinite.
 }
 
 END

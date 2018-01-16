@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -35,10 +36,10 @@ IMPORTS T-UInt16, T-Float FROM TASTE-ExtendedTypes;
 PlanarRegion ::=
 SEQUENCE
 {
-    offset-x T-UInt16,
-    offset-y T-UInt16,
-    size-x   T-UInt16,
-    size-y   T-UInt16
+   offset-x T-UInt16,
+   offset-y T-UInt16,
+   size-x   T-UInt16,
+   size-y   T-UInt16
 }
 
 --------------------------------------------------------------------------------
@@ -55,10 +56,10 @@ SEQUENCE
 PolarRegion ::=
 SEQUENCE
 {
-    offset-x T-Float,
-    offset-y T-Float,
-    size-x   T-Float,
-    size-y   T-Float
+   offset-x T-Float,
+   offset-y T-Float,
+   size-x   T-Float,
+   size-y   T-Float
 }
 
 END

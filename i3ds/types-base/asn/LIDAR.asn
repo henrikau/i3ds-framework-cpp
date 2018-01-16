@@ -46,9 +46,9 @@ SEQUENCE
 LIDARMeasurement{T-UInt32: maxPointCloudSize} ::=
 SEQUENCE
 {
-    attributes  SampleAttributes,
-    points      PointCloud{maxPointCloudSize},
-    region      PolarRegion
+   attributes  SampleAttributes,
+   points      PointCloud{maxPointCloudSize},
+   region      PolarRegion
 }
 
 END

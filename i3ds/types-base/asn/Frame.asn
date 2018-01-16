@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -26,20 +27,20 @@ T-UInt16 FROM TASTE-ExtendedTypes;
 Frame-mode-t ::=
 ENUMERATED
 {
-     mode-undefined,
-     mode-mono, -- Grayscale image
-     mode-rgb, -- Colour image in RGB format
-     mode-bgr, -- Colour image in BGR format
-     mode-uyvy, -- Colour image in UYVY format
-     mode-rgba, -- Colour image in RGBA format (RGB32)
-     mode-bayer-rggb, -- RAW image with RGGB bayer layout
-     mode-bayer-grbg, -- RAW image with GRBG bayer layout
-     mode-bayer-bggr, -- RAW image with BGGR bayer layout
-     mode-bayer-gbrg, -- RAW image with GBRG bayer layout
-     mode-pjpg, -- Compressed image in PJPG format
-     mode-jpeg, -- Compressed image in JPEG format
-     mode-png, -- Compressed image in PNG format
-     mode-tiff -- Image in TIFF format
+   mode-undefined,
+   mode-mono,       -- Grayscale image
+   mode-rgb,        -- Colour image in RGB format
+   mode-bgr,        -- Colour image in BGR format
+   mode-uyvy,       -- Colour image in UYVY format
+   mode-rgba,       -- Colour image in RGBA format (RGB32)
+   mode-bayer-rggb, -- RAW image with RGGB bayer layout
+   mode-bayer-grbg, -- RAW image with GRBG bayer layout
+   mode-bayer-bggr, -- RAW image with BGGR bayer layout
+   mode-bayer-gbrg, -- RAW image with GBRG bayer layout
+   mode-pjpg,       -- Compressed image in PJPG format
+   mode-jpeg,       -- Compressed image in JPEG format
+   mode-png,        -- Compressed image in PNG format
+   mode-tiff        -- Image in TIFF format
 }
 
 --- Image frame is an octet string

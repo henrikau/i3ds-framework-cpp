@@ -42,9 +42,9 @@ SEQUENCE
 IMUMeasurement ::=
 SEQUENCE
 {
-   attributes     SampleAttributes,
-   linear-accel   Vector3d,
-   angular-rate   Vector3d
+   attributes    SampleAttributes,
+   linear-accel  Vector3d,
+   angular-rate  Vector3d
 }
 
 END

@@ -38,18 +38,18 @@ CHOICE
 ToFConfiguration ::=
 CHOICE
 {
-   config-sensor   SensorConfiguration,
-   config-region   PlanarRegion
+   config-sensor  SensorConfiguration,
+   config-region  PlanarRegion
 }
 
 --- ToF measurement
 ToFMeasurement{T-UInt32: maxDepthMapSize} ::=
 SEQUENCE
 {
-    attributes  SampleAttributes,
-    distances   DepthMap{maxDepthMapSize},
-    validity    DepthValidityList{maxDepthMapSize},
-    region      PlanarRegion
+   attributes  SampleAttributes,
+   distances   DepthMap{maxDepthMapSize},
+   validity    DepthValidityList{maxDepthMapSize},
+   region      PlanarRegion
 }
 
 END

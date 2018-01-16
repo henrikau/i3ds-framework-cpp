@@ -42,59 +42,59 @@ IlluminationPattern ::= T-UInt32
 CameraCommand ::=
 CHOICE
 {
-    sensor-command             SensorCommand,
-    set-exposure               ExposureTime,
-    set-gain                   SensorGain,
-    set-auto-exposure          T-Boolean,
-    set-exposure-limit         ExposureTime,
-    set-gain-limit             SensorGain,
-    set-region                 PlanarRegion,
-    set-flash-illumination     T-Boolean,
-    set-flash-strength         FlashStrength,
-    set-pattern-illumination   T-Boolean,
-    set-illumination-pattern   IlluminationPattern
+    sensor-command            SensorCommand,
+    set-exposure              ExposureTime,
+    set-gain                  SensorGain,
+    set-auto-exposure         T-Boolean,
+    set-exposure-limit        ExposureTime,
+    set-gain-limit            SensorGain,
+    set-region                PlanarRegion,
+    set-flash-illumination    T-Boolean,
+    set-flash-strength        FlashStrength,
+    set-pattern-illumination  T-Boolean,
+    set-illumination-pattern  IlluminationPattern
 }
 
 --- Camera configuration.
 CameraConfiguration ::=
 SEQUENCE
 {
-   config-sensor                 SensorConfiguration,
-   config-exposure               ExposureTime,
-   config-gain                   SensorGain,
-   config-auto-exposure          T-Boolean,
-   config-exposure-limit         ExposureTime,
-   config-gain-limit             SensorGain,
-   config-region                 PlanarRegion,
-   config-flash-illumination     T-Boolean,
-   config-flash-strength         FlashStrength,
-   config-pattern-illumination   T-Boolean,
-   config-illumination-pattern   IlluminationPattern
+   config-sensor                SensorConfiguration,
+   config-exposure              ExposureTime,
+   config-gain                  SensorGain,
+   config-auto-exposure         T-Boolean,
+   config-exposure-limit        ExposureTime,
+   config-gain-limit            SensorGain,
+   config-region                PlanarRegion,
+   config-flash-illumination    T-Boolean,
+   config-flash-strength        FlashStrength,
+   config-pattern-illumination  T-Boolean,
+   config-illumination-pattern  IlluminationPattern
 }
 
 --- Camera measurement
 CameraMeasurement{T-UInt32: maxImageBytes} ::=
 SEQUENCE
 {
-   attributes     SampleAttributes,
-   image          ImageFrame{maxImageBytes},
-   frame-mode     Frame-mode-t,
-   region         PlanarRegion,
-   data-depth     T-UInt8,
-   pixel-size     T-UInt8
+   attributes  SampleAttributes,
+   image       ImageFrame{maxImageBytes},
+   frame-mode  Frame-mode-t,
+   region      PlanarRegion,
+   data-depth  T-UInt8,
+   pixel-size  T-UInt8
 }
 
 --- Stereo camera measurement
 StereoCameraMeasurement{T-UInt32: maxImageBytes} ::=
 SEQUENCE
 {
-   attributes     SampleAttributes,
-   image-left     ImageFrame{maxImageBytes},
-   image-right    ImageFrame{maxImageBytes},
-   frame-mode     Frame-mode-t,
-   region         PlanarRegion,
-   data-depth     T-UInt8,
-   pixel-size     T-UInt8
+   attributes   SampleAttributes,
+   image-left   ImageFrame{maxImageBytes},
+   image-right  ImageFrame{maxImageBytes},
+   frame-mode   Frame-mode-t,
+   region       PlanarRegion,
+   data-depth   T-UInt8,
+   pixel-size   T-UInt8
 }
 
 END
