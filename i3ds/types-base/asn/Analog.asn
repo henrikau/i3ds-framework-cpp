@@ -22,7 +22,7 @@ Analog-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
 SampleAttributes FROM SampleAttribute-Types
-T-UInt32 FROM TASTE-BasicTypes
+T-UInt8, T-UInt32 FROM TASTE-BasicTypes
 T-Float FROM TASTE-ExtendedTypes;
 
 --- Analog sensor command
@@ -41,12 +41,15 @@ SEQUENCE
    config-batch-count  T-UInt32
 }
 
+--- Analog series.
+AnalogSeries{T-UInt32: maxSamples} ::= SEQUENCE (SIZE(0..maxSamples)) OF T-Float
+
 --- Analog measurement
-AnalogMeasurement{T-UInt32: maxSamples} ::=
+AnalogMeasurement{T-UInt8: maxSeries, T-UInt32: maxSamples} ::=
 SEQUENCE
 {
    attributes  SampleAttributes,
-   samples     SEQUENCE (SIZE(1..maxSamples)) OF T-Float
+   series      SEQUENCE (SIZE(0..maxSeries)) OF AnalogSeries{maxSamples}
 }
 
 END
