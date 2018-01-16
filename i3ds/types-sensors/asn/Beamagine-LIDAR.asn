@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -29,6 +30,6 @@ beamagine-LIDARHeight     T-UInt16 ::= 400
 beamagine-LIDARResolution T-UInt32 ::= 160000
 
 --- Beamagine LIDAR measurement
-Beamagine-LIDARMeasurement ::= LIDARMeasurement{beamagine-LIDARResolution, 1}
+Beamagine-LIDARMeasurement ::= LIDARMeasurement{beamagine-LIDARResolution}
 
 END

@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -31,6 +32,6 @@ basler-HRPixelSize   T-UInt16 ::= 2
 basler-HRImageSize   T-UInt32 ::= 8388608
 
 --- Basler HR camera measurement
-Basler-HRCameraMeasurement ::= CameraMeasurement{basler-HRImageSize, 3}
+Basler-HRCameraMeasurement ::= CameraMeasurement{basler-HRImageSize}
 
 END

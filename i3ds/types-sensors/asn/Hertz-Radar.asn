@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -28,6 +29,6 @@ hertz-RadarDepthMapHeight T-UInt32 ::= 121
 hertz-RadarResolution     T-UInt32 ::= 14641
 
 --- Hertz HF radar measurement
-Hertz-RadarMeasurement ::= RadarMeasurement{hertz-RadarResolution, 4}
+Hertz-RadarMeasurement ::= RadarMeasurement{hertz-RadarResolution}
 
 END

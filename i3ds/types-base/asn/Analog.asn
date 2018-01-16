@@ -21,9 +21,9 @@
 Analog-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-T-UInt32, T-Boolean FROM TASTE-BasicTypes
-T-Float, T-String FROM TASTE-ExtendedTypes
-Time FROM Time-Types;
+SampleAttributes FROM SampleAttribute-Types
+T-UInt32 FROM TASTE-BasicTypes
+T-Float FROM TASTE-ExtendedTypes;
 
 --- Analog sensor command
 AnalogCommand ::=
@@ -45,7 +45,7 @@ SEQUENCE
 AnalogMeasurement{T-UInt32: maxSamples} ::=
 SEQUENCE
 {
-   timestamp   Time,
+   attributes  SampleAttributes,
    samples     SEQUENCE (SIZE(1..maxSamples)) OF T-Float
 }
 

@@ -21,12 +21,10 @@
 Radar-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-SampleValidity, SampleAttributeList FROM SampleAttribute-Types
+SampleAttributes FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
-T-UInt32, T-Boolean FROM TASTE-BasicTypes
-T-UInt16, T-String FROM TASTE-ExtendedTypes
-DepthMap, DepthValidityList FROM DepthMap-Types
-Time FROM Time-Types;
+T-UInt32 FROM TASTE-BasicTypes
+DepthMap, DepthValidityList FROM DepthMap-Types;
 
 --- Radar command.
 RadarCommand ::=
@@ -45,15 +43,13 @@ SEQUENCE
 }
 
 --- Radar measurement.
-RadarMeasurement{T-UInt32: maxDepthMapSize, T-UInt32: maxAttributes} ::=
+RadarMeasurement{T-UInt32: maxDepthMapSize} ::=
 SEQUENCE
 {
-    timestamp        Time,
-    distances        DepthMap{maxDepthMapSize},
-    depth-validity   DepthValidityList{maxDepthMapSize},
-    region           PlanarRegion,
-    attributes       SampleAttributeList{maxAttributes},
-    validity         SampleValidity
+    attributes  SampleAttributes,
+    distances   DepthMap{maxDepthMapSize},
+    validity    DepthValidityList{maxDepthMapSize},
+    region      PlanarRegion
 }
 
 END

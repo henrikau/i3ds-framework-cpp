@@ -21,10 +21,8 @@
 IMU-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-Time FROM Time-Types
-Vector3d FROM Eigen-Types
-T-Boolean FROM TASTE-BasicTypes
-T-String FROM TASTE-ExtendedTypes;
+SampleAttributes FROM SampleAttribute-Types
+Vector3d FROM Eigen-Types;
 
 --- IMU command.
 IMUCommand ::=
@@ -44,7 +42,7 @@ SEQUENCE
 IMUMeasurement ::=
 SEQUENCE
 {
-   timestamp      Time,
+   attributes     SampleAttributes,
    linear-accel   Vector3d,
    angular-rate   Vector3d
 }

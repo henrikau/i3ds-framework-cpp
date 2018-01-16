@@ -21,12 +21,10 @@
 Camera-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-SampleValidity, SampleAttributeList FROM SampleAttribute-Types
+SampleAttributes FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
 T-UInt8, T-UInt32, T-Boolean FROM TASTE-BasicTypes
-T-UInt16, T-String FROM TASTE-ExtendedTypes
-Frame-mode-t, ImageFrame FROM Frame-Types
-Time FROM Time-Types;
+Frame-mode-t, ImageFrame FROM Frame-Types;
 
 --- Exposure time in seconds
 ExposureTime ::= REAL(1.0e-9 .. 1.0e12)
@@ -37,8 +35,8 @@ SensorGain ::= REAL(1.0 .. 1.0e6)
 --- Flash strength if supported, range from 0 (off) to 1 (full)
 FlashStrength ::= REAL(0.0 .. 1.0)
 
---- Illumination pattern if supported, 0 is none, range depends on camera
-IlluminationPattern ::= T-UInt16
+--- Illumination pattern if supported, range depends on camera
+IlluminationPattern ::= T-UInt32
 
 --- Camera command.
 CameraCommand ::=
@@ -75,32 +73,28 @@ SEQUENCE
 }
 
 --- Camera measurement
-CameraMeasurement{T-UInt32: maxImageBytes, T-UInt32: maxAttributes} ::=
+CameraMeasurement{T-UInt32: maxImageBytes} ::=
 SEQUENCE
 {
-   timestamp      Time,
+   attributes     SampleAttributes,
    image          ImageFrame{maxImageBytes},
    frame-mode     Frame-mode-t,
    region         PlanarRegion,
    data-depth     T-UInt8,
-   pixel-size     T-UInt8,
-   attributes     SampleAttributeList{maxAttributes},
-   validity       SampleValidity
+   pixel-size     T-UInt8
 }
 
 --- Stereo camera measurement
-StereoCameraMeasurement{T-UInt32: maxImageBytes, T-UInt32: maxAttributes} ::=
+StereoCameraMeasurement{T-UInt32: maxImageBytes} ::=
 SEQUENCE
 {
-   timestamp      Time,
+   attributes     SampleAttributes,
    image-left     ImageFrame{maxImageBytes},
    image-right    ImageFrame{maxImageBytes},
    frame-mode     Frame-mode-t,
    region         PlanarRegion,
    data-depth     T-UInt8,
-   pixel-size     T-UInt8,
-   attributes     SampleAttributeList{maxAttributes},
-   validity       SampleValidity
+   pixel-size     T-UInt8
 }
 
 END

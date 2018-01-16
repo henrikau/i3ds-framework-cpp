@@ -21,10 +21,8 @@
 StarTracker-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-Time FROM Time-Types
-Quaterniond FROM Eigen-Types
-T-Boolean FROM TASTE-BasicTypes
-T-String FROM TASTE-ExtendedTypes;
+SampleAttributes FROM SampleAttribute-Types
+Quaterniond FROM Eigen-Types;
 
 --- Star tracker command.
 StarTrackerCommand ::=
@@ -40,11 +38,11 @@ SEQUENCE
    config-sensor   SensorConfiguration
 }
 
---- Star tracker mesurement
+--- Star tracker mesurement.
 StarTrackerMeasurement ::=
 SEQUENCE
 {
-   timestamp   Time,
+   attributes  SampleAttributes,
    position    Quaterniond
 }
 
