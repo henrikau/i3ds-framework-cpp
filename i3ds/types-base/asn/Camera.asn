@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -19,7 +20,7 @@
 
 Camera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
 SampleValidity, SampleAttributeList FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
 T-UInt8, T-UInt32, T-Boolean FROM TASTE-BasicTypes
@@ -39,13 +40,11 @@ FlashStrength ::= REAL(0.0 .. 1.0)
 --- Illumination pattern if supported, 0 is none, range depends on camera
 IlluminationPattern ::= T-UInt16
 
---- Camera config request
-CameraConfigRequest ::=
+--- Camera command.
+CameraCommand ::=
 CHOICE
 {
-    command                    StateCommand,
-    trigger                    T-Boolean,
-    set-rate                   SensorRate,
+    sensor-command             SensorCommand,
     set-exposure               ExposureTime,
     set-gain                   SensorGain,
     set-auto-exposure          T-Boolean,
@@ -58,14 +57,11 @@ CHOICE
     set-illumination-pattern   IlluminationPattern
 }
 
---- Camera config response
-CameraConfigResponse ::=
+--- Camera configuration.
+CameraConfiguration ::=
 SEQUENCE
 {
-   success                       T-Boolean,
-   error-message                 T-String,
-   sensor-state                  SensorState,
-   config-rate                   SensorRate,
+   config-sensor                 SensorConfiguration,
    config-exposure               ExposureTime,
    config-gain                   SensorGain,
    config-auto-exposure          T-Boolean,

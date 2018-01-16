@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -19,7 +20,7 @@
 
 ToFCamera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
 SampleValidity, SampleAttributeList FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
 DepthValidityList, DepthMap FROM DepthMap-Types
@@ -27,24 +28,19 @@ T-UInt32, T-Boolean FROM TASTE-BasicTypes
 T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types;
 
---- ToF config request
-ToFConfigRequest ::=
+--- ToF command
+ToFCommand ::=
 CHOICE
 {
-   command      StateCommand,
-   trigger      T-Boolean,
-   set-rate     SensorRate,
-   set-region   PlanarRegion
+   sensor-command  SensorCommand,
+   set-region      PlanarRegion
 }
 
---- ToF config response
-ToFConfigResponse ::=
+--- ToF configuration
+ToFConfiguration ::=
 CHOICE
 {
-   success         T-Boolean,
-   error-message   T-String,
-   sensor-state    SensorState,
-   config-rate     SensorRate,
+   config-sensor   SensorConfiguration,
    config-region   PlanarRegion
 }
 

@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -19,61 +20,33 @@
 
 Analog-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
 T-UInt32, T-Boolean FROM TASTE-BasicTypes
-T-UInt16, T-Float, T-String FROM TASTE-ExtendedTypes
+T-Float, T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types;
 
---- Sample mode
-SampleMode-t ::=
-ENUMERATED
-{
-   sample-mode-batch,
-   sample-mode-trigger-up,
-   sample-mode-trigger-down,
-   sample-mode-trigger-any
-}
-
---- Sample trigger
-SampleTrigger-t ::=
-ENUMERATED
-{
-   sample-trigger-time,
-   sample-trigger-up,
-   sample-trigger-down
-}
-
---- Analog config request
-AnalogConfigRequest ::=
+--- Analog sensor command
+AnalogCommand ::=
 CHOICE
 {
-   command             StateCommand,
-   set-rate            SensorRate,
-   set-mode            SampleMode-t,
-   set-batch-size      T-UInt16,
-   set-trigger-level   T-Float
+   sensor-command   SensorCommand,
+   set-batch-count  T-UInt32
 }
 
---- Analog config response
-AnalogConfigResponse ::=
+--- Analog sensor configuration.
+AnalogConfiguration ::=
 SEQUENCE
 {
-   success                T-Boolean,
-   error-message          T-String,
-   sensor-state           SensorState,
-   config-rate            SensorRate,
-   config-mode            SampleMode-t,
-   config-batch-size      T-UInt16,
-   config-trigger-level   T-Float
+   config-sensor       SensorConfiguration,
+   config-batch-count  T-UInt32
 }
 
 --- Analog measurement
-AnalogMeasurement{T-UInt16: maxSamples} ::=
+AnalogMeasurement{T-UInt32: maxSamples} ::=
 SEQUENCE
 {
    timestamp   Time,
-   samples     SEQUENCE (SIZE(1..maxSamples)) OF T-Float,
-   trigger     SampleTrigger-t
+   samples     SEQUENCE (SIZE(1..maxSamples)) OF T-Float
 }
 
 END

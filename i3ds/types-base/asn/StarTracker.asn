@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -19,28 +20,24 @@
 
 StarTracker-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
 Time FROM Time-Types
 Quaterniond FROM Eigen-Types
 T-Boolean FROM TASTE-BasicTypes
 T-String FROM TASTE-ExtendedTypes;
 
---- Star tracker config request
-StarTrackerConfigRequest ::=
+--- Star tracker command.
+StarTrackerCommand ::=
 CHOICE
 {
-   command    StateCommand,
-   set-rate   SensorRate
+   sensor-command  SensorCommand
 }
 
---- Star tracker config response
-StarTrackerConfigResponse ::=
+--- Star tracker configuration.
+StarTrackerConfiguration ::=
 SEQUENCE
 {
-   success         T-Boolean,
-   error-message   T-String,
-   sensor-state    SensorState,
-   config-rate     SensorRate
+   config-sensor   SensorConfiguration
 }
 
 --- Star tracker mesurement

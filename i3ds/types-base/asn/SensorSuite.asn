@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -19,7 +20,8 @@
 
 SensorSuite-Types DEFINITIONS ::=
 BEGIN
-IMPORTS T-String FROM TASTE-ExtendedTypes
+IMPORTS T-UInt32 FROM TASTE-BasicTypes
+T-String FROM TASTE-ExtendedTypes
 Time FROM Time-Types
 Temperature FROM Temperature-Types;
 
@@ -32,7 +34,8 @@ Temperature FROM Temperature-Types;
 ---  STANDBY     = (start      -> OPERATIONAL
 ---                |deactivate -> INACTIVE
 ---                |_failure_  -> FAILURE),
----  OPERATIONAL = (stop       -> STANDBY
+---  OPERATIONAL = (stop       -> STANDBY,
+---                |_count_    -> STANDBY,
 ---                |_failure_  -> FAILURE),
 ---  FAILURE     = (_restore_  -> STANDBY
 ---                |deactivate -> INACTIVE).
@@ -43,14 +46,55 @@ StateCommand ::= ENUMERATED {activate, start, stop, deactivate}
 -- Sensor rate given as seconds between periodic samples (inverse of frequency).
 SensorRate ::= REAL(0.0 .. 3.402823466e+38)
 
---  Sensor status messages.
+-- The sensor ID is a 24-bit integer.
+SensorID ::= INTEGER(0 .. 16777215)
+
+--  Sensor status message is common for all sensor classes.
 SensorStatus ::=
 SEQUENCE
 {
     timestamp           Time,
-    device-state        SensorState,
-    device-temperature  Temperature,
-    debug-message       T-String
+    sensor-id           SensorID,
+    sensor-state        SensorState,
+    sensor-temperature  Temperature,
+    status-message      T-String
+}
+
+--- Sensor command common for all sensor classes, extended by nesting.
+SensorCommand ::=
+CHOICE
+{
+   command    StateCommand,    -- State change command
+   set-rate   SensorRate,      -- Rate of sampling when operational.
+   set-count  T-UInt32         -- Number of samples, where 0 is infinite.
+}
+
+--- Command result codes.
+CommandResult ::=
+ENUMERATED
+{
+   success,                    -- Successfully executed command.
+   error-illegal-state,        -- Command is illegal from current state.
+   error-unsupported-command,  -- Command is not supported by sensor.
+   error-unsupported-value,    -- Command value is not supported.
+   error-other                 -- Other command error, see message.
+}
+
+--- Sensor command response common for all sensor classes.
+SensorCommandResponse ::=
+SEQUENCE
+{
+   result   CommandResult,
+   message  T-String
+}
+
+--- Sensor configuration common for all sensor classes, extended by nesting.
+SensorConfiguration ::=
+SEQUENCE
+{
+   sensor-state   SensorState, -- Current state of the sensor.
+   config-rate    SensorRate,  -- Rate of sampling when operational.
+   config-count   T-UInt32     -- Number of samples, where 0 is infinite.
 }
 
 END

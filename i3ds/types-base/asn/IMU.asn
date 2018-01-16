@@ -2,6 +2,7 @@
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
 --- Copyright (C) 2017      Stiftelsen SINTEF
+--- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
 --- modify it under the terms of the GNU General Public License
@@ -19,28 +20,24 @@
 
 IMU-Types DEFINITIONS ::=
 BEGIN
-IMPORTS StateCommand, SensorState, SensorRate FROM SensorSuite-Types
+IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
 Time FROM Time-Types
 Vector3d FROM Eigen-Types
 T-Boolean FROM TASTE-BasicTypes
 T-String FROM TASTE-ExtendedTypes;
 
---- IMU config request
-IMUConfigRequest ::=
+--- IMU command.
+IMUCommand ::=
 CHOICE
 {
-   command    StateCommand,
-   set-rate   SensorRate
+   sensor-command  SensorCommand
 }
 
---- IMU config response
+--- IMU configuration.
 IMUConfiguration ::=
 SEQUENCE
 {
-   success         T-Boolean,
-   error-message   T-String,
-   sensor-state    SensorState,
-   config-rate     SensorRate
+   config-sensor  SensorConfiguration
 }
 
 --- IMU measurement definition
