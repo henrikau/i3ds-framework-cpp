@@ -11,6 +11,8 @@ set (PROJECT_URL "http://i3ds-h2020.eu/")
 set (PROJECT_LICENSE "MPLv2")
 set (PROJECT_VERSION "1.0")
 
+enable_testing ()
+
 ################################################################################
 # Set paths common for whole framework
 ################################################################################
