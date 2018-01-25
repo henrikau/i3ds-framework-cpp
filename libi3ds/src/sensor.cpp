@@ -14,30 +14,24 @@ i3ds::Sensor::~Sensor()
 CommandResult
 i3ds::Sensor::handle_sensor_command(SensorCommand& command)
 {
-  CommandResult r;
-
   switch(command.kind)
     {
     case SensorCommand::command_PRESENT:
-      r = handle_state_command(command.u.command);
-      break;
+      return handle_state_command(command.u.command);
 
     case SensorCommand::set_rate_PRESENT:
-      r = handle_rate_command(command.u.set_rate);
-      break;
+      return handle_rate_command(command.u.set_rate);
 
     default:
-      r = error_other;
+      break;
     }
 
-  return r;
+  return error_unsupported_command;
 }
 
 CommandResult
 i3ds::Sensor::handle_state_command(StateCommand command)
 {
-  CommandResult r;
-
   switch(_state)
     {
     case inactive:
@@ -45,11 +39,7 @@ i3ds::Sensor::handle_state_command(StateCommand command)
 	{
 	  do_activate();
 	  _state = standby;
-	  r = success;
-	}
-      else
-	{
-	  r = error_illegal_state;
+	  return success;
 	}
       break;
 
@@ -58,17 +48,13 @@ i3ds::Sensor::handle_state_command(StateCommand command)
 	{
 	  do_deactivate();
 	  _state = inactive;
-	  r = success;
+	  return success;
 	}
       else if (command == start)
 	{
 	  do_start();
 	  _state = operational;
-	  r = success;
-	}
-      else
-	{
-	  r = error_illegal_state;
+	  return success;
 	}
       break;
 
@@ -77,50 +63,38 @@ i3ds::Sensor::handle_state_command(StateCommand command)
 	{
 	  do_stop();
 	  _state = standby;
-	  r = success;
-	}
-      else
-	{
-	  r = error_illegal_state;
+	  return success;
 	}
       break;
 
     default:
-      r = error_illegal_state;
+      break;
     }
 
-  return r;
+  return error_illegal_state;
 }
 
 CommandResult
 i3ds::Sensor::handle_rate_command(SensorRate rate)
 {
-  CommandResult r;
   int errCode;
 
-  if (_state == standby)
+  if (_state != standby)
     {
-      if (SensorRate_IsConstraintValid(&rate, &errCode))
-	{
-	  if (support_rate(rate))
-	    {
-	      r = success;
-	      _rate = rate;
-	    }
-	  else
-	    {
-	      r = error_unsupported_value;
-	    }
-	}
-      else
-	{
-	  r = error_unsupported_value;
-	}
-    }
-  else
-    {
-      r = error_illegal_state;
+      return error_illegal_state;
     }
 
-  return r;
+  if (!SensorRate_IsConstraintValid(&rate, &errCode))
+    {
+      return error_unsupported_value;
+    }
+
+  if (!support_rate(rate))
+    {
+      return error_unsupported_value;
+    }
+
+  _rate = rate;
+
+  return success;
 }
