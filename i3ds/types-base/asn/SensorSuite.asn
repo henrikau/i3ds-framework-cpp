@@ -46,8 +46,23 @@ StateCommand ::= ENUMERATED {activate, start, stop, deactivate}
 -- Sensor rate given as seconds between periodic samples (inverse of frequency).
 SensorRate ::= REAL(0.0 .. 3.402823466e+38)
 
--- The sensor ID is a 24-bit integer.
+-- The sensor ID is a 24-bit integer identifying the sensor.
 SensorID ::= INTEGER(0 .. 16777215)
+
+-- The endpoint ID is a 8-bit integer identifying the endpoint within the sensor.
+EndpointID ::= INTEGER(0 .. 255)
+
+-- Endpoint ID for command request (input with response).
+command-Endpoint EndpointID ::= 1
+
+-- Endpoint ID for configuration query request (input with response).
+configuration-Endpoint EndpointID ::= 2
+
+-- Endpoint ID for status (output without response).
+status-Endpoint EndpointID ::= 128
+
+-- Endpoint ID for measurements (output without response).
+measurement-Endpoint EndpointID ::= 129
 
 --  Sensor status message is common for all sensor classes.
 SensorStatus ::=
