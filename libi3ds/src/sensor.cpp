@@ -100,10 +100,17 @@ i3ds::Sensor::handle_rate_command(SensorRate rate)
 
   if (_state == standby)
     {
-      if (SensorRate_IsConstraintValid(&rate, &errCode) && update_rate(rate))
+      if (SensorRate_IsConstraintValid(&rate, &errCode))
 	{
-	  r = success;
-	  _rate = rate;
+	  if (support_rate(rate))
+	    {
+	      r = success;
+	      _rate = rate;
+	    }
+	  else
+	    {
+	      r = error_unsupported_value;
+	    }
 	}
       else
 	{

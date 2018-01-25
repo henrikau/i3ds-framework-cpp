@@ -27,7 +27,7 @@ namespace i3ds
     virtual void do_stop() = 0;
     virtual void do_deactivate() = 0;
 
-    virtual bool update_rate(SensorRate rate) = 0;
+    virtual bool support_rate(SensorRate rate) = 0;
 
   private:
 
