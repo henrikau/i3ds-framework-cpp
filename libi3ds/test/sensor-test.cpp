@@ -40,6 +40,8 @@ class TestSensor : public Sensor
 
   std::vector<std::string> callbacks;
 
+  virtual double get_temperature() const {return 300.0;}
+
  protected:
 
   void log(std::string callback) {callbacks.push_back(callback);}
@@ -149,6 +151,7 @@ BOOST_AUTO_TEST_CASE(sensor_creation)
   BOOST_CHECK_EQUAL(s.get_id(), id);
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
   BOOST_CHECK_EQUAL(s.get_rate(), 0.0);
+  BOOST_CHECK_CLOSE(s.get_temperature(), 300.0, 0.01);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -18,13 +18,27 @@ namespace i3ds
     // Get sensor rate.
     SensorRate get_rate() const {return _rate;}
 
+    // Get temperature in Kelvin (defaults to 0.0).
+    virtual double get_temperature() const {return 0.0;}
+
   protected:
 
+    // Read sensor status.
+    void read_status(SensorStatus& status) const;
+
+    // Handle SensorCommand.
     CommandResult handle_sensor_command(SensorCommand& command);
 
+    // Sensor action when activated.
     virtual void do_activate() = 0;
+
+    // Sensor action when started.
     virtual void do_start() = 0;
+
+    // Sensor action when activated.
     virtual void do_stop() = 0;
+
+    // Sensor action when activated.
     virtual void do_deactivate() = 0;
 
     virtual bool support_rate(SensorRate rate) = 0;
