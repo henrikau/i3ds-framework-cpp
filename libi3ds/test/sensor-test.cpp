@@ -17,35 +17,27 @@
 #include <vector>
 #include <iostream>
 
+#include "codec.hpp"
 #include "sensor.hpp"
 
 using namespace i3ds;
 
 class TestSensor : public Sensor
 {
- public:
+public:
 
   TestSensor(SensorID id) : Sensor(id) {};
 
-  CommandResult issue_state_command(StateCommand cmd);
-
-  void test_legal_state_command(StateCommand cmd, std::string callback);
-  void test_illegal_state_command(StateCommand cmd);
-
-  CommandResult issue_rate_command(SensorRate rate);
-
-  void test_legal_rate_command(SensorRate rate);
-  void test_illegal_rate_command(SensorRate rate, CommandResult error);
-  void test_unsupported_rate_command(SensorRate rate, CommandResult error);
-
-  std::vector<std::string> callbacks;
+  void test_callback_and_clear(std::string callback);
+  void test_no_callback();
 
   virtual double get_temperature() const {return 300.0;}
 
- protected:
+protected:
+
+  std::vector<std::string> callbacks;
 
   void log(std::string callback) {callbacks.push_back(callback);}
-  void clear() {callbacks.clear();}
 
   virtual void do_activate() {log("do_activate");}
   virtual void do_start() {log("do_start");}
@@ -55,6 +47,46 @@ class TestSensor : public Sensor
   virtual bool support_rate(SensorRate rate);
 };
 
+class TestClient
+{
+public:
+
+  TestClient(Sensor& sensor) : sensor_(sensor) {}
+
+  CommandResult issue_state_command(StateCommand cmd);
+
+  void test_legal_state_command(StateCommand cmd);
+  void test_illegal_state_command(StateCommand cmd);
+
+  CommandResult issue_rate_command(SensorRate rate);
+
+  void test_legal_rate_command(SensorRate rate);
+  void test_illegal_rate_command(SensorRate rate, CommandResult error);
+  void test_unsupported_rate_command(SensorRate rate, CommandResult error);
+
+private:
+
+  CommandResult issue_command();
+
+  Sensor& sensor_;
+
+  Encoder<SensorCommandCodec> command_;
+  Decoder<SensorCommandResponseCodec> response_;
+};
+
+void TestSensor::test_callback_and_clear(std::string callback)
+{
+  BOOST_CHECK_EQUAL(callbacks.size(), 1);
+  BOOST_CHECK_EQUAL(callbacks[0], callback);
+
+  callbacks.clear();
+}
+
+void TestSensor::test_no_callback()
+{
+  BOOST_CHECK_EQUAL(callbacks.size(), 0);
+}
+
 bool TestSensor::support_rate(SensorRate rate)
 {
   log("support_rate");
@@ -62,82 +94,77 @@ bool TestSensor::support_rate(SensorRate rate)
   return (0.1 <= rate && rate <= 10.0);
 }
 
-CommandResult TestSensor::issue_state_command(StateCommand sc)
+CommandResult TestClient::issue_command()
 {
-  SensorCommand cmd;
+  Message req;
 
-  SensorCommand_Initialize(&cmd);
+  command_.Encode(req);
 
-  cmd.kind = SensorCommand::command_PRESENT;
-  cmd.u.command = sc;
+  req.sensor_id = sensor_.get_id();
+  req.endpoint_id = Sensor::COMMAND;
 
-  return handle_sensor_command(cmd);
+  Message res = sensor_.handle_request(req);
+
+  BOOST_CHECK_EQUAL(res.sensor_id, sensor_.get_id());
+  BOOST_CHECK_EQUAL(res.endpoint_id, Sensor::COMMAND);
+
+  BOOST_REQUIRE_GT(res.size, 0);
+  BOOST_REQUIRE(res.data);
+
+  response_.Decode(res);
+
+  return response_.data.result;
 }
 
-void TestSensor::test_legal_state_command(StateCommand sc, std::string callback)
+CommandResult TestClient::issue_state_command(StateCommand sc)
+{
+  command_.data.kind = SensorCommand::command_PRESENT;
+  command_.data.u.command = sc;
+
+  return issue_command();
+}
+
+void TestClient::test_legal_state_command(StateCommand sc)
 {
   CommandResult r = issue_state_command(sc);
 
   BOOST_CHECK_EQUAL(r, success);
-  BOOST_CHECK_EQUAL(callbacks.size(), 1);
-  BOOST_CHECK_EQUAL(callbacks[0], callback);
-
-  clear();
 }
 
-void TestSensor::test_illegal_state_command(StateCommand sc)
+void TestClient::test_illegal_state_command(StateCommand sc)
 {
   CommandResult r = issue_state_command(sc);
 
   BOOST_CHECK_EQUAL(r, error_illegal_state);
-  BOOST_CHECK_EQUAL(callbacks.size(), 0);
-
-  clear();
 }
 
-CommandResult TestSensor::issue_rate_command(SensorRate rate)
+CommandResult TestClient::issue_rate_command(SensorRate rate)
 {
-  SensorCommand cmd;
+  command_.data.kind = SensorCommand::set_rate_PRESENT;
+  command_.data.u.set_rate = rate;
 
-  SensorCommand_Initialize(&cmd);
-
-  cmd.kind = SensorCommand::set_rate_PRESENT;
-  cmd.u.set_rate = rate;
-
-  return handle_sensor_command(cmd);
+  return issue_command();
 }
 
-void TestSensor::test_legal_rate_command(SensorRate rate)
+void TestClient::test_legal_rate_command(SensorRate rate)
 {
   CommandResult r = issue_rate_command(rate);
 
   BOOST_CHECK_EQUAL(r, success);
-  BOOST_CHECK_EQUAL(callbacks.size(), 1);
-  BOOST_CHECK_EQUAL(callbacks[0], "support_rate");
-
-  clear();
 }
 
-void TestSensor::test_illegal_rate_command(SensorRate rate, CommandResult error)
+void TestClient::test_illegal_rate_command(SensorRate rate, CommandResult error)
 {
   CommandResult r = issue_rate_command(rate);
 
   BOOST_CHECK_EQUAL(r, error);
-  BOOST_CHECK_EQUAL(callbacks.size(), 0);
-
-  clear();
 }
 
-void TestSensor::test_unsupported_rate_command(SensorRate rate, CommandResult error)
+void TestClient::test_unsupported_rate_command(SensorRate rate, CommandResult error)
 {
   CommandResult r = issue_rate_command(rate);
 
   BOOST_CHECK_EQUAL(r, error);
-  BOOST_CHECK_EQUAL(callbacks.size(), 1);
-
-  BOOST_CHECK_EQUAL(callbacks[0], "support_rate");
-
-  clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -159,45 +186,58 @@ BOOST_AUTO_TEST_CASE(sensor_creation)
 BOOST_AUTO_TEST_CASE(sensor_state_command)
 {
   TestSensor s(1);
+  TestClient c(s);
 
   // Test commands from INACTIVE.
-  s.test_illegal_state_command(start);
+  c.test_illegal_state_command(start);
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
+  s.test_no_callback();
 
-  s.test_illegal_state_command(stop);
+  c.test_illegal_state_command(stop);
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
+  s.test_no_callback();
 
-  s.test_illegal_state_command(deactivate);
+  c.test_illegal_state_command(deactivate);
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
+  s.test_no_callback();
 
-  s.test_legal_state_command(activate, "do_activate");
+  c.test_legal_state_command(activate);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
+  s.test_callback_and_clear("do_activate");
 
   // Test commands from STANDBY.
-  s.test_illegal_state_command(activate);
+  c.test_illegal_state_command(activate);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
+  s.test_no_callback();
 
-  s.test_legal_state_command(deactivate, "do_deactivate");
+  c.test_legal_state_command(deactivate);
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
+  s.test_callback_and_clear("do_deactivate");
 
-  s.test_legal_state_command(activate, "do_activate");
+  c.test_legal_state_command(activate);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
+  s.test_callback_and_clear("do_activate");
 
-  s.test_legal_state_command(start, "do_start");
+  c.test_legal_state_command(start);
   BOOST_CHECK_EQUAL(s.get_state(), operational);
+  s.test_callback_and_clear("do_start");
 
   // Test commands from OPERATIONAL.
-  s.test_illegal_state_command(start);
+  c.test_illegal_state_command(start);
   BOOST_CHECK_EQUAL(s.get_state(), operational);
+  s.test_no_callback();
 
-  s.test_illegal_state_command(deactivate);
+  c.test_illegal_state_command(deactivate);
   BOOST_CHECK_EQUAL(s.get_state(), operational);
+  s.test_no_callback();
 
-  s.test_illegal_state_command(activate);
+  c.test_illegal_state_command(activate);
   BOOST_CHECK_EQUAL(s.get_state(), operational);
+  s.test_no_callback();
 
-  s.test_legal_state_command(stop, "do_stop");
+  c.test_legal_state_command(stop);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
+  s.test_callback_and_clear("do_stop");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,39 +245,39 @@ BOOST_AUTO_TEST_CASE(sensor_state_command)
 BOOST_AUTO_TEST_CASE(sensor_rate_command)
 {
   TestSensor s(1);
+  TestClient c(s);
 
   // Test from INACTIVE (illegal).
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
 
-  s.test_illegal_rate_command(1.0, error_illegal_state);
-  s.test_illegal_rate_command(-1.0, error_illegal_state);
+  c.test_illegal_rate_command(1.0, error_illegal_state);
+  s.test_no_callback();
 
   // Test from STANDBY (legal).
-  s.test_legal_state_command(activate, "do_activate");
+  c.test_legal_state_command(activate);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
 
-  s.test_legal_rate_command(1.0);
-  BOOST_CHECK_EQUAL(s.get_state(), standby);
-  BOOST_CHECK_CLOSE(s.get_rate(), 1.0, 1e-9);
-
-  s.test_illegal_rate_command(-1.0, error_unsupported_value);
+  c.test_legal_rate_command(1.0);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
   BOOST_CHECK_CLOSE(s.get_rate(), 1.0, 1e-9);
 
-  s.test_legal_rate_command(0.1);
+  c.test_unsupported_rate_command(100.0, error_unsupported_value);
+  BOOST_CHECK_EQUAL(s.get_state(), standby);
+  BOOST_CHECK_CLOSE(s.get_rate(), 1.0, 1e-9);
+
+  c.test_legal_rate_command(0.1);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
   BOOST_CHECK_CLOSE(s.get_rate(), 0.1, 1e-9);
 
-  s.test_unsupported_rate_command(0.01, error_unsupported_value);
+  c.test_unsupported_rate_command(0.01, error_unsupported_value);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
 
-  s.test_unsupported_rate_command(100.0, error_unsupported_value);
+  c.test_unsupported_rate_command(100.0, error_unsupported_value);
   BOOST_CHECK_EQUAL(s.get_state(), standby);
 
   // Test from OPERATIONAL (illegal).
-  s.test_legal_state_command(start, "do_start");
+  c.test_legal_state_command(start);
   BOOST_CHECK_EQUAL(s.get_state(), operational);
 
-  s.test_illegal_rate_command(1.0, error_illegal_state);
-  s.test_illegal_rate_command(-1.0, error_illegal_state);
+  c.test_illegal_rate_command(1.0, error_illegal_state);
 }

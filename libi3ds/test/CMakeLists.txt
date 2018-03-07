@@ -4,6 +4,7 @@ find_package(Boost 1.58 COMPONENTS unit_test_framework REQUIRED)
 include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
 
 set(TESTS
+  codec-test
   sensor-test
 )
 
