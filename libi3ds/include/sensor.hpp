@@ -8,6 +8,9 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef __I3DS_SENSOR_HPP
+#define __I3DS_SENSOR_HPP
+
 #include "SensorSuite.h"
 #include "message.hpp"
 #include "codec.hpp"
@@ -97,3 +100,5 @@ namespace i3ds
   };
 
 } // namespace i3ds
+
+#endif
