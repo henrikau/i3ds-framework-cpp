@@ -6,9 +6,10 @@ asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
 
 set (SRCS
   sensor.cpp
+  zmq_sensor_server.cpp
   ${ASN1_SRCS} ${ASN1_HDRS})
 
-set (LIBS)
+set (LIBS zmq)
 
 add_library (i3ds SHARED ${SRCS})
 target_link_libraries (i3ds ${LIBS})

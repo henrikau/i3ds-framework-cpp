@@ -6,10 +6,12 @@ include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
 set(TESTS
   codec-test
   sensor-test
+  zmq_sensor_server-test
 )
 
 set(LIBS
   i3ds
+  zmq
   ${Boost_LIBRARIES})
 
 foreach(t ${TESTS})
