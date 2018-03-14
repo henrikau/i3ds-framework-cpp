@@ -8,6 +8,7 @@ set (SRCS
   sensor.cpp
   zmq_msg_codec.cpp
   zmq_sensor_server.cpp
+  zmq_sensor_client.cpp
   ${ASN1_SRCS} ${ASN1_HDRS})
 
 set (LIBS zmq)
