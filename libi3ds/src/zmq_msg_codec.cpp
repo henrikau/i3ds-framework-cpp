@@ -46,3 +46,30 @@ void i3ds::add_message_payload(i3ds::Message* i3ds_msg, const zmq::message_t& pa
     i3ds_msg->data = (byte*)payload_msg.data();
     i3ds_msg->size = payload_msg.size();
 }
+
+
+void i3ds::sendI3dsMsgOverZmq(i3ds::Message i3ds_msg, zmq::socket_t &socket)
+{
+    zmq::message_t id_msg = create_id_message(i3ds_msg);
+    if(i3ds_msg.size == 0) {
+        socket.send(id_msg);
+    } else {
+        zmq::message_t data_msg = create_payload_message(i3ds_msg);
+        socket.send(id_msg, ZMQ_SNDMORE);
+        socket.send(data_msg);
+    }
+}
+
+i3ds::Message i3ds::receiveI3dsMsgOverZmq(zmq::socket_t &socket)
+{
+    zmq::message_t id_msg, data_msg;
+    socket.recv(&id_msg);
+    i3ds::Message i3ds_msg = create_i3ds_message(id_msg);
+    if(id_msg.more())
+    {
+        socket.recv(&data_msg);
+        add_message_payload(&i3ds_msg, data_msg);
+    }
+    return i3ds_msg;
+}
+

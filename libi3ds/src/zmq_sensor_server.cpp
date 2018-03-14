@@ -33,28 +33,11 @@ void i3ds::ZmqSensorServer::run()
 {
     while(true) {
         try {
-            zmq::message_t id_msg, data_msg;
-            socket_.recv(&id_msg);
-            i3ds::Message request = create_i3ds_message(id_msg);
-            if(id_msg.more())
-            {
-                socket_.recv(&data_msg);
-                add_message_payload(&request, data_msg);
-            }
-
+            i3ds::Message request = receiveI3dsMsgOverZmq(socket_);
             i3ds::Message response = sensor_->handle_request(request);
-
-            zmq::message_t reply_id = create_id_message(response);
-            if(response.size == 0) {
-                socket_.send(reply_id);
-            } else {
-                zmq::message_t reply_data = create_payload_message(response);
-                socket_.send(reply_id, ZMQ_SNDMORE);
-                socket_.send(reply_data);
-            }
+            sendI3dsMsgOverZmq(response, socket_);
         } catch (const zmq::error_t e) {
             throw std::runtime_error(e.what());
         }
     }
 }
-

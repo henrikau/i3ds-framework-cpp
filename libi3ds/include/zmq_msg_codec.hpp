@@ -23,6 +23,9 @@ zmq::message_t create_id_message(Message i3ds_msg);
 Message create_i3ds_message(const zmq::message_t &id_msg);
 void add_message_payload(Message* i3ds_msg, const zmq::message_t& payload_msg);
 
+void sendI3dsMsgOverZmq(Message i3ds_msg, zmq::socket_t &socket);
+Message receiveI3dsMsgOverZmq(zmq::socket_t &socket);
+
 } // namespace i3ds
 
 #endif
