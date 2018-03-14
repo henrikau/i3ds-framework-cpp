@@ -24,7 +24,8 @@ class ZmqSensorServer
 private:
     Sensor* sensor_;
     std::string address_;
-    
+    zmq::context_t context_;
+    zmq::socket_t socket_;
 
 public:
     ZmqSensorServer(i3ds::Sensor* sensor, std::string address);
