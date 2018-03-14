@@ -11,6 +11,8 @@
 #ifndef __I3DS_SENSOR_HPP
 #define __I3DS_SENSOR_HPP
 
+#include <unordered_map>
+
 #include "SensorSuite.h"
 #include "message.hpp"
 #include "codec.hpp"
@@ -53,6 +55,17 @@ public:
 
 protected:
 
+  // Set default handler for endpoints.
+  void default_command_handler();
+  void default_status_handler();
+  void default_configuration_handler();
+
+  // Set handler for endpoint ID.
+  void set_handler(EndpointID id, Handler* handler);
+
+  // Get handler for endpoint ID, null if not present.
+  Handler* get_handler(EndpointID id) const;
+
   // Get sensor status.
   void get_sensor_status(SensorStatus& status) const;
 
@@ -60,16 +73,7 @@ protected:
   void get_sensor_configuration(SensorConfiguration& config) const;
 
   // Execute SensorCommand.
-  CommandResult execute_sensor_command(const SensorCommand& command);
-
-  // Callback for handling command message.
-  virtual void handle_command(const Message& request, Message& response);
-
-  // Callback for handling status query message.
-  virtual void handle_status_query(const Message& request, Message& response);
-
-  // Callback for handling configuration query message.
-  virtual void handle_configuration_query(const Message& request, Message& response);
+  void execute_sensor_command(const SensorCommand& command, SensorCommandResponse& response);
 
   // Sensor action when activated.
   virtual void do_activate() = 0;
@@ -96,9 +100,7 @@ private:
   SensorState state_;
   SensorRate rate_;
 
-  Encoder<SensorCommandResponseCodec> command_response_;
-  Encoder<SensorConfigurationCodec> configuration_;
-  Encoder<SensorStatusCodec> status_;
+  std::unordered_map<EndpointID, Handler*> handlers_;
 };
 
 } // namespace i3ds

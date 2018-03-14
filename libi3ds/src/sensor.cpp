@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cassert>
 #include "sensor.hpp"
+#include "wrapper.hpp"
 
 const EndpointID i3ds::Sensor::COMMAND = command_Endpoint;
 const EndpointID i3ds::Sensor::STATUS = status_Endpoint;
@@ -26,24 +27,86 @@ i3ds::Sensor::Sensor(SensorID id)
 
 i3ds::Sensor::~Sensor()
 {
+  for (auto it : handlers_)
+    {
+      delete it.second;
+    }
+
+  handlers_.clear();
 }
 
-CommandResult
-i3ds::Sensor::execute_sensor_command(const SensorCommand& command)
+void i3ds::Sensor::default_command_handler()
+{
+  using std::placeholders::_1;
+  using std::placeholders::_2;
+
+  auto op = std::bind(&i3ds::Sensor::execute_sensor_command, this, _1, _2);
+
+  set_handler(COMMAND, new CommandWrapper<SensorCommandCodec, SensorCommandResponseCodec>(op));
+}
+
+void i3ds::Sensor::default_status_handler()
+{
+  using std::placeholders::_1;
+
+  auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
+
+  set_handler(STATUS, new QueryWrapper<SensorStatusCodec>(op));
+}
+
+void i3ds::Sensor::default_configuration_handler()
+{
+  using std::placeholders::_1;
+
+  auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
+
+  set_handler(STATUS, new QueryWrapper<SensorStatusCodec>(op));
+}
+
+void i3ds::Sensor::set_handler(EndpointID id, i3ds::Handler* handler)
+{
+  Handler* old = get_handler(id);
+
+  if (old)
+    {
+      delete old;
+    }
+
+  handlers_[id] = handler;
+}
+
+i3ds::Handler*
+i3ds::Sensor::get_handler(EndpointID id) const
+{
+  auto it = handlers_.find(id);
+
+  if (it == handlers_.end())
+    {
+      return NULL;
+    }
+  else
+    {
+      return it->second;
+    }
+}
+
+void
+i3ds::Sensor::execute_sensor_command(const SensorCommand& command, SensorCommandResponse& response)
 {
   switch(command.kind)
     {
     case SensorCommand::command_PRESENT:
-      return execute_state_command(command.u.command);
+      response.result = execute_state_command(command.u.command);
+      break;
 
     case SensorCommand::set_rate_PRESENT:
-      return execute_rate_command(command.u.set_rate);
+      response.result = execute_rate_command(command.u.set_rate);
+      break;
 
     default:
+      response.result = error_unsupported_command;
       break;
     }
-
-  return error_unsupported_command;
 }
 
 CommandResult
@@ -133,64 +196,14 @@ i3ds::Sensor::handle(const i3ds::Message& request, i3ds::Message& response)
   response.sensor_id = get_id();
   response.endpoint_id = request.endpoint_id;
 
-  if (request.sensor_id != get_id())
+  Handler* handler = get_handler(request.endpoint_id);
+
+  if (handler)
     {
-      response.sensor_id = 0;
-    }
-  else if (request.endpoint_id == Sensor::COMMAND)
-    {
-      handle_command(request, response);
-    }
-  else if (request.endpoint_id == Sensor::CONFIGURATION)
-    {
-      handle_configuration_query(request, response);
-    }
-  else if (request.endpoint_id == Sensor::STATUS)
-    {
-      handle_status_query(request, response);
+      handler->handle(request, response);
     }
   else
     {
       response.endpoint_id = 0;
     }
-}
-
-void
-i3ds::Sensor::handle_command(const i3ds::Message& request, i3ds::Message& response)
-{
-  // Create decoder on stack.
-  Decoder<SensorCommandCodec> decoder;
-  decoder.Decode(request);
-
-  // Execute the sensor command and get result.
-  command_response_.data.result = execute_sensor_command(decoder.data);
-
-  // Encode response message.
-  command_response_.Encode(response);
-}
-
-void
-i3ds::Sensor::handle_status_query(const i3ds::Message& request, i3ds::Message& response)
-{
-  // Status query message shall be empty.
-  assert(request.size == 0);
-
-  // Get sensor status.
-  get_sensor_status(status_.data);
-
-  // Encode response message.
-  status_.Encode(response);
-}
-
-void
-i3ds::Sensor::handle_configuration_query(const i3ds::Message& request, i3ds::Message& response)
-{
-  // Status query message shall be empty.
-  assert(request.size == 0);
-
-  // Get sensor status.
-  get_sensor_configuration(configuration_.data);
-
-  // Encode response message.
-  configuration_.Encode(response);
 }

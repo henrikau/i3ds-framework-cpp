@@ -26,7 +26,7 @@ class TestSensor : public Sensor
 {
 public:
 
-  TestSensor(SensorID id) : Sensor(id) {};
+  TestSensor(SensorID id);
 
   void test_callback_and_clear(std::string callback);
   void test_no_callback();
@@ -73,6 +73,13 @@ private:
   Encoder<SensorCommandCodec> command_;
   Decoder<SensorCommandResponseCodec> response_;
 };
+
+TestSensor::TestSensor(SensorID id) : Sensor(id)
+{
+  default_command_handler();
+  default_status_handler();
+  default_configuration_handler();
+}
 
 void TestSensor::test_callback_and_clear(std::string callback)
 {
