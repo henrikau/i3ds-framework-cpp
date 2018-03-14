@@ -37,13 +37,16 @@ i3ds::Message i3ds::create_i3ds_message(const zmq::message_t &id_msg)
     i3ds::Message i3ds_msg;
     i3ds_msg.sensor_id = (combined_id >> 8);
     i3ds_msg.endpoint_id = combined_id & 255;
+    i3ds_msg.size = 0;
 
     return i3ds_msg;
 }
 
 void i3ds::add_message_payload(i3ds::Message* i3ds_msg, const zmq::message_t& payload_msg)
 {
-    i3ds_msg->data = (byte*)payload_msg.data();
+    //i3ds_msg->data = (byte*)payload_msg.data();
+    i3ds_msg->data = (byte*)malloc(payload_msg.size());
+    memcpy(i3ds_msg->data, payload_msg.data(), payload_msg.size());
     i3ds_msg->size = payload_msg.size();
 }
 

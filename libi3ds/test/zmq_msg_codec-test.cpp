@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(create_payload_message_test)
     i3ds_msg.data = (byte*)data;
     i3ds_msg.size = strlen(data)+1;
     zmq::message_t zmq_msg = create_payload_message(i3ds_msg);
-    BOOST_CHECK_EQUAL(strcmp(data, (char*)zmq_msg.data()), 0);
+    BOOST_CHECK_EQUAL(strcmp("Hello world123", (char*)zmq_msg.data()), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +85,16 @@ Message create_random_data_msg(int sensor_id, int endpoint_id, int size)
     return i3ds_msg;
 }
 
+void check_msgs_are_equal(Message msg_1, Message msg_2)
+{
+    BOOST_CHECK_EQUAL(msg_1.size, msg_2.size);
+    BOOST_CHECK_EQUAL(msg_1.sensor_id, msg_2.sensor_id);
+    BOOST_CHECK_EQUAL(msg_1.endpoint_id, msg_2.endpoint_id);
+    for (unsigned int i = 0; i < msg_1.size; i++) {
+        BOOST_CHECK_EQUAL(msg_1.data[i], msg_2.data[i]);
+    }
+}
+
 void check_zmq_msg_decoding(Message original_msg)
 {
     zmq::message_t id_msg = create_id_message(original_msg);
@@ -92,13 +102,9 @@ void check_zmq_msg_decoding(Message original_msg)
     Message decoded_msg = create_i3ds_message(id_msg);
     add_message_payload(&decoded_msg, data_msg);
 
-    BOOST_CHECK_EQUAL(original_msg.size, decoded_msg.size);
-    BOOST_CHECK_EQUAL(original_msg.sensor_id, decoded_msg.sensor_id);
-    BOOST_CHECK_EQUAL(original_msg.endpoint_id, decoded_msg.endpoint_id);
-    for (unsigned int i = 0; i < original_msg.size; i++) {
-        BOOST_CHECK_EQUAL(original_msg.data[i], decoded_msg.data[i]);
-    }
+    check_msgs_are_equal(original_msg, decoded_msg);
 }
+
 
 BOOST_AUTO_TEST_CASE(create_i3ds_msg_test)
 {
@@ -112,4 +118,38 @@ BOOST_AUTO_TEST_CASE(create_i3ds_msg_test)
     check_zmq_msg_decoding(create_random_data_msg(16777215, 255, 1000));
     check_zmq_msg_decoding(create_random_data_msg(1, 1, 1));
 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void perform_send_and_receive(Message original_msg)
+{
+    zmq::context_t context(1);
+    zmq::socket_t recv_socket(context, ZMQ_REP);
+    recv_socket.bind("tcp://127.0.0.1:5555");
+    zmq::socket_t send_socket(context, ZMQ_REQ);
+    send_socket.connect("tcp://127.0.0.1:5555");
+
+    sendI3dsMsgOverZmq(original_msg, send_socket);
+    Message received_msg = receiveI3dsMsgOverZmq(recv_socket);
+
+    check_msgs_are_equal(original_msg, received_msg);
+}
+
+BOOST_AUTO_TEST_CASE(send_and_receive_test)
+{
+    Message msg_with_payload = create_string_msg(123, 45, "Test message");
+    perform_send_and_receive(msg_with_payload);
+
+    Message msg_without_payload;
+    msg_without_payload.sensor_id = 321;
+    msg_without_payload.endpoint_id = 21;
+    msg_without_payload.size = 0;
+    perform_send_and_receive(msg_without_payload);
+
+    Message msg_with_empty_string_payload = create_string_msg(32, 12, "");
+    perform_send_and_receive(msg_with_empty_string_payload);
+
+    Message msg_with_random_payload = create_random_data_msg(544, 43, 324);
+    perform_send_and_receive(msg_with_random_payload);
 }
