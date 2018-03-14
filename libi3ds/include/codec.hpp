@@ -45,6 +45,25 @@ namespace i3ds
 {
 
 ////////////////////////////////////////////////////////////////////////////////
+/// NullCodec for empty messages, does nothing.
+////////////////////////////////////////////////////////////////////////////////
+
+struct NullCodec
+{
+  typedef void Data;
+
+  static const int max_size = 0;
+
+  static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints) {
+    return true;
+  }
+
+  static inline flag Decode(Data* pVal, BitStream* pBitStrm, int* pErrCode) {
+    return true;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// Utility function for creating std::string from T_String and similar.
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -71,6 +90,10 @@ inline size_t set_string(T& ts, std::string s)
   return n;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Template class for encoding ASN.1 data into messages.
+////////////////////////////////////////////////////////////////////////////////
+
 template<typename T>
 class Encoder
 {
@@ -83,7 +106,7 @@ public:
     T::Initialize(data);
   }
 
-  void Encode(Message& message)
+  void Encode(Message& message) const
   {
     BitStream bs;
 
@@ -109,6 +132,26 @@ private:
 
   mutable byte buffer_[T::max_size];
 };
+
+////////////////////////////////////////////////////////////////////////////////
+/// Template specialization for null codec, sets null message with size 0.
+////////////////////////////////////////////////////////////////////////////////
+
+template<>
+class Encoder<NullCodec>
+{
+public:
+
+  void Encode(Message& message)
+  {
+    message.data = NULL;
+    message.size = 0;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Template class for decoding ASN.1 data from messages.
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
 class Decoder
@@ -140,7 +183,23 @@ public:
   }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+/// Template specialization for null codec, expects message with size 0.
+////////////////////////////////////////////////////////////////////////////////
 
+template<>
+class Decoder<NullCodec>
+{
+public:
+
+  void Decode(const Message& message)
+  {
+    if (message.size > 0)
+      {
+	throw std::runtime_error("Cannot decode: Expected zero data for null codec");
+      }
+  }
+};
 
 } // namespace i3ds
 

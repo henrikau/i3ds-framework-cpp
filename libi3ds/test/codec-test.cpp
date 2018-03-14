@@ -26,6 +26,22 @@ using namespace i3ds;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+BOOST_AUTO_TEST_CASE(codec_null)
+{
+  Encoder<NullCodec> encoder;
+  Decoder<NullCodec> decoder;
+
+  Message msg;
+
+  encoder.Encode(msg);
+
+  BOOST_CHECK_EQUAL(msg.size, 0);
+
+  decoder.Decode(msg);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 BOOST_AUTO_TEST_CASE(codec_sensor_status)
 {
   Encoder<SensorStatusCodec> encoder;
