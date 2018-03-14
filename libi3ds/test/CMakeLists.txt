@@ -6,7 +6,7 @@ include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
 set(TESTS
   codec-test
   sensor-test
-  zmq_sensor_server-test
+  zmq_msg_codec-test
 )
 
 set(LIBS

@@ -8,31 +8,20 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ZMQ_SENSOR_SERVER_HPP
-#define __ZMQ_SENSOR_SERVER_HPP
+#ifndef __ZMQ_MSG_CODEC_HPP
+#define __ZMQ_MSG_CODEC_HPP
 
 #include "message.hpp"
-#include "sensor.hpp"
 #include <zmq.hpp>
-#include <string>
 
 namespace i3ds
 {
 
-class ZmqSensorServer
-{
-private:
-    Sensor* sensor_;
-    std::string address_;
-    zmq::context_t context_;
-    zmq::socket_t socket_;
+zmq::message_t create_payload_message(Message i3ds_msg);
+zmq::message_t create_id_message(Message i3ds_msg);
 
-public:
-    ZmqSensorServer(i3ds::Sensor* sensor, std::string address);
-    
-    virtual ~ZmqSensorServer();
-    void run();
-};
+Message create_i3ds_message(const zmq::message_t &id_msg);
+void add_message_payload(Message* i3ds_msg, const zmq::message_t& payload_msg);
 
 } // namespace i3ds
 

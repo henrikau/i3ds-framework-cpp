@@ -6,6 +6,7 @@ asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
 
 set (SRCS
   sensor.cpp
+  zmq_msg_codec.cpp
   zmq_sensor_server.cpp
   ${ASN1_SRCS} ${ASN1_HDRS})
 

@@ -13,7 +13,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "zmq_sensor_server.hpp"
+#include "zmq_msg_codec.hpp"
 #include "message.hpp"
 #include <zmq.hpp>
 
