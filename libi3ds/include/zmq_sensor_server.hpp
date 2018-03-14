@@ -12,7 +12,8 @@
 #define __ZMQ_SENSOR_SERVER_HPP
 
 #include "message.hpp"
-#include "sensor.hpp"
+#include "handler.hpp"
+
 #include <zmq.hpp>
 #include <string>
 
@@ -22,16 +23,16 @@ namespace i3ds
 class ZmqSensorServer
 {
 private:
-    Sensor* sensor_;
-    std::string address_;
-    zmq::context_t context_;
-    zmq::socket_t socket_;
+  Handler* handler_;
+  std::string address_;
+  zmq::context_t context_;
+  zmq::socket_t socket_;
 
 public:
-    ZmqSensorServer(i3ds::Sensor* sensor, std::string address);
+  ZmqSensorServer(Handler* handler, std::string address);
     
-    virtual ~ZmqSensorServer();
-    void run();
+  virtual ~ZmqSensorServer() {};
+  void run();
 };
 
 } // namespace i3ds
