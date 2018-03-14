@@ -36,7 +36,7 @@ void i3ds::ZmqSensorServer::run()
             zmq::message_t id_msg, data_msg;
             socket_.recv(&id_msg);
             i3ds::Message request = create_i3ds_message(id_msg);
-            if(!id_msg.more())
+            if(id_msg.more())
             {
                 socket_.recv(&data_msg);
                 add_message_payload(&request, data_msg);
