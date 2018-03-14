@@ -125,11 +125,9 @@ i3ds::Sensor::get_sensor_configuration(SensorConfiguration& config) const
   config.config_count = 0; // FIXME
 }
 
-i3ds::Message
-i3ds::Sensor::handle_request(const i3ds::Message& request)
+void
+i3ds::Sensor::handle(const i3ds::Message& request, i3ds::Message& response)
 {
-  Message response;
-
   response.data = NULL;
   response.size = 0;
   response.sensor_id = get_id();
@@ -155,8 +153,6 @@ i3ds::Sensor::handle_request(const i3ds::Message& request)
     {
       response.endpoint_id = 0;
     }
-
-  return response;
 }
 
 void

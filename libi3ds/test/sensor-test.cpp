@@ -96,14 +96,14 @@ bool TestSensor::support_rate(SensorRate rate)
 
 CommandResult TestClient::issue_command()
 {
-  Message req;
+  Message req, res;
 
   command_.Encode(req);
 
   req.sensor_id = sensor_.get_id();
   req.endpoint_id = Sensor::COMMAND;
 
-  Message res = sensor_.handle_request(req);
+  sensor_.handle(req, res);
 
   BOOST_CHECK_EQUAL(res.sensor_id, sensor_.get_id());
   BOOST_CHECK_EQUAL(res.endpoint_id, Sensor::COMMAND);

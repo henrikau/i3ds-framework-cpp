@@ -14,6 +14,7 @@
 #include "SensorSuite.h"
 #include "message.hpp"
 #include "codec.hpp"
+#include "handler.hpp"
 
 namespace i3ds
 {
@@ -23,7 +24,7 @@ CODEC(SensorCommand);
 CODEC(SensorConfiguration);
 CODEC(SensorCommandResponse);
 
-class Sensor
+class Sensor : public Handler
 {
 public:
 
@@ -48,7 +49,7 @@ public:
   virtual double get_temperature() const {return 0.0;}
 
   // Callback for handling sensor request message.
-  virtual Message handle_request(const Message& message);
+  virtual void handle(const Message& request, Message& response);
 
 protected:
 
