@@ -30,8 +30,13 @@ public:
 
   typedef std::function<void(const typename RequestCodec::Data&, typename ResponseCodec::Data&)> Operation;
 
+  static inline Handler::Ptr Create(Operation operation)
+  {
+    return Handler::Ptr(new ServiceHandler<RequestCodec, ResponseCodec>(operation));
+  }
+
   ServiceHandler(Operation operation) : operation_(operation) {};
-  
+
   virtual ~ServiceHandler() {};
 
   virtual void handle(const Message& request, Message& response)
@@ -48,7 +53,7 @@ private:
   const Operation operation_;
 
   Decoder<RequestCodec> decoder_;
-  Encoder<ResponseCodec> encoder_;  
+  Encoder<ResponseCodec> encoder_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +68,12 @@ public:
   typedef std::function<void(typename ResponseCodec::Data&)> Operation;
 
   ServiceHandler(Operation operation) : operation_(operation) {};
-  
+
+  static inline Handler::Ptr Create(Operation operation)
+  {
+    return Handler::Ptr(new ServiceHandler<NullCodec, ResponseCodec>(operation));
+  }
+
   virtual ~ServiceHandler() {};
 
   virtual void handle(const Message& request, Message& response)
@@ -80,7 +90,7 @@ private:
   const Operation operation_;
 
   Decoder<NullCodec> decoder_;
-  Encoder<ResponseCodec> encoder_;  
+  Encoder<ResponseCodec> encoder_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,8 +105,13 @@ public:
   typedef std::function<void(const typename RequestCodec::Data&)> Operation;
 
   ServiceHandler(Operation operation) : operation_(operation) {};
-  
+
   virtual ~ServiceHandler() {};
+
+  static inline Handler::Ptr Create(Operation operation)
+  {
+    return Handler::Ptr(new ServiceHandler<RequestCodec, NullCodec>(operation));
+  }
 
   virtual void handle(const Message& request, Message& response)
   {
@@ -110,7 +125,7 @@ private:
   const Operation operation_;
 
   Decoder<RequestCodec> decoder_;
-  Encoder<NullCodec> encoder_;  
+  Encoder<NullCodec> encoder_;
 };
 
 } // namespace i3ds

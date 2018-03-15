@@ -27,11 +27,6 @@ i3ds::Sensor::Sensor(SensorID id)
 
 i3ds::Sensor::~Sensor()
 {
-  for (auto it : handlers_)
-    {
-      delete it.second;
-    }
-
   handlers_.clear();
 }
 
@@ -42,7 +37,7 @@ void i3ds::Sensor::default_command_handler()
 
   auto op = std::bind(&i3ds::Sensor::execute_sensor_command, this, _1, _2);
 
-  set_handler(COMMAND, new ServiceHandler<SensorCommandCodec, SensorCommandResponseCodec>(op));
+  set_handler(COMMAND, ServiceHandler<SensorCommandCodec, SensorCommandResponseCodec>::Create(op));
 }
 
 void i3ds::Sensor::default_status_handler()
@@ -51,7 +46,7 @@ void i3ds::Sensor::default_status_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
 
-  set_handler(STATUS, new ServiceHandler<NullCodec, SensorStatusCodec>(op));
+  set_handler(STATUS, ServiceHandler<NullCodec, SensorStatusCodec>::Create(op));
 }
 
 void i3ds::Sensor::default_configuration_handler()
@@ -60,34 +55,25 @@ void i3ds::Sensor::default_configuration_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
 
-  set_handler(STATUS, new ServiceHandler<NullCodec, SensorStatusCodec>(op));
+  set_handler(STATUS, ServiceHandler<NullCodec, SensorStatusCodec>::Create(op));
 }
 
-void i3ds::Sensor::set_handler(EndpointID id, i3ds::Handler* handler)
+void i3ds::Sensor::set_handler(EndpointID id, Handler::Ptr handler)
 {
-  Handler* old = get_handler(id);
-
-  if (old)
-    {
-      delete old;
-    }
-
-  handlers_[id] = handler;
+  handlers_[id] = std::move(handler);
 }
 
-i3ds::Handler*
+i3ds::Handler&
 i3ds::Sensor::get_handler(EndpointID id) const
 {
   auto it = handlers_.find(id);
 
   if (it == handlers_.end())
     {
-      return NULL;
+      throw std::runtime_error("No handler for ID " + std::to_string(id));
     }
-  else
-    {
-      return it->second;
-    }
+
+  return *it->second;
 }
 
 void
@@ -196,14 +182,7 @@ i3ds::Sensor::handle(const i3ds::Message& request, i3ds::Message& response)
   response.sensor_id = get_id();
   response.endpoint_id = request.endpoint_id;
 
-  Handler* handler = get_handler(request.endpoint_id);
+  Handler& handler = get_handler(request.endpoint_id);
 
-  if (handler)
-    {
-      handler->handle(request, response);
-    }
-  else
-    {
-      response.endpoint_id = 0;
-    }
+  handler.handle(request, response);
 }

@@ -61,10 +61,10 @@ protected:
   void default_configuration_handler();
 
   // Set handler for endpoint ID.
-  void set_handler(EndpointID id, Handler* handler);
+  void set_handler(EndpointID id, Handler::Ptr handler);
 
-  // Get handler for endpoint ID, null if not present.
-  Handler* get_handler(EndpointID id) const;
+  // Get handler for endpoint ID.
+  Handler& get_handler(EndpointID id) const;
 
   // Get sensor status.
   void get_sensor_status(SensorStatus& status) const;
@@ -100,7 +100,7 @@ private:
   SensorState state_;
   SensorRate rate_;
 
-  std::unordered_map<EndpointID, Handler*> handlers_;
+  std::unordered_map<EndpointID, Handler::Ptr> handlers_;
 };
 
 } // namespace i3ds

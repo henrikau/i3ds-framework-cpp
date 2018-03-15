@@ -11,6 +11,8 @@
 #ifndef __I3DS_HANDLER_HPP
 #define __I3DS_HANDLER_HPP
 
+#include <memory>
+
 #include "message.hpp"
 
 namespace i3ds
@@ -19,6 +21,9 @@ namespace i3ds
 class Handler
 {
 public:
+
+  typedef std::unique_ptr<Handler> Ptr;
+
   virtual ~Handler() {};
 
   virtual void handle(const Message& request, Message& response) = 0;
