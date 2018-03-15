@@ -11,7 +11,7 @@
 #include <iostream>
 #include <cassert>
 #include "sensor.hpp"
-#include "wrapper.hpp"
+#include "service_handler.hpp"
 
 const EndpointID i3ds::Sensor::COMMAND = command_Endpoint;
 const EndpointID i3ds::Sensor::STATUS = status_Endpoint;
@@ -42,7 +42,7 @@ void i3ds::Sensor::default_command_handler()
 
   auto op = std::bind(&i3ds::Sensor::execute_sensor_command, this, _1, _2);
 
-  set_handler(COMMAND, new CommandWrapper<SensorCommandCodec, SensorCommandResponseCodec>(op));
+  set_handler(COMMAND, new ServiceHandler<SensorCommandCodec, SensorCommandResponseCodec>(op));
 }
 
 void i3ds::Sensor::default_status_handler()
@@ -51,7 +51,7 @@ void i3ds::Sensor::default_status_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
 
-  set_handler(STATUS, new QueryWrapper<SensorStatusCodec>(op));
+  set_handler(STATUS, new ServiceHandler<NullCodec, SensorStatusCodec>(op));
 }
 
 void i3ds::Sensor::default_configuration_handler()
@@ -60,7 +60,7 @@ void i3ds::Sensor::default_configuration_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
 
-  set_handler(STATUS, new QueryWrapper<SensorStatusCodec>(op));
+  set_handler(STATUS, new ServiceHandler<NullCodec, SensorStatusCodec>(op));
 }
 
 void i3ds::Sensor::set_handler(EndpointID id, i3ds::Handler* handler)

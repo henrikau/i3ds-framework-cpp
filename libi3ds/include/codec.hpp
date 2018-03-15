@@ -45,14 +45,16 @@ namespace i3ds
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-/// NullCodec for empty messages, does nothing.
+/// NullCodec for empty message payload, does nothing.
 ////////////////////////////////////////////////////////////////////////////////
 
 struct NullCodec
 {
-  typedef void Data;
+  typedef struct {} Data;
 
   static const int max_size = 0;
+
+  static inline void Initialize(Data& val) {};
 
   static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints) {
     return true;
@@ -142,6 +144,8 @@ class Encoder<NullCodec>
 {
 public:
 
+  NullCodec::Data data;
+
   void Encode(Message& message)
   {
     message.data = NULL;
@@ -191,6 +195,8 @@ template<>
 class Decoder<NullCodec>
 {
 public:
+
+  NullCodec::Data data;
 
   void Decode(const Message& message)
   {
