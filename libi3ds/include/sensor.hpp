@@ -11,12 +11,11 @@
 #ifndef __I3DS_SENSOR_HPP
 #define __I3DS_SENSOR_HPP
 
-#include <unordered_map>
-
 #include "SensorSuite.h"
-#include "message.hpp"
+
+#include "communication.hpp"
+#include "server.hpp"
 #include "codec.hpp"
-#include "handler.hpp"
 
 namespace i3ds
 {
@@ -26,7 +25,7 @@ CODEC(SensorCommand);
 CODEC(SensorConfiguration);
 CODEC(SensorCommandResponse);
 
-class Sensor : public Handler
+class Sensor
 {
 public:
 
@@ -35,7 +34,7 @@ public:
   static const EndpointID CONFIGURATION;
   static const EndpointID MEASUREMENT;
 
-  Sensor(SensorID id);
+  Sensor(Context& context, SensorID id);
   virtual ~Sensor();
 
   // Get sensor ID.
@@ -50,8 +49,15 @@ public:
   // Get temperature in Kelvin (defaults to 0.0).
   virtual double get_temperature() const {return 0.0;}
 
-  // Callback for handling sensor request message.
-  virtual void handle(const Message& request, Message& response);
+  // Spin the server handling request until context is terminated
+  //
+  // TODO: Replace with is-a Server instead of has-a Server.
+  void Spin();
+
+  // Spin the server handling one requests, return true if message was handled
+  //
+  // TODO: Replace with is-a Server instead of has-a Server.
+  bool SpinOnce(int timeout_ms = -1);
 
 protected:
 
@@ -59,12 +65,6 @@ protected:
   void default_command_handler();
   void default_status_handler();
   void default_configuration_handler();
-
-  // Set handler for endpoint ID.
-  void set_handler(EndpointID id, Handler::Ptr handler);
-
-  // Get handler for endpoint ID.
-  Handler& get_handler(EndpointID id) const;
 
   // Get sensor status.
   void get_sensor_status(SensorStatus& status) const;
@@ -90,17 +90,16 @@ protected:
   // Check if rate is supported.
   virtual bool support_rate(SensorRate rate) = 0;
 
-
 private:
 
   CommandResult execute_state_command(StateCommand command);
   CommandResult execute_rate_command(SensorRate rate);
 
+  Server server_;
+  
   SensorID id_;
   SensorState state_;
   SensorRate rate_;
-
-  std::unordered_map<EndpointID, Handler::Ptr> handlers_;
 };
 
 } // namespace i3ds

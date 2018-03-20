@@ -4,9 +4,9 @@ find_package(Boost 1.58 COMPONENTS unit_test_framework REQUIRED)
 include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
 
 set(TESTS
+  communication-test
   codec-test
   sensor-test
-  zmq_msg_codec-test
 )
 
 set(LIBS

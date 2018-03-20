@@ -14,7 +14,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "message.hpp"
+#include "communication.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Macro to create codec wrapper for ASN.1 uPER encode/decode functions.
@@ -126,8 +126,7 @@ public:
 	throw std::runtime_error("Cannot encode: Bad data " + std::to_string(errcode));
       }
 
-    message.data = bs.buf;
-    message.size = bs.currentByte + 1;
+    message.set_payload(bs.buf, bs.currentByte + 1);
   }
 
 private:
@@ -148,8 +147,6 @@ public:
 
   void Encode(Message& message)
   {
-    message.data = NULL;
-    message.size = 0;
   }
 };
 
@@ -173,8 +170,8 @@ public:
   {
     BitStream bs;
 
-    bs.buf = message.data;
-    bs.count = message.size;
+    bs.buf = message.data();
+    bs.count = message.size();
     bs.currentByte = 0;
     bs.currentBit = 0;
 
@@ -200,9 +197,9 @@ public:
 
   void Decode(const Message& message)
   {
-    if (message.size > 0)
+    if (message.has_payload())
       {
-	throw std::runtime_error("Cannot decode: Expected zero data for null codec");
+	throw std::runtime_error("Cannot decode: Expected no payload for null codec");
       }
   }
 };

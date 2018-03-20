@@ -18,7 +18,8 @@ const EndpointID i3ds::Sensor::STATUS = status_Endpoint;
 const EndpointID i3ds::Sensor::CONFIGURATION = configuration_Endpoint;
 const EndpointID i3ds::Sensor::MEASUREMENT = measurement_Endpoint;
 
-i3ds::Sensor::Sensor(SensorID id)
+i3ds::Sensor::Sensor(Context& context, SensorID id)
+  : server_(context, id)
 {
   id_ = id;
   state_ = inactive;
@@ -27,7 +28,6 @@ i3ds::Sensor::Sensor(SensorID id)
 
 i3ds::Sensor::~Sensor()
 {
-  handlers_.clear();
 }
 
 void i3ds::Sensor::default_command_handler()
@@ -37,7 +37,7 @@ void i3ds::Sensor::default_command_handler()
 
   auto op = std::bind(&i3ds::Sensor::execute_sensor_command, this, _1, _2);
 
-  set_handler(COMMAND, ServiceHandler<SensorCommandCodec, SensorCommandResponseCodec>::Create(op));
+  server_.set_service<SensorCommandCodec, SensorCommandResponseCodec>(COMMAND, op);
 }
 
 void i3ds::Sensor::default_status_handler()
@@ -46,34 +46,16 @@ void i3ds::Sensor::default_status_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
 
-  set_handler(STATUS, ServiceHandler<NullCodec, SensorStatusCodec>::Create(op));
+  server_.set_service<NullCodec, SensorStatusCodec>(STATUS, op);
 }
 
 void i3ds::Sensor::default_configuration_handler()
 {
   using std::placeholders::_1;
 
-  auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
+  auto op = std::bind(&i3ds::Sensor::get_sensor_configuration, this, _1);
 
-  set_handler(STATUS, ServiceHandler<NullCodec, SensorStatusCodec>::Create(op));
-}
-
-void i3ds::Sensor::set_handler(EndpointID id, Handler::Ptr handler)
-{
-  handlers_[id] = std::move(handler);
-}
-
-i3ds::Handler&
-i3ds::Sensor::get_handler(EndpointID id) const
-{
-  auto it = handlers_.find(id);
-
-  if (it == handlers_.end())
-    {
-      throw std::runtime_error("No handler for ID " + std::to_string(id));
-    }
-
-  return *it->second;
+  server_.set_service<NullCodec, SensorConfigurationCodec>(CONFIGURATION, op);
 }
 
 void
@@ -175,14 +157,13 @@ i3ds::Sensor::get_sensor_configuration(SensorConfiguration& config) const
 }
 
 void
-i3ds::Sensor::handle(const i3ds::Message& request, i3ds::Message& response)
+i3ds::Sensor::Spin()
 {
-  response.data = NULL;
-  response.size = 0;
-  response.sensor_id = get_id();
-  response.endpoint_id = request.endpoint_id;
+  server_.Spin();
+}
 
-  Handler& handler = get_handler(request.endpoint_id);
-
-  handler.handle(request, response);
+bool
+i3ds::Sensor::SpinOnce(int timeout_ms)
+{
+  return server_.SpinOnce(timeout_ms);
 }

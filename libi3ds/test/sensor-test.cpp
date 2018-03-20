@@ -26,7 +26,7 @@ class TestSensor : public Sensor
 {
 public:
 
-  TestSensor(SensorID id);
+  TestSensor(Context& context, SensorID id);
 
   void test_callback_and_clear(std::string callback);
   void test_no_callback();
@@ -51,7 +51,7 @@ class TestClient
 {
 public:
 
-  TestClient(Sensor& sensor) : sensor_(sensor) {}
+  TestClient(Context& context, Sensor& sensor);
 
   CommandResult issue_state_command(StateCommand cmd);
 
@@ -68,13 +68,14 @@ private:
 
   CommandResult issue_command();
 
+  Socket::Ptr client_;
   Sensor& sensor_;
 
   Encoder<SensorCommandCodec> command_;
   Decoder<SensorCommandResponseCodec> response_;
 };
 
-TestSensor::TestSensor(SensorID id) : Sensor(id)
+TestSensor::TestSensor(Context& context, SensorID id) : Sensor(context, id)
 {
   default_command_handler();
   default_status_handler();
@@ -101,22 +102,37 @@ bool TestSensor::support_rate(SensorRate rate)
   return (0.1 <= rate && rate <= 10.0);
 }
 
+TestClient::TestClient(Context& context, Sensor& sensor)
+  : sensor_(sensor)
+{
+  int port = 8000 + (sensor.get_id() & 0xFF);
+
+  client_ = context.Client();
+
+  client_->Connect("tcp://127.0.0.1:" + std::to_string(port));
+}
+
 CommandResult TestClient::issue_command()
 {
-  Message req, res;
+  Message req(Address(sensor_.get_id(), Sensor::COMMAND));
+  Message res;
 
   command_.Encode(req);
 
-  req.sensor_id = sensor_.get_id();
-  req.endpoint_id = Sensor::COMMAND;
+  client_->Send(req);
 
-  sensor_.handle(req, res);
+  bool handled = sensor_.SpinOnce(100);
+  BOOST_CHECK(handled);
+  
+  client_->Receive(res);
 
-  BOOST_CHECK_EQUAL(res.sensor_id, sensor_.get_id());
-  BOOST_CHECK_EQUAL(res.endpoint_id, Sensor::COMMAND);
+  Address address = res.address();
 
-  BOOST_REQUIRE_GT(res.size, 0);
-  BOOST_REQUIRE(res.data);
+  BOOST_CHECK_EQUAL(address.sensor, sensor_.get_id());
+  BOOST_CHECK_EQUAL(address.endpoint, Sensor::COMMAND);
+
+  BOOST_REQUIRE_GT(res.size(), 0);
+  BOOST_REQUIRE(res.data());
 
   response_.Decode(res);
 
@@ -176,11 +192,22 @@ void TestClient::test_unsupported_rate_command(SensorRate rate, CommandResult er
 
 ////////////////////////////////////////////////////////////////////////////////
 
+struct F {
+    F() { BOOST_TEST_MESSAGE( "setup fixture" ); }
+    ~F() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+
+    Context context;
+};
+
+BOOST_FIXTURE_TEST_SUITE(s, F)
+
+////////////////////////////////////////////////////////////////////////////////
+
 BOOST_AUTO_TEST_CASE(sensor_creation)
 {
   SensorID id = 1;
 
-  TestSensor s(id);
+  TestSensor s(context, id);
 
   BOOST_CHECK_EQUAL(s.get_id(), id);
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
@@ -192,8 +219,8 @@ BOOST_AUTO_TEST_CASE(sensor_creation)
 
 BOOST_AUTO_TEST_CASE(sensor_state_command)
 {
-  TestSensor s(1);
-  TestClient c(s);
+  TestSensor s(context, 1);
+  TestClient c(context, s);
 
   // Test commands from INACTIVE.
   c.test_illegal_state_command(start);
@@ -251,8 +278,8 @@ BOOST_AUTO_TEST_CASE(sensor_state_command)
 
 BOOST_AUTO_TEST_CASE(sensor_rate_command)
 {
-  TestSensor s(1);
-  TestClient c(s);
+  TestSensor s(context, 1);
+  TestClient c(context, s);
 
   // Test from INACTIVE (illegal).
   BOOST_CHECK_EQUAL(s.get_state(), inactive);
@@ -288,3 +315,7 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
 
   c.test_illegal_rate_command(1.0, error_illegal_state);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_SUITE_END()

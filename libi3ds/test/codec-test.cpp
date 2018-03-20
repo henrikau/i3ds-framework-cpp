@@ -19,7 +19,7 @@
 #include <iostream>
 
 #include "sensor.hpp"
-#include "message.hpp"
+#include "communication.hpp"
 #include "codec.hpp"
 
 using namespace i3ds;
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(codec_null)
 
   encoder.Encode(msg);
 
-  BOOST_CHECK_EQUAL(msg.size, 0);
+  BOOST_CHECK_EQUAL(msg.size(), 0);
 
   decoder.Decode(msg);
 }

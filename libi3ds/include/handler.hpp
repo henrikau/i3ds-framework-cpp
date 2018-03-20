@@ -13,7 +13,7 @@
 
 #include <memory>
 
-#include "message.hpp"
+#include "communication.hpp"
 
 namespace i3ds
 {
