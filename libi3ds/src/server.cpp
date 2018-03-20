@@ -59,7 +59,7 @@ i3ds::Server::SpinOnce(int timeout_ms)
 
   if (address.sensor == sensor_ && handlers_.count(address.endpoint) > 0)
     {
-      handlers_[address.endpoint]->handle(request, response);
+      handlers_[address.endpoint]->Handle(request, response);
       response.set_address(address);
     }
   else

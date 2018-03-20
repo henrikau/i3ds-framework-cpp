@@ -11,13 +11,74 @@
 #ifndef __I3DS_SERVER_HPP
 #define __I3DS_SERVER_HPP
 
+#include <memory>
 #include <unordered_map>
+#include <functional>
 
 #include "communication.hpp"
-#include "service_handler.hpp"
+#include "codec.hpp"
 
 namespace i3ds
 {
+
+////////////////////////////////////////////////////////////////////////////////
+/// Handler for request/response pattern.
+////////////////////////////////////////////////////////////////////////////////
+
+class Handler
+{
+public:
+
+  typedef std::unique_ptr<Handler> Ptr;
+
+  virtual ~Handler() {};
+
+  virtual void Handle(const Message& request, Message& response) = 0;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Service handler for request/response pattern.
+////////////////////////////////////////////////////////////////////////////////
+
+template<typename T>
+class ServiceHandler : public Handler
+{
+public:
+
+  typedef std::function<void(typename T::Data&)> Operation;
+
+  static inline Handler::Ptr Create(Operation operation)
+  {
+    return Handler::Ptr(new ServiceHandler<T>(operation));
+  }
+
+  ServiceHandler(Operation operation) : operation_(operation) {};
+
+  virtual ~ServiceHandler() {};
+
+  virtual void Handle(const Message& request, Message& response)
+  {
+    T::RequestCodec::Initialize(data_.request);
+    T::ResponseCodec::Initialize(data_.response);
+
+    decoder_.Decode(request, data_.request);
+    operation_(data_);
+    encoder_.Encode(response, data_.response);
+  }
+
+private:
+
+  const Operation operation_;
+
+  typename T::Data data_;
+
+  Decoder<typename T::RequestCodec> decoder_;
+  Encoder<typename T::ResponseCodec> encoder_;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/// Server for request/response pattern.
+////////////////////////////////////////////////////////////////////////////////
 
 class Server
 {

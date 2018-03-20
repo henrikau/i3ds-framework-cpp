@@ -11,7 +11,6 @@
 #include <iostream>
 #include <cassert>
 #include "sensor.hpp"
-#include "service_handler.hpp"
 
 const EndpointID i3ds::Sensor::COMMAND = command_Endpoint;
 const EndpointID i3ds::Sensor::STATUS = status_Endpoint;
