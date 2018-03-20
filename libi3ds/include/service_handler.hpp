@@ -23,16 +23,16 @@ namespace i3ds
 /// Service handler for request/response pattern.
 ////////////////////////////////////////////////////////////////////////////////
 
-template<typename RequestCodec, typename ResponseCodec>
+template<typename T>
 class ServiceHandler : public Handler
 {
 public:
 
-  typedef std::function<void(const typename RequestCodec::Data&, typename ResponseCodec::Data&)> Operation;
+  typedef std::function<void(typename T::Data&)> Operation;
 
   static inline Handler::Ptr Create(Operation operation)
   {
-    return Handler::Ptr(new ServiceHandler<RequestCodec, ResponseCodec>(operation));
+    return Handler::Ptr(new ServiceHandler<T>(operation));
   }
 
   ServiceHandler(Operation operation) : operation_(operation) {};
@@ -41,91 +41,22 @@ public:
 
   virtual void handle(const Message& request, Message& response)
   {
-    ResponseCodec::Initialize(encoder_.data);
+    T::RequestCodec::Initialize(data_.request);
+    T::ResponseCodec::Initialize(data_.response);
 
-    decoder_.Decode(request);
-    operation_(decoder_.data, encoder_.data);
-    encoder_.Encode(response);
+    decoder_.Decode(request, data_.request);
+    operation_(data_);
+    encoder_.Encode(response, data_.response);
   }
 
 private:
 
   const Operation operation_;
 
-  Decoder<RequestCodec> decoder_;
-  Encoder<ResponseCodec> encoder_;
-};
+  typename T::Data data_;
 
-////////////////////////////////////////////////////////////////////////////////
-/// Service handler for request/response pattern with empty request.
-////////////////////////////////////////////////////////////////////////////////
-
-template<typename ResponseCodec>
-class ServiceHandler<NullCodec, ResponseCodec> : public Handler
-{
-public:
-
-  typedef std::function<void(typename ResponseCodec::Data&)> Operation;
-
-  ServiceHandler(Operation operation) : operation_(operation) {};
-
-  static inline Handler::Ptr Create(Operation operation)
-  {
-    return Handler::Ptr(new ServiceHandler<NullCodec, ResponseCodec>(operation));
-  }
-
-  virtual ~ServiceHandler() {};
-
-  virtual void handle(const Message& request, Message& response)
-  {
-    ResponseCodec::Initialize(encoder_.data);
-
-    decoder_.Decode(request);
-    operation_(encoder_.data);
-    encoder_.Encode(response);
-  }
-
-private:
-
-  const Operation operation_;
-
-  Decoder<NullCodec> decoder_;
-  Encoder<ResponseCodec> encoder_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-/// Service handler for request/response pattern with empty response.
-////////////////////////////////////////////////////////////////////////////////
-
-template<typename RequestCodec>
-class ServiceHandler<RequestCodec, NullCodec> : public Handler
-{
-public:
-
-  typedef std::function<void(const typename RequestCodec::Data&)> Operation;
-
-  ServiceHandler(Operation operation) : operation_(operation) {};
-
-  virtual ~ServiceHandler() {};
-
-  static inline Handler::Ptr Create(Operation operation)
-  {
-    return Handler::Ptr(new ServiceHandler<RequestCodec, NullCodec>(operation));
-  }
-
-  virtual void handle(const Message& request, Message& response)
-  {
-    decoder_.Decode(request);
-    operation_(decoder_.data);
-    encoder_.Encode(response);
-  }
-
-private:
-
-  const Operation operation_;
-
-  Decoder<RequestCodec> decoder_;
-  Encoder<NullCodec> encoder_;
+  Decoder<typename T::RequestCodec> decoder_;
+  Encoder<typename T::ResponseCodec> encoder_;
 };
 
 } // namespace i3ds

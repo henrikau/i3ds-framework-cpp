@@ -31,13 +31,15 @@ BOOST_AUTO_TEST_CASE(codec_null)
   Encoder<NullCodec> encoder;
   Decoder<NullCodec> decoder;
 
+  NullCodec::Data a, b;
+
   Message msg;
 
-  encoder.Encode(msg);
+  encoder.Encode(msg, a);
 
   BOOST_CHECK_EQUAL(msg.size(), 0);
 
-  decoder.Decode(msg);
+  decoder.Decode(msg, b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,25 +49,28 @@ BOOST_AUTO_TEST_CASE(codec_sensor_status)
   Encoder<SensorStatusCodec> encoder;
   Decoder<SensorStatusCodec> decoder;
 
-  encoder.data.timestamp.microseconds = 123456789;
-  encoder.data.timestamp.usecPerSec = 1000000;
+  SensorStatusCodec::Data a, b;
+  SensorStatusCodec::Initialize(a);
 
-  encoder.data.sensor_id = 1;
-  encoder.data.sensor_state = inactive;
-  encoder.data.sensor_temperature.kelvin = 250.0;
+  a.timestamp.microseconds = 123456789;
+  a.timestamp.usecPerSec = 1000000;
 
-  set_string(encoder.data.status_message, "Hello world!");
+  a.sensor_id = 1;
+  a.sensor_state = inactive;
+  a.sensor_temperature.kelvin = 250.0;
+
+  set_string(a.status_message, "Hello world!");
 
   Message msg;
 
-  encoder.Encode(msg);
-  decoder.Decode(msg);
+  encoder.Encode(msg, a);
+  decoder.Decode(msg, b);
 
-  BOOST_CHECK_EQUAL(decoder.data.timestamp.microseconds, encoder.data.timestamp.microseconds);
-  BOOST_CHECK_EQUAL(decoder.data.sensor_id, encoder.data.sensor_id);
-  BOOST_CHECK_EQUAL(decoder.data.sensor_state, encoder.data.sensor_state);
-  BOOST_CHECK_CLOSE(decoder.data.sensor_temperature.kelvin, encoder.data.sensor_temperature.kelvin, 0.01);
-  BOOST_CHECK_EQUAL(to_string(decoder.data.status_message), to_string(encoder.data.status_message));
+  BOOST_CHECK_EQUAL(b.timestamp.microseconds, a.timestamp.microseconds);
+  BOOST_CHECK_EQUAL(b.sensor_id, a.sensor_id);
+  BOOST_CHECK_EQUAL(b.sensor_state, a.sensor_state);
+  BOOST_CHECK_CLOSE(b.sensor_temperature.kelvin, a.sensor_temperature.kelvin, 0.01);
+  BOOST_CHECK_EQUAL(to_string(b.status_message), to_string(a.status_message));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,34 +80,37 @@ BOOST_AUTO_TEST_CASE(codec_sensor_command)
   Encoder<SensorCommandCodec> encoder;
   Decoder<SensorCommandCodec> decoder;
 
-  encoder.data.kind = SensorCommand::command_PRESENT;
-  encoder.data.u.command = activate;
+  SensorCommandCodec::Data a, b;
+  SensorCommandCodec::Initialize(a);
+
+  a.kind = SensorCommand::command_PRESENT;
+  a.u.command = activate;
 
   Message msg;
 
-  encoder.Encode(msg);
-  decoder.Decode(msg);
+  encoder.Encode(msg, a);
+  decoder.Decode(msg, b);
 
-  BOOST_CHECK_EQUAL(decoder.data.kind, SensorCommand::command_PRESENT);
-  BOOST_CHECK_EQUAL(decoder.data.u.command, activate);
+  BOOST_CHECK_EQUAL(b.kind, SensorCommand::command_PRESENT);
+  BOOST_CHECK_EQUAL(b.u.command, activate);
 
-  encoder.data.kind = SensorCommand::set_rate_PRESENT;
-  encoder.data.u.set_rate = 0.01;
+  a.kind = SensorCommand::set_rate_PRESENT;
+  a.u.set_rate = 0.01;
 
-  encoder.Encode(msg);
-  decoder.Decode(msg);
+  encoder.Encode(msg, a);
+  decoder.Decode(msg, b);
 
-  BOOST_CHECK_EQUAL(decoder.data.kind, SensorCommand::set_rate_PRESENT);
-  BOOST_CHECK_CLOSE(decoder.data.u.set_rate, 0.01, 1.0e-12);
+  BOOST_CHECK_EQUAL(b.kind, SensorCommand::set_rate_PRESENT);
+  BOOST_CHECK_CLOSE(b.u.set_rate, 0.01, 1.0e-12);
 
-  encoder.data.kind = SensorCommand::set_count_PRESENT;
-  encoder.data.u.set_count = 3;
+  a.kind = SensorCommand::set_count_PRESENT;
+  a.u.set_count = 3;
 
-  encoder.Encode(msg);
-  decoder.Decode(msg);
+  encoder.Encode(msg, a);
+  decoder.Decode(msg, b);
 
-  BOOST_CHECK_EQUAL(decoder.data.kind, SensorCommand::set_count_PRESENT);
-  BOOST_CHECK_EQUAL(decoder.data.u.set_count, 3);
+  BOOST_CHECK_EQUAL(b.kind, SensorCommand::set_count_PRESENT);
+  BOOST_CHECK_EQUAL(b.u.set_count, 3);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -110,20 +118,21 @@ BOOST_AUTO_TEST_CASE(codec_sensor_command)
 BOOST_AUTO_TEST_CASE(codec_sensor_command_response)
 {
   Encoder<SensorCommandResponseCodec> encoder;
+  Decoder<SensorCommandResponseCodec> decoder;
 
-  encoder.data.result = success;
-  set_string(encoder.data.message, "OK");
+  SensorCommandResponseCodec::Data a, b;
+  SensorCommandResponseCodec::Initialize(a);
+
+  a.result = success;
+  set_string(a.message, "OK");
 
   Message msg;
 
-  encoder.Encode(msg);
+  encoder.Encode(msg, a);
+  decoder.Decode(msg, b);
 
-  Decoder<SensorCommandResponseCodec> decoder;
-
-  decoder.Decode(msg);
-
-  BOOST_CHECK_EQUAL(decoder.data.result, encoder.data.result);
-  BOOST_CHECK_EQUAL(to_string(decoder.data.message), to_string(encoder.data.message));
+  BOOST_CHECK_EQUAL(b.result, a.result);
+  BOOST_CHECK_EQUAL(to_string(b.message), to_string(a.message));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -131,20 +140,21 @@ BOOST_AUTO_TEST_CASE(codec_sensor_command_response)
 BOOST_AUTO_TEST_CASE(codec_sensor_configuration)
 {
   Encoder<SensorConfigurationCodec> encoder;
+  Decoder<SensorConfigurationCodec> decoder;
 
-  encoder.data.sensor_state = inactive;
-  encoder.data.config_rate = 0.1;
-  encoder.data.config_count = 3;
+  SensorConfigurationCodec::Data a, b;
+  SensorConfigurationCodec::Initialize(a);
+
+  a.sensor_state = inactive;
+  a.config_rate = 0.1;
+  a.config_count = 3;
 
   Message msg;
 
-  encoder.Encode(msg);
+  encoder.Encode(msg, a);
+  decoder.Decode(msg, b);
 
-  Decoder<SensorConfigurationCodec> decoder;
-
-  decoder.Decode(msg);
-
-  BOOST_CHECK_EQUAL(decoder.data.sensor_state, encoder.data.sensor_state);
-  BOOST_CHECK_CLOSE(decoder.data.config_rate, encoder.data.config_rate, 0.01);
-  BOOST_CHECK_EQUAL(decoder.data.config_count, encoder.data.config_count);
+  BOOST_CHECK_EQUAL(b.sensor_state, a.sensor_state);
+  BOOST_CHECK_CLOSE(b.config_rate, a.config_rate, 0.01);
+  BOOST_CHECK_EQUAL(b.config_count, a.config_count);
 }

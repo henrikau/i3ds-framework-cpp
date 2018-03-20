@@ -30,10 +30,10 @@ public:
   SensorID sensor() const {return sensor_;}
   
   // Register service handler for endpoint ID.
-  template<typename RequestCodec, typename ResponseCodec>
-  void set_service(EndpointID endpoint, typename ServiceHandler<RequestCodec,ResponseCodec>::Operation operation)
+  template<typename T>
+  void set_service(EndpointID endpoint, typename ServiceHandler<T>::Operation operation)
   {
-    set_handler(endpoint, ServiceHandler<RequestCodec,ResponseCodec>::Create(operation));
+    set_handler(endpoint, ServiceHandler<T>::Create(operation));
   }
 
   // Register generic handler for endpoint ID.

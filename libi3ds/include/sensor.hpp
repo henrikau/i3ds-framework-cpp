@@ -14,6 +14,7 @@
 #include "SensorSuite.h"
 
 #include "communication.hpp"
+#include "service.hpp"
 #include "server.hpp"
 #include "codec.hpp"
 
@@ -33,6 +34,10 @@ public:
   static const EndpointID STATUS;
   static const EndpointID CONFIGURATION;
   static const EndpointID MEASUREMENT;
+
+  typedef Service<NullCodec, SensorStatusCodec> StatusService;
+  typedef Service<SensorCommandCodec, SensorCommandResponseCodec> CommandService;
+  typedef Service<NullCodec, SensorConfigurationCodec> ConfigurationService;
 
   Sensor(Context& context, SensorID id);
   virtual ~Sensor();
@@ -67,13 +72,13 @@ protected:
   void default_configuration_handler();
 
   // Get sensor status.
-  void get_sensor_status(SensorStatus& status) const;
+  void get_sensor_status(StatusService::Data& status) const;
 
   // Get sensor status.
-  void get_sensor_configuration(SensorConfiguration& config) const;
+  void get_sensor_configuration(ConfigurationService::Data& config) const;
 
   // Execute SensorCommand.
-  void execute_sensor_command(const SensorCommand& command, SensorCommandResponse& response);
+  void execute_sensor_command(CommandService::Data& command);
 
   // Sensor action when activated.
   virtual void do_activate() = 0;

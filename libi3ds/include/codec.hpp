@@ -101,14 +101,10 @@ class Encoder
 {
 public:
 
-  typename T::Data data;
+  Encoder() {};
+  virtual ~Encoder() {};
 
-  Encoder()
-  {
-    T::Initialize(data);
-  }
-
-  void Encode(Message& message) const
+  void Encode(Message& message, const typename T::Data& data) const
   {
     BitStream bs;
 
@@ -143,9 +139,7 @@ class Encoder<NullCodec>
 {
 public:
 
-  NullCodec::Data data;
-
-  void Encode(Message& message)
+  void Encode(Message& message, const NullCodec::Data& data)
   {
   }
 };
@@ -159,14 +153,10 @@ class Decoder
 {
 public:
 
-  typename T::Data data;
+  Decoder() {};
+  virtual ~Decoder() {};
 
-  Decoder()
-  {
-    T::Initialize(data);
-  }
-
-  void Decode(const Message& message)
+  void Decode(const Message& message, typename T::Data& data)
   {
     BitStream bs;
 
@@ -193,9 +183,7 @@ class Decoder<NullCodec>
 {
 public:
 
-  NullCodec::Data data;
-
-  void Decode(const Message& message)
+  void Decode(const Message& message, NullCodec::Data& data)
   {
     if (message.has_payload())
       {

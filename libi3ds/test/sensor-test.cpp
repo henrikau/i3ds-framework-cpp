@@ -71,8 +71,8 @@ private:
   Socket::Ptr client_;
   Sensor& sensor_;
 
-  Encoder<SensorCommandCodec> command_;
-  Decoder<SensorCommandResponseCodec> response_;
+  SensorCommandCodec::Data command_;
+  SensorCommandResponseCodec::Data response_;
 };
 
 TestSensor::TestSensor(Context& context, SensorID id) : Sensor(context, id)
@@ -117,7 +117,10 @@ CommandResult TestClient::issue_command()
   Message req(Address(sensor_.get_id(), Sensor::COMMAND));
   Message res;
 
-  command_.Encode(req);
+  Encoder<SensorCommandCodec> encoder;
+  Decoder<SensorCommandResponseCodec> decoder;
+
+  encoder.Encode(req, command_);
 
   client_->Send(req);
 
@@ -134,15 +137,15 @@ CommandResult TestClient::issue_command()
   BOOST_REQUIRE_GT(res.size(), 0);
   BOOST_REQUIRE(res.data());
 
-  response_.Decode(res);
+  decoder.Decode(res, response_);
 
-  return response_.data.result;
+  return response_.result;
 }
 
 CommandResult TestClient::issue_state_command(StateCommand sc)
 {
-  command_.data.kind = SensorCommand::command_PRESENT;
-  command_.data.u.command = sc;
+  command_.kind = SensorCommand::command_PRESENT;
+  command_.u.command = sc;
 
   return issue_command();
 }
@@ -163,8 +166,8 @@ void TestClient::test_illegal_state_command(StateCommand sc)
 
 CommandResult TestClient::issue_rate_command(SensorRate rate)
 {
-  command_.data.kind = SensorCommand::set_rate_PRESENT;
-  command_.data.u.set_rate = rate;
+  command_.kind = SensorCommand::set_rate_PRESENT;
+  command_.u.set_rate = rate;
 
   return issue_command();
 }
