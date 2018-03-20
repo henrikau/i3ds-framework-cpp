@@ -16,6 +16,7 @@
 #include "communication.hpp"
 
 #include <iostream>
+#include <map>
 
 using namespace i3ds;
 
@@ -67,24 +68,31 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+struct addr_pair
+{
+  Address a;
+  std::string hex;
+};
+
 BOOST_AUTO_TEST_CASE(create_id_message_test)
 {
-  std::vector<Address> addresses;
+  std::vector<addr_pair> addr_pairs;
 
-  addresses.push_back(Address(0,0));
-  addresses.push_back(Address(32413,45));
-  addresses.push_back(Address(16777215,255));
-  addresses.push_back(Address(1,1));
-  addresses.push_back(Address(10485760,45));
-  addresses.push_back(Address(32413,16));
-  addresses.push_back(Address(12,4));
+  addr_pairs.push_back({Address(0,0), "00000000"});
+  addr_pairs.push_back({Address(32413,45),"007E9D2D"});
+  addr_pairs.push_back({Address(16777215,255), "FFFFFFFF"});
+  addr_pairs.push_back({Address(1,1), "00000101"});
+  addr_pairs.push_back({Address(10485760,45), "A000002D"});
+  addr_pairs.push_back({Address(32413,16), "007E9D10"});
+  addr_pairs.push_back({Address(12,4), "00000C04"});
 
-  for (auto a : addresses) {
+  for (auto p : addr_pairs) {
     Message msg;
-    msg.set_address(a);
+    msg.set_address(p.a);
     Address aa = msg.address();
-    BOOST_CHECK_EQUAL(a.sensor, aa.sensor);
-    BOOST_CHECK_EQUAL(a.endpoint, aa.endpoint);
+    BOOST_CHECK_EQUAL(p.a.sensor, aa.sensor);
+    BOOST_CHECK_EQUAL(p.a.endpoint, aa.endpoint);
+    BOOST_CHECK_EQUAL(p.hex, aa.to_string());
   }
 }
 
