@@ -96,7 +96,7 @@ public:
   Socket::Ptr Client() {return CreateSocket(ZMQ_REQ);}
   Socket::Ptr Server(){return CreateSocket(ZMQ_REP);}
   
-  void Terminate();
+  void Close();
 
 private:
 

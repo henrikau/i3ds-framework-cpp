@@ -36,7 +36,7 @@ i3ds::Address::to_string() const
   
   char buffer[9];
 
-  snprintf(buffer, sizeof(buffer), "%08x", a);
+  snprintf(buffer, sizeof(buffer), "%08X", a);
   
   return std::string(buffer, 8);
 }
@@ -137,6 +137,12 @@ i3ds::Socket::FilterAll()
 i3ds::Context::Context()
   : context_(1)
 {
+}
+
+void
+i3ds::Context::Close()
+{
+    context_.close();
 }
 
 i3ds::Socket::Ptr
