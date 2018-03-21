@@ -88,17 +88,18 @@ BOOST_AUTO_TEST_CASE(create_id_message_test)
 
   for (auto p : addr_pairs) {
     Message msg;
+
     msg.set_address(p.a);
-    Address aa = msg.address();
-    BOOST_CHECK_EQUAL(p.a.sensor, aa.sensor);
-    BOOST_CHECK_EQUAL(p.a.endpoint, aa.endpoint);
-    BOOST_CHECK_EQUAL(p.hex, aa.to_string());
+
+    BOOST_CHECK_EQUAL(p.a.sensor, msg.sensor());
+    BOOST_CHECK_EQUAL(p.a.endpoint, msg.endpoint());
+    BOOST_CHECK_EQUAL(p.hex, msg.address().to_string());
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(create_message)
+BOOST_AUTO_TEST_CASE(create_message_payload)
 {
   Message msg;
 

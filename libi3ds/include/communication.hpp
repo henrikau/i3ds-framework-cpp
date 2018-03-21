@@ -31,30 +31,39 @@ struct Address
 
   std::string to_string() const;
 };
-  
+
 class Message
 {
 public:
 
-  Message(Address a) {set_address(a);}
   Message() {};
   virtual ~Message() {};
 
-  Address address() const;
+  inline Address address() const {return address_;}
 
-  byte* data() const {return (byte*) payload_.data();}
-  size_t size() const {return payload_.size();}
+  inline SensorID sensor() const {return address().sensor;}
+  inline EndpointID endpoint() const {return address().endpoint;}
 
-  void set_address(Address address);
-  void set_payload(byte* data, size_t size);
+  inline byte* data() {return payload_.data<byte>();}
+  inline const byte* data() const {return payload_.data<byte>();}
+  inline size_t size() const {return payload_.size();}
 
+  // Set address of message.
+  void set_address(Address address) {address_ = address;}
+
+  // Set payload allocated.
+  //
+  // If copy is false the message will take ownership and free data after use.
+  void set_payload(byte* data, size_t size, bool copy = true);
+
+  // Check if message has non-zero payload.
   bool has_payload() const {return size() > 0;}
 
 private:
 
   friend class Socket;
 
-  zmq::message_t header_;
+  Address address_;
   zmq::message_t payload_;
 };
 
@@ -78,7 +87,7 @@ public:
 private:
 
   friend class Context;
-  
+
   Socket(zmq::socket_t socket);
 
   zmq::socket_t socket_;
@@ -95,7 +104,7 @@ public:
   Socket::Ptr Subscriber() {return CreateSocket(ZMQ_SUB);}
   Socket::Ptr Client() {return CreateSocket(ZMQ_REQ);}
   Socket::Ptr Server(){return CreateSocket(ZMQ_REP);}
-  
+
   void Close();
 
 private:
