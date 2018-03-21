@@ -71,6 +71,10 @@ i3ds::Socket::Socket(zmq::socket_t socket)
 {
 }
 
+i3ds::Socket::~Socket()
+{
+}
+
 void
 i3ds::Socket::Bind(std::string address)
 {

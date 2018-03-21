@@ -64,7 +64,7 @@ public:
 
   typedef std::unique_ptr<Socket> Ptr;
 
-  virtual ~Socket() {};
+  virtual ~Socket();
 
   void Bind(std::string address);
   void Connect(std::string address);
