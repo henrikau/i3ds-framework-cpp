@@ -89,7 +89,7 @@ public:
 
   // Get sensor ID of server.
   SensorID sensor() const {return sensor_;}
-  
+
   // Register service handler for endpoint ID.
   template<typename T>
   void set_service(EndpointID endpoint, typename ServiceHandler<T>::Operation operation)
@@ -110,7 +110,9 @@ public:
   bool SpinOnce(int timeout_ms = -1);
 
 private:
-  
+
+  void Reset();
+
   // Sensor ID.
   const SensorID sensor_;
 
@@ -122,7 +124,7 @@ private:
 
   // Map with handlers for endpoints.
   std::unordered_map<EndpointID, Handler::Ptr> handlers_;
-};  
+};
 
 } // namespace i3ds
 

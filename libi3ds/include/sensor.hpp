@@ -26,7 +26,7 @@ CODEC(SensorCommand);
 CODEC(SensorConfiguration);
 CODEC(SensorCommandResponse);
 
-class Sensor
+class Sensor : public Server
 {
 public:
 
@@ -42,27 +42,14 @@ public:
   Sensor(Context& context, SensorID id);
   virtual ~Sensor();
 
-  // Get sensor ID.
-  SensorID get_id() const {return id_;}
-
   // Get sensor state.
-  SensorState get_state() const {return state_;}
+  SensorState state() const {return state_;}
 
   // Get sensor rate.
-  SensorRate get_rate() const {return rate_;}
+  SensorRate rate() const {return rate_;}
 
   // Get temperature in Kelvin (defaults to 0.0).
-  virtual double get_temperature() const {return 0.0;}
-
-  // Spin the server handling request until context is terminated
-  //
-  // TODO: Replace with is-a Server instead of has-a Server.
-  void Spin();
-
-  // Spin the server handling one requests, return true if message was handled
-  //
-  // TODO: Replace with is-a Server instead of has-a Server.
-  bool SpinOnce(int timeout_ms = -1);
+  virtual double temperature() const {return 0.0;}
 
 protected:
 
@@ -100,9 +87,6 @@ private:
   CommandResult execute_state_command(StateCommand command);
   CommandResult execute_rate_command(SensorRate rate);
 
-  Server server_;
-  
-  SensorID id_;
   SensorState state_;
   SensorRate rate_;
 };

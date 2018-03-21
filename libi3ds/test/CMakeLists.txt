@@ -11,6 +11,7 @@ set(TESTS
 
 set(LIBS
   i3ds
+  pthread
   zmq
   ${Boost_LIBRARIES})
 

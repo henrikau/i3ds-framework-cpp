@@ -18,9 +18,8 @@ const EndpointID i3ds::Sensor::CONFIGURATION = configuration_Endpoint;
 const EndpointID i3ds::Sensor::MEASUREMENT = measurement_Endpoint;
 
 i3ds::Sensor::Sensor(Context& context, SensorID id)
-  : server_(context, id)
+  : Server(context, id)
 {
-  id_ = id;
   state_ = inactive;
   rate_ = 0.0;
 }
@@ -35,7 +34,7 @@ void i3ds::Sensor::default_command_handler()
 
   auto op = std::bind(&i3ds::Sensor::execute_sensor_command, this, _1);
 
-  server_.set_service<CommandService>(COMMAND, op);
+  set_service<CommandService>(COMMAND, op);
 }
 
 void i3ds::Sensor::default_status_handler()
@@ -44,7 +43,7 @@ void i3ds::Sensor::default_status_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_status, this, _1);
 
-  server_.set_service<StatusService>(STATUS, op);
+  set_service<StatusService>(STATUS, op);
 }
 
 void i3ds::Sensor::default_configuration_handler()
@@ -53,7 +52,7 @@ void i3ds::Sensor::default_configuration_handler()
 
   auto op = std::bind(&i3ds::Sensor::get_sensor_configuration, this, _1);
 
-  server_.set_service<ConfigurationService>(CONFIGURATION, op);
+  set_service<ConfigurationService>(CONFIGURATION, op);
 }
 
 void
@@ -141,27 +140,15 @@ i3ds::Sensor::execute_rate_command(SensorRate rate)
 void
 i3ds::Sensor::get_sensor_status(StatusService::Data& status) const
 {
-  status.response.sensor_id = this->get_id();
-  status.response.sensor_state = this->get_state();
-  status.response.sensor_temperature.kelvin = this->get_temperature();
+  status.response.sensor_id = sensor();
+  status.response.sensor_state = state();
+  status.response.sensor_temperature.kelvin = temperature();
 }
 
 void
 i3ds::Sensor::get_sensor_configuration(ConfigurationService::Data& config) const
 {
-  config.response.sensor_state = this->get_state();
-  config.response.config_rate = this->get_rate();
+  config.response.sensor_state = state();
+  config.response.config_rate = rate();
   config.response.config_count = 0; // FIXME
-}
-
-void
-i3ds::Sensor::Spin()
-{
-  server_.Spin();
-}
-
-bool
-i3ds::Sensor::SpinOnce(int timeout_ms)
-{
-  return server_.SpinOnce(timeout_ms);
 }
