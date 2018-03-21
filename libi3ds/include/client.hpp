@@ -37,17 +37,14 @@ public:
   {
     Message request, response;
 
-    Encoder<typename T::RequestCodec> encoder;
-    Decoder<typename T::ResponseCodec> decoder;
-
-    encoder.Encode(request, data.request);
+    Encode<typename T::RequestCodec>(request, data.request);
 
     if (!Execute(endpoint, request, response, timeout_ms))
       {
 	return false;
       }
 
-    decoder.Decode(response, data.response);
+    Decode<typename T::ResponseCodec>(response, data.response);
 
     return true;
   }

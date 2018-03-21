@@ -93,104 +93,73 @@ inline size_t set_string(T& ts, std::string s)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Template class for encoding ASN.1 data into messages.
+/// Template function for encoding ASN.1 data into messages.
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-class Encoder
+void Encode(Message& message, const typename T::Data& data)
 {
-public:
+  BitStream bs;
 
-  Encoder() {};
-  virtual ~Encoder() {};
+  bs.buf = (byte*) calloc(T::max_size, sizeof(byte));
+  bs.count = T::max_size;
+  bs.currentByte = 0;
+  bs.currentBit = 0;
 
-  void Encode(Message& message, const typename T::Data& data) const
-  {
-    BitStream bs;
+  int errcode = 0;
 
-    bzero(buffer_, sizeof(buffer_));
+  if (!T::Encode(&data, &bs, &errcode, true))
+    {
+      free(bs.buf);
+      throw std::runtime_error("Cannot encode: Bad data " + std::to_string(errcode));
+    }
 
-    bs.buf = buffer_;
-    bs.count = sizeof(buffer_);
-    bs.currentByte = 0;
-    bs.currentBit = 0;
-
-    int errcode = 0;
-
-    if (!T::Encode(&data, &bs, &errcode, true))
-      {
-	throw std::runtime_error("Cannot encode: Bad data " + std::to_string(errcode));
-      }
-
-    message.set_payload(bs.buf, bs.currentByte + 1);
-  }
-
-private:
-
-  mutable byte buffer_[T::max_size];
-};
+  message.set_payload(bs.buf, bs.currentByte + 1, false);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Template specialization for null codec, sets null message with size 0.
 ////////////////////////////////////////////////////////////////////////////////
 
 template<>
-class Encoder<NullCodec>
+inline void Encode<NullCodec>(Message& message, const NullCodec::Data& data)
 {
-public:
-
-  void Encode(Message& message, const NullCodec::Data& data)
-  {
-  }
-};
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Template class for decoding ASN.1 data from messages.
+/// Template function for decoding ASN.1 data from messages.
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-class Decoder
+void Decode(const Message& message, typename T::Data& data)
 {
-public:
+  BitStream bs;
 
-  Decoder() {};
-  virtual ~Decoder() {};
+  bs.buf = (byte*) message.data();
+  bs.count = message.size();
+  bs.currentByte = 0;
+  bs.currentBit = 0;
 
-  void Decode(const Message& message, typename T::Data& data)
-  {
-    BitStream bs;
+  int errcode = 0;
 
-    bs.buf = message.data();
-    bs.count = message.size();
-    bs.currentByte = 0;
-    bs.currentBit = 0;
-
-    int errcode = 0;
-
-    if (!T::Decode(&data, &bs, &errcode))
-      {
-	throw std::runtime_error("Cannot decode: Bad data " + std::to_string(errcode));
-      }
-  }
-};
+  if (!T::Decode(&data, &bs, &errcode))
+    {
+      throw std::runtime_error("Cannot decode: Bad data " + std::to_string(errcode));
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Template specialization for null codec, expects message with size 0.
 ////////////////////////////////////////////////////////////////////////////////
 
 template<>
-class Decoder<NullCodec>
+inline void Decode<NullCodec>(const Message& message, NullCodec::Data& data)
 {
-public:
-
-  void Decode(const Message& message, NullCodec::Data& data)
-  {
-    if (message.has_payload())
-      {
-	throw std::runtime_error("Cannot decode: Expected no payload for null codec");
-      }
-  }
-};
+  if (message.has_payload())
+    {
+      throw std::runtime_error("Cannot decode: Expected no payload for null codec");
+    }
+}
 
 } // namespace i3ds
 

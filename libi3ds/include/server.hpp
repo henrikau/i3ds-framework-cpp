@@ -61,9 +61,9 @@ public:
     T::RequestCodec::Initialize(data_.request);
     T::ResponseCodec::Initialize(data_.response);
 
-    decoder_.Decode(request, data_.request);
+    Decode<typename T::RequestCodec>(request, data_.request);
     operation_(data_);
-    encoder_.Encode(response, data_.response);
+    Encode<typename T::ResponseCodec>(response, data_.response);
   }
 
 private:
@@ -71,9 +71,6 @@ private:
   const Operation operation_;
 
   typename T::Data data_;
-
-  Decoder<typename T::RequestCodec> decoder_;
-  Encoder<typename T::ResponseCodec> encoder_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
