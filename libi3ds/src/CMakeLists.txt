@@ -8,6 +8,7 @@ set (SRCS
   communication.cpp
   server.cpp
   client.cpp
+  publisher.cpp
   sensor.cpp
   ${ASN1_SRCS} ${ASN1_HDRS})
 
