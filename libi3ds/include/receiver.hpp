@@ -12,6 +12,7 @@
 #define __I3DS_RECEIVER_HPP
 
 #include "communication.hpp"
+#include <thread>
 
 namespace i3ds
 {
@@ -33,6 +34,9 @@ public:
   // Run the receiver until stop is called.
   void Run();
 
+  // Starts the Run-function in a separate thread.
+  void Start();
+
 protected:
 
   // Receive one message, return false on timeout.
@@ -50,6 +54,8 @@ protected:
 private:
 
   volatile bool running_;
+
+  std::thread worker_;
 };
 
 } // namespace i3ds

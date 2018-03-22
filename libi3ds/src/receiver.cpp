@@ -22,26 +22,32 @@ i3ds::Receiver::~Receiver()
 }
 
 void
+i3ds::Receiver::Start()
+{
+  running_ = true;
+  worker_ = std::thread(&i3ds::Receiver::Run, this);
+}
+
+void
 i3ds::Receiver::Stop()
 {
   running_ = false;
+  worker_.join();
 }
   
 void
 i3ds::Receiver::Run()
 {
-  running_ = true;
-
   try
     {
       while (running_)
-	{
-	  ReceiveOne(10);
-	}
+        {
+          ReceiveOne(10);
+        }
     }
   catch(std::exception e)
     {
       std::cerr << "Receiver got error: " << e.what() << std::endl;
-      socket_.reset();
     }
+  socket_.reset();
 }

@@ -172,25 +172,22 @@ struct F {
     : id(1),
       context(),
       sensor(context, id),
-      client(context, id),
-      worker(&TestSensor::Run, &sensor)
+      client(context, id)
   {
     BOOST_TEST_MESSAGE("setup fixture");
+    sensor.Start();
   }
 
   ~F()
   {
     BOOST_TEST_MESSAGE( "teardown fixture" );
-
-    context.Close();
-    worker.join();
+    sensor.Stop();
   }
 
   const SensorID id;
   Context context;
   TestSensor sensor;
   TestClient client;
-  std::thread worker;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
