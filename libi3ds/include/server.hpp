@@ -22,64 +22,63 @@ namespace i3ds
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Handler for request/response pattern.
-////////////////////////////////////////////////////////////////////////////////
-
-class Handler
-{
-public:
-
-  typedef std::unique_ptr<Handler> Ptr;
-
-  virtual ~Handler() {};
-
-  virtual void Handle(const Message& request, Message& response) = 0;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-/// Service handler for request/response pattern.
-////////////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-class ServiceHandler : public Handler
-{
-public:
-
-  typedef std::function<void(typename T::Data&)> Operation;
-
-  static inline Handler::Ptr Create(Operation operation)
-  {
-    return Handler::Ptr(new ServiceHandler<T>(operation));
-  }
-
-  ServiceHandler(Operation operation) : operation_(operation) {};
-
-  virtual ~ServiceHandler() {};
-
-  virtual void Handle(const Message& request, Message& response)
-  {
-    T::RequestCodec::Initialize(data_.request);
-    T::ResponseCodec::Initialize(data_.response);
-
-    Decode<typename T::RequestCodec>(request, data_.request);
-    operation_(data_);
-    Encode<typename T::ResponseCodec>(response, data_.response);
-  }
-
-private:
-
-  const Operation operation_;
-
-  typename T::Data data_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 /// Server for request/response pattern.
 ////////////////////////////////////////////////////////////////////////////////
 
 class Server
 {
 public:
+
+  ////////////////////////////////////////////////////////////////////////////////
+  /// Handler for request/response pattern.
+  ////////////////////////////////////////////////////////////////////////////////
+
+  class Handler
+  {
+  public:
+
+    typedef std::unique_ptr<Handler> Ptr;
+
+    virtual ~Handler() {};
+
+    virtual void Handle(const Message& request, Message& response) = 0;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////
+  /// Codec wrapper for request/response pattern.
+  ////////////////////////////////////////////////////////////////////////////////
+
+  template<typename T>
+  class Wrapper : public Handler
+  {
+  public:
+
+    typedef std::function<void(typename T::Data&)> Operation;
+
+    static inline Handler::Ptr Create(Operation operation)
+    {
+      return Handler::Ptr(new Wrapper<T>(operation));
+    }
+
+    Wrapper(Operation operation) : operation_(operation) {};
+
+    virtual ~Wrapper() {};
+
+    virtual void Handle(const Message& request, Message& response)
+    {
+      T::ResponseCodec::Initialize(data_.response);
+
+      Decode<typename T::RequestCodec>(request, data_.request);
+      operation_(data_);
+      Encode<typename T::ResponseCodec>(response, data_.response);
+    }
+
+  private:
+
+    const Operation operation_;
+
+    typename T::Data data_;
+  };
 
   Server(Context& context, SensorID sensor);
   virtual ~Server();
@@ -89,9 +88,9 @@ public:
 
   // Register service handler for endpoint ID.
   template<typename T>
-  void set_service(EndpointID endpoint, typename ServiceHandler<T>::Operation operation)
+  void set_service(EndpointID endpoint, typename Wrapper<T>::Operation operation)
   {
-    set_handler(endpoint, ServiceHandler<T>::Create(operation));
+    set_handler(endpoint, Wrapper<T>::Create(operation));
   }
 
   // Register generic handler for endpoint ID.
