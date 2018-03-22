@@ -173,7 +173,7 @@ struct F {
       context(),
       sensor(context, id),
       client(context, id),
-      worker(&TestSensor::Spin, &sensor)
+      worker(&TestSensor::Run, &sensor)
   {
     BOOST_TEST_MESSAGE("setup fixture");
   }

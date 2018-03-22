@@ -13,7 +13,7 @@
 #include "subscriber.hpp"
 
 i3ds::Subscriber::Subscriber(Context& context, SensorID sensor)
-  : sensor_(sensor), context_(context)
+  : Receiver(context), sensor_(sensor)
 {
 }
 
@@ -54,22 +54,8 @@ i3ds::Subscriber::Reset()
     }
 }
 
-void
-i3ds::Subscriber::Spin()
-{
-  try
-    {
-      while (SpinOnce());
-    }
-  catch(std::exception e)
-    {
-      std::cerr << "Terminating subscriber!" << std::endl;
-      socket_.reset();
-    }
-}
-
 bool
-i3ds::Subscriber::SpinOnce(int timeout_ms)
+i3ds::Subscriber::ReceiveOne(int timeout_ms)
 {
   Message message;
 

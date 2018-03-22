@@ -6,6 +6,7 @@ asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
 
 set (SRCS
   communication.cpp
+  receiver.cpp
   client.cpp
   server.cpp
   publisher.cpp

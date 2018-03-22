@@ -8,8 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __I3DS_SERVER_HPP
-#define __I3DS_SERVER_HPP
+#ifndef __I3DS_SUBSCRIBER_HPP
+#define __I3DS_SUBSCRIBER_HPP
 
 #include <memory>
 #include <unordered_map>
@@ -23,10 +23,10 @@ namespace i3ds
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Server for request/response pattern.
+/// Subscriber for publish/subscribe pattern.
 ////////////////////////////////////////////////////////////////////////////////
 
-class Server : public Receiver
+class Subscriber : public Receiver
 {
 public:
 
@@ -42,9 +42,9 @@ public:
 
     virtual ~Handler() {};
 
-    virtual void Handle(const Message& request, Message& response) = 0;
+    virtual void Handle(const Message& message) = 0;
   };
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Codec wrapper for request/response pattern.
   ////////////////////////////////////////////////////////////////////////////////
@@ -64,27 +64,28 @@ public:
     Wrapper(Operation operation) : operation_(operation) {};
 
     virtual ~Wrapper() {};
-
-    virtual void Handle(const Message& request, Message& response)
+    
+    virtual void Handle(const Message& message)
     {
-      T::ResponseCodec::Initialize(data_.response);
-
-      Decode<typename T::RequestCodec>(request, data_.request);
+      Decode<T>(message, data_);
       operation_(data_);
-      Encode<typename T::ResponseCodec>(response, data_.response);
     }
 
   private:
 
     const Operation operation_;
-
+    
     typename T::Data data_;
   };
 
-  Server(Context& context, SensorID sensor);
-  virtual ~Server();
+  ////////////////////////////////////////////////////////////////////////////////
+  /// Constructor and destructor
+  ////////////////////////////////////////////////////////////////////////////////
 
-  // Get sensor ID of server.
+  Subscriber(Context& context, SensorID sensor);
+  virtual ~Subscriber();
+
+  // Get sensor ID of subscriber.
   SensorID sensor() const {return sensor_;}
 
   // Register service handler for endpoint ID.
@@ -102,9 +103,9 @@ public:
 
 protected:
 
+  virtual void Reset();  
+  
   virtual bool ReceiveOne(int timeout_ms = -1);
-
-  virtual void Reset();
 
 private:
 

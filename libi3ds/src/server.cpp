@@ -13,7 +13,7 @@
 #include "server.hpp"
 
 i3ds::Server::Server(Context& context, SensorID sensor)
-  : sensor_(sensor), context_(context)
+  : Receiver(context), sensor_(sensor)
 {
 }
 
@@ -44,22 +44,8 @@ i3ds::Server::Reset()
   socket_->Bind("tcp://*:" + std::to_string(port));
 }
 
-void
-i3ds::Server::Spin()
-{
-  try
-    {
-      while (SpinOnce());
-    }
-  catch(std::exception e)
-    {
-      std::cerr << "Terminating server!" << std::endl;
-      socket_.reset();
-    }
-}
-
 bool
-i3ds::Server::SpinOnce(int timeout_ms)
+i3ds::Server::ReceiveOne(int timeout_ms)
 {
   Message request, response;
 
