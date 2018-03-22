@@ -26,7 +26,7 @@ void i3ds::Client::Reset()
 
   socket_ = context_.Client();
 
-  socket_->Connect("tcp://*:" + std::to_string(port));
+  socket_->Connect("tcp://127.0.0.1:" + std::to_string(port));
 }
 
 bool
