@@ -10,7 +10,7 @@
 
 #include "publisher.hpp"
 
-i3ds::Publisher::Publisher(Context& context, SensorID sensor)
+i3ds::Publisher::Publisher(Context::Ptr context, SensorID sensor)
   : sensor_(sensor),
     context_(context)
 {
@@ -24,7 +24,7 @@ void i3ds::Publisher::Reset()
 {
   int port = 7000 + (sensor_ & 0xFF);
 
-  socket_ = context_.Publisher();
+  socket_ = context_->Publisher();
 
   socket_->Connect("tcp://*:" + std::to_string(port));
 }

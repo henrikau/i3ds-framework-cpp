@@ -12,7 +12,7 @@
 
 #include "receiver.hpp"
 
-i3ds::Receiver::Receiver(Context& context)
+i3ds::Receiver::Receiver(Context::Ptr context)
   : context_(context), running_(false)
 {
 }

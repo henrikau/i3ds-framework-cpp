@@ -82,7 +82,7 @@ public:
   /// Constructor and destructor
   ////////////////////////////////////////////////////////////////////////////////
 
-  Subscriber(Context& context, SensorID sensor);
+  Subscriber(Context::Ptr context, SensorID sensor);
   virtual ~Subscriber();
 
   // Get sensor ID of subscriber.

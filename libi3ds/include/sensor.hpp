@@ -39,7 +39,7 @@ public:
   typedef Service<SensorCommandCodec, SensorCommandResponseCodec> CommandService;
   typedef Service<NullCodec, SensorConfigurationCodec> ConfigurationService;
 
-  Sensor(Context& context, SensorID id);
+  Sensor(Context::Ptr context, SensorID id);
   virtual ~Sensor();
 
   // Get sensor state.

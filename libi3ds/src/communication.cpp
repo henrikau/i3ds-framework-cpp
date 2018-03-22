@@ -131,12 +131,6 @@ i3ds::Context::Context()
 {
 }
 
-void
-i3ds::Context::Close()
-{
-    context_.close();
-}
-
 i3ds::Socket::Ptr
 i3ds::Context::CreateSocket(int type)
 {

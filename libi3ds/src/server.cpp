@@ -12,7 +12,7 @@
 
 #include "server.hpp"
 
-i3ds::Server::Server(Context& context, SensorID sensor)
+i3ds::Server::Server(Context::Ptr context, SensorID sensor)
   : Receiver(context), sensor_(sensor)
 {
 }
@@ -39,7 +39,7 @@ i3ds::Server::Reset()
 {
   int port = 8000 + (sensor_ & 0xFF);
 
-  socket_ = context_.Server();
+  socket_ = context_->Server();
 
   socket_->Bind("tcp://*:" + std::to_string(port));
 }

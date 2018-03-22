@@ -10,7 +10,7 @@
 
 #include "client.hpp"
 
-i3ds::Client::Client(Context& context, SensorID sensor)
+i3ds::Client::Client(Context::Ptr context, SensorID sensor)
   : sensor_(sensor),
     context_(context)
 {
@@ -24,7 +24,7 @@ void i3ds::Client::Reset()
 {
   int port = 8000 + (sensor_ & 0xFF);
 
-  socket_ = context_.Client();
+  socket_ = context_->Client();
 
   socket_->Connect("tcp://127.0.0.1:" + std::to_string(port));
 }

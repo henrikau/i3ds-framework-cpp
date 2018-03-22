@@ -81,7 +81,7 @@ public:
     typename T::Data data_;
   };
 
-  Server(Context& context, SensorID sensor);
+  Server(Context::Ptr context, SensorID sensor);
   virtual ~Server();
 
   // Get sensor ID of server.

@@ -12,7 +12,7 @@
 
 #include "subscriber.hpp"
 
-i3ds::Subscriber::Subscriber(Context& context, SensorID sensor)
+i3ds::Subscriber::Subscriber(Context::Ptr context, SensorID sensor)
   : Receiver(context), sensor_(sensor)
 {
 }
@@ -44,7 +44,7 @@ i3ds::Subscriber::Reset()
 {
   int port = 7000 + (sensor_ & 0xFF);
 
-  socket_ = context_.Subscriber();
+  socket_ = context_->Subscriber();
 
   socket_->Connect("tcp://*:" + std::to_string(port));
 

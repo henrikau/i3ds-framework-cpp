@@ -17,7 +17,7 @@ const EndpointID i3ds::Sensor::STATUS = status_Endpoint;
 const EndpointID i3ds::Sensor::CONFIGURATION = configuration_Endpoint;
 const EndpointID i3ds::Sensor::MEASUREMENT = measurement_Endpoint;
 
-i3ds::Sensor::Sensor(Context& context, SensorID id)
+i3ds::Sensor::Sensor(Context::Ptr context, SensorID id)
   : Server(context, id)
 {
   state_ = inactive;

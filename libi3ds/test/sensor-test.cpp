@@ -28,7 +28,7 @@ class TestSensor : public Sensor
 {
 public:
 
-  TestSensor(Context& context, SensorID id);
+  TestSensor(Context::Ptr context, SensorID id);
 
   void test_callback_and_clear(std::string callback);
   void test_no_callback();
@@ -53,7 +53,7 @@ class TestClient : public Client
 {
 public:
 
-  TestClient(Context& context, SensorID sensor);
+  TestClient(Context::Ptr context, SensorID sensor);
 
   CommandResult issue_state_command(StateCommand cmd);
 
@@ -73,7 +73,7 @@ private:
   Sensor::CommandService::Data command_;
 };
 
-TestSensor::TestSensor(Context& context, SensorID id) : Sensor(context, id)
+TestSensor::TestSensor(Context::Ptr context, SensorID id) : Sensor(context, id)
 {
   default_command_handler();
   default_status_handler();
@@ -100,7 +100,7 @@ bool TestSensor::support_rate(SensorRate rate)
   return (0.1 <= rate && rate <= 10.0);
 }
 
-TestClient::TestClient(Context& context, SensorID sensor)
+TestClient::TestClient(Context::Ptr context, SensorID sensor)
   : Client(context, sensor)
 {
 }
@@ -169,7 +169,7 @@ void TestClient::test_unsupported_rate_command(SensorRate rate, CommandResult er
 struct F {
   F()
     : id(1),
-      context(),
+      context(Context::Create()),
       sensor(context, id),
       client(context, id)
   {
@@ -185,7 +185,7 @@ struct F {
   }
 
   const SensorID id;
-  Context context;
+  Context::Ptr context;
   TestSensor sensor;
   TestClient client;
 };

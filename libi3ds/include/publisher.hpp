@@ -28,7 +28,7 @@ class Publisher
 {
 public:
 
-  Publisher(Context& context, SensorID sensor);
+  Publisher(Context::Ptr context, SensorID sensor);
   virtual ~Publisher();
 
   // Get sensor ID of publisher.
@@ -58,7 +58,7 @@ private:
   const SensorID sensor_;
 
   // Context reference.
-  Context& context_;
+  Context::Ptr context_;
 
   // Publisher socket.
   Socket::Ptr socket_;

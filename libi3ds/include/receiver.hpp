@@ -25,7 +25,7 @@ class Receiver
 {
 public:
 
-  Receiver(Context& context);
+  Receiver(Context::Ptr context);
   virtual ~Receiver();
 
   // Stop the receiver if running.
@@ -46,7 +46,7 @@ protected:
   virtual void Reset() = 0;
 
   // Context reference.
-  Context& context_;
+  Context::Ptr context_;
 
   // Receiver socket.
   Socket::Ptr socket_;

@@ -25,7 +25,7 @@ class Client
 {
 public:
 
-  Client(Context& context, SensorID sensor);
+  Client(Context::Ptr context, SensorID sensor);
   virtual ~Client();
 
   // Get sensor ID of client.
@@ -64,7 +64,7 @@ private:
   const SensorID sensor_;
 
   // Context reference.
-  Context& context_;
+  Context::Ptr context_;
 
   // Client socket.
   Socket::Ptr socket_;

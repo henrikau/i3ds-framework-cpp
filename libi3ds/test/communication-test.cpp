@@ -56,12 +56,22 @@ void check_message(const Message& msg, const Address& address, const std::string
 ////////////////////////////////////////////////////////////////////////////////
 
 struct F {
-  F() : address(1, 1), zmq_address("tcp://127.0.0.1:5555") { BOOST_TEST_MESSAGE( "setup fixture" ); }
-  ~F() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+  F()
+    : address(1, 1),
+      zmq_address("tcp://127.0.0.1:5555"),
+      context(Context::Create())
+  {
+    BOOST_TEST_MESSAGE( "setup fixture" );
+  }
+
+  ~F()
+  {
+    BOOST_TEST_MESSAGE( "teardown fixture" );
+  }
 
   const Address address;
   const std::string zmq_address;
-  Context context;
+  Context::Ptr context;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
@@ -115,8 +125,8 @@ BOOST_AUTO_TEST_CASE(create_message_payload)
 
 BOOST_AUTO_TEST_CASE(request_response_pattern)
 {
-  Socket::Ptr server = context.Server();
-  Socket::Ptr client = context.Client();
+  Socket::Ptr server = context->Server();
+  Socket::Ptr client = context->Client();
 
   server->Bind(zmq_address);
   client->Connect(zmq_address);
@@ -142,8 +152,8 @@ BOOST_AUTO_TEST_CASE(request_response_pattern)
 
 BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
 {
-  Socket::Ptr publisher = context.Publisher();
-  Socket::Ptr subscriber = context.Subscriber();
+  Socket::Ptr publisher = context->Publisher();
+  Socket::Ptr subscriber = context->Subscriber();
 
   publisher->Bind(zmq_address);
 

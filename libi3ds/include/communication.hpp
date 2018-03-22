@@ -97,15 +97,17 @@ class Context
 {
 public:
 
+  typedef std::shared_ptr<Context> Ptr;
+
   Context();
   virtual ~Context() {};
+
+  static Ptr Create() {return std::make_shared<Context>();}
 
   Socket::Ptr Publisher() {return CreateSocket(ZMQ_PUB);}
   Socket::Ptr Subscriber() {return CreateSocket(ZMQ_SUB);}
   Socket::Ptr Client() {return CreateSocket(ZMQ_REQ);}
   Socket::Ptr Server(){return CreateSocket(ZMQ_REP);}
-
-  void Close();
 
 private:
 
