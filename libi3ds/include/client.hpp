@@ -49,6 +49,9 @@ public:
     return true;
   }
 
+  // Releases socket
+  void Stop();
+
 private:
 
   // Reset socket if receive fails.

@@ -118,7 +118,6 @@ CommandResult TestClient::issue_state_command(StateCommand sc)
 {
   command_.request.kind = SensorCommand::command_PRESENT;
   command_.request.u.command = sc;
-
   return issue_command();
 }
 
@@ -182,6 +181,7 @@ struct F {
   {
     BOOST_TEST_MESSAGE( "teardown fixture" );
     sensor.Stop();
+    client.Stop();
   }
 
   const SensorID id;

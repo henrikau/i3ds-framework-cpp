@@ -61,3 +61,9 @@ i3ds::Client::Execute(EndpointID endpoint, Message& request, Message& response, 
 
   return true;
 }
+
+void 
+i3ds::Client::Stop()
+{
+  socket_.reset();
+}
