@@ -30,7 +30,7 @@ public:
 
   // Stop the receiver if running.
   void Stop();
-  
+
   // Run the receiver until stop is called.
   void Run();
 
@@ -39,11 +39,13 @@ public:
 
 protected:
 
-  // Receive one message, return false on timeout.
-  virtual bool ReceiveOne(int timeout_ms = -1) = 0;
-
   // Initialize the socket.
-  virtual void Reset() = 0;
+  virtual Socket::Ptr Create(Context& context) = 0;
+
+  // Handle message, may send using socket.
+  virtual void Handle(Message& message, Socket& socket) = 0;
+
+private:
 
   // Context reference.
   Context::Ptr context_;
@@ -51,10 +53,13 @@ protected:
   // Receiver socket.
   Socket::Ptr socket_;
 
-private:
+  // Timeout for receive polling.
+  const int timeout_ms_;
 
+  // Running flag.
   volatile bool running_;
 
+  // Worker thread.
   std::thread worker_;
 };
 

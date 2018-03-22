@@ -103,9 +103,11 @@ public:
 
 protected:
 
-  virtual void Reset();  
-  
-  virtual bool ReceiveOne(int timeout_ms = -1);
+  // Initialize the socket.
+  virtual Socket::Ptr Create(Context& context);
+
+  // Handle message, may send using socket.
+  virtual void Handle(Message& message, Socket& socket);
 
 private:
 

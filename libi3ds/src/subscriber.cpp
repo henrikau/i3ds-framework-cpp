@@ -26,11 +26,6 @@ void
 i3ds::Subscriber::set_handler(EndpointID endpoint, Handler::Ptr handler)
 {
   handlers_[endpoint] = std::move(handler);
-
-  if (socket_)
-    {
-      socket_->Filter(Address(sensor_, endpoint));
-    }
 }
 
 void
@@ -39,40 +34,28 @@ i3ds::Subscriber::delete_handler(EndpointID endpoint)
   handlers_.erase(endpoint);
 }
 
-void
-i3ds::Subscriber::Reset()
+i3ds::Socket::Ptr
+i3ds::Subscriber::Create(Context& context)
 {
   int port = 7000 + (sensor_ & 0xFF);
 
-  socket_ = context_->Subscriber();
+  Socket::Ptr socket = context.Subscriber();
 
-  socket_->Connect("tcp://*:" + std::to_string(port));
+  socket->Connect("tcp://*:" + std::to_string(port));
 
   for (auto it = handlers_.cbegin(); it != handlers_.cend(); ++it)
     {
-      socket_->Filter(Address(sensor_, it->first));
+      socket->Filter(Address(sensor_, it->first));
     }
+
+  return socket;
 }
 
-bool
-i3ds::Subscriber::ReceiveOne(int timeout_ms)
+void
+i3ds::Subscriber::Handle(Message& message, Socket& socket)
 {
-  Message message;
-
-  if (!socket_)
-    {
-      Reset();
-    }
-
-  if (!socket_->Receive(message, timeout_ms))
-    {
-      return false;
-    }
-
   if (message.sensor() == sensor_ && handlers_.count(message.endpoint()) > 0)
     {
       handlers_[message.endpoint()]->Handle(message);
     }
-
-  return true;
 }

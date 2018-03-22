@@ -34,44 +34,32 @@ i3ds::Server::delete_handler(EndpointID endpoint)
   handlers_.erase(endpoint);
 }
 
-void
-i3ds::Server::Reset()
+i3ds::Socket::Ptr
+i3ds::Server::Create(Context& context)
 {
   int port = 8000 + (sensor_ & 0xFF);
 
-  socket_ = context_->Server();
+  Socket::Ptr socket = context.Server();
 
-  socket_->Bind("tcp://*:" + std::to_string(port));
+  socket->Bind("tcp://*:" + std::to_string(port));
+
+  return socket;
 }
 
-bool
-i3ds::Server::ReceiveOne(int timeout_ms)
+void
+i3ds::Server::Handle(Message& message, Socket& socket)
 {
-  Message request, response;
+  Message response;
 
-  if (!socket_)
+  if (message.sensor() == sensor_ && handlers_.count(message.endpoint()) > 0)
     {
-      Reset();
-    }
-
-  if (!socket_->Receive(request, timeout_ms))
-    {
-      return false;
-    }
-
-  const Address address = request.address();
-
-  if (address.sensor == sensor_ && handlers_.count(address.endpoint) > 0)
-    {
-      handlers_[address.endpoint]->Handle(request, response);
-      response.set_address(address);
+      handlers_[message.endpoint()]->Handle(message, response);
+      response.set_address(Address(sensor_, message.endpoint()));
     }
   else
     {
       response.set_address(Address(sensor_, 0));
     }
 
-  socket_->Send(response);
-
-  return true;
+  socket.Send(response);
 }

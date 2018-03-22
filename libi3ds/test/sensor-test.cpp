@@ -107,7 +107,7 @@ TestClient::TestClient(Context::Ptr context, SensorID sensor)
 
 CommandResult TestClient::issue_command()
 {
-  bool result = Call<Sensor::CommandService>(Sensor::COMMAND, command_, 100);
+  bool result = Call<Sensor::CommandService>(Sensor::COMMAND, command_, 1000);
 
   BOOST_CHECK(result);
 

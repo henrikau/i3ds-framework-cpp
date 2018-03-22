@@ -102,9 +102,11 @@ public:
 
 protected:
 
-  virtual bool ReceiveOne(int timeout_ms = -1);
+  // Initialize the socket.
+  virtual Socket::Ptr Create(Context& context);
 
-  virtual void Reset();
+  // Handle message, may send using socket.
+  virtual void Handle(Message& message, Socket& socket);
 
 private:
 

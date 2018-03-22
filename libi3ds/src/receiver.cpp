@@ -13,12 +13,13 @@
 #include "receiver.hpp"
 
 i3ds::Receiver::Receiver(Context::Ptr context)
-  : context_(context), running_(false)
+  : context_(context), timeout_ms_(100), running_(false)
 {
 }
 
 i3ds::Receiver::~Receiver()
 {
+  Stop();
 }
 
 void
@@ -32,22 +33,34 @@ void
 i3ds::Receiver::Stop()
 {
   running_ = false;
-  worker_.join();
+
+  if (worker_.joinable())
+    {
+      worker_.join();
+    }
 }
-  
+
 void
 i3ds::Receiver::Run()
 {
+  Message message;
+
+  socket_ = Create(*context_);
+
   try
     {
       while (running_)
-        {
-          ReceiveOne(10);
+	{
+	  if (socket_->Receive(message, timeout_ms_))
+	    {
+	      Handle(message, *socket_);
+	    }
         }
     }
   catch(std::exception e)
     {
       std::cerr << "Receiver got error: " << e.what() << std::endl;
     }
+
   socket_.reset();
 }
