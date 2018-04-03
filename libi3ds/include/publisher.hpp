@@ -28,11 +28,11 @@ class Publisher
 {
 public:
 
-  Publisher(Context::Ptr context, SensorID sensor);
+  Publisher(Context::Ptr context, NodeID node);
   virtual ~Publisher();
 
-  // Get sensor ID of publisher.
-  SensorID sensor() const {return sensor_;}
+  // Get node ID of publisher.
+  NodeID node() const {return node_;}
 
   // Publish the data for the given endpoint ID.
   template<typename T>
@@ -45,7 +45,7 @@ public:
     
     Message message;
 
-    message.set_address(Address(sensor_, endpoint));
+    message.set_address(Address(node_, endpoint));
     Encode<T>(message, data);
     socket_->Send(message);
   }
@@ -54,8 +54,8 @@ private:
 
   void Reset();
 
-  // Sensor ID.
-  const SensorID sensor_;
+  // Node ID.
+  const NodeID node_;
 
   // Context reference.
   Context::Ptr context_;

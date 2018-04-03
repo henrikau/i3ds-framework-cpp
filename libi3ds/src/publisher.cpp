@@ -10,8 +10,8 @@
 
 #include "publisher.hpp"
 
-i3ds::Publisher::Publisher(Context::Ptr context, SensorID sensor)
-  : sensor_(sensor),
+i3ds::Publisher::Publisher(Context::Ptr context, NodeID node)
+  : node_(node),
     context_(context)
 {
 }
@@ -22,7 +22,7 @@ i3ds::Publisher::~Publisher()
 
 void i3ds::Publisher::Reset()
 {
-  int port = 7000 + (sensor_ & 0xFF);
+  int port = 7000 + (node_ & 0xFF);
 
   socket_ = context_->Publisher();
 

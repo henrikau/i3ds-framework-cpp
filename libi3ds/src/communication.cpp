@@ -30,14 +30,14 @@ i3ds::Address::Address(std::string address)
 
   unsigned int a = strtoul(buffer, NULL, 16);
 
-  this->sensor = (a >> 8) & 0xFFFFFF;
+  this->node = (a >> 8) & 0xFFFFFF;
   this->endpoint = a & 0xFF;
 }
 
 std::string
 i3ds::Address::to_string() const
 {
-  unsigned int a = (sensor << 8) + endpoint;
+  unsigned int a = (node << 8) + endpoint;
 
   char buffer[9];
 

@@ -12,8 +12,8 @@
 
 #include "subscriber.hpp"
 
-i3ds::Subscriber::Subscriber(Context::Ptr context, SensorID sensor)
-  : Receiver(context), sensor_(sensor)
+i3ds::Subscriber::Subscriber(Context::Ptr context, NodeID node)
+  : Receiver(context), node_(node)
 {
 }
 
@@ -37,7 +37,7 @@ i3ds::Subscriber::delete_handler(EndpointID endpoint)
 i3ds::Socket::Ptr
 i3ds::Subscriber::Create(Context& context)
 {
-  int port = 7000 + (sensor_ & 0xFF);
+  int port = 7000 + (node_ & 0xFF);
 
   Socket::Ptr socket = context.Subscriber();
 
@@ -45,7 +45,7 @@ i3ds::Subscriber::Create(Context& context)
 
   for (auto it = handlers_.cbegin(); it != handlers_.cend(); ++it)
     {
-      socket->Filter(Address(sensor_, it->first));
+      socket->Filter(Address(node_, it->first));
     }
 
   return socket;
@@ -54,7 +54,7 @@ i3ds::Subscriber::Create(Context& context)
 void
 i3ds::Subscriber::Handle(Message& message, Socket& socket)
 {
-  if (message.sensor() == sensor_ && handlers_.count(message.endpoint()) > 0)
+  if (message.node() == node_ && handlers_.count(message.endpoint()) > 0)
     {
       handlers_[message.endpoint()]->Handle(message);
     }

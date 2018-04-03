@@ -82,11 +82,11 @@ public:
   /// Constructor and destructor
   ////////////////////////////////////////////////////////////////////////////////
 
-  Subscriber(Context::Ptr context, SensorID sensor);
+  Subscriber(Context::Ptr context, NodeID node);
   virtual ~Subscriber();
 
-  // Get sensor ID of subscriber.
-  SensorID sensor() const {return sensor_;}
+  // Get node ID of subscriber.
+  NodeID node() const {return node_;}
 
   // Register service handler for endpoint ID.
   template<typename T>
@@ -111,8 +111,8 @@ protected:
 
 private:
 
-  // Sensor ID.
-  const SensorID sensor_;
+  // Node ID.
+  const NodeID node_;
 
   // Map with handlers for endpoints.
   std::unordered_map<EndpointID, Handler::Ptr> handlers_;

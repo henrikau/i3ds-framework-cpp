@@ -47,7 +47,7 @@ void check_message(const Message& msg, const Address& address, const std::string
 {
   Address a = msg.address();
   
-  BOOST_CHECK_EQUAL(a.sensor, address.sensor);
+  BOOST_CHECK_EQUAL(a.node, address.node);
   BOOST_CHECK_EQUAL(a.endpoint, address.endpoint);
   BOOST_CHECK_EQUAL(msg.size(), data.size());
   BOOST_CHECK_EQUAL(memcmp(msg.data(), data.c_str(), msg.size()), 0);
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(create_id_message_test)
 
     msg.set_address(p.a);
 
-    BOOST_CHECK_EQUAL(p.a.sensor, msg.sensor());
+    BOOST_CHECK_EQUAL(p.a.node, msg.node());
     BOOST_CHECK_EQUAL(p.a.endpoint, msg.endpoint());
     BOOST_CHECK_EQUAL(p.hex, msg.address().to_string());
   }

@@ -28,7 +28,7 @@ class TestSensor : public Sensor
 {
 public:
 
-  TestSensor(Context::Ptr context, SensorID id);
+  TestSensor(Context::Ptr context, NodeID id);
 
   void test_callback_and_clear(std::string callback);
   void test_no_callback();
@@ -53,27 +53,27 @@ class TestClient : public Client
 {
 public:
 
-  TestClient(Context::Ptr context, SensorID sensor);
+  TestClient(Context::Ptr context, NodeID sensor);
 
-  CommandResult issue_state_command(StateCommand cmd);
+  ResultCode issue_state_command(StateCommand cmd);
 
   void test_legal_state_command(StateCommand cmd);
   void test_illegal_state_command(StateCommand cmd);
 
-  CommandResult issue_rate_command(SensorRate rate);
+  ResultCode issue_rate_command(SensorRate rate);
 
   void test_legal_rate_command(SensorRate rate);
-  void test_illegal_rate_command(SensorRate rate, CommandResult error);
-  void test_unsupported_rate_command(SensorRate rate, CommandResult error);
+  void test_illegal_rate_command(SensorRate rate, ResultCode error);
+  void test_unsupported_rate_command(SensorRate rate, ResultCode error);
 
 private:
 
-  CommandResult issue_command();
+  ResultCode issue_command();
 
   Sensor::CommandService::Data command_;
 };
 
-TestSensor::TestSensor(Context::Ptr context, SensorID id) : Sensor(context, id)
+TestSensor::TestSensor(Context::Ptr context, NodeID id) : Sensor(context, id)
 {
   default_command_handler();
   default_status_handler();
@@ -100,12 +100,12 @@ bool TestSensor::support_rate(SensorRate rate)
   return (0.1 <= rate && rate <= 10.0);
 }
 
-TestClient::TestClient(Context::Ptr context, SensorID sensor)
+TestClient::TestClient(Context::Ptr context, NodeID sensor)
   : Client(context, sensor)
 {
 }
 
-CommandResult TestClient::issue_command()
+ResultCode TestClient::issue_command()
 {
   bool result = Call<Sensor::CommandService>(Sensor::COMMAND, command_, 1000);
 
@@ -114,28 +114,28 @@ CommandResult TestClient::issue_command()
   return command_.response.result;
 }
 
-CommandResult TestClient::issue_state_command(StateCommand sc)
+ResultCode TestClient::issue_state_command(StateCommand sc)
 {
-  command_.request.kind = SensorCommand::command_PRESENT;
-  command_.request.u.command = sc;
+  command_.request.kind = SensorCommand::set_state_PRESENT;
+  command_.request.u.set_state = sc;
   return issue_command();
 }
 
 void TestClient::test_legal_state_command(StateCommand sc)
 {
-  CommandResult r = issue_state_command(sc);
+  ResultCode r = issue_state_command(sc);
 
   BOOST_CHECK_EQUAL(r, success);
 }
 
 void TestClient::test_illegal_state_command(StateCommand sc)
 {
-  CommandResult r = issue_state_command(sc);
+  ResultCode r = issue_state_command(sc);
 
-  BOOST_CHECK_EQUAL(r, error_illegal_state);
+  BOOST_CHECK_EQUAL(r, error_state);
 }
 
-CommandResult TestClient::issue_rate_command(SensorRate rate)
+ResultCode TestClient::issue_rate_command(SensorRate rate)
 {
   command_.request.kind = SensorCommand::set_rate_PRESENT;
   command_.request.u.set_rate = rate;
@@ -145,21 +145,21 @@ CommandResult TestClient::issue_rate_command(SensorRate rate)
 
 void TestClient::test_legal_rate_command(SensorRate rate)
 {
-  CommandResult r = issue_rate_command(rate);
+  ResultCode r = issue_rate_command(rate);
 
   BOOST_CHECK_EQUAL(r, success);
 }
 
-void TestClient::test_illegal_rate_command(SensorRate rate, CommandResult error)
+void TestClient::test_illegal_rate_command(SensorRate rate, ResultCode error)
 {
-  CommandResult r = issue_rate_command(rate);
+  ResultCode r = issue_rate_command(rate);
 
   BOOST_CHECK_EQUAL(r, error);
 }
 
-void TestClient::test_unsupported_rate_command(SensorRate rate, CommandResult error)
+void TestClient::test_unsupported_rate_command(SensorRate rate, ResultCode error)
 {
-  CommandResult r = issue_rate_command(rate);
+  ResultCode r = issue_rate_command(rate);
 
   BOOST_CHECK_EQUAL(r, error);
 }
@@ -184,7 +184,7 @@ struct F {
     client.Stop();
   }
 
-  const SensorID id;
+  const NodeID id;
   Context::Ptr context;
   TestSensor sensor;
   TestClient client;
@@ -196,7 +196,7 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(sensor_creation)
 {
-  BOOST_CHECK_EQUAL(sensor.sensor(), id);
+  BOOST_CHECK_EQUAL(sensor.node(), id);
   BOOST_CHECK_EQUAL(sensor.state(), inactive);
   BOOST_CHECK_EQUAL(sensor.rate(), 0.0);
   BOOST_CHECK_CLOSE(sensor.temperature(), 300.0, 0.01);
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   // Test from INACTIVE (illegal).
   BOOST_CHECK_EQUAL(sensor.state(), inactive);
 
-  client.test_illegal_rate_command(1.0, error_illegal_state);
+  client.test_illegal_rate_command(1.0, error_state);
   sensor.test_no_callback();
 
   // Test from STANDBY (legal).
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_CLOSE(sensor.rate(), 1.0, 1e-9);
 
-  client.test_unsupported_rate_command(100.0, error_unsupported_value);
+  client.test_unsupported_rate_command(100.0, error_unsupported);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_CLOSE(sensor.rate(), 1.0, 1e-9);
 
@@ -284,17 +284,17 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_CLOSE(sensor.rate(), 0.1, 1e-9);
 
-  client.test_unsupported_rate_command(0.01, error_unsupported_value);
+  client.test_unsupported_rate_command(0.01, error_unsupported);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
-  client.test_unsupported_rate_command(100.0, error_unsupported_value);
+  client.test_unsupported_rate_command(100.0, error_unsupported);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
   // Test from OPERATIONAL (illegal).
   client.test_legal_state_command(start);
   BOOST_CHECK_EQUAL(sensor.state(), operational);
 
-  client.test_illegal_rate_command(1.0, error_illegal_state);
+  client.test_illegal_rate_command(1.0, error_state);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -46,25 +46,19 @@ BOOST_AUTO_TEST_CASE(codec_sensor_status)
   SensorStatusCodec::Data a, b;
   SensorStatusCodec::Initialize(a);
 
-  a.timestamp.microseconds = 123456789;
-  a.timestamp.usecPerSec = 1000000;
+  a.state = inactive;
+  a.temperature.kelvin = 250.0;
 
-  a.sensor_id = 1;
-  a.sensor_state = inactive;
-  a.sensor_temperature.kelvin = 250.0;
-
-  set_string(a.status_message, "Hello world!");
+  set_string(a.message, "Hello world!");
 
   Message msg;
 
   Encode<SensorStatusCodec>(msg, a);
   Decode<SensorStatusCodec>(msg, b);
 
-  BOOST_CHECK_EQUAL(b.timestamp.microseconds, a.timestamp.microseconds);
-  BOOST_CHECK_EQUAL(b.sensor_id, a.sensor_id);
-  BOOST_CHECK_EQUAL(b.sensor_state, a.sensor_state);
-  BOOST_CHECK_CLOSE(b.sensor_temperature.kelvin, a.sensor_temperature.kelvin, 0.01);
-  BOOST_CHECK_EQUAL(to_string(b.status_message), to_string(a.status_message));
+  BOOST_CHECK_EQUAL(b.state, a.state);
+  BOOST_CHECK_CLOSE(b.temperature.kelvin, a.temperature.kelvin, 0.01);
+  BOOST_CHECK_EQUAL(to_string(b.message), to_string(a.message));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,16 +68,16 @@ BOOST_AUTO_TEST_CASE(codec_sensor_command)
   SensorCommandCodec::Data a, b;
   SensorCommandCodec::Initialize(a);
 
-  a.kind = SensorCommand::command_PRESENT;
-  a.u.command = activate;
+  a.kind = SensorCommand::set_state_PRESENT;
+  a.u.set_state = activate;
 
   Message msg;
 
   Encode<SensorCommandCodec>(msg, a);
   Decode<SensorCommandCodec>(msg, b);
 
-  BOOST_CHECK_EQUAL(b.kind, SensorCommand::command_PRESENT);
-  BOOST_CHECK_EQUAL(b.u.command, activate);
+  BOOST_CHECK_EQUAL(b.kind, SensorCommand::set_state_PRESENT);
+  BOOST_CHECK_EQUAL(b.u.set_state, activate);
 
   a.kind = SensorCommand::set_rate_PRESENT;
   a.u.set_rate = 0.01;
@@ -108,16 +102,16 @@ BOOST_AUTO_TEST_CASE(codec_sensor_command)
 
 BOOST_AUTO_TEST_CASE(codec_sensor_command_response)
 {
-  SensorCommandResponseCodec::Data a, b;
-  SensorCommandResponseCodec::Initialize(a);
+  SensorResponseCodec::Data a, b;
+  SensorResponseCodec::Initialize(a);
 
   a.result = success;
   set_string(a.message, "OK");
 
   Message msg;
 
-  Encode<SensorCommandResponseCodec>(msg, a);
-  Decode<SensorCommandResponseCodec>(msg, b);
+  Encode<SensorResponseCodec>(msg, a);
+  Decode<SensorResponseCodec>(msg, b);
 
   BOOST_CHECK_EQUAL(b.result, a.result);
   BOOST_CHECK_EQUAL(to_string(b.message), to_string(a.message));
@@ -130,7 +124,6 @@ BOOST_AUTO_TEST_CASE(codec_sensor_configuration)
   SensorConfigurationCodec::Data a, b;
   SensorConfigurationCodec::Initialize(a);
 
-  a.sensor_state = inactive;
   a.config_rate = 0.1;
   a.config_count = 3;
 
@@ -139,7 +132,6 @@ BOOST_AUTO_TEST_CASE(codec_sensor_configuration)
   Encode<SensorConfigurationCodec>(msg, a);
   Decode<SensorConfigurationCodec>(msg, b);
 
-  BOOST_CHECK_EQUAL(b.sensor_state, a.sensor_state);
   BOOST_CHECK_CLOSE(b.config_rate, a.config_rate, 0.01);
   BOOST_CHECK_EQUAL(b.config_count, a.config_count);
 }

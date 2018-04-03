@@ -23,10 +23,10 @@ namespace i3ds
 struct Address
 {
   Address(std::string address);
-  Address(SensorID s, EndpointID e) : sensor(s), endpoint(e) {};
-  Address() : sensor(0), endpoint(0) {};
+  Address(NodeID n, EndpointID e) : node(n), endpoint(e) {};
+  Address() : node(0), endpoint(0) {};
 
-  SensorID sensor;
+  NodeID node;
   EndpointID endpoint;
 
   std::string to_string() const;
@@ -41,7 +41,7 @@ public:
 
   inline Address address() const {return address_;}
 
-  inline SensorID sensor() const {return address().sensor;}
+  inline NodeID node() const {return address().node;}
   inline EndpointID endpoint() const {return address().endpoint;}
 
   inline byte* data() {return payload_.data<byte>();}

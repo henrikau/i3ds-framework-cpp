@@ -81,11 +81,11 @@ public:
     typename T::Data data_;
   };
 
-  Server(Context::Ptr context, SensorID sensor);
+  Server(Context::Ptr context, NodeID node);
   virtual ~Server();
 
-  // Get sensor ID of server.
-  SensorID sensor() const {return sensor_;}
+  // Get node ID of server.
+  NodeID node() const {return node_;}
 
   // Register service handler for endpoint ID.
   template<typename T>
@@ -110,8 +110,8 @@ protected:
 
 private:
 
-  // Sensor ID.
-  const SensorID sensor_;
+  // Node ID.
+  const NodeID node_;
 
   // Map with handlers for endpoints.
   std::unordered_map<EndpointID, Handler::Ptr> handlers_;

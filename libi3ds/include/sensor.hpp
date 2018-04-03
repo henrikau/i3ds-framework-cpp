@@ -24,7 +24,7 @@ namespace i3ds
 CODEC(SensorStatus);
 CODEC(SensorCommand);
 CODEC(SensorConfiguration);
-CODEC(SensorCommandResponse);
+CODEC(SensorResponse);
 
 class Sensor : public Server
 {
@@ -36,10 +36,10 @@ public:
   static const EndpointID MEASUREMENT;
 
   typedef Service<NullCodec, SensorStatusCodec> StatusService;
-  typedef Service<SensorCommandCodec, SensorCommandResponseCodec> CommandService;
+  typedef Service<SensorCommandCodec, SensorResponseCodec> CommandService;
   typedef Service<NullCodec, SensorConfigurationCodec> ConfigurationService;
 
-  Sensor(Context::Ptr context, SensorID id);
+  Sensor(Context::Ptr context, NodeID id);
   virtual ~Sensor();
 
   // Get sensor state.
@@ -84,8 +84,8 @@ protected:
 
 private:
 
-  CommandResult execute_state_command(StateCommand command);
-  CommandResult execute_rate_command(SensorRate rate);
+  ResultCode execute_state_command(StateCommand command);
+  ResultCode execute_rate_command(SensorRate rate);
 
   SensorState state_;
   SensorRate rate_;

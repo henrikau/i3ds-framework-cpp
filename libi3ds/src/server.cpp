@@ -12,8 +12,8 @@
 
 #include "server.hpp"
 
-i3ds::Server::Server(Context::Ptr context, SensorID sensor)
-  : Receiver(context), sensor_(sensor)
+i3ds::Server::Server(Context::Ptr context, NodeID node)
+  : Receiver(context), node_(node)
 {
 }
 
@@ -37,7 +37,7 @@ i3ds::Server::delete_handler(EndpointID endpoint)
 i3ds::Socket::Ptr
 i3ds::Server::Create(Context& context)
 {
-  int port = 8000 + (sensor_ & 0xFF);
+  int port = 8000 + (node_ & 0xFF);
 
   Socket::Ptr socket = context.Server();
 
@@ -51,14 +51,14 @@ i3ds::Server::Handle(Message& message, Socket& socket)
 {
   Message response;
 
-  if (message.sensor() == sensor_ && handlers_.count(message.endpoint()) > 0)
+  if (message.node() == node_ && handlers_.count(message.endpoint()) > 0)
     {
       handlers_[message.endpoint()]->Handle(message, response);
-      response.set_address(Address(sensor_, message.endpoint()));
+      response.set_address(Address(node_, message.endpoint()));
     }
   else
     {
-      response.set_address(Address(sensor_, 0));
+      response.set_address(Address(node_, 0));
     }
 
   socket.Send(response);

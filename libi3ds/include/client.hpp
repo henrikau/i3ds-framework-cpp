@@ -25,11 +25,11 @@ class Client
 {
 public:
 
-  Client(Context::Ptr context, SensorID sensor);
+  Client(Context::Ptr context, NodeID node);
   virtual ~Client();
 
-  // Get sensor ID of client.
-  SensorID sensor() const {return sensor_;}
+  // Get node ID of client.
+  NodeID node() const {return node_;}
 
   // Execute call for client, returns true if successful.
   template<typename T>
@@ -60,8 +60,8 @@ private:
   // Execute call.
   bool Execute(EndpointID endpoint, Message& request, Message& response, int timeout_ms);
 
-  // Sensor ID.
-  const SensorID sensor_;
+  // Node ID.
+  const NodeID node_;
 
   // Context reference.
   Context::Ptr context_;
