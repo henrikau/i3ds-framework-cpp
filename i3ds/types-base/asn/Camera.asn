@@ -27,7 +27,7 @@ T-UInt8, T-UInt32, T-Boolean FROM TASTE-BasicTypes
 Frame-mode-t, ImageFrame FROM Frame-Types;
 
 --- Exposure time in seconds
-ExposureTime ::= REAL(1.0e-9 .. 1.0e12)
+ExposureTime ::= REAL(0.0 .. 1.0e12)
 
 --- Camera sensor gain, max value depends on sensor
 SensorGain ::= REAL(1.0 .. 1.0e6)
