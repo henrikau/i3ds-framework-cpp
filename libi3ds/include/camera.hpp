@@ -35,35 +35,41 @@ public:
   Camera(Context::Ptr context, NodeID id);
   virtual ~Camera();
 
+  // Get the X (horizontal) resolution of sensor.
+  virtual int resolution_x() const = 0;
+
+  // Get the Y (vertical) resolution of sensor.
+  virtual int resolution_y() const = 0;
+
   // Get exposure time for camera.
-  virtual void get_exposure(ExposureTime& exposure) const {};
+  virtual ExposureTime exposure() const = 0;
 
   // Get gain for camera.
-  virtual void get_gain(SensorGain& gain) const {};
+  virtual SensorGain gain() const = 0;
 
   // Get auto exposure for camera.
-  virtual void get_auto_exposure(bool& auto_exposure) const {};
+  virtual bool auto_exposure() const {return false;}
 
   // Get exposure time limit for camera with auto exposure.
-  virtual void get_exposure_limit(ExposureTime& exposure_limit) const {};
+  virtual ExposureTime exposure_limit() const {return 0.0;}
 
   // Get gain limit for camera with auto exposure.
-  virtual void get_gain_limit(SensorGain& gain_limit) const {};
+  virtual SensorGain gain_limit() const {return 0.0;}
 
   // Get the region of interest for the camera.
-  virtual void get_region(PlanarRegion& region) const {};
+  virtual PlanarRegion region() const;
 
   // Get the flash illumination for the camera.
-  virtual void get_flash_illumination(bool& flash_enable) const {};
+  virtual bool flash_enabled() const {return false;}
 
   // Get the flash strength for the camera.
-  virtual void get_flash_strength(FlashStrength& flash_strength) const {};
+  virtual FlashStrength flash_strength() const {return 0;}
 
   // Get the pattern illumination for the camera.
-  virtual void get_pattern_illumination(bool& pattern_enabled) const {};
+  virtual bool pattern_enabled() const {return false;}
 
   // Get the pattern for the camera.
-  virtual void get_illumination_pattern(IlluminationPattern& pattern) const {};
+  virtual IlluminationPattern illumination_pattern() const {return 0;}
 
 protected:
 
@@ -96,13 +102,13 @@ protected:
   virtual ResultCode set_region(PlanarRegion region) {return error_unsupported;}
 
   // Set the flash illumination for the camera.
-  virtual ResultCode set_flash_illumination(bool flash_enable) {return error_unsupported;}
+  virtual ResultCode set_flash_enabled(bool flash_enabled) {return error_unsupported;}
 
   // Set the flash strength for the camera.
   virtual ResultCode set_flash_strength(FlashStrength flash_strength) {return error_unsupported;}
 
   // Set the pattern illumination for the camera.
-  virtual ResultCode set_pattern_illumination(bool pattern_enabled) {return error_unsupported;}
+  virtual ResultCode set_pattern_enabled(bool pattern_enabled) {return error_unsupported;}
 
   // Set the next pattern for the camera.
   virtual ResultCode set_illumination_pattern(IlluminationPattern pattern) {return error_unsupported;}

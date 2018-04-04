@@ -20,10 +20,22 @@ class EmulatedCamera : public Camera
 {
 public:
 
-  EmulatedCamera(Context::Ptr context, NodeID id);
+  EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy);
   virtual ~EmulatedCamera();
 
-  virtual double temperature() const;
+  // Getters.
+  virtual int resolution_x() const {return resx_;}
+  virtual int resolution_y() const {return resy_;}
+  virtual ExposureTime exposure() const {return exposure_;}
+  virtual SensorGain gain() const {return gain_;}
+  virtual bool auto_exposure() const {return auto_exposure_;}
+  virtual ExposureTime exposure_limit() const {return exposure_limit_;}
+  virtual SensorGain gain_limit() const {return gain_limit_;}
+  virtual PlanarRegion region() const {return region_;}
+  virtual bool flash_enabled() const {return flash_enabled_;}
+  virtual FlashStrength flash_strength() const {return flash_strength_;}
+  virtual bool pattern_enabled() const {return pattern_enabled_;}
+  virtual IlluminationPattern illumination_pattern() const {return pattern_;}
 
 protected:
 
@@ -41,24 +53,15 @@ protected:
   virtual ResultCode set_exposure_limit(ExposureTime exposure_limit);
   virtual ResultCode set_gain_limit(SensorGain gain_limit);
   virtual ResultCode set_region(PlanarRegion region);
-  virtual ResultCode set_flash_illumination(bool flash_enable);
+  virtual ResultCode set_flash_enabled(bool flash_enabled);
   virtual ResultCode set_flash_strength(FlashStrength flash_strength);
-  virtual ResultCode set_pattern_illumination(bool pattern_enabled);
+  virtual ResultCode set_pattern_enabled(bool pattern_enabled);
   virtual ResultCode set_illumination_pattern(IlluminationPattern pattern);
 
-  // Getters.
-  virtual void get_exposure(ExposureTime& exposure) const {exposure =  exposure_;}
-  virtual void get_gain(SensorGain& gain) const {gain = gain_;}
-  virtual void get_auto_exposure(bool& auto_exposure) const {auto_exposure = auto_exposure_;}
-  virtual void get_exposure_limit(ExposureTime& exposure_limit) const {exposure_limit = exposure_limit_;}
-  virtual void get_gain_limit(SensorGain& gain_limit) const {gain_limit = gain_limit_;}
-  virtual void get_region(PlanarRegion& region) const {region = region_;}
-  virtual void get_flash_illumination(bool& flash_enable) const {flash_enable = flash_enable_;}
-  virtual void get_flash_strength(FlashStrength& flash_strength) const {flash_strength = flash_strength_;}
-  virtual void get_pattern_illumination(bool& pattern_enabled) const {pattern_enabled = pattern_enabled_;}
-  virtual void get_illumination_pattern(IlluminationPattern& pattern) const {pattern = pattern_;}
-
 private:
+
+  const int resx_;
+  const int resy_;
 
   ExposureTime exposure_;
   SensorGain gain_;
@@ -66,7 +69,7 @@ private:
   ExposureTime exposure_limit_;
   SensorGain gain_limit_;
   PlanarRegion region_;
-  bool flash_enable_;
+  bool flash_enabled_;
   FlashStrength flash_strength_;
   bool pattern_enabled_;
   IlluminationPattern pattern_;

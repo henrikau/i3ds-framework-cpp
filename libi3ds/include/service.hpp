@@ -29,6 +29,12 @@ struct Service
     typename RequestCodec::Data request;
     typename ResponseCodec::Data response;
   };
+
+  static void Initialize(Data& data)
+  {
+    RequestCodec::Initialize(data.request);
+    ResponseCodec::Initialize(data.response);
+  }
 };
 
 } // namespace i3ds

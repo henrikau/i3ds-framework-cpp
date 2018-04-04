@@ -11,19 +11,31 @@
 #include "emulated_camera.hpp"
 
 
-i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id)
-  : Camera(context, id)
+i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy)
+  : Camera(context, id),
+    resx_(resx),
+    resy_(resy)
 {
+  exposure_ = 0.0;
+  gain_ = 1.0;
+  auto_exposure_ = false;
+  exposure_limit_ = 0.0;
+  gain_limit_ = 1.0;
+
+  region_.size_x = resx;
+  region_.size_y = resy;
+  region_.offset_x = 0;
+  region_.offset_y = 0;
+
+  flash_enabled_ = false;
+  flash_strength_ = 0.0;
+
+  pattern_enabled_ = false;
+  pattern_ = 0.0;
 }
 
 i3ds::EmulatedCamera::~EmulatedCamera()
 {
-}
-
-double
-i3ds::EmulatedCamera::temperature() const
-{
-  return 300.0;
 }
 
 void
@@ -95,9 +107,9 @@ i3ds::EmulatedCamera::set_region(PlanarRegion region)
 }
 
 ResultCode
-i3ds::EmulatedCamera::set_flash_illumination(bool flash_enable)
+i3ds::EmulatedCamera::set_flash_enabled(bool flash_enabled)
 {
-  flash_enable_ = flash_enable;
+  flash_enabled_ = flash_enabled;
   return success;
 }
 
@@ -109,7 +121,7 @@ i3ds::EmulatedCamera::set_flash_strength(FlashStrength flash_strength)
 }
 
 ResultCode
-i3ds::EmulatedCamera::set_pattern_illumination(bool pattern_enabled)
+i3ds::EmulatedCamera::set_pattern_enabled(bool pattern_enabled)
 {
   pattern_enabled_ = pattern_enabled;
   return success;

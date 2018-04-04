@@ -67,6 +67,7 @@ public:
 
     virtual void Handle(const Message& request, Message& response)
     {
+      T::RequestCodec::Initialize(data_.request);
       T::ResponseCodec::Initialize(data_.response);
 
       Decode<typename T::RequestCodec>(request, data_.request);
