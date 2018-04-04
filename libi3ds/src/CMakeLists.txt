@@ -12,6 +12,7 @@ set (SRCS
   publisher.cpp
   subscriber.cpp
   sensor.cpp
+  camera.cpp
   ${ASN1_SRCS} ${ASN1_HDRS})
 
 set (LIBS zmq)
