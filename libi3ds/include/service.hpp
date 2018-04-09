@@ -18,12 +18,14 @@
 namespace i3ds
 {
 
-template<typename T1, typename T2>
+template<EndpointID E, typename T1, typename T2>
 struct Service
 {
+  static const EndpointID endpoint = E;
+
   typedef T1 RequestCodec;
   typedef T2 ResponseCodec;
-  
+
   struct Data
   {
     typename RequestCodec::Data request;

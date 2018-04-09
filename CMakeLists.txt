@@ -25,7 +25,6 @@ set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scripts)
 
 set (ESROCOS_ASN1_DIR ${PROJECT_SOURCE_DIR}/esrocos/types-base/asn)
 set (I3DS_ASN1_DIR ${PROJECT_SOURCE_DIR}/i3ds/types-base/asn)
-set (SENSORS_ASN1_DIR ${PROJECT_SOURCE_DIR}/i3ds/types-sensors/asn)
 
 set (ASN1_FILES
 ${ESROCOS_ASN1_DIR}/Eigen.asn
@@ -35,10 +34,11 @@ ${ESROCOS_ASN1_DIR}/taste-types.asn
 ${ESROCOS_ASN1_DIR}/Temperature.asn
 ${ESROCOS_ASN1_DIR}/Time.asn
 ${I3DS_ASN1_DIR}/Analog.asn
+${I3DS_ASN1_DIR}/Common.asn
 ${I3DS_ASN1_DIR}/DepthMap.asn
 ${I3DS_ASN1_DIR}/IMU.asn
 ${I3DS_ASN1_DIR}/PointCloud.asn
-${I3DS_ASN1_DIR}/SensorSuite.asn
+${I3DS_ASN1_DIR}/Sensor.asn
 ${I3DS_ASN1_DIR}/Camera.asn
 ${I3DS_ASN1_DIR}/Frame.asn
 ${I3DS_ASN1_DIR}/LIDAR.asn
@@ -47,13 +47,6 @@ ${I3DS_ASN1_DIR}/Region.asn
 ${I3DS_ASN1_DIR}/SampleAttribute.asn
 ${I3DS_ASN1_DIR}/StarTracker.asn
 ${I3DS_ASN1_DIR}/ToFCamera.asn
-${SENSORS_ASN1_DIR}/Basler-ToFCamera.asn
-${SENSORS_ASN1_DIR}/Basler-HRCamera.asn
-${SENSORS_ASN1_DIR}/Beamagine-LIDAR.asn
-${SENSORS_ASN1_DIR}/Cosine-HRCamera.asn
-${SENSORS_ASN1_DIR}/Cosine-StereoCamera.asn
-${SENSORS_ASN1_DIR}/Cosine-TIRCamera.asn
-${SENSORS_ASN1_DIR}/Hertz-Radar.asn
 )
 
 ################################################################################

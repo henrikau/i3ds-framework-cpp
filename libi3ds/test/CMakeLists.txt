@@ -6,7 +6,6 @@ include_directories ("../emulator")
 
 set(TESTS
   communication-test
-  codec-test
   sensor-test
   camera-test
 )

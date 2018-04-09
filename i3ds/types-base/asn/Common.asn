@@ -1,7 +1,6 @@
 --------------------------------------------------------------------------------
 --- ASN.1 message definitions for the I3DS sensor suite.
 ---
---- Copyright (C) 2017      Stiftelsen SINTEF
 --- Copyright (C) 2018      SINTEF AS
 ---
 --- This program is free software; you can redistribute it and/or
@@ -18,43 +17,35 @@
 --- along with this program;  if not, see <http://www.gnu.org/licenses/>.
 --------------------------------------------------------------------------------
 
-ToFCamera-Types DEFINITIONS ::=
+Common-Types DEFINITIONS ::=
 BEGIN
-IMPORTS SampleAttributes FROM SampleAttribute-Types
-PlanarRegion FROM Region-Types
-DepthValidityList, DepthMap FROM DepthMap-Types
-T-UInt32, T-Boolean FROM TASTE-BasicTypes;
+IMPORTS T-String FROM TASTE-ExtendedTypes;
 
---- ToF region command
-ToFRegion ::=
-SEQUENCE
+-- The node ID is a 24-bit integer identifying a node in the suite (such as a sensor).
+NodeID ::= INTEGER(0 .. 16777215)
+
+-- The endpoint ID is a 8-bit integer identifying the endpoint within the node.
+EndpointID ::= INTEGER(0 .. 255)
+
+--- Command result codes.
+ResultCode ::=
+ENUMERATED
 {
-    enable   T-Boolean,
-    region   PlanarRegion
+   success,            -- Successfully executed the request.
+   error-node-id,      -- The node ID was not recognized.
+   error-endpoint-id,  -- The endpoint ID was not recognized.
+   error-unsupported,  -- The requested operation is not supported.
+   error-state,        -- The requested operation is illegal from current state.
+   error-value,        -- One or more of the provided values are illegal or in conflict.
+   error-other         -- Other error, see message.
 }
 
---- ToF configuration
-ToFConfiguration ::=
+--- Command response common for all nodes classes.
+CommandResponse ::=
 SEQUENCE
 {
-   region-enabled   T-Boolean,
-   region           PlanarRegion
+   result   ResultCode,
+   message  T-String
 }
-
---- ToF measurement
-ToFMeasurement{T-UInt32: maxDepthMapSize} ::=
-SEQUENCE
-{
-   attributes   SampleAttributes,
-   distances    DepthMap{maxDepthMapSize},
-   validity     DepthValidityList{maxDepthMapSize},
-   region       PlanarRegion
-}
-
---- ToF measurements for 250K, 500K, 1M, 2M sample points.
-ToFMeasurement250K ::= ToFMeasurement{256000}
-ToFMeasurement500K ::= ToFMeasurement{512000}
-ToFMeasurement1M ::= ToFMeasurement{1000000}
-ToFMeasurement2M ::= ToFMeasurement{2000000}
 
 END

@@ -24,39 +24,35 @@ public:
   virtual ~EmulatedCamera();
 
   // Getters.
-  virtual int resolution_x() const {return resx_;}
-  virtual int resolution_y() const {return resy_;}
   virtual ExposureTime exposure() const {return exposure_;}
   virtual SensorGain gain() const {return gain_;}
-  virtual bool auto_exposure() const {return auto_exposure_;}
-  virtual ExposureTime exposure_limit() const {return exposure_limit_;}
-  virtual SensorGain gain_limit() const {return gain_limit_;}
+  virtual bool auto_exposure_enabled() const {return auto_exposure_enabled_;}
+  virtual ExposureTime max_exposure() const {return max_exposure_;}
+  virtual SensorGain max_gain() const {return max_gain_;}
+  virtual bool region_enabled() const {return region_enabled_;}
   virtual PlanarRegion region() const {return region_;}
   virtual bool flash_enabled() const {return flash_enabled_;}
   virtual FlashStrength flash_strength() const {return flash_strength_;}
   virtual bool pattern_enabled() const {return pattern_enabled_;}
-  virtual IlluminationPattern illumination_pattern() const {return pattern_;}
+  virtual PatternSequence pattern_sequence() const {return pattern_sequence_;}
+
+  // Setter commands.
+  virtual void set_exposure(ExposureTime exposure, SensorGain gain);
+  virtual void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
+  virtual void set_region(bool enable, PlanarRegion region);
+  virtual void set_flash(bool enable, FlashStrength strength);
+  virtual void set_pattern(bool enable, PatternSequence sequence);
+
+  // Supported rate.
+  virtual bool support_rate(SampleRate rate);
 
 protected:
 
+  // Actions.
   virtual void do_activate();
   virtual void do_start();
   virtual void do_stop();
   virtual void do_deactivate();
-
-  virtual bool support_rate(SensorRate rate);
-
-  // Setters.
-  virtual ResultCode set_exposure(ExposureTime exposure);
-  virtual ResultCode set_gain(SensorGain gain);
-  virtual ResultCode set_auto_exposure(bool auto_exposure);
-  virtual ResultCode set_exposure_limit(ExposureTime exposure_limit);
-  virtual ResultCode set_gain_limit(SensorGain gain_limit);
-  virtual ResultCode set_region(PlanarRegion region);
-  virtual ResultCode set_flash_enabled(bool flash_enabled);
-  virtual ResultCode set_flash_strength(FlashStrength flash_strength);
-  virtual ResultCode set_pattern_enabled(bool pattern_enabled);
-  virtual ResultCode set_illumination_pattern(IlluminationPattern pattern);
 
 private:
 
@@ -65,14 +61,15 @@ private:
 
   ExposureTime exposure_;
   SensorGain gain_;
-  bool auto_exposure_;
-  ExposureTime exposure_limit_;
-  SensorGain gain_limit_;
+  bool auto_exposure_enabled_;
+  ExposureTime max_exposure_;
+  SensorGain max_gain_;
+  bool region_enabled_;
   PlanarRegion region_;
   bool flash_enabled_;
   FlashStrength flash_strength_;
   bool pattern_enabled_;
-  IlluminationPattern pattern_;
+  PatternSequence pattern_sequence_;
 };
 
 } // namespace i3ds

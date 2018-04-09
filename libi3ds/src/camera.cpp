@@ -13,107 +13,158 @@
 i3ds::Camera::Camera(Context::Ptr context, NodeID id)
   : Sensor(context, id)
 {
-  default_status_handler();
-  set_command_handler();
-  set_configuration_handler();
+  using std::placeholders::_1;
+
+  set_service<ExposureService>(std::bind(&i3ds::Camera::handle_exposure, this, _1));
+  set_service<AutoExposureService>(std::bind(&i3ds::Camera::handle_auto_exposure, this, _1));
+  set_service<RegionService>(std::bind(&i3ds::Camera::handle_region, this, _1));
+  set_service<PatternService>(std::bind(&i3ds::Camera::handle_pattern, this, _1));
+  set_service<FlashService>(std::bind(&i3ds::Camera::handle_flash, this, _1));
+  set_service<ConfigurationService>(std::bind(&i3ds::Camera::handle_configuration, this, _1));
 }
 
 i3ds::Camera::~Camera()
 {
 }
 
-PlanarRegion
-i3ds::Camera::region() const
-{
-  PlanarRegion r;
-
-  r.size_x = resolution_x();
-  r.size_y = resolution_y();
-  r.offset_x = 0;
-  r.offset_y = 0;
-
-  return r;
-}
-
 void
-i3ds::Camera::set_command_handler()
+i3ds::Camera::handle_exposure(ExposureService::Data& command)
 {
-  using std::placeholders::_1;
-
-  auto op = std::bind(&i3ds::Camera::handle_command, this, _1);
-
-  set_service<CommandService>(COMMAND, op);
-}
-
-void
-i3ds::Camera::set_configuration_handler()
-{
-  using std::placeholders::_1;
-
-  auto op = std::bind(&i3ds::Camera::handle_configuration_query, this, _1);
-
-  set_service<ConfigurationService>(CONFIGURATION, op);
-}
-
-void
-i3ds::Camera::get_camera_configuration(CameraConfiguration& config) const
-{
-  get_sensor_configuration(config.config_sensor);
-
-  config.config_exposure = exposure();
-  config.config_gain = gain();
-  config.config_auto_exposure = auto_exposure();
-  config.config_exposure_limit = exposure_limit();
-  config.config_gain_limit = gain_limit();
-  config.config_region = region();
-  config.config_flash_illumination = flash_enabled();
-  config.config_flash_strength = flash_strength();
-  config.config_pattern_illumination = pattern_enabled();
-  config.config_illumination_pattern = illumination_pattern();
-}
-
-ResultCode
-i3ds::Camera::execute_camera_command(CameraCommand& command)
-{
-  switch (command.kind)
+  if (!is_active())
     {
-    case CameraCommand::CameraCommand_sensor_command_PRESENT:
-      return execute_sensor_command(command.u.sensor_command);
-    case CameraCommand::set_exposure_PRESENT:
-      return set_exposure(command.u.set_exposure);
-    case CameraCommand::set_gain_PRESENT:
-      return set_gain(command.u.set_gain);
-    case CameraCommand::set_auto_exposure_PRESENT:
-      return set_auto_exposure(command.u.set_auto_exposure);
-    case CameraCommand::set_exposure_limit_PRESENT:
-      return set_exposure_limit(command.u.set_exposure_limit);
-    case CameraCommand::set_gain_limit_PRESENT:
-      return set_gain_limit(command.u.set_gain_limit);
-    case CameraCommand::CameraCommand_set_region_PRESENT:
-      return set_region(command.u.set_region);
-    case CameraCommand::set_flash_illumination_PRESENT:
-      return set_flash_enabled(command.u.set_flash_illumination);
-    case CameraCommand::set_flash_strength_PRESENT:
-      return set_flash_strength(command.u.set_flash_strength);
-    case CameraCommand::set_pattern_illumination_PRESENT:
-      return set_pattern_enabled(command.u.set_pattern_illumination);
-    case CameraCommand::set_illumination_pattern_PRESENT:
-      return set_illumination_pattern(command.u.set_illumination_pattern);
-    default:
-      break;
+      set_response(command.response, error_state, "Camera not active");
     }
-
-  return error_unsupported;
+  else
+    {
+      try
+	{
+	  set_exposure(command.request.exposure,
+		       command.request.gain);
+	}
+      catch(CommandException e)
+	{
+	  set_response(command.response, e);
+	}
+      catch(std::exception e)
+	{
+	  set_response(command.response, error_other, e.what());
+	}
+    }
 }
 
 void
-i3ds::Camera::handle_configuration_query(ConfigurationService::Data& config) const
+i3ds::Camera::handle_auto_exposure(AutoExposureService::Data& command)
 {
-  get_camera_configuration(config.response);
+  if (!is_active())
+    {
+      set_response(command.response, error_state, "Camera not active");
+    }
+  else
+    {
+      try
+	{
+	  set_auto_exposure(command.request.enable,
+			    command.request.max_exposure,
+			    command.request.max_gain);
+	}
+      catch(CommandException e)
+	{
+	  set_response(command.response, e);
+	}
+      catch(std::exception e)
+	{
+	  set_response(command.response, error_other, e.what());
+	}
+    }
 }
 
 void
-i3ds::Camera::handle_command(CommandService::Data& command)
+i3ds::Camera::handle_region(RegionService::Data& command)
 {
-  command.response.result = execute_camera_command(command.request);
+  if (!is_active())
+    {
+      set_response(command.response, error_state, "Camera not active");
+    }
+  else
+    {
+      try
+	{
+	  set_region(command.request.enable,
+		     command.request.region);
+	}
+      catch(CommandException e)
+	{
+	  set_response(command.response, e);
+	}
+      catch(std::exception e)
+	{
+	  set_response(command.response, error_other, e.what());
+	}
+    }
+}
+
+void
+i3ds::Camera::handle_flash(FlashService::Data& command)
+{
+  if (!is_active())
+    {
+      set_response(command.response, error_state, "Camera not active");
+    }
+  else
+    {
+      try
+	{
+	  set_flash(command.request.enable,
+		    command.request.strength);
+	}
+      catch(CommandException e)
+	{
+	  set_response(command.response, e);
+	}
+      catch(std::exception e)
+	{
+	  set_response(command.response, error_other, e.what());
+	}
+    }
+}
+
+void
+i3ds::Camera::handle_pattern(PatternService::Data& command)
+{
+  if (!is_active())
+    {
+      set_response(command.response, error_state, "Camera not active");
+    }
+  else
+    {
+      try
+	{
+	  set_pattern(command.request.enable,
+		      command.request.sequence);
+	}
+      catch(CommandException e)
+	{
+	  set_response(command.response, e);
+	}
+      catch(std::exception e)
+	{
+	  set_response(command.response, error_other, e.what());
+	}
+    }
+}
+
+void
+i3ds::Camera::handle_configuration(ConfigurationService::Data& config) const
+{
+  config.response.exposure = exposure();
+  config.response.gain = gain();
+  config.response.auto_exposure_enabled = auto_exposure_enabled();
+  config.response.max_exposure = max_exposure();
+  config.response.max_gain = max_gain();
+  config.response.region_enabled = region_enabled();
+  config.response.region = region();
+  config.response.flash_enabled = flash_enabled();
+  config.response.flash_strength = flash_strength();
+  config.response.pattern_enabled = pattern_enabled();
+  config.response.pattern_sequence = pattern_sequence();
 }

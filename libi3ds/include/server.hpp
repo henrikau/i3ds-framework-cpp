@@ -17,10 +17,13 @@
 
 #include "receiver.hpp"
 #include "communication.hpp"
+#include "exception.hpp"
 #include "codec.hpp"
 
 namespace i3ds
 {
+
+CODEC(CommandResponse);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Server for request/response pattern.
@@ -90,9 +93,9 @@ public:
 
   // Register service handler for endpoint ID.
   template<typename T>
-  void set_service(EndpointID endpoint, typename Wrapper<T>::Operation operation)
+  void set_service(typename Wrapper<T>::Operation operation)
   {
-    set_handler(endpoint, Wrapper<T>::Create(operation));
+    set_handler(T::endpoint, Wrapper<T>::Create(operation));
   }
 
   // Register generic handler for endpoint ID.
@@ -117,6 +120,9 @@ private:
   // Map with handlers for endpoints.
   std::unordered_map<EndpointID, Handler::Ptr> handlers_;
 };
+
+void set_response(CommandResponse& response, ResultCode result, std::string message);
+void set_response(CommandResponse& response, const CommandException& e);
 
 } // namespace i3ds
 

@@ -63,3 +63,17 @@ i3ds::Server::Handle(Message& message, Socket& socket)
 
   socket.Send(response);
 }
+
+void
+i3ds::set_response(CommandResponse& response, ResultCode result, std::string message)
+{
+  response.result = result;
+  set_string(response.message, message);
+}
+
+void
+i3ds::set_response(CommandResponse& response, const CommandException& e)
+{
+  response.result = e.result();
+  set_string(response.message, e.what());
+}

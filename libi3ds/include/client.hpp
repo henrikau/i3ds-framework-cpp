@@ -33,13 +33,13 @@ public:
 
   // Execute call for client, returns true if successful.
   template<typename T>
-  bool Call(EndpointID endpoint, typename T::Data& data, int timeout_ms = -1)
+  bool Call(typename T::Data& data, int timeout_ms = -1)
   {
     Message request, response;
 
     Encode<typename T::RequestCodec>(request, data.request);
 
-    if (!Execute(endpoint, request, response, timeout_ms))
+    if (!Execute(T::endpoint, request, response, timeout_ms))
       {
 	return false;
       }

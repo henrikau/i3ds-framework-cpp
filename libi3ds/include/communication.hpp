@@ -15,7 +15,7 @@
 #include <string>
 #include <zmq.hpp>
 
-#include "SensorSuite.h"
+#include "Common.h"
 
 namespace i3ds
 {

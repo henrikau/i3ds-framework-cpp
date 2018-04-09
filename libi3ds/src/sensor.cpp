@@ -12,118 +12,61 @@
 #include <cassert>
 #include "sensor.hpp"
 
-const EndpointID i3ds::Sensor::COMMAND = command_Endpoint;
-const EndpointID i3ds::Sensor::STATUS = status_Endpoint;
-const EndpointID i3ds::Sensor::CONFIGURATION = configuration_Endpoint;
-const EndpointID i3ds::Sensor::MEASUREMENT = measurement_Endpoint;
-
 i3ds::Sensor::Sensor(Context::Ptr context, NodeID id)
   : Server(context, id)
 {
+  using std::placeholders::_1;
+
   state_ = inactive;
   rate_ = 0.0;
+
+  set_service<StateService>(std::bind(&i3ds::Sensor::handle_state, this, _1));
+  set_service<SampleService>(std::bind(&i3ds::Sensor::handle_sample, this, _1));
+  set_service<StatusService>(std::bind(&i3ds::Sensor::handle_status, this, _1));
+  set_service<ConfigurationService>(std::bind(&i3ds::Sensor::handle_configuration, this, _1));
 }
 
 i3ds::Sensor::~Sensor()
 {
 }
 
-void i3ds::Sensor::default_command_handler()
-{
-  using std::placeholders::_1;
-
-  auto op = std::bind(&i3ds::Sensor::handle_command, this, _1);
-
-  set_service<CommandService>(COMMAND, op);
-}
-
-void i3ds::Sensor::default_status_handler()
-{
-  using std::placeholders::_1;
-
-  auto op = std::bind(&i3ds::Sensor::handle_status_query, this, _1);
-
-  set_service<StatusService>(STATUS, op);
-}
-
-void i3ds::Sensor::default_configuration_handler()
-{
-  using std::placeholders::_1;
-
-  auto op = std::bind(&i3ds::Sensor::handle_configuration_query, this, _1);
-
-  set_service<ConfigurationService>(CONFIGURATION, op);
-}
-
 void
-i3ds::Sensor::handle_status_query(StatusService::Data& status) const
+i3ds::Sensor::handle_state(StateService::Data& command)
 {
-  get_sensor_status(status.response);
-}
+  ResultCode result = error_state;
 
-void
-i3ds::Sensor::handle_configuration_query(ConfigurationService::Data& config) const
-{
-  get_sensor_configuration(config.response);
-}
-
-void
-i3ds::Sensor::handle_command(CommandService::Data& command)
-{
-  command.response.result = execute_sensor_command(command.request);
-}
-
-ResultCode
-i3ds::Sensor::execute_sensor_command(SensorCommand& command)
-{
-  switch(command.kind)
-    {
-    case SensorCommand::set_state_PRESENT:
-      return execute_state_command(command.u.set_state);
-
-    case SensorCommand::set_rate_PRESENT:
-      return execute_rate_command(command.u.set_rate);
-
-    default:
-      return error_unsupported;
-    }
-}
-
-ResultCode
-i3ds::Sensor::execute_state_command(StateCommand command)
-{
   switch(state_)
     {
     case inactive:
-      if (command == activate)
+      if (command.request == activate)
 	{
 	  do_activate();
 	  state_ = standby;
-	  return success;
+	  result = success;
 	}
       break;
 
     case standby:
-      if (command == deactivate)
+      if (command.request == deactivate)
 	{
 	  do_deactivate();
 	  state_ = inactive;
-	  return success;
+	  result = success;
 	}
-      else if (command == start)
+      else if (command.request == start)
 	{
 	  do_start();
 	  state_ = operational;
-	  return success;
+	  result = success;
 	}
       break;
 
     case operational:
-      if (command == stop)
+      if (command.request == stop)
 	{
 	  do_stop();
 	  state_ = standby;
-	  return success;
+	  result = success;
 	}
       break;
 
@@ -131,37 +74,37 @@ i3ds::Sensor::execute_state_command(StateCommand command)
       break;
     }
 
-  return error_state;
+  command.response.result = result;
 }
 
-ResultCode
-i3ds::Sensor::execute_rate_command(SensorRate rate)
+void
+i3ds::Sensor::handle_sample(SampleService::Data& sample)
 {
   if (state_ != standby)
     {
-      return error_state;
+      sample.response.result = error_state;
     }
-
-  if (!support_rate(rate))
+  else if (!support_rate(sample.request.rate))
     {
-      return error_unsupported;
+      sample.response.result = error_unsupported;
     }
-
-  rate_ = rate;
-
-  return success;
+  else
+    {
+      rate_ = sample.request.rate;
+      sample.response.result = success;
+    }
 }
 
 void
-i3ds::Sensor::get_sensor_status(SensorStatus& status) const
+i3ds::Sensor::handle_status(StatusService::Data& status) const
 {
-  status.state = state();
-  status.temperature.kelvin = temperature();
+  status.response.state = state();
+  status.response.temperature.kelvin = temperature();
 }
 
 void
-i3ds::Sensor::get_sensor_configuration(SensorConfiguration& config) const
+i3ds::Sensor::handle_configuration(ConfigurationService::Data& config) const
 {
-  config.config_rate = rate();
-  config.config_count = 0; // FIXME
+  config.response.rate = rate();
+  config.response.count = 0; // FIXME
 }

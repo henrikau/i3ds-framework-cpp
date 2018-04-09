@@ -11,7 +11,8 @@
 #ifndef __I3DS_SENSOR_HPP
 #define __I3DS_SENSOR_HPP
 
-#include "SensorSuite.h"
+#include "Common.h"
+#include "Sensor.h"
 
 #include "communication.hpp"
 #include "service.hpp"
@@ -21,57 +22,47 @@
 namespace i3ds
 {
 
+CODEC(StateCommand);
+CODEC(SampleCommand);
 CODEC(SensorStatus);
-CODEC(SensorCommand);
 CODEC(SensorConfiguration);
-CODEC(SensorResponse);
 
 class Sensor : public Server
 {
 public:
 
-  // Endpoint definitions for sensors.
-  static const EndpointID COMMAND;
-  static const EndpointID STATUS;
-  static const EndpointID CONFIGURATION;
-  static const EndpointID MEASUREMENT;
-
   // Service definitions for basic sensor.
-  typedef Service<NullCodec, SensorStatusCodec> StatusService;
-  typedef Service<SensorCommandCodec, SensorResponseCodec> CommandService;
-  typedef Service<NullCodec, SensorConfigurationCodec> ConfigurationService;
+  typedef Service<1, StateCommandCodec, CommandResponseCodec>  StateService;
+  typedef Service<2, SampleCommandCodec, CommandResponseCodec> SampleService;
+  typedef Service<3, NullCodec, SensorStatusCodec>             StatusService;
+  typedef Service<4, NullCodec, SensorConfigurationCodec>      ConfigurationService;
 
   Sensor(Context::Ptr context, NodeID id);
   virtual ~Sensor();
 
+  // Returns true if sensor is in active state.
+  inline bool is_active() const {return state() == standby || state() == operational;}
+
+  // Returns true if sensor is in standby state.
+  inline bool is_standby() const {return state() == standby;}
+
+  // Returns true if sensor is in operational state.
+  inline bool is_operational() const {return state() == operational;}
+
+  // Returns true if sensor is in inactive state.
+  inline bool is_inactive() const {return state() == inactive;}
+
+  // Returns true if sensor is in failure state.
+  inline bool is_failure() const {return state() == failure;}
+
   // Get sensor state.
-  SensorState state() const {return state_;}
+  inline SensorState state() const {return state_;}
 
   // Get sensor rate in seconds between samples.
-  SensorRate rate() const {return rate_;}
+  inline SampleRate rate() const {return rate_;}
 
   // Get temperature in Kelvin (defaults to 0.0).
   virtual double temperature() const {return 0.0;}
-
-protected:
-
-  // Set default handler for status query.
-  void default_status_handler();
-
-  // Set default handler for configuration query.
-  void default_configuration_handler();
-
-  // Set default handler for command.
-  void default_command_handler();
-
-  // Execute sensor command.
-  ResultCode execute_sensor_command(SensorCommand& command);
-
-  // Get sensor configuration.
-  void get_sensor_configuration(SensorConfiguration& config) const;
-
-  // Get sensor status.
-  void get_sensor_status(SensorStatus& status) const;
 
   // Sensor action when activated.
   virtual void do_activate() = 0;
@@ -86,27 +77,24 @@ protected:
   virtual void do_deactivate() = 0;
 
   // Check if rate is supported.
-  virtual bool support_rate(SensorRate rate) = 0;
+  virtual bool support_rate(SampleRate rate) = 0;
 
 private:
 
-  // Default handler for sensor status query.
-  void handle_status_query(StatusService::Data& status) const;
+  // Handler for state command.
+  void handle_state(StateService::Data& command);
 
-  // Default handler for sensor configuration query.
-  void handle_configuration_query(ConfigurationService::Data& config) const;
+  // Handler for sample configuration.
+  void handle_sample(SampleService::Data& sample);
 
-  // Default handler for sensor command.
-  void handle_command(CommandService::Data& command);
+  // Handler for sensor status query.
+  void handle_status(StatusService::Data& status) const;
 
-  // Execute state command according to sensor FSM pattern.
-  ResultCode execute_state_command(StateCommand command);
-
-  // Execute rate command checking if rate is supported.
-  ResultCode execute_rate_command(SensorRate rate);
+  // Handler for sensor configuration query.
+  void handle_configuration(ConfigurationService::Data& config) const;
 
   SensorState state_;
-  SensorRate rate_;
+  SampleRate rate_;
 };
 
 } // namespace i3ds

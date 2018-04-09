@@ -20,26 +20,34 @@
 namespace i3ds
 {
 
-CODEC(CameraCommand);
+CODEC(CameraExposure);
+CODEC(CameraAutoExposure);
+CODEC(CameraRegion);
+CODEC(CameraFlash);
+CODEC(CameraPattern);
 CODEC(CameraConfiguration);
+
+CODEC(CameraMeasurement1M);
+CODEC(CameraMeasurement4M);
+CODEC(CameraMeasurement8M);
+CODEC(StereoCameraMeasurement4M);
+CODEC(StereoCameraMeasurement8M);
 
 class Camera : public Sensor
 {
 public:
 
   // Camera services.
-  typedef Service<CameraCommandCodec, SensorResponseCodec> CommandService;
-  typedef Service<NullCodec, CameraConfigurationCodec> ConfigurationService;
+  typedef Service<16, CameraExposureCodec, CommandResponseCodec> ExposureService;
+  typedef Service<17, CameraAutoExposureCodec, CommandResponseCodec> AutoExposureService;
+  typedef Service<18, CameraRegionCodec, CommandResponseCodec> RegionService;
+  typedef Service<19, CameraFlashCodec, CommandResponseCodec> FlashService;
+  typedef Service<20, CameraPatternCodec, CommandResponseCodec> PatternService;
+  typedef Service<21, NullCodec, CameraConfigurationCodec> ConfigurationService;
 
   // Constructor and destructor.
   Camera(Context::Ptr context, NodeID id);
   virtual ~Camera();
-
-  // Get the X (horizontal) resolution of sensor.
-  virtual int resolution_x() const = 0;
-
-  // Get the Y (vertical) resolution of sensor.
-  virtual int resolution_y() const = 0;
 
   // Get exposure time for camera.
   virtual ExposureTime exposure() const = 0;
@@ -48,79 +56,66 @@ public:
   virtual SensorGain gain() const = 0;
 
   // Get auto exposure for camera.
-  virtual bool auto_exposure() const {return false;}
+  virtual bool auto_exposure_enabled() const = 0;
 
   // Get exposure time limit for camera with auto exposure.
-  virtual ExposureTime exposure_limit() const {return 0.0;}
+  virtual ExposureTime max_exposure() const = 0;
 
   // Get gain limit for camera with auto exposure.
-  virtual SensorGain gain_limit() const {return 0.0;}
+  virtual SensorGain max_gain() const = 0;
+
+  // Get the region of interest enabled for camera.
+  virtual bool region_enabled() const = 0;
 
   // Get the region of interest for the camera.
-  virtual PlanarRegion region() const;
+  virtual PlanarRegion region() const = 0;
 
   // Get the flash illumination for the camera.
-  virtual bool flash_enabled() const {return false;}
+  virtual bool flash_enabled() const = 0;
 
   // Get the flash strength for the camera.
-  virtual FlashStrength flash_strength() const {return 0;}
+  virtual FlashStrength flash_strength() const = 0;
 
   // Get the pattern illumination for the camera.
-  virtual bool pattern_enabled() const {return false;}
+  virtual bool pattern_enabled() const = 0;
 
-  // Get the pattern for the camera.
-  virtual IlluminationPattern illumination_pattern() const {return 0;}
-
-protected:
-
-  // Set default handler for endpoints.
-  void set_command_handler();
-  void set_configuration_handler();
-
-  // Get camera status.
-  void get_camera_configuration(CameraConfiguration& config) const;
-
-  // Execute camera command.
-  ResultCode execute_camera_command(CameraCommand& command);
+  // Get the pattern sequence for the camera.
+  virtual PatternSequence pattern_sequence() const = 0;
 
   // Set exposure time for camera.
-  virtual ResultCode set_exposure(ExposureTime exposure) {return error_unsupported;}
-
-  // Set gain for camera.
-  virtual ResultCode set_gain(SensorGain gain) {return error_unsupported;}
+  virtual void set_exposure(ExposureTime exposure, SensorGain gain) = 0;
 
   // Set auto exposure for camera.
-  virtual ResultCode set_auto_exposure(bool auto_exposure) {return error_unsupported;}
-
-  // Set exposure time limit for camera with auto exposure.
-  virtual ResultCode set_exposure_limit(ExposureTime exposure_limit) {return error_unsupported;}
-
-  // Set gain limit for camera with auto exposure.
-  virtual ResultCode set_gain_limit(SensorGain gain_limit) {return error_unsupported;}
+  virtual void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain) = 0;
 
   // Set the region of interest for the camera.
-  virtual ResultCode set_region(PlanarRegion region) {return error_unsupported;}
+  virtual void set_region(bool enable, PlanarRegion region) = 0;
 
   // Set the flash illumination for the camera.
-  virtual ResultCode set_flash_enabled(bool flash_enabled) {return error_unsupported;}
-
-  // Set the flash strength for the camera.
-  virtual ResultCode set_flash_strength(FlashStrength flash_strength) {return error_unsupported;}
+  virtual void set_flash(bool enable, FlashStrength strength) = 0;
 
   // Set the pattern illumination for the camera.
-  virtual ResultCode set_pattern_enabled(bool pattern_enabled) {return error_unsupported;}
-
-  // Set the next pattern for the camera.
-  virtual ResultCode set_illumination_pattern(IlluminationPattern pattern) {return error_unsupported;}
+  virtual void set_pattern(bool enable, PatternSequence sequence) = 0;
 
 private:
 
+  // Handler for camera exposure command.
+  void handle_exposure(ExposureService::Data& command);
+
+  // Handler for camera auto exposure command.
+  void handle_region(RegionService::Data& command);
+
+  // Handler for camera auto exposure command.
+  void handle_auto_exposure(AutoExposureService::Data& command);
+
+    // Handler for camera auto exposure command.
+  void handle_flash(FlashService::Data& command);
+
+  // Handler for camera auto exposure command.
+  void handle_pattern(PatternService::Data& command);
+
   // Handler for camera configuration query.
-  void handle_configuration_query(ConfigurationService::Data& config) const;
-
-  // Handler for camera command.
-  void handle_command(CommandService::Data& command);
-
+  void handle_configuration(ConfigurationService::Data& config) const;
 };
 
 } // namespace i3ds

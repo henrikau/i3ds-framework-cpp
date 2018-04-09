@@ -20,56 +20,83 @@
 
 Camera-Types DEFINITIONS ::=
 BEGIN
-IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-SampleAttributes FROM SampleAttribute-Types
+IMPORTS SampleAttributes FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
 T-UInt8, T-UInt32, T-Boolean FROM TASTE-BasicTypes
+T-Float, T-UInt16 FROM TASTE-ExtendedTypes
 Frame-mode-t, ImageFrame FROM Frame-Types;
 
---- Exposure time in seconds
-ExposureTime ::= REAL(0.0 .. 1.0e12)
+--- Exposure time in microseconds
+ExposureTime ::= T-UInt32
 
---- Camera sensor gain, max value depends on sensor
-SensorGain ::= REAL(1.0 .. 1.0e6)
+--- Sensor gain in decibel, range is camera dependent
+SensorGain ::= T-Float
 
---- Flash strength if supported, range from 0 (off) to 1 (full)
-FlashStrength ::= REAL(0.0 .. 1.0)
-
---- Illumination pattern if supported, range depends on camera
-IlluminationPattern ::= T-UInt32
-
---- Camera command.
-CameraCommand ::=
-CHOICE
+--- Camera exposure command.
+CameraExposure ::=
+SEQUENCE
 {
-    sensor-command            SensorCommand,
-    set-exposure              ExposureTime,
-    set-gain                  SensorGain,
-    set-auto-exposure         T-Boolean,
-    set-exposure-limit        ExposureTime,
-    set-gain-limit            SensorGain,
-    set-region                PlanarRegion,
-    set-flash-illumination    T-Boolean,
-    set-flash-strength        FlashStrength,
-    set-pattern-illumination  T-Boolean,
-    set-illumination-pattern  IlluminationPattern
+    exposure   ExposureTime,
+    gain       SensorGain
+}
+
+--- Camera auto exposure command.
+CameraAutoExposure ::=
+SEQUENCE
+{
+    enable         T-Boolean,
+    max-exposure   ExposureTime,
+    max-gain       SensorGain
+}
+
+--- Flash strength from 0 (off) to 255 (full)
+FlashStrength ::= T-UInt8
+
+--- Camera flash illumination command.
+CameraFlash ::=
+SEQUENCE
+{
+    enable     T-Boolean,
+    strength   FlashStrength
+}
+
+--- Camera region command.
+CameraRegion ::=
+SEQUENCE
+{
+    enable   T-Boolean,
+    region   PlanarRegion
+}
+
+--- Illumination pattern sequence, range depends on camera
+PatternSequence ::= T-UInt16
+
+--- Illumination pattern ID, 0 is none, range depends on camera
+PatternID ::= T-UInt16
+
+--- Camera pattern illumination command.
+CameraPattern ::=
+SEQUENCE
+{
+    enable     T-Boolean,
+    sequence   PatternSequence
 }
 
 --- Camera configuration.
 CameraConfiguration ::=
 SEQUENCE
 {
-   config-sensor                SensorConfiguration,
-   config-exposure              ExposureTime,
-   config-gain                  SensorGain,
-   config-auto-exposure         T-Boolean,
-   config-exposure-limit        ExposureTime,
-   config-gain-limit            SensorGain,
-   config-region                PlanarRegion,
-   config-flash-illumination    T-Boolean,
-   config-flash-strength        FlashStrength,
-   config-pattern-illumination  T-Boolean,
-   config-illumination-pattern  IlluminationPattern
+   exposure                ExposureTime,
+   gain                    SensorGain,
+   auto-exposure-enabled   T-Boolean,
+   max-exposure            ExposureTime,
+   max-gain                SensorGain,
+   region-enabled          T-Boolean,
+   region                  PlanarRegion,
+   flash-enabled           T-Boolean,
+   flash-strength          FlashStrength,
+   pattern-enabled         T-Boolean,
+   pattern-sequence        PatternSequence
 }
 
 --- Camera measurement
@@ -79,10 +106,16 @@ SEQUENCE
    attributes  SampleAttributes,
    image       ImageFrame{maxImageBytes},
    frame-mode  Frame-mode-t,
-   region      PlanarRegion,
    data-depth  T-UInt8,
-   pixel-size  T-UInt8
+   pixel-size  T-UInt8,
+   region      PlanarRegion,
+   pattern     PatternID
 }
+
+--- Camera measurements for 1 MiB, 4 MiB and 8 MiB images.
+CameraMeasurement1M ::= CameraMeasurement{1048576}
+CameraMeasurement4M ::= CameraMeasurement{4194304}
+CameraMeasurement8M ::= CameraMeasurement{8388608}
 
 --- Stereo camera measurement
 StereoCameraMeasurement{T-UInt32: maxImageBytes} ::=
@@ -92,9 +125,13 @@ SEQUENCE
    image-left   ImageFrame{maxImageBytes},
    image-right  ImageFrame{maxImageBytes},
    frame-mode   Frame-mode-t,
-   region       PlanarRegion,
    data-depth   T-UInt8,
-   pixel-size   T-UInt8
+   pixel-size   T-UInt8,
+   region       PlanarRegion
 }
+
+--- Stereo camera measurements for 4 MiB and 8 MiB left/right images.
+StereoCameraMeasurement4M ::= StereoCameraMeasurement{4194304}
+StereoCameraMeasurement8M ::= StereoCameraMeasurement{8388608}
 
 END

@@ -16,11 +16,12 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, 
     resx_(resx),
     resy_(resy)
 {
-  exposure_ = 0.0;
-  gain_ = 1.0;
-  auto_exposure_ = false;
-  exposure_limit_ = 0.0;
-  gain_limit_ = 1.0;
+  exposure_ = 0;
+  gain_ = 0.0;
+
+  auto_exposure_enabled_ = false;
+  max_exposure_ = 0;
+  max_gain_ = 0.0;
 
   region_.size_x = resx;
   region_.size_y = resy;
@@ -31,7 +32,7 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, 
   flash_strength_ = 0.0;
 
   pattern_enabled_ = false;
-  pattern_ = 0.0;
+  pattern_sequence_ = 0;
 }
 
 i3ds::EmulatedCamera::~EmulatedCamera()
@@ -59,77 +60,60 @@ i3ds::EmulatedCamera::do_deactivate()
 }
 
 bool
-i3ds::EmulatedCamera::support_rate(SensorRate rate)
+i3ds::EmulatedCamera::support_rate(SampleRate rate)
 {
-  return 0.0 < rate && rate <= 10.0;
+  return 0 < rate && rate <= 10000000;
 }
 
-ResultCode
-i3ds::EmulatedCamera::set_exposure(ExposureTime exposure)
+void
+i3ds::EmulatedCamera::set_exposure(ExposureTime exposure, SensorGain gain)
 {
+  auto_exposure_enabled_ = false;
   exposure_ = exposure;
-  return success;
-}
-
-ResultCode
-i3ds::EmulatedCamera::set_gain(SensorGain gain)
-{
   gain_ = gain;
-  return success;
 }
 
-ResultCode
-i3ds::EmulatedCamera::set_auto_exposure(bool auto_exposure)
+void
+i3ds::EmulatedCamera::set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain)
 {
-  auto_exposure_ = auto_exposure;
-  return success;
+  auto_exposure_enabled_ = enable;
+
+  if (enable)
+    {
+      max_exposure_ = max_exposure;
+      max_gain_ = max_gain;
+    }
 }
 
-ResultCode
-i3ds::EmulatedCamera::set_exposure_limit(ExposureTime exposure_limit)
+void
+i3ds::EmulatedCamera::set_region(bool enable, PlanarRegion region)
 {
-  exposure_limit_ = exposure_limit;
-  return success;
+  region_enabled_ = enable;
+
+  if (enable)
+    {
+      region_ = region;
+    }
 }
 
-ResultCode
-i3ds::EmulatedCamera::set_gain_limit(SensorGain gain_limit)
+void
+i3ds::EmulatedCamera::set_flash(bool enable, FlashStrength strength)
 {
-  gain_limit_ = gain_limit;
-  return success;
+  flash_enabled_ = enable;
+
+  if (enable)
+    {
+      flash_strength_ = strength;
+    }
 }
 
-ResultCode
-i3ds::EmulatedCamera::set_region(PlanarRegion region)
+void
+i3ds::EmulatedCamera::set_pattern(bool enable, PatternSequence sequence)
 {
-  region_ = region;
-  return success;
-}
+  pattern_enabled_ = enable;
 
-ResultCode
-i3ds::EmulatedCamera::set_flash_enabled(bool flash_enabled)
-{
-  flash_enabled_ = flash_enabled;
-  return success;
-}
-
-ResultCode
-i3ds::EmulatedCamera::set_flash_strength(FlashStrength flash_strength)
-{
-  flash_strength_ = flash_strength;
-  return success;
-}
-
-ResultCode
-i3ds::EmulatedCamera::set_pattern_enabled(bool pattern_enabled)
-{
-  pattern_enabled_ = pattern_enabled;
-  return success;
-}
-
-ResultCode
-i3ds::EmulatedCamera::set_illumination_pattern(IlluminationPattern pattern)
-{
-  pattern_ = pattern;
-  return success;
+  if (enable)
+    {
+      pattern_sequence_ = sequence;
+    }
 }
