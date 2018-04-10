@@ -47,18 +47,40 @@ i3ds::Server::Create(Context& context)
 }
 
 void
-i3ds::Server::Handle(Message& message, Socket& socket)
+i3ds::Server::Handle(Message& message, Socket& socket) noexcept
 {
   Message response;
+  CommandResponseCodec::Data error;
 
-  if (message.node() == node_ && handlers_.count(message.endpoint()) > 0)
+  if (message.node() != node_)
     {
-      handlers_[message.endpoint()]->Handle(message, response);
-      response.set_address(Address(node_, message.endpoint()));
+       response.set_address(Address(node_, 0));
+       set_response(error, error_node_id, "Wrong node ID: " + std::to_string(message.node()));
+       Encode<CommandResponseCodec>(response, error);
+    }
+  else if (handlers_.count(message.endpoint()) == 0)
+    {
+       response.set_address(Address(node_, 0));
+       set_response(error, error_endpoint_id, "Unknown endpoint ID: " + std::to_string(message.endpoint()));
+       Encode<CommandResponseCodec>(response, error);
     }
   else
     {
-      response.set_address(Address(node_, 0));
+      try
+	{
+	  handlers_[message.endpoint()]->Handle(message, response);
+	  response.set_address(Address(node_, message.endpoint()));
+	}
+      catch(CommandException e)
+	{
+	  set_response(error, e);
+	  Encode<CommandResponseCodec>(response, error);
+	}
+      catch(std::exception e)
+	{
+	  set_response(error, error_other, e.what());
+	  Encode<CommandResponseCodec>(response, error);
+	}
     }
 
   socket.Send(response);

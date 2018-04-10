@@ -18,6 +18,7 @@
 #include "service.hpp"
 #include "server.hpp"
 #include "codec.hpp"
+#include "exception.hpp"
 
 namespace i3ds
 {
@@ -32,13 +33,31 @@ class Sensor : public Server
 public:
 
   // Service definitions for basic sensor.
-  typedef Service<1, StateCommandCodec, CommandResponseCodec>  StateService;
-  typedef Service<2, SampleCommandCodec, CommandResponseCodec> SampleService;
-  typedef Service<3, NullCodec, SensorStatusCodec>             StatusService;
-  typedef Service<4, NullCodec, SensorConfigurationCodec>      ConfigurationService;
+  typedef Command<1, StateCommandCodec>        StateService;
+  typedef Command<2, SampleCommandCodec>       SampleService;
+  typedef Query  <3, SensorStatusCodec>        StatusService;
+  typedef Query  <4, SensorConfigurationCodec> ConfigurationService;
 
   Sensor(Context::Ptr context, NodeID id);
   virtual ~Sensor();
+
+  // Throws exception if sensor is not in inactive state.
+  void check_inactive() const throw (CommandException);
+
+  // Throws exception if sensor is not in active state.
+  void check_active() const throw (CommandException);
+
+  // Throws exception if sensor is not in standby state.
+  void check_standby() const throw (CommandException);
+
+  // Throws exception if sensor is not in operational state.
+  void check_operational() const throw (CommandException);
+
+  // Throws exception if sensor is not in failure state.
+  void check_failure() const throw (CommandException);
+
+  // Returns true if sensor is in inactive state.
+  inline bool is_inactive() const {return state() == inactive;}
 
   // Returns true if sensor is in active state.
   inline bool is_active() const {return state() == standby || state() == operational;}
@@ -48,9 +67,6 @@ public:
 
   // Returns true if sensor is in operational state.
   inline bool is_operational() const {return state() == operational;}
-
-  // Returns true if sensor is in inactive state.
-  inline bool is_inactive() const {return state() == inactive;}
 
   // Returns true if sensor is in failure state.
   inline bool is_failure() const {return state() == failure;}

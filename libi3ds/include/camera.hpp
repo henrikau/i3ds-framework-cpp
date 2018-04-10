@@ -38,12 +38,12 @@ class Camera : public Sensor
 public:
 
   // Camera services.
-  typedef Service<16, CameraExposureCodec, CommandResponseCodec> ExposureService;
-  typedef Service<17, CameraAutoExposureCodec, CommandResponseCodec> AutoExposureService;
-  typedef Service<18, CameraRegionCodec, CommandResponseCodec> RegionService;
-  typedef Service<19, CameraFlashCodec, CommandResponseCodec> FlashService;
-  typedef Service<20, CameraPatternCodec, CommandResponseCodec> PatternService;
-  typedef Service<21, NullCodec, CameraConfigurationCodec> ConfigurationService;
+  typedef Command<16, CameraExposureCodec>      ExposureService;
+  typedef Command<17, CameraAutoExposureCodec>  AutoExposureService;
+  typedef Command<18, CameraRegionCodec>        RegionService;
+  typedef Command<19, CameraFlashCodec>         FlashService;
+  typedef Command<20, CameraPatternCodec>       PatternService;
+  typedef Query  <21, CameraConfigurationCodec> ConfigurationService;
 
   // Constructor and destructor.
   Camera(Context::Ptr context, NodeID id);

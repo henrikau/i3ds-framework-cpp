@@ -31,6 +31,51 @@ i3ds::Sensor::~Sensor()
 }
 
 void
+i3ds::Sensor::check_inactive() const throw (CommandException)
+{
+  if (!is_inactive())
+    {
+      throw CommandException(error_state, "Sensor is not in inactive state");
+    }
+}
+
+void
+i3ds::Sensor::check_active() const throw (CommandException)
+{
+  if (!is_active())
+    {
+      throw CommandException(error_state, "Sensor is not in active state");
+    }
+}
+
+void
+i3ds::Sensor::check_standby() const throw (CommandException)
+{
+  if (!is_standby())
+    {
+      throw CommandException(error_state, "Sensor is not in standby state");
+    }
+}
+
+void
+i3ds::Sensor::check_operational() const throw (CommandException)
+{
+  if (!is_operational())
+    {
+      throw CommandException(error_state, "Sensor is not in operational state");
+    }
+}
+
+void
+i3ds::Sensor::check_failure() const throw (CommandException)
+{
+  if (!is_failure())
+    {
+      throw CommandException(error_state, "Sensor is not in failure state");
+    }
+}
+
+void
 i3ds::Sensor::handle_state(StateService::Data& command)
 {
   ResultCode result = error_state;

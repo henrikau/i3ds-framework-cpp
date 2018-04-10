@@ -14,9 +14,12 @@
 #include <functional>
 
 #include "communication.hpp"
+#include "codec.hpp"
 
 namespace i3ds
 {
+
+CODEC(CommandResponse);
 
 template<EndpointID E, typename T1, typename T2>
 struct Service
@@ -38,6 +41,13 @@ struct Service
     ResponseCodec::Initialize(data.response);
   }
 };
+
+template<EndpointID E, typename T>
+struct Query : public Service<E, NullCodec, T> {};
+
+template<EndpointID E, typename T>
+struct Command : public Service<E, T, CommandResponseCodec> {};
+
 
 } // namespace i3ds
 

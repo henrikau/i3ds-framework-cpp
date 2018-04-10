@@ -52,10 +52,17 @@ i3ds::Subscriber::Create(Context& context)
 }
 
 void
-i3ds::Subscriber::Handle(Message& message, Socket& socket)
+i3ds::Subscriber::Handle(Message& message, Socket& socket) noexcept
 {
-  if (message.node() == node_ && handlers_.count(message.endpoint()) > 0)
+  try
     {
-      handlers_[message.endpoint()]->Handle(message);
+      if (message.node() == node_ && handlers_.count(message.endpoint()) > 0)
+	{
+	  handlers_[message.endpoint()]->Handle(message);
+	}
+    }
+  catch (std::exception e)
+    {
+      // TODO: Log error
     }
 }

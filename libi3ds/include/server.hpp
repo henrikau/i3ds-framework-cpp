@@ -18,12 +18,10 @@
 #include "receiver.hpp"
 #include "communication.hpp"
 #include "exception.hpp"
-#include "codec.hpp"
+#include "service.hpp"
 
 namespace i3ds
 {
-
-CODEC(CommandResponse);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Server for request/response pattern.
@@ -70,7 +68,6 @@ public:
 
     virtual void Handle(const Message& request, Message& response)
     {
-      T::RequestCodec::Initialize(data_.request);
       T::ResponseCodec::Initialize(data_.response);
 
       Decode<typename T::RequestCodec>(request, data_.request);
@@ -110,7 +107,7 @@ protected:
   virtual Socket::Ptr Create(Context& context);
 
   // Handle message, may send using socket.
-  virtual void Handle(Message& message, Socket& socket);
+  virtual void Handle(Message& message, Socket& socket) noexcept;
 
 private:
 
