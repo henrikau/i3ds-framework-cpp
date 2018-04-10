@@ -43,7 +43,7 @@ protected:
   virtual Socket::Ptr Create(Context& context) = 0;
 
   // Handle message, may send using socket.
-  virtual void Handle(Message& message, Socket& socket) noexcept = 0;
+  virtual void Handle(Message& message, Socket& socket) = 0;
 
 private:
 

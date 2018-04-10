@@ -107,7 +107,7 @@ protected:
   virtual Socket::Ptr Create(Context& context);
 
   // Handle message, may send using socket.
-  virtual void Handle(Message& message, Socket& socket) noexcept;
+  virtual void Handle(Message& message, Socket& socket);
 
 private:
 

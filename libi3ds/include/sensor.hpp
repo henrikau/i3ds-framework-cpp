@@ -42,19 +42,19 @@ public:
   virtual ~Sensor();
 
   // Throws exception if sensor is not in inactive state.
-  void check_inactive() const throw (CommandException);
+  void check_inactive() const;
 
   // Throws exception if sensor is not in active state.
-  void check_active() const throw (CommandException);
+  void check_active() const;
 
   // Throws exception if sensor is not in standby state.
-  void check_standby() const throw (CommandException);
+  void check_standby() const;
 
   // Throws exception if sensor is not in operational state.
-  void check_operational() const throw (CommandException);
+  void check_operational() const;
 
   // Throws exception if sensor is not in failure state.
-  void check_failure() const throw (CommandException);
+  void check_failure() const;
 
   // Returns true if sensor is in inactive state.
   inline bool is_inactive() const {return state() == inactive;}

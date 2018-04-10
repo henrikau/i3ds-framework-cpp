@@ -52,7 +52,7 @@ i3ds::Subscriber::Create(Context& context)
 }
 
 void
-i3ds::Subscriber::Handle(Message& message, Socket& socket) noexcept
+i3ds::Subscriber::Handle(Message& message, Socket& socket)
 {
   try
     {

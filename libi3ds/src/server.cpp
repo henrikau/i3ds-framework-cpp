@@ -47,7 +47,7 @@ i3ds::Server::Create(Context& context)
 }
 
 void
-i3ds::Server::Handle(Message& message, Socket& socket) noexcept
+i3ds::Server::Handle(Message& message, Socket& socket)
 {
   Message response;
   CommandResponseCodec::Data error;

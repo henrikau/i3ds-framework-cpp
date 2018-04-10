@@ -31,7 +31,7 @@ i3ds::Sensor::~Sensor()
 }
 
 void
-i3ds::Sensor::check_inactive() const throw (CommandException)
+i3ds::Sensor::check_inactive() const
 {
   if (!is_inactive())
     {
@@ -40,7 +40,7 @@ i3ds::Sensor::check_inactive() const throw (CommandException)
 }
 
 void
-i3ds::Sensor::check_active() const throw (CommandException)
+i3ds::Sensor::check_active() const
 {
   if (!is_active())
     {
@@ -49,7 +49,7 @@ i3ds::Sensor::check_active() const throw (CommandException)
 }
 
 void
-i3ds::Sensor::check_standby() const throw (CommandException)
+i3ds::Sensor::check_standby() const
 {
   if (!is_standby())
     {
@@ -58,7 +58,7 @@ i3ds::Sensor::check_standby() const throw (CommandException)
 }
 
 void
-i3ds::Sensor::check_operational() const throw (CommandException)
+i3ds::Sensor::check_operational() const
 {
   if (!is_operational())
     {
@@ -67,7 +67,7 @@ i3ds::Sensor::check_operational() const throw (CommandException)
 }
 
 void
-i3ds::Sensor::check_failure() const throw (CommandException)
+i3ds::Sensor::check_failure() const
 {
   if (!is_failure())
     {
