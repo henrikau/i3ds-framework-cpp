@@ -49,20 +49,20 @@ public:
   Camera(Context::Ptr context, NodeID id);
   virtual ~Camera();
 
-  // Get exposure time for camera.
+  // Get exposure time for camera in microseconds.
   virtual ExposureTime exposure() const = 0;
 
-  // Get gain for camera.
+  // Get gain for camera in decibel.
   virtual SensorGain gain() const = 0;
 
   // Get auto exposure for camera.
   virtual bool auto_exposure_enabled() const {return false;}
 
-  // Get exposure time limit for camera with auto exposure.
+  // Get exposure time limit for camera with auto exposure in microseconds.
   virtual ExposureTime max_exposure() const {return 0;}
 
-  // Get gain limit for camera with auto exposure.
-  virtual SensorGain max_gain() const {return 0;}
+  // Get gain limit for camera with auto exposure in decibel.
+  virtual SensorGain max_gain() const {return 0.0;}
 
   // Get the region of interest enabled for camera.
   virtual bool region_enabled() const {return false;}
