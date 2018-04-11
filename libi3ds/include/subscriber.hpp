@@ -17,6 +17,7 @@
 
 #include "receiver.hpp"
 #include "communication.hpp"
+#include "topic.hpp"
 #include "codec.hpp"
 
 namespace i3ds
@@ -67,7 +68,7 @@ public:
     
     virtual void Handle(const Message& message)
     {
-      Decode<T>(message, data_);
+      Decode<T::Codec>(message, data_);
       operation_(data_);
     }
 
@@ -90,9 +91,9 @@ public:
 
   // Register service handler for endpoint ID.
   template<typename T>
-  void set_service(EndpointID endpoint, typename Wrapper<T>::Operation operation)
+  void set_handler(typename Wrapper<T>::Operation operation)
   {
-    set_handler(endpoint, Wrapper<T>::Create(operation));
+    set_handler(T::endpoint, Wrapper<T>::Create(operation));
   }
 
   // Register generic handler for endpoint ID.
