@@ -46,7 +46,7 @@ protected:
   virtual void do_stop() {log("do_stop");}
   virtual void do_deactivate() {log("do_deactivate");}
 
-  virtual bool support_rate(SampleRate rate);
+  virtual bool is_rate_supported(SampleRate rate);
 };
 
 class TestClient : public Client
@@ -84,7 +84,7 @@ void TestSensor::test_no_callback()
   BOOST_CHECK_EQUAL(callbacks.size(), 0);
 }
 
-bool TestSensor::support_rate(SampleRate rate)
+bool TestSensor::is_rate_supported(SampleRate rate)
 {
   log("support_rate");
 
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.rate(), 1000);
 
-  client.test_unsupported_rate_command(2000000, error_unsupported);
+  client.test_unsupported_rate_command(2000000, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.rate(), 1000);
 
@@ -280,10 +280,10 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.rate(), 2000);
 
-  client.test_unsupported_rate_command(10, error_unsupported);
+  client.test_unsupported_rate_command(10, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
-  client.test_unsupported_rate_command(2000000, error_unsupported);
+  client.test_unsupported_rate_command(2000000, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
   // Test from OPERATIONAL (illegal).

@@ -76,6 +76,15 @@ i3ds::Sensor::check_failure() const
 }
 
 void
+i3ds::Sensor::check_rate_supported(SampleRate rate)
+{
+  if (!is_rate_supported(rate))
+    {
+      throw CommandError(error_value, "Sample rate not supported: " + std::to_string(rate));
+    }
+}
+
+void
 i3ds::Sensor::handle_state(StateService::Data& command)
 {
   ResultCode result = error_state;
@@ -125,19 +134,10 @@ i3ds::Sensor::handle_state(StateService::Data& command)
 void
 i3ds::Sensor::handle_sample(SampleService::Data& sample)
 {
-  if (state_ != standby)
-    {
-      sample.response.result = error_state;
-    }
-  else if (!support_rate(sample.request.rate))
-    {
-      sample.response.result = error_unsupported;
-    }
-  else
-    {
-      rate_ = sample.request.rate;
-      sample.response.result = success;
-    }
+  check_standby();
+  check_rate_supported(sample.request.rate);
+
+  rate_ = sample.request.rate;
 }
 
 void

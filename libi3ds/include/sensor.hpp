@@ -92,8 +92,11 @@ public:
   // Sensor action when activated.
   virtual void do_deactivate() = 0;
 
-  // Check if rate is supported.
-  virtual bool support_rate(SampleRate rate) = 0;
+  // Throws exception if rate is not supported.
+  void check_rate_supported(SampleRate rate);
+
+  // Returns true if rate is supported.
+  virtual bool is_rate_supported(SampleRate rate) = 0;
 
 private:
 

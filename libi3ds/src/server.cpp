@@ -66,10 +66,11 @@ i3ds::Server::Handle(Message& message, Socket& socket)
     }
   else
     {
+      response.set_address(message.address());
+
       try
 	{
 	  handlers_[message.endpoint()]->Handle(message, response);
-	  response.set_address(Address(node_, message.endpoint()));
 	}
       catch(CommandError e)
 	{

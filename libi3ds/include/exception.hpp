@@ -23,6 +23,7 @@ class CommandError : public std::runtime_error
 {
 public:
 
+  CommandError(ResultCode result, std::string message) : std::runtime_error(message), result_(result) {};
   CommandError(ResultCode result, const char* message) : std::runtime_error(message), result_(result) {};
   virtual ~CommandError() {};
 
