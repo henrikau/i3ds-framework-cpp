@@ -12,6 +12,7 @@
 #define __I3DS_EMULATED_CAMERA_HPP
 
 #include "camera.hpp"
+#include "periodic_sampler.hpp"
 
 namespace i3ds
 {
@@ -56,6 +57,8 @@ protected:
 
 private:
 
+  bool send_sample(unsigned long timestamp_us);
+  
   const int resx_;
   const int resy_;
 
@@ -70,6 +73,8 @@ private:
   FlashStrength flash_strength_;
   bool pattern_enabled_;
   PatternSequence pattern_sequence_;
+
+  Sampler sampler_;
 };
 
 } // namespace i3ds

@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 #include "client.hpp"
 #include "emulated_camera.hpp"
@@ -31,7 +33,8 @@ public:
 
   CameraClient(Context::Ptr context, NodeID sensor);
 
-  void set_state(StateCommand s);
+  void set_state(StateCommand state);
+  void set_rate(SampleRate rate);
 
   void set_exposure(ExposureTime exposure, SensorGain gain);
   void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
@@ -73,13 +76,26 @@ CameraClient::load_configuration()
 }
 
 void
-CameraClient::set_state(StateCommand s)
+CameraClient::set_state(StateCommand state)
 {
   Sensor::StateService::Data command;
 
-  command.request = s;
+  command.request = state;
 
   bool result = Call<Sensor::StateService>(command, 1000);
+
+  BOOST_CHECK(result);
+}
+
+void
+CameraClient::set_rate(SampleRate rate)
+{
+  Sensor::SampleService::Data command;
+
+  command.request.rate = rate;
+  command.request.count = 0;
+
+  bool result = Call<Sensor::SampleService>(command, 1000);
 
   BOOST_CHECK(result);
 }
@@ -288,6 +304,21 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
   BOOST_CHECK_EQUAL(pattern_enabled, client.pattern_enabled());
   BOOST_CHECK_EQUAL(pattern_sequence, client.pattern_sequence());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(camera_sampling)
+{
+  SampleRate rate = 100000;
+
+  client.set_state(activate);
+  client.set_rate(rate);
+  client.set_state(start);
+
+  std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
+
+  client.set_state(stop);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

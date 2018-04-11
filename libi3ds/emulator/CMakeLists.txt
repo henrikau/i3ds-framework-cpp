@@ -1,6 +1,7 @@
 include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
 
 set (SRCS
+  periodic_sampler.cpp
   emulated_camera.cpp)
 
 set (LIBS i3ds)

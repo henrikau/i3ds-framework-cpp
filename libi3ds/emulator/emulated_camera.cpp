@@ -10,11 +10,13 @@
 
 #include "emulated_camera.hpp"
 
+#include <iostream>
 
 i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy)
   : Camera(context, id),
     resx_(resx),
-    resy_(resy)
+    resy_(resy),
+    sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1))
 {
   exposure_ = 0;
   gain_ = 0.0;
@@ -47,11 +49,13 @@ i3ds::EmulatedCamera::do_activate()
 void
 i3ds::EmulatedCamera::do_start()
 {
+  sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedCamera::do_stop()
 {
+  sampler_.Stop();
 }
 
 void
@@ -116,4 +120,11 @@ i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
     {
       pattern_sequence_ = command.request.sequence;
     }
+}
+
+bool
+i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
+{
+  std::cout << "Sample: " << timestamp_us << std::endl;
+  return true;
 }
