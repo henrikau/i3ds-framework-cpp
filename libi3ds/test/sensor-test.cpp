@@ -35,6 +35,8 @@ public:
 
   virtual double temperature() const {return 300.0;}
 
+  virtual bool is_rate_supported(SampleRate rate);
+
 protected:
 
   std::vector<std::string> callbacks;
@@ -45,8 +47,6 @@ protected:
   virtual void do_start() {log("do_start");}
   virtual void do_stop() {log("do_stop");}
   virtual void do_deactivate() {log("do_deactivate");}
-
-  virtual bool is_rate_supported(SampleRate rate);
 };
 
 class TestClient : public Client
