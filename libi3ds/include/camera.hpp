@@ -82,40 +82,25 @@ public:
   // Get the pattern sequence for the camera.
   virtual PatternSequence pattern_sequence() const {return 0;}
 
-  // Set exposure time for camera.
-  virtual void set_exposure(ExposureTime exposure, SensorGain gain) = 0;
+protected:
 
-  // Set auto exposure for camera.
-  virtual void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
-
-  // Set the region of interest for the camera.
-  virtual void set_region(bool enable, PlanarRegion region);
-
-  // Set the flash illumination for the camera.
-  virtual void set_flash(bool enable, FlashStrength strength);
-
-  // Set the pattern illumination for the camera.
-  virtual void set_pattern(bool enable, PatternSequence sequence);
-
-private:
-
-  // Handler for camera exposure command.
-  void handle_exposure(ExposureService::Data& command);
+  // Handler for camera exposure command, must be overloaded.
+  virtual void handle_exposure(ExposureService::Data& command) = 0;
 
   // Handler for camera auto exposure command.
-  void handle_region(RegionService::Data& command);
+  virtual void handle_region(RegionService::Data& command);
 
   // Handler for camera auto exposure command.
-  void handle_auto_exposure(AutoExposureService::Data& command);
+  virtual void handle_auto_exposure(AutoExposureService::Data& command);
 
     // Handler for camera auto exposure command.
-  void handle_flash(FlashService::Data& command);
+  virtual void handle_flash(FlashService::Data& command);
 
   // Handler for camera auto exposure command.
-  void handle_pattern(PatternService::Data& command);
+  virtual void handle_pattern(PatternService::Data& command);
 
   // Handler for camera configuration query.
-  void handle_configuration(ConfigurationService::Data& config) const;
+  virtual void handle_configuration(ConfigurationService::Data& config) const;
 };
 
 } // namespace i3ds

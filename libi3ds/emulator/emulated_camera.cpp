@@ -60,60 +60,60 @@ i3ds::EmulatedCamera::do_deactivate()
 }
 
 bool
-i3ds::EmulatedCamera::support_rate(SampleRate rate)
+i3ds::EmulatedCamera::is_rate_supported(SampleRate rate)
 {
   return 0 < rate && rate <= 10000000;
 }
 
 void
-i3ds::EmulatedCamera::set_exposure(ExposureTime exposure, SensorGain gain)
+i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 {
   auto_exposure_enabled_ = false;
-  exposure_ = exposure;
-  gain_ = gain;
+  exposure_ = command.request.exposure;
+  gain_ = command.request.gain;
 }
 
 void
-i3ds::EmulatedCamera::set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain)
+i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 {
-  auto_exposure_enabled_ = enable;
+  auto_exposure_enabled_ = command.request.enable;
 
-  if (enable)
+  if (command.request.enable)
     {
-      max_exposure_ = max_exposure;
-      max_gain_ = max_gain;
+      max_exposure_ = command.request.max_exposure;
+      max_gain_ = command.request.max_gain;
     }
 }
 
 void
-i3ds::EmulatedCamera::set_region(bool enable, PlanarRegion region)
+i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 {
-  region_enabled_ = enable;
+  region_enabled_ = command.request.enable;
 
-  if (enable)
+  if (command.request.enable)
     {
-      region_ = region;
+      region_ = command.request.region;
     }
 }
 
 void
-i3ds::EmulatedCamera::set_flash(bool enable, FlashStrength strength)
+i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 {
-  flash_enabled_ = enable;
+  flash_enabled_ = command.request.enable;
 
-  if (enable)
+  if (command.request.enable)
     {
-      flash_strength_ = strength;
+      flash_strength_ = command.request.strength;
     }
 }
 
 void
-i3ds::EmulatedCamera::set_pattern(bool enable, PatternSequence sequence)
+i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
 {
-  pattern_enabled_ = enable;
+  pattern_enabled_ = command.request.enable;
 
-  if (enable)
+  if (command.request.enable)
     {
-      pattern_sequence_ = sequence;
+      pattern_sequence_ = command.request.sequence;
     }
 }

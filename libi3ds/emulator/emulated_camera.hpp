@@ -36,15 +36,8 @@ public:
   virtual bool pattern_enabled() const {return pattern_enabled_;}
   virtual PatternSequence pattern_sequence() const {return pattern_sequence_;}
 
-  // Setter commands.
-  virtual void set_exposure(ExposureTime exposure, SensorGain gain);
-  virtual void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
-  virtual void set_region(bool enable, PlanarRegion region);
-  virtual void set_flash(bool enable, FlashStrength strength);
-  virtual void set_pattern(bool enable, PatternSequence sequence);
-
   // Supported rate.
-  virtual bool support_rate(SampleRate rate);
+  virtual bool is_rate_supported(SampleRate rate);
 
 protected:
 
@@ -53,6 +46,13 @@ protected:
   virtual void do_start();
   virtual void do_stop();
   virtual void do_deactivate();
+
+  // Handlers.
+  virtual void handle_exposure(ExposureService::Data& command);
+  virtual void handle_region(RegionService::Data& command);
+  virtual void handle_auto_exposure(AutoExposureService::Data& command);
+  virtual void handle_flash(FlashService::Data& command);
+  virtual void handle_pattern(PatternService::Data& command);
 
 private:
 
