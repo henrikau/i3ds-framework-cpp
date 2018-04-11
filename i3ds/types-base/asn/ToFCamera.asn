@@ -52,8 +52,8 @@ SEQUENCE
 }
 
 --- ToF measurements for 250K, 500K, 1M, 2M sample points.
-ToFMeasurement250K ::= ToFMeasurement{256000}
-ToFMeasurement500K ::= ToFMeasurement{512000}
+ToFMeasurement250K ::= ToFMeasurement{250000}
+ToFMeasurement500K ::= ToFMeasurement{500000}
 ToFMeasurement1M ::= ToFMeasurement{1000000}
 ToFMeasurement2M ::= ToFMeasurement{2000000}
 
