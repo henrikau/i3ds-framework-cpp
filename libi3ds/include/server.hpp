@@ -119,7 +119,7 @@ private:
 };
 
 void set_response(CommandResponse& response, ResultCode result, std::string message);
-void set_response(CommandResponse& response, const CommandException& e);
+void set_response(CommandResponse& response, const CommandError& e);
 
 } // namespace i3ds
 

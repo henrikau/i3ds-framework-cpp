@@ -71,7 +71,7 @@ i3ds::Server::Handle(Message& message, Socket& socket)
 	  handlers_[message.endpoint()]->Handle(message, response);
 	  response.set_address(Address(node_, message.endpoint()));
 	}
-      catch(CommandException e)
+      catch(CommandError e)
 	{
 	  set_response(error, e);
 	  Encode<CommandResponseCodec>(response, error);
@@ -94,7 +94,7 @@ i3ds::set_response(CommandResponse& response, ResultCode result, std::string mes
 }
 
 void
-i3ds::set_response(CommandResponse& response, const CommandException& e)
+i3ds::set_response(CommandResponse& response, const CommandError& e)
 {
   response.result = e.result();
   set_string(response.message, e.what());

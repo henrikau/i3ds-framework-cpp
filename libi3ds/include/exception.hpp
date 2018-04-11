@@ -19,12 +19,12 @@
 namespace i3ds
 {
 
-class CommandException : public std::runtime_error
+class CommandError : public std::runtime_error
 {
 public:
 
-  CommandException(ResultCode result, std::string what_arg) : std::runtime_error(what_arg), result_(result) {};
-  virtual ~CommandException() {};
+  CommandError(ResultCode result, const char* message) : std::runtime_error(message), result_(result) {};
+  virtual ~CommandError() {};
 
   inline ResultCode result() const {return result_;}
 

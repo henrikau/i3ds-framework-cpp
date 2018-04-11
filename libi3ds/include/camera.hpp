@@ -56,46 +56,46 @@ public:
   virtual SensorGain gain() const = 0;
 
   // Get auto exposure for camera.
-  virtual bool auto_exposure_enabled() const = 0;
+  virtual bool auto_exposure_enabled() const {return false;}
 
   // Get exposure time limit for camera with auto exposure.
-  virtual ExposureTime max_exposure() const = 0;
+  virtual ExposureTime max_exposure() const {return 0;}
 
   // Get gain limit for camera with auto exposure.
-  virtual SensorGain max_gain() const = 0;
+  virtual SensorGain max_gain() const {return 0;}
 
   // Get the region of interest enabled for camera.
-  virtual bool region_enabled() const = 0;
+  virtual bool region_enabled() const {return false;}
 
   // Get the region of interest for the camera.
-  virtual PlanarRegion region() const = 0;
+  virtual PlanarRegion region() const {return {0,0,0,0};}
 
   // Get the flash illumination for the camera.
-  virtual bool flash_enabled() const = 0;
+  virtual bool flash_enabled() const {return false;}
 
   // Get the flash strength for the camera.
-  virtual FlashStrength flash_strength() const = 0;
+  virtual FlashStrength flash_strength() const {return 0;}
 
   // Get the pattern illumination for the camera.
-  virtual bool pattern_enabled() const = 0;
+  virtual bool pattern_enabled() const {return false;}
 
   // Get the pattern sequence for the camera.
-  virtual PatternSequence pattern_sequence() const = 0;
+  virtual PatternSequence pattern_sequence() const {return 0;}
 
   // Set exposure time for camera.
   virtual void set_exposure(ExposureTime exposure, SensorGain gain) = 0;
 
   // Set auto exposure for camera.
-  virtual void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain) = 0;
+  virtual void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
 
   // Set the region of interest for the camera.
-  virtual void set_region(bool enable, PlanarRegion region) = 0;
+  virtual void set_region(bool enable, PlanarRegion region);
 
   // Set the flash illumination for the camera.
-  virtual void set_flash(bool enable, FlashStrength strength) = 0;
+  virtual void set_flash(bool enable, FlashStrength strength);
 
   // Set the pattern illumination for the camera.
-  virtual void set_pattern(bool enable, PatternSequence sequence) = 0;
+  virtual void set_pattern(bool enable, PatternSequence sequence);
 
 private:
 

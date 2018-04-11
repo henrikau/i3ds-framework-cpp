@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "camera.hpp"
+#include "exception.hpp"
 
 i3ds::Camera::Camera(Context::Ptr context, NodeID id)
   : Sensor(context, id)
@@ -28,13 +29,35 @@ i3ds::Camera::~Camera()
 }
 
 void
+i3ds::Camera::set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain)
+{
+  throw CommandError(error_unsupported, "Auto exposure not supported");
+}
+
+void
+i3ds::Camera::set_region(bool enable, PlanarRegion region)
+{
+  throw CommandError(error_unsupported, "Region of interest not supported");
+}
+
+void
+i3ds::Camera::set_flash(bool enable, FlashStrength strength)
+{
+  throw CommandError(error_unsupported, "Flash not supported");
+}
+
+void
+i3ds::Camera::set_pattern(bool enable, PatternSequence sequence)
+{
+  throw CommandError(error_unsupported, "Pattern illumination not supported");
+}
+
+void
 i3ds::Camera::handle_exposure(ExposureService::Data& command)
 {
   check_active();
 
   set_exposure(command.request.exposure, command.request.gain);
-
-  command.response.result = success;
 }
 
 void
@@ -43,8 +66,6 @@ i3ds::Camera::handle_auto_exposure(AutoExposureService::Data& command)
   check_active();
 
   set_auto_exposure(command.request.enable, command.request.max_exposure, command.request.max_gain);
-
-  command.response.result = success;
 }
 
 void
@@ -53,8 +74,6 @@ i3ds::Camera::handle_region(RegionService::Data& command)
   check_active();
 
   set_region(command.request.enable, command.request.region);
-
-  command.response.result = success;
 }
 
 void
@@ -63,8 +82,6 @@ i3ds::Camera::handle_flash(FlashService::Data& command)
   check_active();
 
   set_flash(command.request.enable, command.request.strength);
-
-  command.response.result = success;
 }
 
 void
@@ -73,8 +90,6 @@ i3ds::Camera::handle_pattern(PatternService::Data& command)
   check_active();
 
   set_pattern(command.request.enable, command.request.sequence);
-
-  command.response.result = success;
 }
 
 void
