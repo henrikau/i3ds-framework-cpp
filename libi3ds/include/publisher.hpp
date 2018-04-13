@@ -36,7 +36,7 @@ public:
 
   // Publish the data for the given endpoint ID.
   template<typename T>
-  void publish(EndpointID endpoint, const typename T::Data& data)
+  void Send(const typename T::Data& data)
   {
     if (!socket_)
       {
@@ -45,8 +45,8 @@ public:
     
     Message message;
 
-    message.set_address(Address(node_, endpoint));
-    Encode<T>(message, data);
+    message.set_address(Address(node_, T::endpoint));
+    Encode<typename T::Codec>(message, data);
     socket_->Send(message);
   }
 

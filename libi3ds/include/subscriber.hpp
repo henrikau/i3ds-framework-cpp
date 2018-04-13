@@ -89,9 +89,9 @@ public:
   // Get node ID of subscriber.
   NodeID node() const {return node_;}
 
-  // Register service handler for endpoint ID.
+  // Register callback for topic.
   template<typename T>
-  void set_handler(typename Wrapper<T>::Operation operation)
+  void set_callback(typename Wrapper<T>::Operation operation)
   {
     set_handler(T::endpoint, Wrapper<T>::Create(operation));
   }

@@ -16,7 +16,8 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, 
   : Camera(context, id),
     resx_(resx),
     resy_(resy),
-    sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1))
+    sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
+    publisher_(context, id)
 {
   exposure_ = 0;
   gain_ = 0.0;
@@ -35,6 +36,15 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, 
 
   pattern_enabled_ = false;
   pattern_sequence_ = 0;
+
+  CameraMeasurement4MCodec::Initialize(frame_);
+
+  frame_.frame_mode = mode_mono;
+  frame_.data_depth = 12;
+  frame_.pixel_size = 2;
+  frame_.region.size_x = resx_;
+  frame_.region.size_y = resy_;
+  frame_.image.nCount = resx_ * resy_ * 2;
 }
 
 i3ds::EmulatedCamera::~EmulatedCamera()
@@ -126,5 +136,11 @@ bool
 i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
 {
   std::cout << "Sample: " << timestamp_us << std::endl;
+
+  frame_.attributes.timestamp.microseconds = timestamp_us;
+  frame_.attributes.validity = sample_valid;
+
+  publisher_.Send<ImageMeasurement>(frame_);
+
   return true;
 }

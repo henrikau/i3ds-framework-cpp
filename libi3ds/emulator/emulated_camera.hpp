@@ -11,6 +11,8 @@
 #ifndef __I3DS_EMULATED_CAMERA_HPP
 #define __I3DS_EMULATED_CAMERA_HPP
 
+#include "topic.hpp"
+#include "publisher.hpp"
 #include "camera.hpp"
 #include "periodic_sampler.hpp"
 
@@ -20,6 +22,8 @@ namespace i3ds
 class EmulatedCamera : public Camera
 {
 public:
+
+  typedef Topic<128, CameraMeasurement4MCodec> ImageMeasurement;
 
   EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy);
   virtual ~EmulatedCamera();
@@ -58,7 +62,7 @@ protected:
 private:
 
   bool send_sample(unsigned long timestamp_us);
-  
+
   const int resx_;
   const int resy_;
 
@@ -75,6 +79,9 @@ private:
   PatternSequence pattern_sequence_;
 
   Sampler sampler_;
+
+  Publisher publisher_;
+  CameraMeasurement4M frame_;
 };
 
 } // namespace i3ds
