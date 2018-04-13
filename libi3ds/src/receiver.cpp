@@ -45,7 +45,7 @@ i3ds::Receiver::Run()
 {
   Message message;
 
-  socket_ = Create(*context_);
+  socket_ = Create();
 
   try
     {

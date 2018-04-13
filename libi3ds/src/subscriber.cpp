@@ -35,13 +35,10 @@ i3ds::Subscriber::delete_handler(EndpointID endpoint)
 }
 
 i3ds::Socket::Ptr
-i3ds::Subscriber::Create(Context& context)
+i3ds::Subscriber::Create()
 {
-  int port = 7000 + (node_ & 0xFF);
-
-  Socket::Ptr socket = context.Subscriber();
-
-  socket->Connect("tcp://*:" + std::to_string(port));
+  Socket::Ptr socket = Socket::Subscriber(context_);
+  socket->Attach(node_);
 
   for (auto it = handlers_.cbegin(); it != handlers_.cend(); ++it)
     {

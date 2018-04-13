@@ -52,8 +52,13 @@ i3ds::Message::set_payload(byte* data, size_t size, bool copy)
   payload_ = zmq::message_t(data, size, copy ? NULL : &i3ds_message_free);
 }
 
-i3ds::Socket::Socket(zmq::socket_t socket)
-  : socket_(std::move(socket))
+i3ds::Context::Context()
+  : context_(1)
+{
+}
+
+i3ds::Socket::Socket(zmq::socket_t socket, i3ds::Context::Ptr context, int type)
+  : socket_(std::move(socket)), context_(context), type_(type)
 {
 }
 
@@ -62,15 +67,36 @@ i3ds::Socket::~Socket()
 }
 
 void
-i3ds::Socket::Bind(std::string address)
+i3ds::Socket::Attach(NodeID node)
 {
-  socket_.bind(address);
-}
+  if (node < 256)
+    {
+      int port;
+      switch(type_)
+        {
+          case ZMQ_PUB:
+            port = 7000 + (node & 0xFF);
+            socket_.bind("tcp://*:" + std::to_string(port));
+            break;
+          case ZMQ_SUB:
+            port = 7000 + (node & 0xFF);
+            socket_.connect("tcp://127.0.0.1:" + std::to_string(port));
+            break;
+          case ZMQ_REQ: 
+            port = 8000 + (node & 0xFF);
+            socket_.connect("tcp://127.0.0.1:" + std::to_string(port));
+            break;
+          case ZMQ_REP:
+            port = 8000 + (node & 0xFF);
+            socket_.bind("tcp://*:" + std::to_string(port));
+            break;
+        }
+    }
+  else
+    {
+        //std::string address = context_.get_address(type_, node);
+    }
 
-void
-i3ds::Socket::Connect(std::string address)
-{
-  socket_.connect(address);
 }
 
 void
@@ -126,13 +152,8 @@ i3ds::Socket::FilterAll()
   socket_.setsockopt(ZMQ_SUBSCRIBE, "", 0);
 }
 
-i3ds::Context::Context()
-  : context_(1)
-{
-}
-
 i3ds::Socket::Ptr
-i3ds::Context::CreateSocket(int type)
+i3ds::Socket::CreateSocket(i3ds::Context::Ptr context, int type)
 {
-  return Socket::Ptr(new Socket(zmq::socket_t(context_, type)));
+  return i3ds::Socket::Ptr(new Socket(zmq::socket_t(context->context_, type), context, type));
 }

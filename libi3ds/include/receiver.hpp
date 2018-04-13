@@ -40,15 +40,15 @@ public:
 protected:
 
   // Initialize the socket.
-  virtual Socket::Ptr Create(Context& context) = 0;
+  virtual Socket::Ptr Create() = 0;
 
   // Handle message, may send using socket.
   virtual void Handle(Message& message, Socket& socket) = 0;
-
-private:
-
+  
   // Context reference.
   Context::Ptr context_;
+
+private:
 
   // Receiver socket.
   Socket::Ptr socket_;

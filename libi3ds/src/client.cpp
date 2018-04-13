@@ -22,11 +22,8 @@ i3ds::Client::~Client()
 
 void i3ds::Client::Reset()
 {
-  int port = 8000 + (node_ & 0xFF);
-
-  socket_ = context_->Client();
-
-  socket_->Connect("tcp://127.0.0.1:" + std::to_string(port));
+  socket_ = Socket::Client(context_);
+  socket_->Attach(node_);
 }
 
 bool

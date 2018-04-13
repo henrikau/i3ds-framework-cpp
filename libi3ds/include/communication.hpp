@@ -67,32 +67,6 @@ private:
   zmq::message_t payload_;
 };
 
-class Socket
-{
-public:
-
-  typedef std::unique_ptr<Socket> Ptr;
-
-  virtual ~Socket();
-
-  void Bind(std::string address);
-  void Connect(std::string address);
-
-  void Send(Message& message);
-  bool Receive(Message& message, int timeout_ms = -1);
-
-  void Filter(Address address);
-  void FilterAll();
-
-private:
-
-  friend class Context;
-
-  Socket(zmq::socket_t socket);
-
-  zmq::socket_t socket_;
-};
-
 class Context
 {
 public:
@@ -104,16 +78,46 @@ public:
 
   static Ptr Create() {return std::make_shared<Context>();}
 
-  Socket::Ptr Publisher() {return CreateSocket(ZMQ_PUB);}
-  Socket::Ptr Subscriber() {return CreateSocket(ZMQ_SUB);}
-  Socket::Ptr Client() {return CreateSocket(ZMQ_REQ);}
-  Socket::Ptr Server(){return CreateSocket(ZMQ_REP);}
+  std::string get_address(NodeID node, int type);
 
 private:
 
-  Socket::Ptr CreateSocket(int type);
+  friend class Socket;
 
   zmq::context_t context_;
+
+};
+
+class Socket
+{
+public:
+
+  typedef std::unique_ptr<Socket> Ptr;
+
+  virtual ~Socket();
+
+  static Socket::Ptr Publisher(Context::Ptr context) {return CreateSocket(context, ZMQ_PUB);}
+  static Socket::Ptr Subscriber(Context::Ptr context) {return CreateSocket(context, ZMQ_SUB);}
+  static Socket::Ptr Client(Context::Ptr context) {return CreateSocket(context, ZMQ_REQ);}
+  static Socket::Ptr Server(Context::Ptr context) {return CreateSocket(context, ZMQ_REP);}
+
+  void Attach(NodeID node);
+
+  void Send(Message& message);
+  bool Receive(Message& message, int timeout_ms = -1);
+
+  void Filter(Address address);
+  void FilterAll();
+
+private:
+
+  Socket(zmq::socket_t socket, Context::Ptr context, int type);
+  static Socket::Ptr CreateSocket(Context::Ptr context, int type);
+
+  zmq::socket_t socket_;
+  Context::Ptr context_;
+  const int type_;
+
 };
 
 

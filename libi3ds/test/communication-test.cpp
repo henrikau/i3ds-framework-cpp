@@ -58,7 +58,6 @@ void check_message(const Message& msg, const Address& address, const std::string
 struct F {
   F()
     : address(1, 1),
-      zmq_address("tcp://127.0.0.1:5555"),
       context(Context::Create())
   {
     BOOST_TEST_MESSAGE( "setup fixture" );
@@ -70,7 +69,6 @@ struct F {
   }
 
   const Address address;
-  const std::string zmq_address;
   Context::Ptr context;
 };
 
@@ -125,11 +123,11 @@ BOOST_AUTO_TEST_CASE(create_message_payload)
 
 BOOST_AUTO_TEST_CASE(request_response_pattern)
 {
-  Socket::Ptr server = context->Server();
-  Socket::Ptr client = context->Client();
+  Socket::Ptr server = Socket::Server(context);
+  Socket::Ptr client = Socket::Client(context);
 
-  server->Bind(zmq_address);
-  client->Connect(zmq_address);
+  server->Attach(address.node);
+  client->Attach(address.node);
   
   Message req, res, copy;
 
@@ -152,12 +150,12 @@ BOOST_AUTO_TEST_CASE(request_response_pattern)
 
 BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
 {
-  Socket::Ptr publisher = context->Publisher();
-  Socket::Ptr subscriber = context->Subscriber();
+  Socket::Ptr publisher = Socket::Publisher(context);
+  Socket::Ptr subscriber = Socket::Subscriber(context);
 
-  publisher->Bind(zmq_address);
+  publisher->Attach(address.node);
 
-  subscriber->Connect(zmq_address);
+  subscriber->Attach(address.node);
   subscriber->Filter(address);
 
   // Needed to let filter take effect before sending.

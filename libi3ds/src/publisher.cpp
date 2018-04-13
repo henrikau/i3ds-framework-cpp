@@ -22,9 +22,6 @@ i3ds::Publisher::~Publisher()
 
 void i3ds::Publisher::Reset()
 {
-  int port = 7000 + (node_ & 0xFF);
-
-  socket_ = context_->Publisher();
-
-  socket_->Connect("tcp://*:" + std::to_string(port));
+  socket_ = Socket::Publisher(context_);
+  socket_->Attach(node_);
 }
