@@ -28,7 +28,7 @@ CODEC(SampleCommand);
 CODEC(SensorStatus);
 CODEC(SensorConfiguration);
 
-class Sensor : public Server
+class Sensor
 {
 public:
 
@@ -38,7 +38,7 @@ public:
   typedef Query  <3, SensorStatusCodec>        StatusService;
   typedef Query  <4, SensorConfigurationCodec> ConfigurationService;
 
-  Sensor(Context::Ptr context, NodeID id);
+  Sensor(NodeID node);
   virtual ~Sensor();
 
   // Throws exception if sensor is not in inactive state.
@@ -71,6 +71,9 @@ public:
   // Returns true if sensor is in failure state.
   inline bool is_failure() const {return state() == failure;}
 
+  // Get the node ID.
+  inline NodeID node() const {return node_;}
+
   // Get sensor state.
   inline SensorState state() const {return state_;}
 
@@ -98,6 +101,9 @@ public:
   // Returns true if rate is supported.
   virtual bool is_rate_supported(SampleRate rate) = 0;
 
+  // Attach handlers to the server.
+  virtual void Attach(Server& server);
+
 private:
 
   // Handler for state command.
@@ -112,6 +118,7 @@ private:
   // Handler for sensor configuration query.
   void handle_configuration(ConfigurationService::Data& config) const;
 
+  const NodeID node_;
   SensorState state_;
   SampleRate rate_;
 };

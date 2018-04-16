@@ -11,21 +11,19 @@
 #include "camera.hpp"
 #include "exception.hpp"
 
-i3ds::Camera::Camera(Context::Ptr context, NodeID id)
-  : Sensor(context, id)
+void
+i3ds::Camera::Attach(Server& server)
 {
   using std::placeholders::_1;
 
-  set_service<ExposureService>(std::bind(&i3ds::Camera::handle_exposure, this, _1));
-  set_service<AutoExposureService>(std::bind(&i3ds::Camera::handle_auto_exposure, this, _1));
-  set_service<RegionService>(std::bind(&i3ds::Camera::handle_region, this, _1));
-  set_service<PatternService>(std::bind(&i3ds::Camera::handle_pattern, this, _1));
-  set_service<FlashService>(std::bind(&i3ds::Camera::handle_flash, this, _1));
-  set_service<ConfigurationService>(std::bind(&i3ds::Camera::handle_configuration, this, _1));
-}
+  Sensor::Attach(server);
 
-i3ds::Camera::~Camera()
-{
+  server.Attach<ExposureService>(node(), std::bind(&i3ds::Camera::handle_exposure, this, _1));
+  server.Attach<AutoExposureService>(node(), std::bind(&i3ds::Camera::handle_auto_exposure, this, _1));
+  server.Attach<RegionService>(node(), std::bind(&i3ds::Camera::handle_region, this, _1));
+  server.Attach<PatternService>(node(), std::bind(&i3ds::Camera::handle_pattern, this, _1));
+  server.Attach<FlashService>(node(), std::bind(&i3ds::Camera::handle_flash, this, _1));
+  server.Attach<ConfigurationService>(node(), std::bind(&i3ds::Camera::handle_configuration, this, _1));
 }
 
 void

@@ -12,8 +12,8 @@
 
 #include "subscriber.hpp"
 
-i3ds::Subscriber::Subscriber(Context::Ptr context, NodeID node)
-  : Receiver(context), node_(node)
+i3ds::Subscriber::Subscriber(Context::Ptr context)
+  : Receiver(context)
 {
 }
 
@@ -23,26 +23,26 @@ i3ds::Subscriber::~Subscriber()
 }
 
 void
-i3ds::Subscriber::set_handler(EndpointID endpoint, Handler::Ptr handler)
+i3ds::Subscriber::attach_handler(Address address, Handler::Ptr handler)
 {
-  handlers_[endpoint] = std::move(handler);
+  handlers_[address] = std::move(handler);
 }
 
 void
-i3ds::Subscriber::delete_handler(EndpointID endpoint)
+i3ds::Subscriber::detach_handler(Address address)
 {
-  handlers_.erase(endpoint);
+  handlers_.erase(address);
 }
 
 i3ds::Socket::Ptr
 i3ds::Subscriber::Create()
 {
   Socket::Ptr socket = Socket::Subscriber(context_);
-  socket->Attach(node_);
 
   for (auto it = handlers_.cbegin(); it != handlers_.cend(); ++it)
     {
-      socket->Filter(Address(node_, it->first));
+      socket->Attach(it->first.node);
+      socket->Filter(it->first);
     }
 
   return socket;
@@ -53,9 +53,9 @@ i3ds::Subscriber::Handle(Message& message, Socket& socket)
 {
   try
     {
-      if (message.node() == node_ && handlers_.count(message.endpoint()) > 0)
+      if (handlers_.count(message.address()) > 0)
 	{
-	  handlers_[message.endpoint()]->Handle(message);
+	  handlers_[message.address()]->Handle(message);
 	}
     }
   catch (std::exception e)

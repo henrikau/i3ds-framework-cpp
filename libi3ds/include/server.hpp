@@ -82,24 +82,21 @@ public:
     typename T::Data data_;
   };
 
-  Server(Context::Ptr context, NodeID node);
+  Server(Context::Ptr context);
   virtual ~Server();
 
-  // Get node ID of server.
-  NodeID node() const {return node_;}
-
-  // Register service handler for endpoint ID.
+  // Attach service handler for endpoint ID.
   template<typename T>
-  void set_service(typename Wrapper<T>::Operation operation)
+  void Attach(NodeID node, typename Wrapper<T>::Operation operation)
   {
-    set_handler(T::endpoint, Wrapper<T>::Create(operation));
+    attach_handler(Address(node, T::endpoint), Wrapper<T>::Create(operation));
   }
 
-  // Register generic handler for endpoint ID.
-  void set_handler(EndpointID endpoint, Handler::Ptr handler);
+  // Attach generic handler for address.
+  void attach_handler(Address address, Handler::Ptr handler);
 
-  // Delete handler for endpoint ID.
-  void delete_handler(EndpointID endpoint);
+  // Detach handler for address.
+  void detach_handler(Address address);
 
 protected:
 
@@ -111,11 +108,8 @@ protected:
 
 private:
 
-  // Node ID.
-  const NodeID node_;
-
   // Map with handlers for endpoints.
-  std::unordered_map<EndpointID, Handler::Ptr> handlers_;
+  std::unordered_map<Address, Handler::Ptr> handlers_;
 };
 
 void set_response(CommandResponse& response, ResultCode result, std::string message);

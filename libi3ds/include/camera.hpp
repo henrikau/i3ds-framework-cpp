@@ -46,8 +46,8 @@ public:
   typedef Query  <21, CameraConfigurationCodec> ConfigurationService;
 
   // Constructor and destructor.
-  Camera(Context::Ptr context, NodeID id);
-  virtual ~Camera();
+  Camera(NodeID node) : Sensor(node) {};
+  virtual ~Camera() {};
 
   // Get exposure time for camera in microseconds.
   virtual ExposureTime exposure() const = 0;
@@ -81,6 +81,9 @@ public:
 
   // Get the pattern sequence for the camera.
   virtual PatternSequence pattern_sequence() const {return 0;}
+
+  // Attach handlers to the server.
+  virtual void Attach(Server& server);
 
 protected:
 

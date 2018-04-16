@@ -12,18 +12,11 @@
 #include <cassert>
 #include "sensor.hpp"
 
-i3ds::Sensor::Sensor(Context::Ptr context, NodeID id)
-  : Server(context, id)
+i3ds::Sensor::Sensor(NodeID node)
+  : node_(node)
 {
-  using std::placeholders::_1;
-
   state_ = inactive;
   rate_ = 0.0;
-
-  set_service<StateService>(std::bind(&i3ds::Sensor::handle_state, this, _1));
-  set_service<SampleService>(std::bind(&i3ds::Sensor::handle_sample, this, _1));
-  set_service<StatusService>(std::bind(&i3ds::Sensor::handle_status, this, _1));
-  set_service<ConfigurationService>(std::bind(&i3ds::Sensor::handle_configuration, this, _1));
 }
 
 i3ds::Sensor::~Sensor()
@@ -82,6 +75,17 @@ i3ds::Sensor::check_rate_supported(SampleRate rate)
     {
       throw CommandError(error_value, "Sample rate not supported: " + std::to_string(rate));
     }
+}
+
+void
+i3ds::Sensor::Attach(Server& server)
+{
+  using std::placeholders::_1;
+
+  server.Attach<StateService>(node(), std::bind(&i3ds::Sensor::handle_state, this, _1));
+  server.Attach<SampleService>(node(), std::bind(&i3ds::Sensor::handle_sample, this, _1));
+  server.Attach<StatusService>(node(), std::bind(&i3ds::Sensor::handle_status, this, _1));
+  server.Attach<ConfigurationService>(node(), std::bind(&i3ds::Sensor::handle_configuration, this, _1));
 }
 
 void

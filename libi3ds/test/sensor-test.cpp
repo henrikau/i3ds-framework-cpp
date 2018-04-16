@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "codec.hpp"
+#include "server.hpp"
 #include "sensor.hpp"
 #include "client.hpp"
 
@@ -28,7 +29,7 @@ class TestSensor : public Sensor
 {
 public:
 
-  TestSensor(Context::Ptr context, NodeID id);
+  TestSensor(NodeID node);
 
   void test_callback_and_clear(std::string callback);
   void test_no_callback();
@@ -67,7 +68,7 @@ public:
   void test_unsupported_rate_command(SampleRate rate, ResultCode error);
 };
 
-TestSensor::TestSensor(Context::Ptr context, NodeID id) : Sensor(context, id)
+TestSensor::TestSensor(NodeID node) : Sensor(node)
 {
 }
 
@@ -166,22 +167,25 @@ struct F {
   F()
     : id(1),
       context(Context::Create()),
-      sensor(context, id),
+      server(context),
+      sensor(id),
       client(context, id)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    sensor.Start();
+    sensor.Attach(server);
+    server.Start();
   }
 
   ~F()
   {
     BOOST_TEST_MESSAGE( "teardown fixture" );
-    sensor.Stop();
+    server.Stop();
     client.Stop();
   }
 
   const NodeID id;
   Context::Ptr context;
+  Server server;
   TestSensor sensor;
   TestClient client;
 };

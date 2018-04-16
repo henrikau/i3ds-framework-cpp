@@ -10,6 +10,8 @@
 
 #include "publisher.hpp"
 
+#include <thread>
+
 i3ds::Publisher::Publisher(Context::Ptr context, NodeID node)
   : node_(node),
     context_(context)

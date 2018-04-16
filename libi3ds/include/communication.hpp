@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <zmq.hpp>
 
 #include "Common.h"
@@ -111,17 +112,44 @@ public:
 
 private:
 
-  Socket(zmq::socket_t socket, Context::Ptr context, int type);
   static Socket::Ptr CreateSocket(Context::Ptr context, int type);
 
-  zmq::socket_t socket_;
-  Context::Ptr context_;
-  const int type_;
+  Socket(Context::Ptr context, int type);
 
+  const int type_;
+  const Context::Ptr context_;
+
+  zmq::socket_t socket_;
+  std::unordered_set<NodeID> attached_;
 };
 
 
-
 } // namespace i3ds
+
+/// Hash and equal_to for Address.
+namespace std
+{
+
+template <>
+class hash<i3ds::Address>
+{
+public:
+  size_t operator()(const i3ds::Address& address) const
+  {
+    size_t a = address.node << 8 & address.endpoint;
+    return a;
+  }
+};
+
+template<>
+class equal_to<i3ds::Address>
+{
+public:
+  size_t operator()(const i3ds::Address& a, const i3ds::Address& b) const
+  {
+    return a.node == b.node && a.endpoint == b.endpoint;
+  }
+};
+}
 
 #endif

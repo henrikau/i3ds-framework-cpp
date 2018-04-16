@@ -68,7 +68,7 @@ public:
     
     virtual void Handle(const Message& message)
     {
-      Decode<T::Codec>(message, data_);
+      Decode<typename T::Codec>(message, data_);
       operation_(data_);
     }
 
@@ -83,24 +83,21 @@ public:
   /// Constructor and destructor
   ////////////////////////////////////////////////////////////////////////////////
 
-  Subscriber(Context::Ptr context, NodeID node);
+  Subscriber(Context::Ptr context);
   virtual ~Subscriber();
-
-  // Get node ID of subscriber.
-  NodeID node() const {return node_;}
 
   // Register callback for topic.
   template<typename T>
-  void set_callback(typename Wrapper<T>::Operation operation)
+  void Attach(NodeID node, typename Wrapper<T>::Operation operation)
   {
-    set_handler(T::endpoint, Wrapper<T>::Create(operation));
+    attach_handler(Address(node, T::endpoint), Wrapper<T>::Create(operation));
   }
 
-  // Register generic handler for endpoint ID.
-  void set_handler(EndpointID endpoint, Handler::Ptr handler);
+  // Attach generic handler for address.
+  void attach_handler(Address address, Handler::Ptr handler);
 
-  // Delete handler for endpoint ID.
-  void delete_handler(EndpointID endpoint);
+  // Detach handler for endpoint address.
+  void detach_handler(Address address);
 
 protected:
 
@@ -112,11 +109,8 @@ protected:
 
 private:
 
-  // Node ID.
-  const NodeID node_;
-
   // Map with handlers for endpoints.
-  std::unordered_map<EndpointID, Handler::Ptr> handlers_;
+  std::unordered_map<Address, Handler::Ptr> handlers_;
 };
 
 } // namespace i3ds

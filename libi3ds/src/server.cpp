@@ -12,8 +12,8 @@
 
 #include "server.hpp"
 
-i3ds::Server::Server(Context::Ptr context, NodeID node)
-  : Receiver(context), node_(node)
+i3ds::Server::Server(Context::Ptr context)
+  : Receiver(context)
 {
 }
 
@@ -23,22 +23,27 @@ i3ds::Server::~Server()
 }
 
 void
-i3ds::Server::set_handler(EndpointID endpoint, Handler::Ptr handler)
+i3ds::Server::attach_handler(Address address, Handler::Ptr handler)
 {
-  handlers_[endpoint] = std::move(handler);
+  handlers_[address] = std::move(handler);
 }
 
 void
-i3ds::Server::delete_handler(EndpointID endpoint)
+i3ds::Server::detach_handler(Address address)
 {
-  handlers_.erase(endpoint);
+  handlers_.erase(address);
 }
 
 i3ds::Socket::Ptr
 i3ds::Server::Create()
 {
   Socket::Ptr socket = Socket::Server(context_);
-  socket->Attach(node_);
+
+  for (auto it = handlers_.cbegin(); it != handlers_.cend(); ++it)
+    {
+      socket->Attach(it->first.node);
+    }
+
   return socket;
 }
 
@@ -48,17 +53,11 @@ i3ds::Server::Handle(Message& message, Socket& socket)
   Message response;
   CommandResponseCodec::Data error;
 
-  if (message.node() != node_)
+  if (handlers_.count(message.address()) == 0)
     {
-       response.set_address(Address(node_, 0));
-       set_response(error, error_node_id, "Wrong node ID: " + std::to_string(message.node()));
-       Encode<CommandResponseCodec>(response, error);
-    }
-  else if (handlers_.count(message.endpoint()) == 0)
-    {
-       response.set_address(Address(node_, 0));
-       set_response(error, error_endpoint_id, "Unknown endpoint ID: " + std::to_string(message.endpoint()));
-       Encode<CommandResponseCodec>(response, error);
+      response.set_address(Address(message.node(), 0));
+      set_response(error, error_endpoint_id, "Unknown address: " + message.address().to_string());
+      Encode<CommandResponseCodec>(response, error);
     }
   else
     {
@@ -66,7 +65,7 @@ i3ds::Server::Handle(Message& message, Socket& socket)
 
       try
 	{
-	  handlers_[message.endpoint()]->Handle(message, response);
+	  handlers_[message.address()]->Handle(message, response);
 	}
       catch(CommandError e)
 	{

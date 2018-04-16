@@ -12,12 +12,12 @@
 
 #include <iostream>
 
-i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy)
-  : Camera(context, id),
+i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx, int resy)
+  : Camera(node),
     resx_(resx),
     resy_(resy),
     sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
-    publisher_(context, id)
+    publisher_(context, node)
 {
   exposure_ = 0;
   gain_ = 0.0;
@@ -135,7 +135,7 @@ i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
 bool
 i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
 {
-  std::cout << "Sample: " << timestamp_us << std::endl;
+  std::cout << "Send: " << timestamp_us << std::endl;
 
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;

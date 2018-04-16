@@ -21,6 +21,7 @@
 #include <thread>
 
 #include "client.hpp"
+#include "subscriber.hpp"
 #include "emulated_camera.hpp"
 
 using namespace i3ds;
@@ -54,17 +55,27 @@ public:
   bool pattern_enabled() const {return config_.response.pattern_enabled;}
   PatternSequence pattern_sequence() const {return config_.response.pattern_sequence;}
 
+  void Attach(Subscriber& subscriber);
+
   void load_configuration();
+
+  void handle_measurement(EmulatedCamera::ImageMeasurement::Data& data);
+
+  int received() const {return received_;}
 
 private:
 
   Camera::ConfigurationService::Data config_;
+
+  int received_;
 };
 
 CameraClient::CameraClient(Context::Ptr context, NodeID sensor)
   : Client(context, sensor)
 {
   Camera::ConfigurationService::Initialize(config_);
+
+  received_ = 0;
 }
 
 void
@@ -166,31 +177,49 @@ CameraClient::set_pattern(bool enable, PatternSequence sequence)
   BOOST_CHECK(result);
 }
 
+void
+CameraClient::Attach(Subscriber& subscriber)
+{
+  using std::placeholders::_1;
+
+  subscriber.Attach<EmulatedCamera::ImageMeasurement>(node(), std::bind(&CameraClient::handle_measurement, this, _1));
+}
+
+void
+CameraClient::handle_measurement(EmulatedCamera::ImageMeasurement::Data& data)
+{
+  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  received_++;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 struct F {
   F()
-    : id(1),
+    : node(1),
       resx(800),
       resy(600),
       context(Context::Create()),
-      camera(context, id, resx, resy),
-      client(context, id)
+      server(context),
+      camera(context, node, resx, resy),
+      client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    camera.Start();
+    camera.Attach(server);
+    server.Start();
   }
 
   ~F()
   {
     BOOST_TEST_MESSAGE( "teardown fixture" );
-    camera.Stop();
+    server.Stop();
   }
 
-  const NodeID id;
+  const NodeID node;
   const int resx, resy;
 
   Context::Ptr context;
+  Server server;
   EmulatedCamera camera;
   CameraClient client;
 };
@@ -201,7 +230,7 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(camera_creation)
 {
-  BOOST_CHECK_EQUAL(camera.node(), id);
+  BOOST_CHECK_EQUAL(camera.node(), node);
   BOOST_CHECK_EQUAL(camera.state(), inactive);
   BOOST_CHECK_EQUAL(camera.rate(), 0);
 }
@@ -310,15 +339,26 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
 BOOST_AUTO_TEST_CASE(camera_sampling)
 {
+  Subscriber subscriber(context);
+
+  client.Attach(subscriber);
+
   SampleRate rate = 100000;
 
   client.set_state(activate);
   client.set_rate(rate);
   client.set_state(start);
 
+  subscriber.Start();
+
   std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
 
   client.set_state(stop);
+
+  std::chrono::milliseconds(100);
+  subscriber.Stop();
+
+  BOOST_CHECK_GT(client.received(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
