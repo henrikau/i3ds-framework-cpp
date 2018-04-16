@@ -1,8 +1,8 @@
-include_directories ("${CMAKE_CURRENT_BINARY_DIR}")
-
 find_package (ASN1CC REQUIRED)
 
 asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
+
+include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
 
 set (SRCS
   communication.cpp
@@ -26,3 +26,5 @@ set_target_properties (
   SOVERSION ${PROJECT_VERSION})
 
 install(TARGETS i3ds DESTINATION lib)
+
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" DESTINATION include/i3ds FILES_MATCHING PATTERN "src/*.h")
