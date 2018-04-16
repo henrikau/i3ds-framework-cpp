@@ -8,9 +8,9 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "publisher.hpp"
-
 #include <thread>
+
+#include "i3ds/core/publisher.hpp"
 
 i3ds::Publisher::Publisher(Context::Ptr context, NodeID node)
   : node_(node),

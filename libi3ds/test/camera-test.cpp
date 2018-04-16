@@ -20,9 +20,9 @@
 #include <chrono>
 #include <thread>
 
-#include "client.hpp"
-#include "subscriber.hpp"
-#include "emulated_camera.hpp"
+#include "i3ds/core/client.hpp"
+#include "i3ds/core/subscriber.hpp"
+#include "i3ds/emulators/emulated_camera.hpp"
 
 using namespace i3ds;
 

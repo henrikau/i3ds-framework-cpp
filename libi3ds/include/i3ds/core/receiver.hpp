@@ -11,8 +11,9 @@
 #ifndef __I3DS_RECEIVER_HPP
 #define __I3DS_RECEIVER_HPP
 
-#include "communication.hpp"
 #include <thread>
+
+#include "i3ds/core/communication.hpp"
 
 namespace i3ds
 {

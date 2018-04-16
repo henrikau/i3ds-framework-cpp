@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "subscriber.hpp"
+#include "i3ds/core/subscriber.hpp"
 
 i3ds::Subscriber::Subscriber(Context::Ptr context)
   : Receiver(context)

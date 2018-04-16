@@ -8,51 +8,57 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __I3DS_PUBLISHER_HPP
-#define __I3DS_PUBLISHER_HPP
+#ifndef __I3DS_CLIENT_HPP
+#define __I3DS_CLIENT_HPP
 
-#include <memory>
-#include <unordered_map>
-#include <functional>
-
-#include "communication.hpp"
-#include "codec.hpp"
+#include "i3ds/core/communication.hpp"
+#include "i3ds/core/codec.hpp"
 
 namespace i3ds
 {
+
 ////////////////////////////////////////////////////////////////////////////////
-/// Publisher in request/response pattern.
+/// Client for request/response pattern.
 ////////////////////////////////////////////////////////////////////////////////
 
-class Publisher
+class Client
 {
 public:
 
-  Publisher(Context::Ptr context, NodeID node);
-  virtual ~Publisher();
+  Client(Context::Ptr context, NodeID node);
+  virtual ~Client();
 
-  // Get node ID of publisher.
+  // Get node ID of client.
   NodeID node() const {return node_;}
 
-  // Publish the data for the given endpoint ID.
+  // Execute call for client, returns true if successful.
   template<typename T>
-  void Send(const typename T::Data& data)
+  bool Call(typename T::Data& data, int timeout_ms = -1)
   {
-    if (!socket_)
-      {
-	Reset();
-      }
-    
-    Message message;
+    Message request, response;
 
-    message.set_address(Address(node_, T::endpoint));
-    Encode<typename T::Codec>(message, data);
-    socket_->Send(message);
+    Encode<typename T::RequestCodec>(request, data.request);
+
+    if (!Execute(T::endpoint, request, response, timeout_ms))
+      {
+	return false;
+      }
+
+    Decode<typename T::ResponseCodec>(response, data.response);
+
+    return true;
   }
+
+  // Releases socket
+  void Stop();
 
 private:
 
+  // Reset socket if receive fails.
   void Reset();
+
+  // Execute call.
+  bool Execute(EndpointID endpoint, Message& request, Message& response, int timeout_ms);
 
   // Node ID.
   const NodeID node_;
@@ -60,7 +66,7 @@ private:
   // Context reference.
   Context::Ptr context_;
 
-  // Publisher socket.
+  // Client socket.
   Socket::Ptr socket_;
 };
 

@@ -13,9 +13,9 @@
 
 #include "Camera.h"
 
-#include "sensor.hpp"
-#include "service.hpp"
-#include "codec.hpp"
+#include "i3ds/sensors/sensor.hpp"
+#include "i3ds/core/service.hpp"
+#include "i3ds/core/codec.hpp"
 
 namespace i3ds
 {

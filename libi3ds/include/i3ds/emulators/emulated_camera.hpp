@@ -11,10 +11,10 @@
 #ifndef __I3DS_EMULATED_CAMERA_HPP
 #define __I3DS_EMULATED_CAMERA_HPP
 
-#include "topic.hpp"
-#include "publisher.hpp"
-#include "camera.hpp"
-#include "periodic_sampler.hpp"
+#include "i3ds/core/topic.hpp"
+#include "i3ds/core/publisher.hpp"
+#include "i3ds/sensors/camera.hpp"
+#include "i3ds/emulators/periodic_sampler.hpp"
 
 namespace i3ds
 {

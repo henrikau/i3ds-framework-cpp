@@ -8,26 +8,26 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __I3DS_SUBSCRIBER_HPP
-#define __I3DS_SUBSCRIBER_HPP
+#ifndef __I3DS_SERVER_HPP
+#define __I3DS_SERVER_HPP
 
 #include <memory>
 #include <unordered_map>
 #include <functional>
 
-#include "receiver.hpp"
-#include "communication.hpp"
-#include "topic.hpp"
-#include "codec.hpp"
+#include "i3ds/core/receiver.hpp"
+#include "i3ds/core/communication.hpp"
+#include "i3ds/core/exception.hpp"
+#include "i3ds/core/service.hpp"
 
 namespace i3ds
 {
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Subscriber for publish/subscribe pattern.
+/// Server for request/response pattern.
 ////////////////////////////////////////////////////////////////////////////////
 
-class Subscriber : public Receiver
+class Server : public Receiver
 {
 public:
 
@@ -43,9 +43,9 @@ public:
 
     virtual ~Handler() {};
 
-    virtual void Handle(const Message& message) = 0;
+    virtual void Handle(const Message& request, Message& response) = 0;
   };
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   /// Codec wrapper for request/response pattern.
   ////////////////////////////////////////////////////////////////////////////////
@@ -65,28 +65,27 @@ public:
     Wrapper(Operation operation) : operation_(operation) {};
 
     virtual ~Wrapper() {};
-    
-    virtual void Handle(const Message& message)
+
+    virtual void Handle(const Message& request, Message& response)
     {
-      Decode<typename T::Codec>(message, data_);
+      T::ResponseCodec::Initialize(data_.response);
+
+      Decode<typename T::RequestCodec>(request, data_.request);
       operation_(data_);
+      Encode<typename T::ResponseCodec>(response, data_.response);
     }
 
   private:
 
     const Operation operation_;
-    
+
     typename T::Data data_;
   };
 
-  ////////////////////////////////////////////////////////////////////////////////
-  /// Constructor and destructor
-  ////////////////////////////////////////////////////////////////////////////////
+  Server(Context::Ptr context);
+  virtual ~Server();
 
-  Subscriber(Context::Ptr context);
-  virtual ~Subscriber();
-
-  // Register callback for topic.
+  // Attach service handler for endpoint ID.
   template<typename T>
   void Attach(NodeID node, typename Wrapper<T>::Operation operation)
   {
@@ -96,7 +95,7 @@ public:
   // Attach generic handler for address.
   void attach_handler(Address address, Handler::Ptr handler);
 
-  // Detach handler for endpoint address.
+  // Detach handler for address.
   void detach_handler(Address address);
 
 protected:
@@ -112,6 +111,9 @@ private:
   // Map with handlers for endpoints.
   std::unordered_map<Address, Handler::Ptr> handlers_;
 };
+
+void set_response(CommandResponse& response, ResultCode result, std::string message);
+void set_response(CommandResponse& response, const CommandError& e);
 
 } // namespace i3ds
 

@@ -8,9 +8,9 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "emulated_camera.hpp"
-
 #include <iostream>
+
+#include "i3ds/emulators/emulated_camera.hpp"
 
 i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx, int resy)
   : Camera(node),

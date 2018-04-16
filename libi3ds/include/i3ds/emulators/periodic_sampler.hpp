@@ -11,11 +11,11 @@
 #ifndef __I3DS_PERIODIC_SAMPLER_HPP
 #define __I3DS_PERIODIC_SAMPLER_HPP
 
-#include "sensor.hpp"
-
 #include <thread>
 #include <functional>
 #include <chrono>
+
+#include "i3ds/sensors/sensor.hpp"
 
 namespace i3ds
 {

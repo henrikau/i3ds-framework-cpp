@@ -13,8 +13,8 @@
 
 #include <functional>
 
-#include "communication.hpp"
-#include "codec.hpp"
+#include "i3ds/core/communication.hpp"
+#include "i3ds/core/codec.hpp"
 
 namespace i3ds
 {

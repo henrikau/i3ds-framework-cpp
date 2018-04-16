@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "receiver.hpp"
+#include "i3ds/core/receiver.hpp"
 
 i3ds::Receiver::Receiver(Context::Ptr context)
   : context_(context), timeout_ms_(100), running_(false)

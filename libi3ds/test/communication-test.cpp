@@ -13,10 +13,10 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "communication.hpp"
-
 #include <iostream>
 #include <map>
+
+#include "i3ds/core/communication.hpp"
 
 using namespace i3ds;
 
