@@ -27,4 +27,4 @@ set_target_properties (
 
 install(TARGETS i3ds DESTINATION lib)
 
-install(FILES ${ASN1_HDRS} DESTINATION include/i3ds)
+install(FILES ${ASN1_HDRS} DESTINATION include/i3ds/core)
