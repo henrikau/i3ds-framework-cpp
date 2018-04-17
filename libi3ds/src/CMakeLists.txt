@@ -27,4 +27,4 @@ set_target_properties (
 
 install(TARGETS i3ds DESTINATION lib)
 
-install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" DESTINATION include/i3ds FILES_MATCHING PATTERN "src/*.h")
+install(FILES ${ASN1_HDRS} DESTINATION include/i3ds)
