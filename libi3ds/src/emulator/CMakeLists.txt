@@ -1,5 +1,3 @@
-include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../core")
-
 set (SRCS
   emulated_camera.cpp
   periodic_sampler.cpp

@@ -1,5 +1,3 @@
-include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/../core")
-
 set (SRCS
   camera.cpp
   sensor.cpp

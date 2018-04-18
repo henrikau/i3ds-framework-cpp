@@ -1,8 +1,5 @@
 find_package(Boost 1.58 COMPONENTS unit_test_framework REQUIRED)
 
-# FIXME: Include the generated headers.
-include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src/core")
-
 set(TESTS
   address-server-test
   camera-test
