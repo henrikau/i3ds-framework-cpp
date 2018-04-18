@@ -1,5 +1,15 @@
-add_executable (i3ds_address_server i3ds_address_server.cpp)
-target_link_libraries (i3ds_address_server zmq pthread i3ds)
+set (SRCS
+  address_server.cpp
+)
 
+set (LIBS zmq)
 
-install (TARGETS i3ds_address_server DESTINATION bin)
+add_library (i3ds-utils SHARED ${SRCS})
+target_link_libraries (i3ds-utils ${LIBS})
+
+set_target_properties (
+  i3ds-utils PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  SOVERSION ${PROJECT_VERSION})
+
+install(TARGETS i3ds-utils DESTINATION lib)

@@ -1,10 +1,11 @@
-include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
+include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../core")
 
 set (SRCS
+  emulated_camera.cpp
   periodic_sampler.cpp
-  emulated_camera.cpp)
+)
 
-set (LIBS i3ds)
+set (LIBS i3ds-sensors)
 
 add_library (i3ds-emulator SHARED ${SRCS})
 target_link_libraries (i3ds-emulator ${LIBS})

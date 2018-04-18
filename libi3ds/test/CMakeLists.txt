@@ -1,19 +1,20 @@
 find_package(Boost 1.58 COMPONENTS unit_test_framework REQUIRED)
 
 # FIXME: Include the generated headers.
-include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src")
-include_directories ("../emulator")
+include_directories ("${CMAKE_CURRENT_BINARY_DIR}/../src/core")
 
 set(TESTS
+  address-server-test
+  camera-test
   communication-test
   sensor-test
-  camera-test
-  address-server-test
 )
 
 set(LIBS
-  i3ds
+  i3ds-core
   i3ds-emulator
+  i3ds-sensors
+  i3ds-utils
   pthread
   zmq
   ${Boost_LIBRARIES})

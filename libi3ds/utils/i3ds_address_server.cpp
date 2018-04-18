@@ -8,9 +8,11 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/utils/address_server.hpp"
-
 #include <csignal>
+#include <iostream>
+#include <unistd.h>
+
+#include "i3ds/utils/address_server.hpp"
 
 volatile bool running;
 
