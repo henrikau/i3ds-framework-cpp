@@ -1,5 +1,7 @@
 find_package (ASN1CC REQUIRED)
 
+add_subdirectory (utils)
+
 asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
 
 include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
