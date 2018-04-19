@@ -11,6 +11,7 @@
 #include "i3ds/core/communication.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 void i3ds_message_free(void* data, void* hint)
 {
@@ -52,9 +53,60 @@ i3ds::Message::set_payload(byte* data, size_t size, bool copy)
   payload_ = zmq::message_t(data, size, copy ? NULL : &i3ds_message_free);
 }
 
-i3ds::Context::Context()
-  : context_(1)
+i3ds::Context::Context(std::string addr_srv_addr)
+  : context_(1),
+    address_socket_(context_, ZMQ_REQ),
+    addr_srv_addr_(addr_srv_addr),
+    connected_to_addr_srv(false)
 {
+}
+
+std::string
+i3ds::Context::get_config(NodeID node, int type)
+{
+  if (!connected_to_addr_srv)
+    {
+      int timeout_ms = 1000;
+      address_socket_.connect(addr_srv_addr_);
+      address_socket_.setsockopt(ZMQ_RCVTIMEO, &timeout_ms, sizeof(int));
+      connected_to_addr_srv = true;
+    }
+
+  std::string query = std::to_string(node);
+  
+  switch (type)
+  {
+    case ZMQ_PUB:
+        query += ",pub";
+        break;
+    case ZMQ_SUB:
+        query += ",sub";
+        break;
+    case ZMQ_REP:
+        query += ",rep";
+        break;
+    case ZMQ_REQ:
+        query += ",req";
+        break;
+    default:
+        throw std::invalid_argument("type");
+  }
+  zmq::message_t request (query.length());
+  memcpy (request.data (), query.c_str(), query.length());
+  address_socket_.send(request);
+
+  zmq::message_t reply;
+  if (address_socket_.recv(&reply) < 1)
+  {
+    throw std::runtime_error("Could not connect to address server");
+  }
+
+  std::string reply_string = std::string(static_cast<char*>(reply.data()), reply.size());
+  if (reply_string == "ADDRESS_NOT_FOUND")
+  {
+    throw std::invalid_argument("No address found for node_id, type: " + std::to_string(node) + "," + std::to_string(type));
+  }
+  return reply_string;
 }
 
 i3ds::Socket::Ptr
@@ -107,9 +159,22 @@ i3ds::Socket::Attach(NodeID node)
     }
   else
     {
-        //std::string address = context_.get_address(type_, node);
+      std::string config = context_->get_config(node, type_);
+      char operation = config[0];
+      std::string address = config.substr(2);
+      if (tolower(operation) == 'b')
+        {
+          socket_.bind(address);
+        } 
+      else if (tolower(operation) == 'c')
+        {
+          socket_.connect(address);
+        }
+      else
+        {
+          throw std::runtime_error("Invalid bind/connect field in config file for " + node);
+        }
     }
-
   attached_.insert(node);
 }
 

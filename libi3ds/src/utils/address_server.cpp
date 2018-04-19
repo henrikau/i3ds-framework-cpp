@@ -63,7 +63,15 @@ i3ds::AddressServer::handle_query()
     if (socket_.recv(&request)>0)
     {
         std::string query = std::string(static_cast<char*>(request.data()), request.size());
-        std::string result = address_book_[query];
+        std::string result;
+        if (address_book_.find(query) == address_book_.end())
+        {
+            result = "ADDRESS_NOT_FOUND";
+        }
+        else
+        {
+            result = address_book_[query];
+        }
 
         zmq::message_t reply(result.length());
         memcpy(reply.data(), result.c_str(), result.length());

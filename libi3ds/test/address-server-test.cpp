@@ -62,14 +62,14 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(check_addresses)
 {
-  BOOST_CHECK_EQUAL(get_address(&socket, "323,pub"), "b,192.168.0.1:7000");
-  BOOST_CHECK_EQUAL(get_address(&socket, "323,sub"), "c,192.168.0.1:7000");
-  BOOST_CHECK_EQUAL(get_address(&socket, "323,req"), "c,192.168.0.1:7001");
-  BOOST_CHECK_EQUAL(get_address(&socket, "323,rep"), "b,192.168.0.1:7001");
-  BOOST_CHECK_EQUAL(get_address(&socket, "324,pub"), "b,192.168.0.2:7000");
-  BOOST_CHECK_EQUAL(get_address(&socket, "324,sub"), "c,192.168.0.2:7000");
-  BOOST_CHECK_EQUAL(get_address(&socket, "324,req"), "c,192.168.0.2:7001");
-  BOOST_CHECK_EQUAL(get_address(&socket, "324,rep"), "b,192.168.0.2:7001");
+  BOOST_CHECK_EQUAL(get_address(&socket, "323,pub"), "b,tcp://127.0.0.1:7000");
+  BOOST_CHECK_EQUAL(get_address(&socket, "323,sub"), "c,tcp://127.0.0.1:7000");
+  BOOST_CHECK_EQUAL(get_address(&socket, "323,req"), "c,tcp://127.0.0.1:7001");
+  BOOST_CHECK_EQUAL(get_address(&socket, "323,rep"), "b,tcp://127.0.0.1:7001");
+  BOOST_CHECK_EQUAL(get_address(&socket, "324,pub"), "b,tcp://192.168.0.2:7000");
+  BOOST_CHECK_EQUAL(get_address(&socket, "324,sub"), "c,tcp://192.168.0.2:7000");
+  BOOST_CHECK_EQUAL(get_address(&socket, "324,req"), "c,tcp://192.168.0.2:7001");
+  BOOST_CHECK_EQUAL(get_address(&socket, "324,rep"), "b,tcp://192.168.0.2:7001");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

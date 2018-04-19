@@ -74,18 +74,21 @@ public:
 
   typedef std::shared_ptr<Context> Ptr;
 
-  Context();
+  Context(std::string addr_srv_addr = "tcp://localhost:24680");
   virtual ~Context() {};
 
   static Ptr Create() {return std::make_shared<Context>();}
 
-  std::string get_address(NodeID node, int type);
+  std::string get_config(NodeID node, int type);
 
 private:
 
   friend class Socket;
 
   zmq::context_t context_;
+  zmq::socket_t address_socket_;
+  std::string addr_srv_addr_;
+  bool connected_to_addr_srv;
 
 };
 
