@@ -1,5 +1,6 @@
 set (SRCS
   camera.cpp
+  camera_client.cpp
   sensor.cpp
 )
 
