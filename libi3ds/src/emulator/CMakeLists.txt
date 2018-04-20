@@ -1,5 +1,6 @@
 set (SRCS
   emulated_camera.cpp
+  emulated_tof_camera.cpp
   periodic_sampler.cpp
 )
 

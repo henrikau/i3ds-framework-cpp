@@ -3,6 +3,8 @@ set (SRCS
   camera_client.cpp
   sensor.cpp
   sensor_client.cpp
+  tof_camera.cpp
+  tof_camera_client.cpp
 )
 
 set (LIBS i3ds-core)

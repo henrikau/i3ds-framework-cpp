@@ -5,6 +5,7 @@ set(TESTS
   camera-test
   communication-test
   sensor-test
+  tof-camera-test
 )
 
 set(LIBS
