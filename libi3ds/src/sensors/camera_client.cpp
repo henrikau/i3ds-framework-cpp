@@ -11,7 +11,7 @@
 #include "i3ds/sensors/camera_client.hpp"
 
 i3ds::CameraClient::CameraClient(Context::Ptr context, NodeID sensor)
-  : Client(context, sensor)
+  : SensorClient(context, sensor)
 {
   Camera::ConfigurationService::Initialize(config_);
 }
@@ -20,27 +20,6 @@ bool
 i3ds::CameraClient::load_configuration()
 {
   return Call<Camera::ConfigurationService>(config_, 1000);
-}
-
-bool
-i3ds::CameraClient::set_state(StateCommand state)
-{
-  Sensor::StateService::Data command;
-
-  command.request = state;
-
-  return Call<Sensor::StateService>(command, 1000);
-}
-
-bool
-i3ds::CameraClient::set_rate(SampleRate rate)
-{
-  Sensor::SampleService::Data command;
-
-  command.request.rate = rate;
-  command.request.count = 0;
-
-  return Call<Sensor::SampleService>(command, 1000);
 }
 
 bool

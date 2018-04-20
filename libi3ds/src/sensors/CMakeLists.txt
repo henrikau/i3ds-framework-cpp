@@ -2,6 +2,7 @@ set (SRCS
   camera.cpp
   camera_client.cpp
   sensor.cpp
+  sensor_client.cpp
 )
 
 set (LIBS i3ds-core)

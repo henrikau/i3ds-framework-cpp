@@ -33,31 +33,30 @@ void
 print_camera_settings(i3ds::CameraClient *camera)
 {
     camera->load_configuration();
+    camera->load_status();
 
-    //TODO: fix CameraClient to expose state
-    /*
-     *int state = camera->state();
-     *std::string state_string;
-     *switch (state)
-     *{
-     *    case inactive:
-     *        state_string = "inactive";
-     *        break;
-     *    case standby:
-     *        state_string = "standby";
-     *        break;
-     *    case operational:
-     *        state_string = "operational";
-     *        break;
-     *    case failure:
-     *        state_string = "failure";
-     *        break;
-     *    default:
-     *        state_string = "UNKNOWN STATE";
-     *}
-     *
-     *std::cout << "State: " << state_string << std::endl;
-     */
+    int state = camera->state();
+    std::string state_string;
+    switch (state)
+    {
+        case inactive:
+            state_string = "inactive";
+            break;
+        case standby:
+            state_string = "standby";
+            break;
+        case operational:
+            state_string = "operational";
+            break;
+        case failure:
+            state_string = "failure";
+            break;
+        default:
+            state_string = "UNKNOWN STATE";
+    }
+  
+    std::cout << "State: " << state_string << std::endl;
+    std::cout << "Temperature [deg K]: " << camera->temperature().kelvin << std::endl;
 
     std::cout << "Exposure: " << camera->exposure() << std::endl;
     std::cout << "Gain: " << camera->gain() << std::endl;

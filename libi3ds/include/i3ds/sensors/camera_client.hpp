@@ -11,21 +11,17 @@
 #ifndef __I3DS_CAMERA_CLIENT_HPP
 #define __I3DS_CAMERA_CLIENT_HPP
 
-#include "i3ds/core/client.hpp"
-#include "i3ds/core/subscriber.hpp"
+#include "i3ds/sensors/sensor_client.hpp"
 #include "i3ds/sensors/camera.hpp"
 
 namespace i3ds
 {
 
-class CameraClient : public Client
+class CameraClient : public SensorClient
 {
 public:
 
   CameraClient(Context::Ptr context, NodeID sensor);
-
-  bool set_state(StateCommand state);
-  bool set_rate(SampleRate rate);
 
   bool set_exposure(ExposureTime exposure, SensorGain gain);
   bool set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
