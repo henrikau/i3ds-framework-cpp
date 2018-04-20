@@ -1,6 +1,7 @@
 set (SRCS
   camera.cpp
   camera_client.cpp
+  imu_client.cpp
   sensor.cpp
   sensor_client.cpp
   tof_camera.cpp

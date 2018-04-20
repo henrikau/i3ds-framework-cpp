@@ -4,6 +4,7 @@ set(TESTS
   address-server-test
   camera-test
   communication-test
+  imu-test
   sensor-test
   tof-camera-test
 )
