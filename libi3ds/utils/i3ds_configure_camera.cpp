@@ -13,145 +13,266 @@
 
 #include "i3ds/sensors/camera_client.hpp"
 
-void
-print_usage_and_exit(char *command, int retval)
-{
-    std::cout << "Usage: " << command << " <node_id> <command> <args...>" << std::endl;
-    std::cout << "  Available commands:" << std::endl;
-    std::cout << "    get                                                          - Print current settings" << std::endl;
-    std::cout << "    sta <activate|start|stop|deactivate>                         - Send state command" << std::endl;
-    std::cout << "    exp <exposure> <gain>                                        - Set exposure" << std::endl;
-    std::cout << "    aex <auto-exposure enabled> <max_exposure> <max_gain>        - Set auto exposure" << std::endl;
-    std::cout << "    reg <region enabled> <x-offset> <y-offset> <x-size> <y-size> - Set region" << std::endl;
-    std::cout << "    fla <flash enabled> <flash strength>                         - Set flash" << std::endl;
-    std::cout << "    pat <pattern enabled> <pattern sequence>                     - Set pattern" << std::endl;
-    std::cout << "    rat <rate>                                                   - Set rate" << std::endl;
-    exit(retval);
-}
+#include <boost/program_options.hpp>
+
+#define BOOST_LOG_DYN_LINK
+
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
+namespace po = boost::program_options;
+namespace logging = boost::log;
 
 void
 print_camera_settings(i3ds::CameraClient *camera)
 {
-    camera->load_configuration();
-    camera->load_status();
+  camera->load_configuration();
+  camera->load_status();
 
-    int state = camera->state();
-    std::string state_string;
-    switch (state)
+  int state = camera->state();
+  std::string state_string;
+  switch (state)
     {
-        case inactive:
-            state_string = "inactive";
-            break;
-        case standby:
-            state_string = "standby";
-            break;
-        case operational:
-            state_string = "operational";
-            break;
-        case failure:
-            state_string = "failure";
-            break;
-        default:
-            state_string = "UNKNOWN STATE";
+    case inactive:
+      state_string = "inactive";
+      break;
+    case standby:
+      state_string = "standby";
+      break;
+    case operational:
+      state_string = "operational";
+      break;
+    case failure:
+      state_string = "failure";
+      break;
+    default:
+      state_string = "UNKNOWN STATE";
     }
-  
-    std::cout << "State: " << state_string << std::endl;
-    std::cout << "Temperature [deg K]: " << camera->temperature().kelvin << std::endl;
 
-    std::cout << "Exposure: " << camera->exposure() << std::endl;
-    std::cout << "Gain: " << camera->gain() << std::endl;
+  std::cout << "{" << std::endl;
+  std::cout << "\"node\" : " << camera->node() << "," << std::endl;
+  std::cout << "\"state\" : \"" << state_string << "\"," << std::endl;
+  std::cout << "\"temperature\" : " << camera->temperature().kelvin << "," << std::endl;
 
-    std::cout << "Auto-exposure enabled: " << camera->auto_exposure_enabled() << std::endl;
-    std::cout << "Max exposure: " << camera->max_exposure() << std::endl;
-    std::cout << "Max gain: " << camera->max_gain() << std::endl;
+  std::cout << "\"exposure\" : " << camera->exposure() << "," << std::endl;
+  std::cout << "\"gain\" : " << camera->gain() << "," << std::endl;
 
-    std::cout << "Region enabled: " << camera->region_enabled() << std::endl;
-    std::cout << "Region: (" << camera->region().size_x;
-    std::cout << ", " << camera->region().size_y;
-    std::cout << ", " << camera->region().offset_x;
-    std::cout << ", " << camera->region().offset_y << ")" << std::endl;
+  std::cout << "\"auto-exposure-enabled\" : " << camera->auto_exposure_enabled() << "," << std::endl;
+  std::cout << "\"max-exposure\" : " << camera->max_exposure() << "," << std::endl;
+  std::cout << "\"max-gain\" : " << camera->max_gain() << "," << std::endl;
 
-    std::cout << "Flash enabled: " << camera->flash_enabled() << std::endl;
-    std::cout << "Flash strength: " << camera->flash_strength() << std::endl;
+  std::cout << "\"region-enabled\" : " << camera->region_enabled() << "," << std::endl;
+  std::cout << "\"region\" : [" << camera->region().size_x;
+  std::cout << "," << camera->region().size_y;
+  std::cout << "," << camera->region().offset_x;
+  std::cout << "," << camera->region().offset_y << "]" << "," << std::endl;
 
-    std::cout << "Pattern enabled: " << camera->pattern_enabled() << std::endl;
-    std::cout << "Pattern sequence: " << camera->pattern_sequence() << std::endl;
+  std::cout << "\"flash-enabled\" : " << camera->flash_enabled() << "," << std::endl;
+  std::cout << "\"flash-strength\" : " << camera->flash_strength() << "," << std::endl;
+
+  std::cout << "\"pattern-enabled\" : " << camera->pattern_enabled() << "," << std::endl;
+  std::cout << "\"pattern-sequence\" : " << camera->pattern_sequence() << std::endl;
+  std::cout << "}" << std::endl;
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc < 3)
+  unsigned int node_id;
+  unsigned int rate, exposure, min_exposure, max_exposure;
+  double gain, min_gain, max_gain;
+  unsigned int flash_strength, pattern_sequence;
+  bool enable_auto, enable_region, enable_flash, enable_pattern;
+  PlanarRegion region;
+
+  po::options_description desc("Allowed camera control options");
+
+  desc.add_options()
+    ("help", "Produce this message")
+    ("node", po::value<unsigned int>(&node_id)->required(), "Node ID of camera")
+
+    ("activate", "Activate the sensor")
+    ("start", "Start the sensor")
+    ("stop", "Stop the sensor")
+    ("deactivate", "Deactivate the sensor")
+
+    ("rate", po::value(&rate), "Sensor rate in microseconds")
+
+    ("verbose,v", "Print verbose output")
+    ("quite,q", "Quiet ouput")
+    ("print", "Print the camera configuration")
+
+    ("exposure", po::value(&exposure), "Exposure time in microseconds, gain is optional")
+    ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set exposure")
+
+    ("auto-exposure", po::value(&enable_auto), "Enable camera auto exposure")
+    ("auto-min-exposure", po::value(&min_exposure)->default_value(0), "Min auto exposure time in microseconds")
+    ("auto-max-exposure", po::value(&max_exposure)->default_value(100000), "Max auto exposure time in microseconds")
+    ("auto-min-gain", po::value(&min_gain)->default_value(0.0), "Min auto gain in decibel")
+    ("auto-max-gain", po::value(&max_gain)->default_value(100.0), "Max auto gain in decibel")
+
+    ("region", po::value(&enable_region), "Enable camera region of interest (ROI)")
+    ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
+    ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
+    ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
+    ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
+
+    ("flash", po::value(&enable_flash), "Enable camera flash")
+    ("flash-strength", po::value(&flash_strength)->default_value(255), "Flash strength from 0 (off) to 255 (full)")
+
+    ("pattern", po::value(&enable_pattern), "Enable camera pattern illumination")
+    ("pattern-sequence", po::value(&pattern_sequence)->default_value(1), "Pattern sequence to use")
+    ;
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+
+  if (vm.count("help"))
     {
-        print_usage_and_exit(argv[0],-1);
+      std::cout << desc << std::endl;
+      return -1;
     }
 
-    int node_id = atoi(argv[1]);
-    i3ds::Context::Ptr context(i3ds::Context::Create());
-    i3ds::CameraClient camera(context, node_id);
-
-    std::string command = argv[2];
-
-    if (command == "get")
+  if (vm.count("quite"))
     {
-        print_camera_settings(&camera);
+      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
     }
-    else if (command == "sta")
+  else if (!vm.count("verbose"))
     {
-        if (argc < 4) {print_usage_and_exit(argv[0],-1);}
-        std::string state = argv[3];
-        if (state == "activate") {camera.set_state(activate);}
-        else if (state == "start") {camera.set_state(start);}
-        else if (state == "stop") {camera.set_state(stop);}
-    }
-    else if (command == "ex")
-    {
-        if (argc < 5) {print_usage_and_exit(argv[0],-1);}
-        ExposureTime exposure = atof(argv[3]);
-        SensorGain gain = atof(argv[4]);
-        camera.set_exposure(exposure, gain);
-    }
-    else if (command == "aex")
-    {
-        if (argc < 6) {print_usage_and_exit(argv[0],-1);}
-        bool auto_exposure_enabled = atoi(argv[3]);
-        ExposureTime max_exposure = atof(argv[4]);
-        SensorGain max_gain = atof(argv[5]);
-        camera.set_auto_exposure(auto_exposure_enabled, max_exposure, max_gain);
-    }
-    else if (command == "req")
-    {
-        if (argc < 8) {print_usage_and_exit(argv[0],-1);}
-        bool region_enabled = atoi(argv[3]);
-        PlanarRegion region = {static_cast<uint16_t>(atoi(argv[4])),
-                               static_cast<uint16_t>(atoi(argv[5])),
-                               static_cast<uint16_t>(atoi(argv[6])),
-                               static_cast<uint16_t>(atoi(argv[7]))};
-        camera.set_region(region_enabled, region);
-    }
-    else if (command == "fla")
-    {
-        if (argc < 5) {print_usage_and_exit(argv[0],-1);}
-        bool flash_enabled = atoi(argv[3]);
-        FlashStrength flash_strength = atof(argv[4]);
-        camera.set_flash(flash_enabled, flash_strength);
-    }
-    else if (command == "pat")
-    {
-        if (argc < 5) {print_usage_and_exit(argv[0],-1);}
-        bool pattern_enabled = atoi(argv[3]);
-        PatternSequence pattern_sequence = atof(argv[4]);
-        camera.set_pattern(pattern_enabled, pattern_sequence);
-    }
-    else if (command == "rat")
-    {
-        if (argc < 4) {print_usage_and_exit(argv[0],-1);}
-        SampleRate rate = atoi(argv[3]);
-        camera.set_rate(rate);
-    }
-    else 
-    {
-        print_usage_and_exit(argv[0],0);
+      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
     }
 
-    return 0;
+  po::notify(vm);
+
+  i3ds::Context::Ptr context(i3ds::Context::Create());
+
+  BOOST_LOG_TRIVIAL(info) << "Connecting to camera with node ID: " << node_id;
+  i3ds::CameraClient camera(context, node_id);
+  BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+
+  // Can either command activate, allow more commands.
+  if (vm.count("activate"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Command ACTIVATE";
+      camera.set_state(activate);
+    }
+
+  // Command stop, allow more commands.
+  if (vm.count("stop"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Command STOP";
+      camera.set_state(stop);
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Command deactivate, no more commands.
+  if (vm.count("deactivate"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Command DEACTIVATE";
+      camera.set_state(deactivate);
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+      return 0;
+    }
+
+  // Set rate, allow further commands.
+  if (vm.count("rate"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Set rate: " << rate << " [us]";
+      camera.set_rate(rate);
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Either set manual exposure or auto exposure, allow further commands.
+  if (vm.count("exposure"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Set exposure: " << exposure << " [us] " << gain << " [dB]";
+      camera.set_exposure(exposure, gain);
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+  else if (vm.count("auto-exposure"))
+    {
+      if (enable_auto)
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Enable auto exposure: " << max_exposure << " [us] " << max_gain << " [dB]";
+	}
+      else
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Disable auto exposure";
+	}
+
+      camera.set_auto_exposure(enable_auto, max_exposure, max_gain);
+
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Enable region, allow further commands.
+  if (vm.count("region"))
+    {
+      if (enable_region)
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Enable region: ("
+				  << region.size_x << ","
+				  << region.size_y << ","
+				  << region.offset_x << ","
+				  << region.offset_y << ")";
+	}
+      else
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Disable region";
+	}
+
+      camera.set_region(enable_region, region);
+
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Enable flash, allow further commands.
+  if (vm.count("flash"))
+    {
+      if (enable_flash)
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Enable flash: " << flash_strength;
+	}
+      else
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Disable flash";
+	}
+
+      camera.set_flash(enable_flash, flash_strength);
+
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Enable pattern illumination, allow further commands.
+  if (vm.count("pattern"))
+    {
+      if (enable_pattern)
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Enable pattern: " << pattern_sequence;
+	}
+      else
+	{
+	  BOOST_LOG_TRIVIAL(info) << "Disable pattern";
+	}
+
+      camera.set_pattern(enable_pattern, pattern_sequence);
+
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Start sensor, allow further commands.
+  if (vm.count("start"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Command START";
+      camera.set_state(start);
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  // Print config, this is the final command.
+  if (vm.count("print"))
+    {
+      print_camera_settings(&camera);
+    }
+
+  return 0;
 }
