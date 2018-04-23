@@ -19,10 +19,12 @@
 
 #include "i3ds/utils/address_server.hpp"
 
-i3ds::AddressServer::AddressServer(std::string port, std::string filename) : context_(1), socket_(context_, ZMQ_REP) 
+const int i3ds::AddressServer::DEFAULT_PORT = 6000;
+
+i3ds::AddressServer::AddressServer(std::string filename, int port) : context_(1), socket_(context_, ZMQ_REP) 
 {
     int timeout_ms = 100;
-    socket_.bind("tcp://*:" + port);
+    socket_.bind("tcp://*:" + std::to_string(port));
     socket_.setsockopt(ZMQ_RCVTIMEO, &timeout_ms, sizeof(int));
     load_csv_file(filename);
 }

@@ -1,8 +1,9 @@
 set (SRCS
-  address_server.cpp
-)
+  address_server.cpp)
 
-set (LIBS zmq)
+set (LIBS
+  zmq
+  i3ds-core)
 
 add_library (i3ds-utils SHARED ${SRCS})
 target_link_libraries (i3ds-utils ${LIBS})

@@ -36,12 +36,12 @@ std::string get_address(zmq::socket_t *socket, std::string input)
 
 struct F {
   F()
-    : port("24689"),
+    : port(i3ds::AddressServer::DEFAULT_PORT),
       context(1),
       socket(context, ZMQ_REQ),
-      srv(port, "test_addresses.csv")
+      srv("test_addresses.csv", port)
   {
-    socket.connect ("tcp://localhost:" + port);
+    socket.connect ("tcp://localhost:" + std::to_string(port));
     srv.Start();
   }
 
@@ -50,7 +50,7 @@ struct F {
     srv.Stop();
   }
 
-  const std::string port;
+  const int port;
   zmq::context_t context;
   zmq::socket_t socket;
   AddressServer srv;

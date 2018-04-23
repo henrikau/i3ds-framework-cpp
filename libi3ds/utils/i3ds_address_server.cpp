@@ -14,31 +14,53 @@
 
 #include "i3ds/utils/address_server.hpp"
 
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
+
 volatile bool running;
 
 void signal_handler(int signum)
 {
-    running = false;
+  running = false;
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc < 3)
-    {
-        std::cout << "Usage: " << argv[0] << " <port> <configfile>" << std::endl;
-        return -1;
-    }
-    running = true;
-    signal(SIGINT, signal_handler);
+  std::string filename;
+  int port;
 
-    i3ds::AddressServer srv(argv[1], argv[2]);
+  po::options_description desc("Allowed manager options");
 
-    srv.Start();
-    while(running)
+  desc.add_options()
+    ("help", "Produce this message")
+    ("config", po::value<std::string>(&filename)->default_value(""), "Config file with addresses")
+    ("port", po::value<int>(&port)->default_value(i3ds::AddressServer::DEFAULT_PORT), "Port to bind service to")
+    ;
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);
+
+  if (vm.count("help"))
     {
-        sleep(1);
+      std::cout << desc << std::endl;
+      return -1;
     }
-    srv.Stop();
-    
-    return 0;
+
+  running = true;
+  signal(SIGINT, signal_handler);
+
+  i3ds::AddressServer srv(filename, port);
+
+  srv.Start();
+
+  while(running)
+    {
+      sleep(1);
+    }
+
+  srv.Stop();
+
+  return 0;
 }

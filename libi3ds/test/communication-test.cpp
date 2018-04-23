@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
 
 BOOST_AUTO_TEST_CASE(connect_to_address_from_config_file)
 {
-  AddressServer srv("24680", "test_addresses.csv"); // Default port assumed by Context
+  AddressServer srv("test_addresses.csv"); // Default port assumed by Context
   srv.Start();
   int node = 323; // Known node_id from test-file
   Socket::Ptr publisher = Socket::Publisher(context);

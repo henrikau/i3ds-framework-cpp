@@ -18,11 +18,14 @@
 
 namespace i3ds
 {
-    
+
 class AddressServer
 {
 public:
-    AddressServer(std::string port, std::string filename);
+
+    static const int DEFAULT_PORT;
+
+    AddressServer(std::string filename, int port = DEFAULT_PORT);
     virtual ~AddressServer();
 
     void Start();
