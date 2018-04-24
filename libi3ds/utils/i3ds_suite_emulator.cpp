@@ -43,63 +43,41 @@ void signal_handler(int signum)
 
 int main(int argc, char** argv)
 {
-	po::options_description desc("Allowed camera control options");
+  unsigned int base_id;
 
-	  desc.add_options()
-	    ("help", "Produce this message")
-	//    ("node", po::value<unsigned int>(&node_id)->required(), "Node ID of camera")
+  po::options_description desc("Allowed camera control options");
 
+  desc.add_options()
+  ("help", "Produce this message")
+  ("base", po::value(&base_id)->default_value(10), "Base node ID of sensors")
+  ("verbose,v", "Print verbose output")
+  ("quite,q", "Quiet ouput")
+  ;
 
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
 
-	    ("verbose,v", "Print verbose output")
-	    ("quite,q", "Quiet ouput")
-	    ("print", "Print the camera configuration")
-   ;
+  if (vm.count("help"))
+    {
+      std::cout << desc << std::endl;
+      return -1;
+    }
 
-	  po::variables_map vm;
-	  po::store(po::parse_command_line(argc, argv, desc), vm);
+  if (vm.count("quite"))
+    {
+      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
+    }
+  else if (!vm.count("verbose"))
+    {
+      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
+    }
 
-	  if (vm.count("help"))
-	    {
-	      std::cout << desc << std::endl;
-	      return -1;
-	    }
-
-	  if (vm.count("quite"))
-	    {
-	      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-	    }
-	  else if (!vm.count("verbose"))
-	    {
-	      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-	    }
-
-	  po::notify(vm);
-
-/*	  i3ds::Context::Ptr context(i3ds::Context::Create());
-
-	  BOOST_LOG_TRIVIAL(info) << "Connecting to camera with node ID: " << node_id;
-	  i3ds::CameraClient camera(context, node_id);
-	  BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
-*/
-
-	/*
-	  // Print config, this is the final command.
-	  if (vm.count("print"))
-	    {
-	      print_camera_settings(&camera);
-	    }
-	*/
-
-
-
-
-
+  po::notify(vm);
 
   i3ds::Context::Ptr context = i3ds::Context::Create();;
 
   i3ds::Server server(context);
-  i3ds::EmulatedCamera camera(context, 10, 800, 600);
+  i3ds::EmulatedCamera camera(context, base_id + 0, 800, 600);
 
   camera.Attach(server);
 
