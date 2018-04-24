@@ -1,7 +1,7 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
 
 add_executable (i3ds_suite_emulator i3ds_suite_emulator.cpp)
-target_link_libraries (i3ds_suite_emulator i3ds-emulator)
+target_link_libraries (i3ds_suite_emulator i3ds-emulator ${Boost_LIBRARIES})
 
 add_executable (i3ds_address_server i3ds_address_server.cpp)
 target_link_libraries (i3ds_address_server i3ds-utils ${Boost_LIBRARIES})

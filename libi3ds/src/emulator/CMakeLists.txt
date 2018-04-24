@@ -1,3 +1,5 @@
+find_package (Boost COMPONENTS program_options log REQUIRED)
+
 set (SRCS
   emulated_camera.cpp
   emulated_imu.cpp
@@ -8,7 +10,7 @@ set (SRCS
 set (LIBS i3ds-sensors)
 
 add_library (i3ds-emulator SHARED ${SRCS})
-target_link_libraries (i3ds-emulator ${LIBS})
+target_link_libraries (i3ds-emulator ${LIBS} ${Boost_LIBRARIES})
 
 set_target_properties (
   i3ds-emulator PROPERTIES
