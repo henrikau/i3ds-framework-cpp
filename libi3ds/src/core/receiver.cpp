@@ -50,11 +50,11 @@ i3ds::Receiver::Run()
   try
     {
       while (running_)
-	{
-	  if (socket_->Receive(message, timeout_ms_))
-	    {
-	      Handle(message, *socket_);
-	    }
+        {
+          if (socket_->Receive(message, timeout_ms_))
+            {
+              Handle(message, *socket_);
+            }
         }
     }
   catch(std::exception e)

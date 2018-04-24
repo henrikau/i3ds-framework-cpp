@@ -64,19 +64,19 @@ i3ds::Server::Handle(Message& message, Socket& socket)
       response.set_address(message.address());
 
       try
-	{
-	  handlers_[message.address()]->Handle(message, response);
-	}
+        {
+          handlers_[message.address()]->Handle(message, response);
+        }
       catch(CommandError e)
-	{
-	  set_response(error, e);
-	  Encode<CommandResponseCodec>(response, error);
-	}
+        {
+          set_response(error, e);
+          Encode<CommandResponseCodec>(response, error);
+        }
       catch(std::exception e)
-	{
-	  set_response(error, error_other, e.what());
-	  Encode<CommandResponseCodec>(response, error);
-	}
+        {
+          set_response(error, error_other, e.what());
+          Encode<CommandResponseCodec>(response, error);
+        }
     }
 
   socket.Send(response);

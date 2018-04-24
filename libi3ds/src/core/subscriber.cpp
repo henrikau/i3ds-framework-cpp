@@ -54,9 +54,9 @@ i3ds::Subscriber::Handle(Message& message, Socket& socket)
   try
     {
       if (handlers_.count(message.address()) > 0)
-	{
-	  handlers_[message.address()]->Handle(message);
-	}
+        {
+          handlers_[message.address()]->Handle(message);
+        }
     }
   catch (std::exception e)
     {

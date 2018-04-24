@@ -96,7 +96,7 @@ protected:
   // Handler for camera auto exposure command.
   virtual void handle_auto_exposure(AutoExposureService::Data& command);
 
-    // Handler for camera auto exposure command.
+  // Handler for camera auto exposure command.
   virtual void handle_flash(FlashService::Data& command);
 
   // Handler for camera auto exposure command.

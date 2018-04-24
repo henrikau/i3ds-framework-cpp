@@ -45,7 +45,7 @@ protected:
 
   // Handle message, may send using socket.
   virtual void Handle(Message& message, Socket& socket) = 0;
-  
+
   // Context reference.
   Context::Ptr context_;
 

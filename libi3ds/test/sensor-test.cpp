@@ -163,7 +163,8 @@ void TestClient::test_unsupported_rate_command(SampleRate rate, ResultCode error
 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct F {
+struct F
+{
   F()
     : id(1),
       context(Context::Create()),

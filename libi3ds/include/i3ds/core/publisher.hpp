@@ -40,9 +40,9 @@ public:
   {
     if (!socket_)
       {
-	Reset();
+        Reset();
       }
-    
+
     Message message;
 
     message.set_address(Address(node_, T::endpoint));

@@ -33,7 +33,7 @@ i3ds::Client::Execute(EndpointID endpoint, Message& request, Message& response, 
     {
       Reset();
     }
-  
+
   request.set_address(Address(node_, endpoint));
 
   socket_->Send(request);
@@ -59,7 +59,7 @@ i3ds::Client::Execute(EndpointID endpoint, Message& request, Message& response, 
   return true;
 }
 
-void 
+void
 i3ds::Client::Stop()
 {
   socket_.reset();

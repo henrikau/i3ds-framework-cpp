@@ -34,7 +34,8 @@ std::string get_address(zmq::socket_t *socket, std::string input)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-struct F {
+struct F
+{
   F()
     : port(i3ds::AddressServer::DEFAULT_PORT),
       context(1),

@@ -45,7 +45,7 @@ public:
 
     virtual void Handle(const Message& message) = 0;
   };
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   /// Codec wrapper for request/response pattern.
   ////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ public:
     Wrapper(Operation operation) : operation_(operation) {};
 
     virtual ~Wrapper() {};
-    
+
     virtual void Handle(const Message& message)
     {
       Decode<typename T::Codec>(message, data_);
@@ -75,7 +75,7 @@ public:
   private:
 
     const Operation operation_;
-    
+
     typename T::Data data_;
   };
 

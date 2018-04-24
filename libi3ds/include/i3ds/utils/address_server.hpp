@@ -23,25 +23,25 @@ class AddressServer
 {
 public:
 
-    static const int DEFAULT_PORT;
+  static const int DEFAULT_PORT;
 
-    AddressServer(std::string filename, int port = DEFAULT_PORT);
-    virtual ~AddressServer();
+  AddressServer(std::string filename, int port = DEFAULT_PORT);
+  virtual ~AddressServer();
 
-    void Start();
-    void Stop();
-    void Run();
+  void Start();
+  void Stop();
+  void Run();
 
 private:
-    std::map<std::string, std::string> address_book_;
-    zmq::context_t context_;
-    zmq::socket_t socket_;
+  std::map<std::string, std::string> address_book_;
+  zmq::context_t context_;
+  zmq::socket_t socket_;
 
-    volatile bool running_;
-    std::thread worker_;
+  volatile bool running_;
+  std::thread worker_;
 
-    void handle_query();
-    void load_csv_file(std::string filename);
+  void handle_query();
+  void load_csv_file(std::string filename);
 };
 
 } // namespace i3ds

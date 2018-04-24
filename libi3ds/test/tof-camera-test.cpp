@@ -24,7 +24,8 @@ using namespace i3ds;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct F {
+struct F
+{
   F()
     : node(1),
       resx(800),
@@ -97,7 +98,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   BOOST_CHECK(client.set_state(activate));
 
   BOOST_CHECK(client.set_region(region_enabled, region));
-  
+
   BOOST_CHECK(client.load_configuration());
 
   BOOST_CHECK_EQUAL(region_enabled, client.region_enabled());

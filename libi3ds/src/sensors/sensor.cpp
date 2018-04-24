@@ -98,35 +98,35 @@ i3ds::Sensor::handle_state(StateService::Data& command)
     {
     case inactive:
       if (command.request == activate)
-	{
-	  do_activate();
-	  state_ = standby;
-	  result = success;
-	}
+        {
+          do_activate();
+          state_ = standby;
+          result = success;
+        }
       break;
 
     case standby:
       if (command.request == deactivate)
-	{
-	  do_deactivate();
-	  state_ = inactive;
-	  result = success;
-	}
+        {
+          do_deactivate();
+          state_ = inactive;
+          result = success;
+        }
       else if (command.request == start)
-	{
-	  do_start();
-	  state_ = operational;
-	  result = success;
-	}
+        {
+          do_start();
+          state_ = operational;
+          result = success;
+        }
       break;
 
     case operational:
       if (command.request == stop)
-	{
-	  do_stop();
-	  state_ = standby;
-	  result = success;
-	}
+        {
+          do_stop();
+          state_ = standby;
+          result = success;
+        }
       break;
 
     default:

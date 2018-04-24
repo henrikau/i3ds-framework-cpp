@@ -73,39 +73,39 @@ i3ds::Context::get_config(NodeID node, int type)
     }
 
   std::string query = std::to_string(node);
-  
+
   switch (type)
-  {
+    {
     case ZMQ_PUB:
-        query += ",pub";
-        break;
+      query += ",pub";
+      break;
     case ZMQ_SUB:
-        query += ",sub";
-        break;
+      query += ",sub";
+      break;
     case ZMQ_REP:
-        query += ",rep";
-        break;
+      query += ",rep";
+      break;
     case ZMQ_REQ:
-        query += ",req";
-        break;
+      query += ",req";
+      break;
     default:
-        throw std::invalid_argument("type");
-  }
+      throw std::invalid_argument("type");
+    }
   zmq::message_t request (query.length());
   memcpy (request.data (), query.c_str(), query.length());
   address_socket_.send(request);
 
   zmq::message_t reply;
   if (address_socket_.recv(&reply) < 1)
-  {
-    throw std::runtime_error("Could not connect to address server");
-  }
+    {
+      throw std::runtime_error("Could not connect to address server");
+    }
 
   std::string reply_string = std::string(static_cast<char*>(reply.data()), reply.size());
   if (reply_string == "ADDRESS_NOT_FOUND")
-  {
-    throw std::invalid_argument("No address found for node_id, type: " + std::to_string(node) + "," + std::to_string(type));
-  }
+    {
+      throw std::invalid_argument("No address found for node_id, type: " + std::to_string(node) + "," + std::to_string(type));
+    }
   return reply_string;
 }
 
@@ -139,22 +139,22 @@ i3ds::Socket::Attach(NodeID node)
       int port;
       switch(type_)
         {
-          case ZMQ_PUB:
-            port = 7000 + (node & 0xFF);
-            socket_.bind("tcp://*:" + std::to_string(port));
-            break;
-          case ZMQ_SUB:
-            port = 7000 + (node & 0xFF);
-            socket_.connect("tcp://127.0.0.1:" + std::to_string(port));
-            break;
-          case ZMQ_REQ:
-            port = 8000 + (node & 0xFF);
-            socket_.connect("tcp://127.0.0.1:" + std::to_string(port));
-            break;
-          case ZMQ_REP:
-            port = 8000 + (node & 0xFF);
-            socket_.bind("tcp://*:" + std::to_string(port));
-            break;
+        case ZMQ_PUB:
+          port = 7000 + (node & 0xFF);
+          socket_.bind("tcp://*:" + std::to_string(port));
+          break;
+        case ZMQ_SUB:
+          port = 7000 + (node & 0xFF);
+          socket_.connect("tcp://127.0.0.1:" + std::to_string(port));
+          break;
+        case ZMQ_REQ:
+          port = 8000 + (node & 0xFF);
+          socket_.connect("tcp://127.0.0.1:" + std::to_string(port));
+          break;
+        case ZMQ_REP:
+          port = 8000 + (node & 0xFF);
+          socket_.bind("tcp://*:" + std::to_string(port));
+          break;
         }
     }
   else
@@ -165,7 +165,7 @@ i3ds::Socket::Attach(NodeID node)
       if (tolower(operation) == 'b')
         {
           socket_.bind(address);
-        } 
+        }
       else if (tolower(operation) == 'c')
         {
           socket_.connect(address);

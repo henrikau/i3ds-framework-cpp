@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
   po::options_description desc("Allowed manager options");
 
   desc.add_options()
-    ("help", "Produce this message")
-    ("config", po::value<std::string>(&filename)->default_value(""), "Config file with addresses")
-    ("port", po::value<int>(&port)->default_value(i3ds::AddressServer::DEFAULT_PORT), "Port to bind service to")
-    ;
+  ("help", "Produce this message")
+  ("config", po::value<std::string>(&filename)->default_value(""), "Config file with addresses")
+  ("port", po::value<int>(&port)->default_value(i3ds::AddressServer::DEFAULT_PORT), "Port to bind service to")
+  ;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);

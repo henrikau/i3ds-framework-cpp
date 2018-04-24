@@ -37,7 +37,7 @@ void Initialize(Message& msg, Address address, size_t size)
     {
       data[i] = i % 0xFF;
     }
-  
+
   msg.set_payload(data, size);
   msg.set_address(address);
 
@@ -47,7 +47,7 @@ void Initialize(Message& msg, Address address, size_t size)
 void check_message(const Message& msg, const Address& address, const std::string data)
 {
   Address a = msg.address();
-  
+
   BOOST_CHECK_EQUAL(a.node, address.node);
   BOOST_CHECK_EQUAL(a.endpoint, address.endpoint);
   BOOST_CHECK_EQUAL(msg.size(), data.size());
@@ -56,7 +56,8 @@ void check_message(const Message& msg, const Address& address, const std::string
 
 ////////////////////////////////////////////////////////////////////////////////
 
-struct F {
+struct F
+{
   F()
     : address(1, 1),
       context(Context::Create())
@@ -95,15 +96,16 @@ BOOST_AUTO_TEST_CASE(create_id_message_test)
   addr_pairs.push_back({Address(32413,16), "007E9D10"});
   addr_pairs.push_back({Address(12,4), "00000C04"});
 
-  for (auto p : addr_pairs) {
-    Message msg;
+  for (auto p : addr_pairs)
+    {
+      Message msg;
 
-    msg.set_address(p.a);
+      msg.set_address(p.a);
 
-    BOOST_CHECK_EQUAL(p.a.node, msg.node());
-    BOOST_CHECK_EQUAL(p.a.endpoint, msg.endpoint());
-    BOOST_CHECK_EQUAL(p.hex, msg.address().to_string());
-  }
+      BOOST_CHECK_EQUAL(p.a.node, msg.node());
+      BOOST_CHECK_EQUAL(p.a.endpoint, msg.endpoint());
+      BOOST_CHECK_EQUAL(p.hex, msg.address().to_string());
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,9 +115,9 @@ BOOST_AUTO_TEST_CASE(create_message_payload)
   Message msg;
 
   std::string data = "Hello world!";
-  
+
   Initialize(msg, address, data);
-  
+
   BOOST_CHECK_EQUAL(data.size(), msg.size());
   BOOST_CHECK_EQUAL(memcmp(data.c_str(), msg.data(), data.size()), 0);
 }
@@ -129,7 +131,7 @@ BOOST_AUTO_TEST_CASE(request_response_pattern)
 
   server->Attach(address.node);
   client->Attach(address.node);
-  
+
   Message req, res, copy;
 
   Initialize(req, address, "Hello?");
@@ -161,7 +163,7 @@ BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
 
   // Needed to let filter take effect before sending.
   usleep(10000);
-  
+
   Message msg, copy;
 
   Initialize(msg, address, "Hello world!");
@@ -184,10 +186,10 @@ BOOST_AUTO_TEST_CASE(connect_to_address_from_config_file)
   Socket::Ptr server = Socket::Server(context);
   Socket::Ptr client = Socket::Client(context);
 
-  publisher->Attach(node); 
-  subscriber->Attach(node); 
-  server->Attach(node); 
-  client->Attach(node); 
+  publisher->Attach(node);
+  subscriber->Attach(node);
+  server->Attach(node);
+  client->Attach(node);
 
   // Attempt to attach to node id, not found in file
   BOOST_CHECK_THROW(

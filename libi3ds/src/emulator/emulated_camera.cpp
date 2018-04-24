@@ -84,7 +84,7 @@ i3ds::EmulatedCamera::do_start()
 void
 i3ds::EmulatedCamera::do_stop()
 {
-	BOOST_LOG_TRIVIAL(info) << "do_stop()";
+  BOOST_LOG_TRIVIAL(info) << "do_stop()";
   sampler_.Stop();
 }
 

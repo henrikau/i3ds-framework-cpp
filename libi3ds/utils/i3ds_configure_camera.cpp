@@ -88,41 +88,41 @@ int main(int argc, char *argv[])
   po::options_description desc("Allowed camera control options");
 
   desc.add_options()
-    ("help", "Produce this message")
-    ("node", po::value<unsigned int>(&node_id)->required(), "Node ID of camera")
+  ("help", "Produce this message")
+  ("node", po::value<unsigned int>(&node_id)->required(), "Node ID of camera")
 
-    ("activate", "Activate the sensor")
-    ("start", "Start the sensor")
-    ("stop", "Stop the sensor")
-    ("deactivate", "Deactivate the sensor")
+  ("activate", "Activate the sensor")
+  ("start", "Start the sensor")
+  ("stop", "Stop the sensor")
+  ("deactivate", "Deactivate the sensor")
 
-    ("rate", po::value(&rate), "Sensor rate in microseconds")
+  ("rate", po::value(&rate), "Sensor rate in microseconds")
 
-    ("verbose,v", "Print verbose output")
-    ("quite,q", "Quiet ouput")
-    ("print", "Print the camera configuration")
+  ("verbose,v", "Print verbose output")
+  ("quite,q", "Quiet ouput")
+  ("print", "Print the camera configuration")
 
-    ("exposure", po::value(&exposure), "Exposure time in microseconds, gain is optional")
-    ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set exposure")
+  ("exposure", po::value(&exposure), "Exposure time in microseconds, gain is optional")
+  ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set exposure")
 
-    ("auto-exposure", po::value(&enable_auto), "Enable camera auto exposure")
-    ("auto-min-exposure", po::value(&min_exposure)->default_value(0), "Min auto exposure time in microseconds")
-    ("auto-max-exposure", po::value(&max_exposure)->default_value(100000), "Max auto exposure time in microseconds")
-    ("auto-min-gain", po::value(&min_gain)->default_value(0.0), "Min auto gain in decibel")
-    ("auto-max-gain", po::value(&max_gain)->default_value(100.0), "Max auto gain in decibel")
+  ("auto-exposure", po::value(&enable_auto), "Enable camera auto exposure")
+  ("auto-min-exposure", po::value(&min_exposure)->default_value(0), "Min auto exposure time in microseconds")
+  ("auto-max-exposure", po::value(&max_exposure)->default_value(100000), "Max auto exposure time in microseconds")
+  ("auto-min-gain", po::value(&min_gain)->default_value(0.0), "Min auto gain in decibel")
+  ("auto-max-gain", po::value(&max_gain)->default_value(100.0), "Max auto gain in decibel")
 
-    ("region", po::value(&enable_region), "Enable camera region of interest (ROI)")
-    ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
-    ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
-    ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
-    ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
+  ("region", po::value(&enable_region), "Enable camera region of interest (ROI)")
+  ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
+  ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
+  ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
+  ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 
-    ("flash", po::value(&enable_flash), "Enable camera flash")
-    ("flash-strength", po::value(&flash_strength)->default_value(255), "Flash strength from 0 (off) to 255 (full)")
+  ("flash", po::value(&enable_flash), "Enable camera flash")
+  ("flash-strength", po::value(&flash_strength)->default_value(255), "Flash strength from 0 (off) to 255 (full)")
 
-    ("pattern", po::value(&enable_pattern), "Enable camera pattern illumination")
-    ("pattern-sequence", po::value(&pattern_sequence)->default_value(1), "Pattern sequence to use")
-    ;
+  ("pattern", po::value(&enable_pattern), "Enable camera pattern illumination")
+  ("pattern-sequence", po::value(&pattern_sequence)->default_value(1), "Pattern sequence to use")
+  ;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -192,13 +192,13 @@ int main(int argc, char *argv[])
   else if (vm.count("auto-exposure"))
     {
       if (enable_auto)
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Enable auto exposure: " << max_exposure << " [us] " << max_gain << " [dB]";
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Enable auto exposure: " << max_exposure << " [us] " << max_gain << " [dB]";
+        }
       else
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Disable auto exposure";
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Disable auto exposure";
+        }
 
       camera.set_auto_exposure(enable_auto, max_exposure, max_gain);
 
@@ -209,17 +209,17 @@ int main(int argc, char *argv[])
   if (vm.count("region"))
     {
       if (enable_region)
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Enable region: ("
-				  << region.size_x << ","
-				  << region.size_y << ","
-				  << region.offset_x << ","
-				  << region.offset_y << ")";
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Enable region: ("
+                                  << region.size_x << ","
+                                  << region.size_y << ","
+                                  << region.offset_x << ","
+                                  << region.offset_y << ")";
+        }
       else
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Disable region";
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Disable region";
+        }
 
       camera.set_region(enable_region, region);
 
@@ -230,13 +230,13 @@ int main(int argc, char *argv[])
   if (vm.count("flash"))
     {
       if (enable_flash)
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Enable flash: " << flash_strength;
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Enable flash: " << flash_strength;
+        }
       else
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Disable flash";
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Disable flash";
+        }
 
       camera.set_flash(enable_flash, flash_strength);
 
@@ -247,13 +247,13 @@ int main(int argc, char *argv[])
   if (vm.count("pattern"))
     {
       if (enable_pattern)
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Enable pattern: " << pattern_sequence;
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Enable pattern: " << pattern_sequence;
+        }
       else
-	{
-	  BOOST_LOG_TRIVIAL(info) << "Disable pattern";
-	}
+        {
+          BOOST_LOG_TRIVIAL(info) << "Disable pattern";
+        }
 
       camera.set_pattern(enable_pattern, pattern_sequence);
 

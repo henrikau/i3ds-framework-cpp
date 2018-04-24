@@ -42,7 +42,7 @@ protected:
 private:
 
   bool send_sample(unsigned long timestamp_us);
-  
+
   Sampler sampler_;
 
   Publisher publisher_;

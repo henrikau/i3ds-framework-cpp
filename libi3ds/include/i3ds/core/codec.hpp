@@ -56,11 +56,13 @@ struct NullCodec
 
   static inline void Initialize(Data& val) {};
 
-  static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints) {
+  static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+  {
     return true;
   }
 
-  static inline flag Decode(Data* pVal, BitStream* pBitStrm, int* pErrCode) {
+  static inline flag Decode(Data* pVal, BitStream* pBitStrm, int* pErrCode)
+  {
     return true;
   }
 };
