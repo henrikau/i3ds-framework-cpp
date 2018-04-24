@@ -10,7 +10,24 @@
 
 #include <iostream>
 
+
 #include "i3ds/emulators/emulated_camera.hpp"
+
+
+#define BOOST_LOG_DYN_LINK
+
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
+
+
+namespace logging = boost::log;
+
+
+
+
+
 
 i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx, int resy)
   : Camera(node),
@@ -54,34 +71,40 @@ i3ds::EmulatedCamera::~EmulatedCamera()
 void
 i3ds::EmulatedCamera::do_activate()
 {
+  BOOST_LOG_TRIVIAL(info) << "do_activate()";
 }
 
 void
 i3ds::EmulatedCamera::do_start()
 {
+  BOOST_LOG_TRIVIAL(info) << "do_start()";
   sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedCamera::do_stop()
 {
+	BOOST_LOG_TRIVIAL(info) << "do_stop()";
   sampler_.Stop();
 }
 
 void
 i3ds::EmulatedCamera::do_deactivate()
 {
+  BOOST_LOG_TRIVIAL(info) << "do_deactivate()";
 }
 
 bool
 i3ds::EmulatedCamera::is_rate_supported(SampleRate rate)
 {
+  BOOST_LOG_TRIVIAL(info) << "is_rate_supported()";
   return 0 < rate && rate <= 10000000;
 }
 
 void
 i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 {
+  BOOST_LOG_TRIVIAL(info) << "handle_exposure()";
   auto_exposure_enabled_ = false;
   exposure_ = command.request.exposure;
   gain_ = command.request.gain;
@@ -90,6 +113,7 @@ i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 void
 i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 {
+  BOOST_LOG_TRIVIAL(info) << "handle_auto_exposure()";
   auto_exposure_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -102,6 +126,7 @@ i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 void
 i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 {
+  BOOST_LOG_TRIVIAL(info) << "handle_region()";
   region_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -113,6 +138,7 @@ i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 void
 i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 {
+  BOOST_LOG_TRIVIAL(info) << "handle_flash()";
   flash_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -124,6 +150,7 @@ i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 void
 i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
 {
+  BOOST_LOG_TRIVIAL(info) << "do_pattern()";
   pattern_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -135,6 +162,7 @@ i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
 bool
 i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
 {
+  BOOST_LOG_TRIVIAL(info) << "send_sample()";
   std::cout << "Send: " << timestamp_us << std::endl;
 
   frame_.attributes.timestamp.microseconds = timestamp_us;
