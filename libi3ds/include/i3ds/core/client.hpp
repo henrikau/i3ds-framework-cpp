@@ -37,25 +37,24 @@ public:
   {
     Message request;
     Encode<typename T::RequestCodec>(request, data.request);
-
     Send(T::endpoint, request);
   }
 
   // Receive response for client.
   template<typename T>
-  void Receive(typename T::Data& data, int timeout_ms = -1)
+  void Receive(typename T::Data& data)
   {
     Message response;
-    Receive(T::endpoint, response, timeout_ms);
+    Receive(T::endpoint, response);
     Decode<typename T::ResponseCodec>(response, data.response);
   }
 
   // Execute call for client, returns true if successful.
   template<typename T>
-  void Call(typename T::Data& data, int timeout_ms = -1)
+  void Call(typename T::Data& data)
   {
     Send<T>(data);
-    Receive<T>(data, timeout_ms);
+    Receive<T>(data);
   }
 
   // Releases socket
@@ -63,6 +62,12 @@ public:
 
   // Check pending request status.
   bool pending() const {return pending_;}
+
+  // Get timeout in milliseconds for client, -1 is forever, 0 immediate.
+  int timeout() const {return timeout_;}
+
+  // Set timeout in milliseconds for client, -1 is forever, 0 immediate.
+  void set_timeout(int t) {timeout_ = t;}
 
 private:
 
@@ -73,7 +78,7 @@ private:
   void Send(EndpointID endpoint, Message& request);
 
   // Receive response message for client.
-  void Receive(EndpointID endpoint, Message& response, int timeout_ms);
+  void Receive(EndpointID endpoint, Message& response);
 
   // Node ID.
   const NodeID node_;
@@ -86,6 +91,9 @@ private:
 
   // Pending status.
   bool pending_;
+
+  // The timeout for waiting on requests.
+  int timeout_;
 };
 
 } // namespace i3ds

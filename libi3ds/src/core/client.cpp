@@ -12,7 +12,8 @@
 
 i3ds::Client::Client(Context::Ptr context, NodeID node)
   : node_(node),
-    context_(context)
+    context_(context),
+    timeout_(-1)
 {
 }
 
@@ -43,14 +44,14 @@ i3ds::Client::Send(EndpointID endpoint, Message& request)
 }
 
 void
-i3ds::Client::Receive(EndpointID endpoint, Message& response, int timeout_ms)
+i3ds::Client::Receive(EndpointID endpoint, Message& response)
 {
   if (!socket_ || !pending_)
     {
       throw CommunicationError("No pending request to receive!");
     }
 
-  socket_->Receive(response, timeout_ms);
+  socket_->Receive(response, timeout_);
 
   pending_ = false;
 

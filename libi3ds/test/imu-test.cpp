@@ -36,6 +36,7 @@ struct F
     BOOST_TEST_MESSAGE("setup fixture");
     imu.Attach(server);
     server.Start();
+    client.set_timeout(1000);
   }
 
   ~F()

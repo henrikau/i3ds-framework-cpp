@@ -104,7 +104,7 @@ ResultCode TestClient::issue_state_command(StateCommand sc)
 
   command.request = sc;
 
-  Call<Sensor::StateService>(command, 1000);
+  Call<Sensor::StateService>(command);
 
   return command.response.result;
 }
@@ -131,7 +131,7 @@ ResultCode TestClient::issue_rate_command(SampleRate rate)
   command.request.rate = rate;
   command.request.count = 0;
 
-  Call<Sensor::SampleService>(command, 1000);
+  Call<Sensor::SampleService>(command);
 
   return command.response.result;
 }
@@ -171,6 +171,7 @@ struct F
     BOOST_TEST_MESSAGE("setup fixture");
     sensor.Attach(server);
     server.Start();
+    client.set_timeout(1000);
   }
 
   ~F()

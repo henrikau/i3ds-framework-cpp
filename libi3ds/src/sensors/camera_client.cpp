@@ -19,7 +19,7 @@ i3ds::CameraClient::CameraClient(Context::Ptr context, NodeID sensor)
 void
 i3ds::CameraClient::load_configuration()
 {
-  Call<Camera::ConfigurationService>(config_, 1000);
+  Call<Camera::ConfigurationService>(config_);
 }
 
 void
@@ -30,7 +30,7 @@ i3ds::CameraClient::set_exposure(ExposureTime exposure, SensorGain gain)
   command.request.exposure = exposure;
   command.request.gain = gain;
 
-  Call<Camera::ExposureService>(command, 1000);
+  Call<Camera::ExposureService>(command);
 }
 
 void
@@ -42,7 +42,7 @@ i3ds::CameraClient::set_auto_exposure(bool enable, ExposureTime max_exposure, Se
   command.request.max_exposure = max_exposure;
   command.request.max_gain = max_gain;
 
-  Call<Camera::AutoExposureService>(command, 1000);
+  Call<Camera::AutoExposureService>(command);
 }
 
 void
@@ -53,7 +53,7 @@ i3ds::CameraClient::set_region(bool enable, PlanarRegion region)
   command.request.enable = enable;
   command.request.region = region;
 
-  Call<Camera::RegionService>(command, 1000);
+  Call<Camera::RegionService>(command);
 }
 
 void
@@ -64,7 +64,7 @@ i3ds::CameraClient::set_flash(bool enable, FlashStrength strength)
   command.request.enable = enable;
   command.request.strength = strength;
 
-  Call<Camera::FlashService>(command, 1000);
+  Call<Camera::FlashService>(command);
 }
 
 void
@@ -75,5 +75,5 @@ i3ds::CameraClient::set_pattern(bool enable, PatternSequence sequence)
   command.request.enable = enable;
   command.request.sequence = sequence;
 
-  Call<Camera::PatternService>(command, 1000);
+  Call<Camera::PatternService>(command);
 }

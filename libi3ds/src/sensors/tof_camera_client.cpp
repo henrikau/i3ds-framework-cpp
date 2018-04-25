@@ -19,7 +19,7 @@ i3ds::ToFCameraClient::ToFCameraClient(Context::Ptr context, NodeID sensor)
 void
 i3ds::ToFCameraClient::load_configuration()
 {
-  Call<ToFCamera::ConfigurationService>(config_, 1000);
+  Call<ToFCamera::ConfigurationService>(config_);
 }
 
 void
@@ -30,5 +30,5 @@ i3ds::ToFCameraClient::set_region(bool enable, PlanarRegion region)
   command.request.enable = enable;
   command.request.region = region;
 
-  Call<ToFCamera::RegionService>(command, 1000);
+  Call<ToFCamera::RegionService>(command);
 }
