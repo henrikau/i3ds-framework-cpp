@@ -61,8 +61,10 @@ if (NOT CMAKE_CXX_FLAGS)
 
   if (${DEBUG})
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
   else ()
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
   endif ()
 
   check_cxx_compiler_flag ("-std=c++11" CXX_SUPPORT_STD_11)
