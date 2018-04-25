@@ -31,15 +31,23 @@ public:
   // Get node ID of client.
   NodeID node() const {return node_;}
 
-  // Execute call for client, returns true if successful.
+  // Send request for client.
   template<typename T>
-  bool Call(typename T::Data& data, int timeout_ms = -1)
+  void Send(typename T::Data& data)
   {
-    Message request, response;
-
+    Message request;
     Encode<typename T::RequestCodec>(request, data.request);
 
-    if (!Execute(T::endpoint, request, response, timeout_ms))
+    Send(T::endpoint, request);
+  }
+
+  // Receive response for client.
+  template<typename T>
+  bool Receive(typename T::Data& data, int timeout_ms = -1)
+  {
+    Message response;
+
+    if (!Receive(T::endpoint, response, timeout_ms))
       {
         return false;
       }
@@ -49,16 +57,30 @@ public:
     return true;
   }
 
+  // Execute call for client, returns true if successful.
+  template<typename T>
+  bool Call(typename T::Data& data, int timeout_ms = -1)
+  {
+    Send<T>(data);
+    return Receive<T>(data, timeout_ms);
+  }
+
   // Releases socket
   void Stop();
+
+  // Check pending request status.
+  bool pending() const {return pending_;}
 
 private:
 
   // Reset socket if receive fails.
   void Reset();
 
-  // Execute call.
-  bool Execute(EndpointID endpoint, Message& request, Message& response, int timeout_ms);
+  // Send request message for client.
+  void Send(EndpointID endpoint, Message& request);
+
+  // Receive response message for client.
+  bool Receive(EndpointID endpoint, Message& response, int timeout_ms);
 
   // Node ID.
   const NodeID node_;
@@ -68,6 +90,9 @@ private:
 
   // Client socket.
   Socket::Ptr socket_;
+
+  // Pending status.
+  bool pending_;
 };
 
 } // namespace i3ds

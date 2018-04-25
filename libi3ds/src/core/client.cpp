@@ -20,16 +20,17 @@ i3ds::Client::~Client()
 {
 }
 
-void i3ds::Client::Reset()
+void
+i3ds::Client::Reset()
 {
   socket_ = Socket::Client(context_);
   socket_->Attach(node_);
 }
 
-bool
-i3ds::Client::Execute(EndpointID endpoint, Message& request, Message& response, int timeout_ms)
+void
+i3ds::Client::Send(EndpointID endpoint, Message& request)
 {
-  if (!socket_)
+  if (!socket_ || pending_)
     {
       Reset();
     }
@@ -38,11 +39,24 @@ i3ds::Client::Execute(EndpointID endpoint, Message& request, Message& response, 
 
   socket_->Send(request);
 
+  pending_ = true;
+}
+
+bool
+i3ds::Client::Receive(EndpointID endpoint, Message& response, int timeout_ms)
+{
+  if (!socket_ || !pending_)
+    {
+      return false;
+    }
+
   if (!socket_->Receive(response, timeout_ms))
     {
       socket_.reset();
       return false;
     }
+
+  pending_ = false;
 
   Address a = response.address();
 
