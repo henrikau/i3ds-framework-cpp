@@ -15,6 +15,7 @@
 #include <cstring>
 
 #include "i3ds/core/communication.hpp"
+#include "i3ds/core/exception.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Macro to create codec wrapper for ASN.1 uPER encode/decode functions.
@@ -113,7 +114,7 @@ void Encode(Message& message, const typename T::Data& data)
   if (!T::Encode(&data, &bs, &errcode, true))
     {
       free(bs.buf);
-      throw std::runtime_error("Cannot encode: Bad data " + std::to_string(errcode));
+      throw CodecError("Cannot encode: Bad data " + std::to_string(errcode));
     }
 
   message.set_payload(bs.buf, bs.currentByte + 1, false);
@@ -146,7 +147,7 @@ void Decode(const Message& message, typename T::Data& data)
 
   if (!T::Decode(&data, &bs, &errcode))
     {
-      throw std::runtime_error("Cannot decode: Bad data " + std::to_string(errcode));
+      throw CodecError("Cannot decode: Bad data " + std::to_string(errcode));
     }
 }
 
@@ -159,7 +160,7 @@ inline void Decode<NullCodec>(const Message& message, NullCodec::Data& data)
 {
   if (message.has_payload())
     {
-      throw std::runtime_error("Cannot decode: Expected no payload for null codec");
+      throw CodecError("Cannot decode: Expected no payload for null codec");
     }
 }
 

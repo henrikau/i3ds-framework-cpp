@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "i3ds/core/communication.hpp"
+#include "i3ds/core/exception.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -22,7 +23,7 @@ i3ds::Address::Address(std::string address)
 {
   if (address.size() != 8)
     {
-      throw std::runtime_error("Hex address must be 8 bytes is " + address);
+      throw CommunicationError("Hex address must be 8 bytes is " + address);
     }
 
   char buffer[9];
@@ -91,21 +92,25 @@ i3ds::Context::get_config(NodeID node, int type)
     default:
       throw std::invalid_argument("type");
     }
+
   zmq::message_t request (query.length());
   memcpy (request.data (), query.c_str(), query.length());
   address_socket_.send(request);
 
   zmq::message_t reply;
+
   if (address_socket_.recv(&reply) < 1)
     {
-      throw std::runtime_error("Could not connect to address server");
+      throw CommunicationError("Could not connect to address server");
     }
 
   std::string reply_string = std::string(static_cast<char*>(reply.data()), reply.size());
+
   if (reply_string == "ADDRESS_NOT_FOUND")
     {
-      throw std::invalid_argument("No address found for node_id, type: " + std::to_string(node) + "," + std::to_string(type));
+      throw CommunicationError("No address found for node_id, type: " + std::to_string(node) + "," + std::to_string(type));
     }
+
   return reply_string;
 }
 
@@ -172,7 +177,7 @@ i3ds::Socket::Attach(NodeID node)
         }
       else
         {
-          throw std::runtime_error("Invalid bind/connect field in config file for " + node);
+          throw CommunicationError("Invalid bind/connect field in config file for " + node);
         }
     }
   attached_.insert(node);
@@ -202,12 +207,12 @@ i3ds::Socket::Receive(Message& message, int timeout_ms)
 
   if (header.size() != 8)
     {
-      throw std::runtime_error("Header must be 8 bytes is " + std::to_string(header.size()));
+      throw CommunicationError("Header must be 8 bytes is " + std::to_string(header.size()));
     }
 
   if (!header.more())
     {
-      throw std::runtime_error("Received message without payload frame");
+      throw CommunicationError("Received message without payload frame");
     }
 
   message.set_address(Address(std::string(header.data<char>(), header.size())));
