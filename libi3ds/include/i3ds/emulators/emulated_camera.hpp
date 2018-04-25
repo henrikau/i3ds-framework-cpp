@@ -11,6 +11,8 @@
 #ifndef __I3DS_EMULATED_CAMERA_HPP
 #define __I3DS_EMULATED_CAMERA_HPP
 
+#include <memory>
+
 #include "i3ds/core/topic.hpp"
 #include "i3ds/core/publisher.hpp"
 #include "i3ds/sensors/camera.hpp"
@@ -22,8 +24,6 @@ namespace i3ds
 class EmulatedCamera : public Camera
 {
 public:
-
-  typedef Topic<128, CameraMeasurement4MCodec> ImageMeasurement;
 
   EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy);
   virtual ~EmulatedCamera();
@@ -46,6 +46,9 @@ public:
 
 protected:
 
+  const int resx_;
+  const int resy_;
+
   // Actions.
   virtual void do_activate();
   virtual void do_start();
@@ -59,12 +62,7 @@ protected:
   virtual void handle_flash(FlashService::Data& command);
   virtual void handle_pattern(PatternService::Data& command);
 
-private:
-
-  bool send_sample(unsigned long timestamp_us);
-
-  const int resx_;
-  const int resy_;
+  virtual bool send_sample(unsigned long timestamp_us) = 0;
 
   ExposureTime exposure_;
   SensorGain gain_;
@@ -81,7 +79,54 @@ private:
   Sampler sampler_;
 
   Publisher publisher_;
-  CameraMeasurement4M frame_;
+};
+
+class EmulatedTIRCamera : public EmulatedCamera
+{
+public:
+
+  typedef Topic<128, CameraMeasurement1MCodec> ImageMeasurement;
+
+  EmulatedTIRCamera(Context::Ptr context, NodeID id);
+  virtual ~EmulatedTIRCamera() {};
+
+protected:
+
+  virtual bool send_sample(unsigned long timestamp_us);
+
+  std::unique_ptr<ImageMeasurement::Data> frame_;
+};
+
+class EmulatedHRCamera : public EmulatedCamera
+{
+public:
+
+  typedef Topic<128, CameraMeasurement8MCodec> ImageMeasurement;
+
+  EmulatedHRCamera(Context::Ptr context, NodeID id);
+  virtual ~EmulatedHRCamera() {};
+
+protected:
+
+  virtual bool send_sample(unsigned long timestamp_us);
+
+  std::unique_ptr<ImageMeasurement::Data> frame_;
+};
+
+class EmulatedStereoCamera : public EmulatedCamera
+{
+public:
+
+  typedef Topic<128, StereoCameraMeasurement8MCodec> ImageMeasurement;
+
+  EmulatedStereoCamera(Context::Ptr context, NodeID id);
+  virtual ~EmulatedStereoCamera() {};
+
+protected:
+
+  virtual bool send_sample(unsigned long timestamp_us);
+
+  std::unique_ptr<ImageMeasurement::Data> frame_;
 };
 
 } // namespace i3ds

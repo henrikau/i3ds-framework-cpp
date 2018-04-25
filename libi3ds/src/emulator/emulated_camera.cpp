@@ -10,9 +10,7 @@
 
 #include <iostream>
 
-
 #include "i3ds/emulators/emulated_camera.hpp"
-
 
 #define BOOST_LOG_DYN_LINK
 
@@ -20,14 +18,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 
-
-
 namespace logging = boost::log;
-
-
-
-
-
 
 i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx, int resy)
   : Camera(node),
@@ -36,6 +27,8 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx
     sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
+  BOOST_LOG_TRIVIAL(info) << "Create emulated camera...";
+
   exposure_ = 0;
   gain_ = 0.0;
 
@@ -53,15 +46,6 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx
 
   pattern_enabled_ = false;
   pattern_sequence_ = 0;
-
-  CameraMeasurement4MCodec::Initialize(frame_);
-
-  frame_.frame_mode = mode_mono;
-  frame_.data_depth = 12;
-  frame_.pixel_size = 2;
-  frame_.region.size_x = resx_;
-  frame_.region.size_y = resy_;
-  frame_.image.nCount = resx_ * resy_ * 2;
 }
 
 i3ds::EmulatedCamera::~EmulatedCamera()
@@ -71,40 +55,40 @@ i3ds::EmulatedCamera::~EmulatedCamera()
 void
 i3ds::EmulatedCamera::do_activate()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_activate()";
+  BOOST_LOG_TRIVIAL(info) << "do_activate() " << node();
 }
 
 void
 i3ds::EmulatedCamera::do_start()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_start()";
+  BOOST_LOG_TRIVIAL(info) << "do_start() " << node();
   sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedCamera::do_stop()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_stop()";
+  BOOST_LOG_TRIVIAL(info) << "do_stop() " << node();
   sampler_.Stop();
 }
 
 void
 i3ds::EmulatedCamera::do_deactivate()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_deactivate()";
+  BOOST_LOG_TRIVIAL(info) << "do_deactivate() " << node();
 }
 
 bool
 i3ds::EmulatedCamera::is_rate_supported(SampleRate rate)
 {
-  BOOST_LOG_TRIVIAL(info) << "is_rate_supported()";
+  BOOST_LOG_TRIVIAL(info) << "is_rate_supported() " << node();
   return 0 < rate && rate <= 10000000;
 }
 
 void
 i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_exposure()";
+  BOOST_LOG_TRIVIAL(info) << "handle_exposure() " << node();
   auto_exposure_enabled_ = false;
   exposure_ = command.request.exposure;
   gain_ = command.request.gain;
@@ -113,7 +97,7 @@ i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 void
 i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_auto_exposure()";
+  BOOST_LOG_TRIVIAL(info) << "handle_auto_exposure() " << node();
   auto_exposure_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -126,7 +110,7 @@ i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 void
 i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_region()";
+  BOOST_LOG_TRIVIAL(info) << "handle_region() " << node();
   region_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -138,7 +122,7 @@ i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 void
 i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_flash()";
+  BOOST_LOG_TRIVIAL(info) << "handle_flash() " << node();
   flash_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -150,7 +134,7 @@ i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 void
 i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "do_pattern()";
+  BOOST_LOG_TRIVIAL(info) << "do_pattern() " << node();
   pattern_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -159,16 +143,96 @@ i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
     }
 }
 
-bool
-i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
+i3ds::EmulatedTIRCamera::EmulatedTIRCamera(Context::Ptr context, NodeID node)
+  : EmulatedCamera(context, node, 640, 480),
+    frame_(new ImageMeasurement::Data())
 {
-  BOOST_LOG_TRIVIAL(info) << "send_sample()";
-  std::cout << "Send: " << timestamp_us << std::endl;
+  ImageMeasurement::Codec::Initialize(*frame_);
 
-  frame_.attributes.timestamp.microseconds = timestamp_us;
-  frame_.attributes.validity = sample_valid;
+  frame_->frame_mode = mode_mono;
+  frame_->data_depth = 16;
+  frame_->pixel_size = 2;
+  frame_->region.size_x = resx_;
+  frame_->region.size_y = resy_;
+  frame_->image.nCount = resx_ * resy_ * frame_->pixel_size;
 
-  publisher_.Send<ImageMeasurement>(frame_);
+  BOOST_LOG_TRIVIAL(info) << "TIR image size: "
+                          << frame_->image.nCount / 1024.0
+                          << " KiB";
+}
+
+i3ds::EmulatedHRCamera::EmulatedHRCamera(Context::Ptr context, NodeID node)
+  : EmulatedCamera(context, node, 2048, 2048),
+    frame_(new ImageMeasurement::Data())
+{
+  ImageMeasurement::Codec::Initialize(*frame_);
+
+  frame_->frame_mode = mode_mono;
+  frame_->data_depth = 12;
+  frame_->pixel_size = 2;
+  frame_->region.size_x = resx_;
+  frame_->region.size_y = resy_;
+  frame_->image.nCount = resx_ * resy_ * frame_->pixel_size;
+
+  BOOST_LOG_TRIVIAL(info) << "HR image size: "
+                          << frame_->image.nCount / 1024.0
+                          << " KiB";
+}
+
+i3ds::EmulatedStereoCamera::EmulatedStereoCamera(Context::Ptr context, NodeID node)
+  : EmulatedCamera(context, node, 2048, 2048),
+    frame_(new ImageMeasurement::Data())
+{
+  ImageMeasurement::Codec::Initialize(*frame_);
+
+  frame_->frame_mode = mode_mono;
+  frame_->data_depth = 12;
+  frame_->pixel_size = 2;
+  frame_->region.size_x = resx_;
+  frame_->region.size_y = resy_;
+  frame_->image_left.nCount = resx_ * resy_ * frame_->pixel_size;
+  frame_->image_right.nCount = resx_ * resy_ * frame_->pixel_size;
+
+  BOOST_LOG_TRIVIAL(info) << "Stereo image size: "
+                          << 2 * frame_->image_left.nCount / 1024.0
+                          << " KiB";
+}
+
+bool
+i3ds::EmulatedTIRCamera::send_sample(unsigned long timestamp_us)
+{
+  BOOST_LOG_TRIVIAL(trace) << "Send TIR sample " << timestamp_us;
+
+  frame_->attributes.timestamp.microseconds = timestamp_us;
+  frame_->attributes.validity = sample_valid;
+
+  publisher_.Send<ImageMeasurement>(*frame_);
+
+  return true;
+}
+
+bool
+i3ds::EmulatedHRCamera::send_sample(unsigned long timestamp_us)
+{
+  BOOST_LOG_TRIVIAL(trace) << "Send HR sample " << timestamp_us;
+
+  frame_->attributes.timestamp.microseconds = timestamp_us;
+  frame_->attributes.validity = sample_valid;
+
+  publisher_.Send<ImageMeasurement>(*frame_);
+
+  return true;
+}
+
+bool
+i3ds::EmulatedStereoCamera::send_sample(unsigned long timestamp_us)
+{
+  BOOST_LOG_TRIVIAL(trace) << "Send stereo sample " << timestamp_us;
+
+  frame_->attributes.timestamp.microseconds = timestamp_us;
+  frame_->attributes.validity = sample_valid;
+
+  publisher_.Send<ImageMeasurement>(*frame_);
 
   return true;
 }

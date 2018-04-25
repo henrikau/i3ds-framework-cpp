@@ -28,11 +28,9 @@ struct F
 {
   F()
     : node(1),
-      resx(800),
-      resy(600),
       context(Context::Create()),
       server(context),
-      camera(context, node, resx, resy),
+      camera(context, node),
       client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
@@ -48,11 +46,10 @@ struct F
   }
 
   const NodeID node;
-  const int resx, resy;
 
   Context::Ptr context;
   Server server;
-  EmulatedCamera camera;
+  EmulatedHRCamera camera;
   CameraClient client;
 };
 
@@ -172,7 +169,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 int received;
 
 void
-handle_measurement(EmulatedCamera::ImageMeasurement::Data& data)
+handle_measurement(EmulatedHRCamera::ImageMeasurement::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
   received++;
@@ -183,8 +180,7 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedCamera::ImageMeasurement>(client.node(), &handle_measurement);
-
+  subscriber.Attach<EmulatedHRCamera::ImageMeasurement>(client.node(), &handle_measurement);
 
   SampleRate rate = 100000;
 
