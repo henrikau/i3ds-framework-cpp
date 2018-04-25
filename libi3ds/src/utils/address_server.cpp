@@ -62,7 +62,7 @@ i3ds::AddressServer::handle_query()
 {
   zmq::message_t request;
 
-  if (socket_.recv(&request)>0)
+  if (socket_.recv(&request) > 0)
     {
       std::string query = std::string(static_cast<char*>(request.data()), request.size());
       std::string result;

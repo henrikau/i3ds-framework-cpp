@@ -23,11 +23,11 @@ public:
 
   CameraClient(Context::Ptr context, NodeID sensor);
 
-  bool set_exposure(ExposureTime exposure, SensorGain gain);
-  bool set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
-  bool set_region(bool enable, PlanarRegion region);
-  bool set_flash(bool enable, FlashStrength strength);
-  bool set_pattern(bool enable, PatternSequence sequence);
+  void set_exposure(ExposureTime exposure, SensorGain gain);
+  void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
+  void set_region(bool enable, PlanarRegion region);
+  void set_flash(bool enable, FlashStrength strength);
+  void set_pattern(bool enable, PatternSequence sequence);
 
   ExposureTime exposure() const {return config_.response.exposure;}
   SensorGain gain() const {return config_.response.gain;}
@@ -41,7 +41,7 @@ public:
   bool pattern_enabled() const {return config_.response.pattern_enabled;}
   PatternSequence pattern_sequence() const {return config_.response.pattern_sequence;}
 
-  bool load_configuration();
+  void load_configuration();
 
 private:
 

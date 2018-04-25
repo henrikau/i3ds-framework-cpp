@@ -17,6 +17,7 @@
 #include <map>
 
 #include "i3ds/core/communication.hpp"
+#include "i3ds/core/exception.hpp"
 #include "i3ds/utils/address_server.hpp"
 
 using namespace i3ds;
@@ -178,9 +179,12 @@ BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
 
 BOOST_AUTO_TEST_CASE(connect_to_address_from_config_file)
 {
-  AddressServer srv("test_addresses.csv"); // Default port assumed by Context
-  srv.Start();
+  AddressServer address_server("test_addresses.csv"); // Default port assumed by Context
+
+  address_server.Start();
+
   int node = 323; // Known node_id from test-file
+
   Socket::Ptr publisher = Socket::Publisher(context);
   Socket::Ptr subscriber = Socket::Subscriber(context);
   Socket::Ptr server = Socket::Server(context);
@@ -192,12 +196,9 @@ BOOST_AUTO_TEST_CASE(connect_to_address_from_config_file)
   client->Attach(node);
 
   // Attempt to attach to node id, not found in file
-  BOOST_CHECK_THROW(
-    publisher->Attach(5432),
-    std::invalid_argument
-  )
+  BOOST_CHECK_THROW(publisher->Attach(5432), CommunicationError);
 
-  srv.Stop();
+  address_server.Stop();
 }
 ////////////////////////////////////////////////////////////////////////////////
 

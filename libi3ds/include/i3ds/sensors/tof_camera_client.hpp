@@ -23,17 +23,16 @@ public:
 
   ToFCameraClient(Context::Ptr context, NodeID sensor);
 
-  bool set_region(bool enable, PlanarRegion region);
+  void set_region(bool enable, PlanarRegion region);
 
   bool region_enabled() const {return config_.response.region_enabled;}
   PlanarRegion region() const {return config_.response.region;}
 
-  bool load_configuration();
+  void load_configuration();
 
 private:
 
   ToFCamera::ConfigurationService::Data config_;
-
 };
 
 } // namespace i3ds

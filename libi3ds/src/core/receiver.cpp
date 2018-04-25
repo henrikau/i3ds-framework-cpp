@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "i3ds/core/receiver.hpp"
+#include "i3ds/core/exception.hpp"
 
 i3ds::Receiver::Receiver(Context::Ptr context)
   : context_(context), timeout_ms_(100), running_(false)
@@ -25,6 +26,11 @@ i3ds::Receiver::~Receiver()
 void
 i3ds::Receiver::Start()
 {
+  if (running_)
+    {
+      throw CommunicationError("Receiver is already running");
+    }
+
   running_ = true;
   worker_ = std::thread(&i3ds::Receiver::Run, this);
 }
@@ -47,19 +53,31 @@ i3ds::Receiver::Run()
 
   socket_ = Create();
 
-  try
+  while (running_)
     {
-      while (running_)
+      try
         {
-          if (socket_->Receive(message, timeout_ms_))
-            {
-              Handle(message, *socket_);
-            }
+          socket_->Receive(message, timeout_ms_);
+          Handle(message, *socket_);
         }
-    }
-  catch(std::exception e)
-    {
-      std::cerr << "Receiver got error: " << e.what() << std::endl;
+      catch(Timeout e)
+        {
+          // Carry on...
+        }
+      catch(CodecError e)
+        {
+          std::cerr << "Codec error: " << e.what() << std::endl;
+        }
+      catch(CommunicationError e)
+        {
+          std::cerr << "Communication error: " << e.what() << std::endl;
+          running_ = false;
+        }
+      catch(std::exception e)
+        {
+          std::cerr << "Exception: " << e.what() << std::endl;
+          running_ = false;
+        }
     }
 
   socket_.reset();

@@ -71,12 +71,12 @@ BOOST_AUTO_TEST_CASE(camera_creation)
 BOOST_AUTO_TEST_CASE(camera_command)
 {
   BOOST_CHECK_EQUAL(camera.state(), inactive);
-  BOOST_CHECK(client.set_state(activate));
+  client.set_state(activate);
   BOOST_CHECK_EQUAL(camera.state(), standby);
 
   PlanarRegion r1 = {300, 200, 150, 100};
 
-  BOOST_CHECK(client.set_region(true, r1));
+  client.set_region(true, r1);
 
   BOOST_CHECK_EQUAL(camera.region_enabled(), true);
 
@@ -95,11 +95,9 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   bool region_enabled = true;
   PlanarRegion region = {300, 200, 150, 100};
 
-  BOOST_CHECK(client.set_state(activate));
-
-  BOOST_CHECK(client.set_region(region_enabled, region));
-
-  BOOST_CHECK(client.load_configuration());
+  client.set_state(activate);
+  client.set_region(region_enabled, region);
+  client.load_configuration();
 
   BOOST_CHECK_EQUAL(region_enabled, client.region_enabled());
   BOOST_CHECK_EQUAL(region.size_x, client.region().size_x);
@@ -129,15 +127,15 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
 
   SampleRate rate = 100000;
 
-  BOOST_CHECK(client.set_state(activate));
-  BOOST_CHECK(client.set_rate(rate));
-  BOOST_CHECK(client.set_state(start));
+  client.set_state(activate);
+  client.set_rate(rate);
+  client.set_state(start);
 
   subscriber.Start();
 
   std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
 
-  BOOST_CHECK(client.set_state(stop));
+  client.set_state(stop);
 
   std::chrono::milliseconds(100);
   subscriber.Stop();

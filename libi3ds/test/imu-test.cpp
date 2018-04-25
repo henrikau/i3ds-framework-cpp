@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(imu_creation)
 BOOST_AUTO_TEST_CASE(imu_state_command)
 {
   BOOST_CHECK_EQUAL(imu.state(), inactive);
-  BOOST_CHECK(client.set_state(activate));
+  client.set_state(activate);
   BOOST_CHECK_EQUAL(imu.state(), standby);
 }
 
@@ -99,15 +99,15 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
 
   SampleRate rate = 100000;
 
-  BOOST_CHECK(client.set_state(activate));
-  BOOST_CHECK(client.set_rate(rate));
-  BOOST_CHECK(client.set_state(start));
+  client.set_state(activate);
+  client.set_rate(rate);
+  client.set_state(start);
 
   subscriber.Start();
 
   std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
 
-  BOOST_CHECK(client.set_state(stop));
+  client.set_state(stop);
 
   std::chrono::milliseconds(100);
   subscriber.Stop();

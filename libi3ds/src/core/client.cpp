@@ -42,7 +42,7 @@ i3ds::Client::Send(EndpointID endpoint, Message& request)
   pending_ = true;
 }
 
-bool
+void
 i3ds::Client::Receive(EndpointID endpoint, Message& response, int timeout_ms)
 {
   if (!socket_ || !pending_)
@@ -50,11 +50,7 @@ i3ds::Client::Receive(EndpointID endpoint, Message& response, int timeout_ms)
       throw CommunicationError("No pending request to receive!");
     }
 
-  if (!socket_->Receive(response, timeout_ms))
-    {
-      socket_.reset();
-      return false;
-    }
+  socket_->Receive(response, timeout_ms);
 
   pending_ = false;
 
@@ -69,8 +65,6 @@ i3ds::Client::Receive(EndpointID endpoint, Message& response, int timeout_ms)
     {
       throw CommunicationError("Response has wrong endpoint ID: " + std::to_string(a.endpoint));
     }
-
-  return true;
 }
 
 void

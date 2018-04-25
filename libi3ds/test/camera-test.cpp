@@ -71,12 +71,12 @@ BOOST_AUTO_TEST_CASE(camera_creation)
 BOOST_AUTO_TEST_CASE(camera_command)
 {
   BOOST_CHECK_EQUAL(camera.state(), inactive);
-  BOOST_CHECK(client.set_state(activate));
+  client.set_state(activate);
   BOOST_CHECK_EQUAL(camera.state(), standby);
 
   BOOST_CHECK_EQUAL(camera.exposure(), 0);
   BOOST_CHECK_CLOSE(camera.gain(), 0.0, 1e-6);
-  BOOST_CHECK(client.set_exposure(1000, 1.0));
+  client.set_exposure(1000, 1.0);
   BOOST_CHECK_EQUAL(camera.exposure(), 1000);
   BOOST_CHECK_CLOSE(camera.gain(), 1.0, 1e-6);
 
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(camera_command)
   BOOST_CHECK_EQUAL(camera.max_exposure(), 0);
   BOOST_CHECK_CLOSE(camera.max_gain(), 0.0, 1e-6);
 
-  BOOST_CHECK(client.set_auto_exposure(true, 10000, 1.0));
+  client.set_auto_exposure(true, 10000, 1.0);
 
   BOOST_CHECK_EQUAL(camera.auto_exposure_enabled(), true);
   BOOST_CHECK_EQUAL(camera.max_exposure(), 10000);
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(camera_command)
 
   PlanarRegion r1 = {300, 200, 150, 100};
 
-  BOOST_CHECK(client.set_region(true, r1));
+  client.set_region(true, r1);
 
   BOOST_CHECK_EQUAL(camera.region_enabled(), true);
 
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(camera_command)
   BOOST_CHECK_EQUAL(camera.flash_enabled(), false);
   BOOST_CHECK_EQUAL(camera.flash_strength(), 0);
 
-  BOOST_CHECK(client.set_flash(true, 128));
+  client.set_flash(true, 128);
 
   BOOST_CHECK_EQUAL(camera.flash_enabled(), true);
   BOOST_CHECK_EQUAL(camera.flash_strength(), 128);
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(camera_command)
   BOOST_CHECK_EQUAL(camera.pattern_enabled(), false);
   BOOST_CHECK_EQUAL(camera.pattern_sequence(), 0);
 
-  BOOST_CHECK(client.set_pattern(true, 1));
+  client.set_pattern(true, 1);
 
   BOOST_CHECK_EQUAL(camera.pattern_enabled(), true);
   BOOST_CHECK_EQUAL(camera.pattern_sequence(), 1);
@@ -136,15 +136,15 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   bool pattern_enabled = true;
   PatternSequence pattern_sequence = 10;
 
-  BOOST_CHECK(client.set_state(activate));
+  client.set_state(activate);
 
-  BOOST_CHECK(client.set_exposure(exposure, gain));
-  BOOST_CHECK(client.set_auto_exposure(auto_exposure_enabled, max_exposure, max_gain));
-  BOOST_CHECK(client.set_region(region_enabled, region));
-  BOOST_CHECK(client.set_flash(flash_enabled, flash_strength));
-  BOOST_CHECK(client.set_pattern(pattern_enabled, pattern_sequence));
+  client.set_exposure(exposure, gain);
+  client.set_auto_exposure(auto_exposure_enabled, max_exposure, max_gain);
+  client.set_region(region_enabled, region);
+  client.set_flash(flash_enabled, flash_strength);
+  client.set_pattern(pattern_enabled, pattern_sequence);
 
-  BOOST_CHECK(client.load_configuration());
+  client.load_configuration();
 
   BOOST_CHECK_EQUAL(exposure, client.exposure());
   BOOST_CHECK_CLOSE(gain, client.gain(), 1e-6);
@@ -187,15 +187,15 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
 
   SampleRate rate = 100000;
 
-  BOOST_CHECK(client.set_state(activate));
-  BOOST_CHECK(client.set_rate(rate));
-  BOOST_CHECK(client.set_state(start));
+  client.set_state(activate);
+  client.set_rate(rate);
+  client.set_state(start);
 
   subscriber.Start();
 
   std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
 
-  BOOST_CHECK(client.set_state(stop));
+  client.set_state(stop);
 
   std::chrono::milliseconds(100);
   subscriber.Stop();

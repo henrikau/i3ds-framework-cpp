@@ -193,7 +193,7 @@ i3ds::Socket::Send(Message& message)
   socket_.send(message.payload_);
 }
 
-bool
+void
 i3ds::Socket::Receive(Message& message, int timeout_ms)
 {
   socket_.setsockopt(ZMQ_RCVTIMEO, &timeout_ms, sizeof(int));
@@ -202,7 +202,7 @@ i3ds::Socket::Receive(Message& message, int timeout_ms)
 
   if (!socket_.recv(&header))
     {
-      return false;
+      throw Timeout();
     }
 
   if (header.size() != 8)
@@ -218,8 +218,6 @@ i3ds::Socket::Receive(Message& message, int timeout_ms)
   message.set_address(Address(std::string(header.data<char>(), header.size())));
 
   socket_.recv(&message.payload_);
-
-  return true;
 }
 
 void

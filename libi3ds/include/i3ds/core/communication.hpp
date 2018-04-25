@@ -74,7 +74,7 @@ public:
 
   typedef std::shared_ptr<Context> Ptr;
 
-  Context(std::string addr_srv_addr = "tcp://localhost:24680");
+  Context(std::string addr_srv_addr = "tcp://localhost:6000");
   virtual ~Context() {};
 
   static Ptr Create() {return std::make_shared<Context>();}
@@ -108,7 +108,7 @@ public:
   void Attach(NodeID node);
 
   void Send(Message& message);
-  bool Receive(Message& message, int timeout_ms = -1);
+  void Receive(Message& message, int timeout_ms = -1);
 
   void Filter(Address address);
   void FilterAll();

@@ -104,9 +104,7 @@ ResultCode TestClient::issue_state_command(StateCommand sc)
 
   command.request = sc;
 
-  bool result = Call<Sensor::StateService>(command, 1000);
-
-  BOOST_CHECK(result);
+  Call<Sensor::StateService>(command, 1000);
 
   return command.response.result;
 }
@@ -133,9 +131,7 @@ ResultCode TestClient::issue_rate_command(SampleRate rate)
   command.request.rate = rate;
   command.request.count = 0;
 
-  bool result = Call<Sensor::SampleService>(command, 1000);
-
-  BOOST_CHECK(result);
+  Call<Sensor::SampleService>(command, 1000);
 
   return command.response.result;
 }

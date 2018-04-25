@@ -43,26 +43,19 @@ public:
 
   // Receive response for client.
   template<typename T>
-  bool Receive(typename T::Data& data, int timeout_ms = -1)
+  void Receive(typename T::Data& data, int timeout_ms = -1)
   {
     Message response;
-
-    if (!Receive(T::endpoint, response, timeout_ms))
-      {
-        return false;
-      }
-
+    Receive(T::endpoint, response, timeout_ms);
     Decode<typename T::ResponseCodec>(response, data.response);
-
-    return true;
   }
 
   // Execute call for client, returns true if successful.
   template<typename T>
-  bool Call(typename T::Data& data, int timeout_ms = -1)
+  void Call(typename T::Data& data, int timeout_ms = -1)
   {
     Send<T>(data);
-    return Receive<T>(data, timeout_ms);
+    Receive<T>(data, timeout_ms);
   }
 
   // Releases socket
@@ -80,7 +73,7 @@ private:
   void Send(EndpointID endpoint, Message& request);
 
   // Receive response message for client.
-  bool Receive(EndpointID endpoint, Message& response, int timeout_ms);
+  void Receive(EndpointID endpoint, Message& response, int timeout_ms);
 
   // Node ID.
   const NodeID node_;

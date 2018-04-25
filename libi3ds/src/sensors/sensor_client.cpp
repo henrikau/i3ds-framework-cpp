@@ -15,23 +15,23 @@ i3ds::SensorClient::SensorClient(Context::Ptr context, NodeID sensor)
 {
 }
 
-bool
+void
 i3ds::SensorClient::load_status()
 {
-  return Call<Sensor::StatusService>(status_, 1000);
+  Call<Sensor::StatusService>(status_, 1000);
 }
 
-bool
+void
 i3ds::SensorClient::set_state(StateCommand state)
 {
   Sensor::StateService::Data command;
 
   command.request = state;
 
-  return Call<Sensor::StateService>(command, 1000);
+  Call<Sensor::StateService>(command, 1000);
 }
 
-bool
+void
 i3ds::SensorClient::set_rate(SampleRate rate)
 {
   Sensor::SampleService::Data command;
@@ -39,5 +39,5 @@ i3ds::SensorClient::set_rate(SampleRate rate)
   command.request.rate = rate;
   command.request.count = 0;
 
-  return Call<Sensor::SampleService>(command, 1000);
+  Call<Sensor::SampleService>(command, 1000);
 }
