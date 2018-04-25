@@ -22,6 +22,13 @@ i3ds::SensorClient::load_status()
 }
 
 void
+i3ds::SensorClient::load_all()
+{
+  load_config();
+  load_status();
+}
+
+void
 i3ds::SensorClient::set_state(StateCommand state)
 {
   Sensor::StateService::Data command;

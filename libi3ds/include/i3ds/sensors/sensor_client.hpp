@@ -30,11 +30,12 @@ public:
   Temperature temperature() const {return status_.response.temperature;}
 
   void load_status();
+  virtual void load_config() {};
+  virtual void load_all();
 
 private:
 
   Sensor::StatusService::Data status_;
-
 };
 
 } // namespace i3ds

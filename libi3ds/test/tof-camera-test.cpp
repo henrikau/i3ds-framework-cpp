@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
   client.set_state(activate);
   client.set_region(region_enabled, region);
-  client.load_configuration();
+  client.load_config();
 
   BOOST_CHECK_EQUAL(region_enabled, client.region_enabled());
   BOOST_CHECK_EQUAL(region.size_x, client.region().size_x);

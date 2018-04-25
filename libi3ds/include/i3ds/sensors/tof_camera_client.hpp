@@ -28,7 +28,7 @@ public:
   bool region_enabled() const {return config_.response.region_enabled;}
   PlanarRegion region() const {return config_.response.region;}
 
-  void load_configuration();
+  virtual void load_config();
 
 private:
 

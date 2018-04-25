@@ -41,7 +41,7 @@ public:
   bool pattern_enabled() const {return config_.response.pattern_enabled;}
   PatternSequence pattern_sequence() const {return config_.response.pattern_sequence;}
 
-  void load_configuration();
+  virtual void load_config();
 
 private:
 

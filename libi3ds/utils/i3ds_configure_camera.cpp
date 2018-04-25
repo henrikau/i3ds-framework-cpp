@@ -27,8 +27,7 @@ namespace logging = boost::log;
 void
 print_camera_settings(i3ds::CameraClient *camera)
 {
-  camera->load_configuration();
-  camera->load_status();
+  camera->load_all();
 
   int state = camera->state();
   std::string state_string;

@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   client.set_flash(flash_enabled, flash_strength);
   client.set_pattern(pattern_enabled, pattern_sequence);
 
-  client.load_configuration();
+  client.load_config();
 
   BOOST_CHECK_EQUAL(exposure, client.exposure());
   BOOST_CHECK_CLOSE(gain, client.gain(), 1e-6);

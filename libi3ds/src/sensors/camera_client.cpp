@@ -17,7 +17,7 @@ i3ds::CameraClient::CameraClient(Context::Ptr context, NodeID sensor)
 }
 
 void
-i3ds::CameraClient::load_configuration()
+i3ds::CameraClient::load_config()
 {
   Call<Camera::ConfigurationService>(config_);
 }
