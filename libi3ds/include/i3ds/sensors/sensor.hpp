@@ -11,6 +11,8 @@
 #ifndef __I3DS_SENSOR_HPP
 #define __I3DS_SENSOR_HPP
 
+#include <memory>
+
 #include "Common.h"
 #include "Sensor.h"
 
@@ -32,13 +34,19 @@ class Sensor
 {
 public:
 
+  // Shared pointer for sensor interfaces.
+  typedef std::shared_ptr<Sensor> Ptr;
+
   // Service definitions for basic sensor.
   typedef Command<1, StateCommandCodec>        StateService;
   typedef Command<2, SampleCommandCodec>       SampleService;
   typedef Query  <3, SensorStatusCodec>        StatusService;
   typedef Query  <4, SensorConfigurationCodec> ConfigurationService;
 
+  // Constructor.
   Sensor(NodeID node);
+
+  // Virtual destructor.
   virtual ~Sensor();
 
   // Throws exception if sensor is not in inactive state.

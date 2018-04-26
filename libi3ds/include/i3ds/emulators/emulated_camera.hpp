@@ -85,6 +85,8 @@ class EmulatedTIRCamera : public EmulatedCamera
 {
 public:
 
+  static Camera::Ptr Create(Context::Ptr context, NodeID id);
+
   typedef Topic<128, CameraMeasurement1MCodec> ImageMeasurement;
 
   EmulatedTIRCamera(Context::Ptr context, NodeID id);
@@ -94,7 +96,7 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us);
 
-  std::unique_ptr<ImageMeasurement::Data> frame_;
+  ImageMeasurement::Data frame_;
 };
 
 class EmulatedHRCamera : public EmulatedCamera
@@ -103,6 +105,8 @@ public:
 
   typedef Topic<128, CameraMeasurement8MCodec> ImageMeasurement;
 
+  static Camera::Ptr Create(Context::Ptr context, NodeID id);
+
   EmulatedHRCamera(Context::Ptr context, NodeID id);
   virtual ~EmulatedHRCamera() {};
 
@@ -110,7 +114,7 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us);
 
-  std::unique_ptr<ImageMeasurement::Data> frame_;
+  ImageMeasurement::Data frame_;
 };
 
 class EmulatedStereoCamera : public EmulatedCamera
@@ -119,6 +123,8 @@ public:
 
   typedef Topic<128, StereoCameraMeasurement8MCodec> ImageMeasurement;
 
+  static Camera::Ptr Create(Context::Ptr context, NodeID id);
+
   EmulatedStereoCamera(Context::Ptr context, NodeID id);
   virtual ~EmulatedStereoCamera() {};
 
@@ -126,7 +132,7 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us);
 
-  std::unique_ptr<ImageMeasurement::Data> frame_;
+  ImageMeasurement::Data frame_;
 };
 
 } // namespace i3ds

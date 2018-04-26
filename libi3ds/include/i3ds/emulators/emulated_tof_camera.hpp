@@ -11,6 +11,8 @@
 #ifndef __I3DS_EMULATED_TOF_CAMERA_HPP
 #define __I3DS_EMULATED_TOF_CAMERA_HPP
 
+#include <memory>
+
 #include "i3ds/core/topic.hpp"
 #include "i3ds/core/publisher.hpp"
 #include "i3ds/sensors/tof_camera.hpp"
@@ -25,7 +27,11 @@ public:
 
   typedef Topic<128, ToFMeasurement500KCodec> ToFMeasurement;
 
-  EmulatedToFCamera(Context::Ptr context, NodeID id, int resx, int resy);
+  typedef std::shared_ptr<EmulatedToFCamera> Ptr;
+
+  static Ptr Create(Context::Ptr context, NodeID node);
+
+  EmulatedToFCamera(Context::Ptr context, NodeID node);
   virtual ~EmulatedToFCamera();
 
   // Getters.

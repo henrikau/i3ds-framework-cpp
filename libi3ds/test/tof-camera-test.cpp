@@ -31,12 +31,12 @@ struct F
       resx(800),
       resy(600),
       context(Context::Create()),
+      camera(EmulatedToFCamera::Create(context, node)),
       server(context),
-      camera(context, node, resx, resy),
       client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    camera.Attach(server);
+    camera->Attach(server);
     server.Start();
     client.set_timeout(1000);
   }
@@ -51,8 +51,8 @@ struct F
   const int resx, resy;
 
   Context::Ptr context;
+  EmulatedToFCamera::Ptr camera;
   Server server;
-  EmulatedToFCamera camera;
   ToFCameraClient client;
 };
 
@@ -62,26 +62,26 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(camera_creation)
 {
-  BOOST_CHECK_EQUAL(camera.node(), node);
-  BOOST_CHECK_EQUAL(camera.state(), inactive);
-  BOOST_CHECK_EQUAL(camera.rate(), 0);
+  BOOST_CHECK_EQUAL(camera->node(), node);
+  BOOST_CHECK_EQUAL(camera->state(), inactive);
+  BOOST_CHECK_EQUAL(camera->rate(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 BOOST_AUTO_TEST_CASE(camera_command)
 {
-  BOOST_CHECK_EQUAL(camera.state(), inactive);
+  BOOST_CHECK_EQUAL(camera->state(), inactive);
   client.set_state(activate);
-  BOOST_CHECK_EQUAL(camera.state(), standby);
+  BOOST_CHECK_EQUAL(camera->state(), standby);
 
   PlanarRegion r1 = {300, 200, 150, 100};
 
   client.set_region(true, r1);
 
-  BOOST_CHECK_EQUAL(camera.region_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->region_enabled(), true);
 
-  PlanarRegion r2 = camera.region();
+  PlanarRegion r2 = camera->region();
 
   BOOST_CHECK_EQUAL(r1.size_x, r2.size_x);
   BOOST_CHECK_EQUAL(r1.size_y, r2.size_y);

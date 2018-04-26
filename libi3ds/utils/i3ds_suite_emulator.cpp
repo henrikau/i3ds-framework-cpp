@@ -10,6 +10,7 @@
 
 #include <csignal>
 #include <iostream>
+#include <vector>
 #include <unistd.h>
 
 #include <boost/program_options.hpp>
@@ -38,6 +39,7 @@ void signal_handler(int signum)
 int main(int argc, char** argv)
 {
   unsigned int base_id;
+  std::vector<i3ds::Sensor::Ptr> sensors;
 
   po::options_description desc("Allowed suite emulator options");
 
@@ -75,21 +77,21 @@ int main(int argc, char** argv)
   i3ds::Server server(context);
 
   BOOST_LOG_TRIVIAL(trace) << "Create TIR camera";
-  i3ds::EmulatedTIRCamera tir_camera(context, base_id++);
+  sensors.push_back(i3ds::EmulatedTIRCamera::Create(context, base_id++));
 
   BOOST_LOG_TRIVIAL(trace) << "Create HR camera";
-  i3ds::EmulatedHRCamera hr_camera(context, base_id++);
+  sensors.push_back(i3ds::EmulatedHRCamera::Create(context, base_id++));
 
   BOOST_LOG_TRIVIAL(trace) << "Create stereo camera";
-  i3ds::EmulatedStereoCamera stereo_camera(context, base_id++);
+  sensors.push_back(i3ds::EmulatedStereoCamera::Create(context, base_id++));
 
   BOOST_LOG_TRIVIAL(trace) << "Create ToF camera";
-  i3ds::EmulatedToFCamera tof_camera(context, base_id++, 800, 600);
+  sensors.push_back(i3ds::EmulatedToFCamera::Create(context, base_id++));
 
-  tir_camera.Attach(server);
-  hr_camera.Attach(server);
-  stereo_camera.Attach(server);
-  tof_camera.Attach(server);
+  for (auto s : sensors)
+    {
+      s->Attach(server);
+    }
 
   running = true;
   signal(SIGINT, signal_handler);

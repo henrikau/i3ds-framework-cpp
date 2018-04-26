@@ -12,15 +12,21 @@
 
 #include "i3ds/emulators/emulated_tof_camera.hpp"
 
-i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node, int resx, int resy)
+i3ds::EmulatedToFCamera::Ptr
+i3ds::EmulatedToFCamera::Create(Context::Ptr context, NodeID node)
+{
+  return std::make_shared<EmulatedToFCamera>(context, node);
+}
+
+i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node)
   : ToFCamera(node),
-    resx_(resx),
-    resy_(resy),
+    resx_(640),
+    resy_(480),
     sampler_(std::bind(&i3ds::EmulatedToFCamera::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
-  region_.size_x = resx;
-  region_.size_y = resy;
+  region_.size_x = resx_;
+  region_.size_y = resy_;
   region_.offset_x = 0;
   region_.offset_y = 0;
 

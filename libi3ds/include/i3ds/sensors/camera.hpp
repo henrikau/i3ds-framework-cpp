@@ -37,6 +37,9 @@ class Camera : public Sensor
 {
 public:
 
+  // Shared pointer for camera interfaces.
+  typedef std::shared_ptr<Camera> Ptr;
+
   // Camera services.
   typedef Command<16, CameraExposureCodec>      ExposureService;
   typedef Command<17, CameraAutoExposureCodec>  AutoExposureService;
@@ -45,8 +48,10 @@ public:
   typedef Command<20, CameraPatternCodec>       PatternService;
   typedef Query  <21, CameraConfigurationCodec> ConfigurationService;
 
-  // Constructor and destructor.
+  // Constructor for camera.
   Camera(NodeID node) : Sensor(node) {};
+
+  // Destructor for camera.
   virtual ~Camera() {};
 
   // Get exposure time for camera in microseconds.
