@@ -13,8 +13,8 @@
 
 #include <memory>
 
-#include "Common.h"
-#include "Sensor.h"
+#include "../core/Common.h"
+#include "../core/Sensor.h"
 
 #include "i3ds/core/communication.hpp"
 #include "i3ds/core/service.hpp"

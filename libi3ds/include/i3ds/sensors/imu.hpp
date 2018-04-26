@@ -11,7 +11,7 @@
 #ifndef __I3DS_IMU_HPP
 #define __I3DS_IMU_HPP
 
-#include "IMU.h"
+#include "../core/IMU.h"
 
 #include "i3ds/sensors/sensor.hpp"
 #include "i3ds/core/service.hpp"

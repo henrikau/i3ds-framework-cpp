@@ -11,7 +11,7 @@
 #ifndef __I3DS_CAMERA_HPP
 #define __I3DS_CAMERA_HPP
 
-#include "Camera.h"
+#include "../core/Camera.h"
 
 #include "i3ds/sensors/sensor.hpp"
 #include "i3ds/core/service.hpp"

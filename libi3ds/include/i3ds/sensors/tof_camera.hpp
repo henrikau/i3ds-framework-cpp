@@ -11,7 +11,7 @@
 #ifndef __I3DS_TOF_CAMERA_HPP
 #define __I3DS_TOF_CAMERA_HPP
 
-#include "ToFCamera.h"
+#include "../core/ToFCamera.h"
 
 #include "i3ds/sensors/sensor.hpp"
 #include "i3ds/core/service.hpp"
