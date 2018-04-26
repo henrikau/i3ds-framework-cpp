@@ -18,14 +18,31 @@
 #include "i3ds/sensors/camera.hpp"
 #include "i3ds/emulators/periodic_sampler.hpp"
 
+#define BOOST_LOG_DYN_LINK
+
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
+namespace logging = boost::log;
+
 namespace i3ds
 {
+
+struct FrameProperties
+{
+  Frame_mode_t mode;
+  int data_depth;
+  int pixel_size;
+  int width;
+  int height;
+};
 
 class EmulatedCamera : public Camera
 {
 public:
 
-  EmulatedCamera(Context::Ptr context, NodeID id, int resx, int resy);
+  EmulatedCamera(Context::Ptr context, NodeID id, FrameProperties prop);
   virtual ~EmulatedCamera();
 
   // Getters.
@@ -46,9 +63,6 @@ public:
 
 protected:
 
-  const int resx_;
-  const int resy_;
-
   // Actions.
   virtual void do_activate();
   virtual void do_start();
@@ -64,6 +78,19 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us) = 0;
 
+  template<typename T>
+  int set_meta(typename T::Data& frame, unsigned long timestamp_us)
+  {
+    frame.attributes.timestamp.microseconds = timestamp_us;
+    frame.attributes.validity = sample_valid;
+    frame.frame_mode = prop_.mode;
+    frame.data_depth = prop_.data_depth;
+    frame.pixel_size = prop_.pixel_size;
+    frame.region = region_;
+
+    return region_.size_x * region_.size_y * prop_.pixel_size;
+  }
+
   ExposureTime exposure_;
   SensorGain gain_;
   bool auto_exposure_enabled_;
@@ -76,63 +103,84 @@ protected:
   bool pattern_enabled_;
   PatternSequence pattern_sequence_;
 
+  FrameProperties prop_;
+
   Sampler sampler_;
 
   Publisher publisher_;
+
 };
 
-class EmulatedTIRCamera : public EmulatedCamera
+template<typename T>
+class EmulatedMonoCamera : public EmulatedCamera
 {
 public:
 
-  static Camera::Ptr Create(Context::Ptr context, NodeID id);
+  typedef Topic<128, T> ImageMeasurement;
 
-  typedef Topic<128, CameraMeasurement1MCodec> ImageMeasurement;
+  EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
+    : EmulatedCamera(context, id, prop)
+  {
+    ImageMeasurement::Codec::Initialize(frame_);
+  }
 
-  EmulatedTIRCamera(Context::Ptr context, NodeID id);
-  virtual ~EmulatedTIRCamera() {};
-
-protected:
-
-  virtual bool send_sample(unsigned long timestamp_us);
-
-  ImageMeasurement::Data frame_;
-};
-
-class EmulatedHRCamera : public EmulatedCamera
-{
-public:
-
-  typedef Topic<128, CameraMeasurement8MCodec> ImageMeasurement;
-
-  static Camera::Ptr Create(Context::Ptr context, NodeID id);
-
-  EmulatedHRCamera(Context::Ptr context, NodeID id);
-  virtual ~EmulatedHRCamera() {};
+  virtual ~EmulatedMonoCamera() {};
 
 protected:
 
-  virtual bool send_sample(unsigned long timestamp_us);
+  virtual bool send_sample(unsigned long timestamp_us)
+  {
+    int size = set_meta<T>(frame_, timestamp_us);
 
-  ImageMeasurement::Data frame_;
+    BOOST_LOG_TRIVIAL(trace) << "Send mono frame: "
+                             << timestamp_us << " "
+                             << size / 1024.0 << "KiB";
+
+    frame_.image.nCount = size;
+
+    publisher_.Send<ImageMeasurement>(frame_);
+
+    return true;
+  }
+
+  typename ImageMeasurement::Data frame_;
 };
 
+
+template<typename T>
 class EmulatedStereoCamera : public EmulatedCamera
 {
 public:
 
-  typedef Topic<128, StereoCameraMeasurement8MCodec> ImageMeasurement;
+  typedef Topic<128, T> ImageMeasurement;
 
-  static Camera::Ptr Create(Context::Ptr context, NodeID id);
+  EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
+    : EmulatedCamera(context, id, prop)
+  {
+    ImageMeasurement::Codec::Initialize(frame_);
+  }
 
-  EmulatedStereoCamera(Context::Ptr context, NodeID id);
   virtual ~EmulatedStereoCamera() {};
 
 protected:
 
-  virtual bool send_sample(unsigned long timestamp_us);
+  virtual bool send_sample(unsigned long timestamp_us)
+  {
+    int size = set_meta<T>(frame_, timestamp_us);
 
-  ImageMeasurement::Data frame_;
+    frame_.image_left.nCount = size;
+    frame_.image_right.nCount = size;
+
+    BOOST_LOG_TRIVIAL(trace) << "Send stereo frame: "
+                             << timestamp_us << " "
+                             << size / 512.0 << "KiB";
+
+    publisher_.Send<ImageMeasurement>(frame_);
+
+    return true;
+  }
+
+  typename ImageMeasurement::Data frame_;
 };
 
 } // namespace i3ds

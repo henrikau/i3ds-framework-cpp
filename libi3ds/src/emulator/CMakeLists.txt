@@ -1,6 +1,7 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
 
 set (SRCS
+  emulator_factory.cpp
   emulated_camera.cpp
   emulated_imu.cpp
   emulated_tof_camera.cpp

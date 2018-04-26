@@ -16,8 +16,7 @@
 #include <boost/program_options.hpp>
 
 #include "i3ds/core/communication.hpp"
-#include "i3ds/emulators/emulated_camera.hpp"
-#include "i3ds/emulators/emulated_tof_camera.hpp"
+#include "i3ds/emulators/emulator_factory.hpp"
 
 #define BOOST_LOG_DYN_LINK
 
@@ -76,17 +75,21 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create server";
   i3ds::Server server(context);
 
+  BOOST_LOG_TRIVIAL(trace) << "Create factory";
+  i3ds::EmulatorFactory factory(context, base_id);
+
+
   BOOST_LOG_TRIVIAL(trace) << "Create TIR camera";
-  sensors.push_back(i3ds::EmulatedTIRCamera::Create(context, base_id++));
+  sensors.push_back(factory.CreateTIRCamera());
 
   BOOST_LOG_TRIVIAL(trace) << "Create HR camera";
-  sensors.push_back(i3ds::EmulatedHRCamera::Create(context, base_id++));
+  sensors.push_back(factory.CreateHRCamera());
 
   BOOST_LOG_TRIVIAL(trace) << "Create stereo camera";
-  sensors.push_back(i3ds::EmulatedStereoCamera::Create(context, base_id++));
+  sensors.push_back(factory.CreateStereoCamera());
 
   BOOST_LOG_TRIVIAL(trace) << "Create ToF camera";
-  sensors.push_back(i3ds::EmulatedToFCamera::Create(context, base_id++));
+  sensors.push_back(factory.CreateToFCamera());
 
   for (auto s : sensors)
     {

@@ -12,18 +12,9 @@
 
 #include "i3ds/emulators/emulated_camera.hpp"
 
-#define BOOST_LOG_DYN_LINK
-
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-
-namespace logging = boost::log;
-
-i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx, int resy)
+i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FrameProperties prop)
   : Camera(node),
-    resx_(resx),
-    resy_(resy),
+    prop_(prop),
     sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
@@ -36,8 +27,8 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, int resx
   max_exposure_ = 0;
   max_gain_ = 0.0;
 
-  region_.size_x = resx;
-  region_.size_y = resy;
+  region_.size_x = prop.width;
+  region_.size_y = prop.height;
   region_.offset_x = 0;
   region_.offset_y = 0;
 
@@ -141,113 +132,4 @@ i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
     {
       pattern_sequence_ = command.request.sequence;
     }
-}
-
-i3ds::Camera::Ptr
-i3ds::EmulatedTIRCamera::Create(Context::Ptr context, NodeID node)
-{
-  return std::make_shared<EmulatedTIRCamera>(context, node);
-}
-
-i3ds::EmulatedTIRCamera::EmulatedTIRCamera(Context::Ptr context, NodeID node)
-  : EmulatedCamera(context, node, 640, 480)
-{
-  ImageMeasurement::Codec::Initialize(frame_);
-
-  frame_.frame_mode = mode_mono;
-  frame_.data_depth = 16;
-  frame_.pixel_size = 2;
-  frame_.region.size_x = resx_;
-  frame_.region.size_y = resy_;
-  frame_.image.nCount = resx_ * resy_ * frame_.pixel_size;
-
-  BOOST_LOG_TRIVIAL(info) << "TIR image size: "
-                          << frame_.image.nCount / 1024.0
-                          << " KiB";
-}
-
-i3ds::Camera::Ptr
-i3ds::EmulatedHRCamera::Create(Context::Ptr context, NodeID node)
-{
-  return std::make_shared<EmulatedHRCamera>(context, node);
-}
-
-i3ds::EmulatedHRCamera::EmulatedHRCamera(Context::Ptr context, NodeID node)
-  : EmulatedCamera(context, node, 2048, 2048)
-{
-  ImageMeasurement::Codec::Initialize(frame_);
-
-  frame_.frame_mode = mode_mono;
-  frame_.data_depth = 12;
-  frame_.pixel_size = 2;
-  frame_.region.size_x = resx_;
-  frame_.region.size_y = resy_;
-  frame_.image.nCount = resx_ * resy_ * frame_.pixel_size;
-
-  BOOST_LOG_TRIVIAL(info) << "HR image size: "
-                          << frame_.image.nCount / 1024.0
-                          << " KiB";
-}
-
-i3ds::Camera::Ptr
-i3ds::EmulatedStereoCamera::Create(Context::Ptr context, NodeID node)
-{
-  return std::make_shared<EmulatedStereoCamera>(context, node);
-}
-
-i3ds::EmulatedStereoCamera::EmulatedStereoCamera(Context::Ptr context, NodeID node)
-  : EmulatedCamera(context, node, 2048, 2048)
-{
-  ImageMeasurement::Codec::Initialize(frame_);
-
-  frame_.frame_mode = mode_mono;
-  frame_.data_depth = 12;
-  frame_.pixel_size = 2;
-  frame_.region.size_x = resx_;
-  frame_.region.size_y = resy_;
-  frame_.image_left.nCount = resx_ * resy_ * frame_.pixel_size;
-  frame_.image_right.nCount = resx_ * resy_ * frame_.pixel_size;
-
-  BOOST_LOG_TRIVIAL(info) << "Stereo image size: "
-                          << 2 * frame_.image_left.nCount / 1024.0
-                          << " KiB";
-}
-
-bool
-i3ds::EmulatedTIRCamera::send_sample(unsigned long timestamp_us)
-{
-  BOOST_LOG_TRIVIAL(trace) << "Send TIR sample " << timestamp_us;
-
-  frame_.attributes.timestamp.microseconds = timestamp_us;
-  frame_.attributes.validity = sample_valid;
-
-  publisher_.Send<ImageMeasurement>(frame_);
-
-  return true;
-}
-
-bool
-i3ds::EmulatedHRCamera::send_sample(unsigned long timestamp_us)
-{
-  BOOST_LOG_TRIVIAL(trace) << "Send HR sample " << timestamp_us;
-
-  frame_.attributes.timestamp.microseconds = timestamp_us;
-  frame_.attributes.validity = sample_valid;
-
-  publisher_.Send<ImageMeasurement>(frame_);
-
-  return true;
-}
-
-bool
-i3ds::EmulatedStereoCamera::send_sample(unsigned long timestamp_us)
-{
-  BOOST_LOG_TRIVIAL(trace) << "Send stereo sample " << timestamp_us;
-
-  frame_.attributes.timestamp.microseconds = timestamp_us;
-  frame_.attributes.validity = sample_valid;
-
-  publisher_.Send<ImageMeasurement>(frame_);
-
-  return true;
 }
