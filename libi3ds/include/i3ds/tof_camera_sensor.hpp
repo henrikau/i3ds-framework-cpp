@@ -32,6 +32,9 @@ class ToFCamera : public Sensor
 {
 public:
 
+  // Shared pointer for ToF camera interfaces.
+  typedef std::shared_ptr<ToFCamera> Ptr;
+
   // ToFCamera services.
   typedef Command<16, ToFRegionCodec>        RegionService;
   typedef Query  <17, ToFConfigurationCodec> ConfigurationService;

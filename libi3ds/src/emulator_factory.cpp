@@ -22,13 +22,13 @@ i3ds::EmulatorFactory::~EmulatorFactory()
 {
 }
 
-i3ds::Sensor::Ptr
+i3ds::ToFCamera::Ptr
 i3ds::EmulatorFactory::CreateToFCamera()
 {
   return std::make_shared<EmulatedToFCamera>(context_, next_id_++);
 }
 
-i3ds::Sensor::Ptr
+i3ds::Camera::Ptr
 i3ds::EmulatorFactory::CreateTIRCamera()
 {
   FrameProperties prop;
@@ -42,7 +42,7 @@ i3ds::EmulatorFactory::CreateTIRCamera()
   return std::make_shared<EmulatedMonoCamera<CameraMeasurement8MCodec> >(context_, next_id_++, prop);
 }
 
-i3ds::Sensor::Ptr
+i3ds::Camera::Ptr
 i3ds::EmulatorFactory::CreateHRCamera()
 {
   FrameProperties prop;
@@ -56,7 +56,7 @@ i3ds::EmulatorFactory::CreateHRCamera()
   return std::make_shared<EmulatedMonoCamera<CameraMeasurement8MCodec> >(context_, next_id_++, prop);
 }
 
-i3ds::Sensor::Ptr
+i3ds::Camera::Ptr
 i3ds::EmulatorFactory::CreateStereoCamera()
 {
   FrameProperties prop;

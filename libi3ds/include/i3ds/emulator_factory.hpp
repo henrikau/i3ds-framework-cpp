@@ -13,6 +13,8 @@
 
 #include "communication.hpp"
 #include "sensor.hpp"
+#include "camera_sensor.hpp"
+#include "tof_camera_sensor.hpp"
 
 namespace i3ds
 {
@@ -24,10 +26,10 @@ public:
   EmulatorFactory(Context::Ptr context, NodeID base_id);
   virtual ~EmulatorFactory();
 
-  Sensor::Ptr CreateToFCamera();
-  Sensor::Ptr CreateTIRCamera();
-  Sensor::Ptr CreateHRCamera();
-  Sensor::Ptr CreateStereoCamera();
+  ToFCamera::Ptr CreateToFCamera();
+  Camera::Ptr CreateTIRCamera();
+  Camera::Ptr CreateHRCamera();
+  Camera::Ptr CreateStereoCamera();
 
 private:
 
