@@ -20,35 +20,39 @@
 
 LIDAR-Types DEFINITIONS ::=
 BEGIN
-IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-SampleAttributes FROM SampleAttribute-Types
+IMPORTS SampleAttributes FROM SampleAttribute-Types
 PolarRegion FROM Region-Types
 PointCloud FROM PointCloud-Types
-T-UInt32 FROM TASTE-BasicTypes;
+T-UInt32, T-Boolean FROM TASTE-BasicTypes;
 
---- LIDAR command.
-LIDARCommand ::=
-CHOICE
+--- LIDAR region command.
+LIDARRegion ::=
+SEQUENCE
 {
-   command-sensor  SensorCommand,
-   set-region      PolarRegion
+   enable   T-Boolean,
+   region   PolarRegion
 }
 
 --- LIDAR configuration.
 LIDARConfiguration ::=
 SEQUENCE
 {
-   config-sensor  SensorConfiguration,
-   config-region  PolarRegion
+   region-enabled   T-Boolean,
+   region           PolarRegion
 }
 
 --- LIDAR measurement.
 LIDARMeasurement{T-UInt32: maxPointCloudSize} ::=
 SEQUENCE
 {
-   attributes  SampleAttributes,
-   points      PointCloud{maxPointCloudSize},
-   region      PolarRegion
+   attributes   SampleAttributes,
+   points       PointCloud{maxPointCloudSize},
+   region       PolarRegion
 }
+
+--- LIDAR measurements for 100K, 200K, 400K sample points.
+LIDARMeasurement100K ::= LIDARMeasurement{100000}
+LIDARMeasurement200K ::= LIDARMeasurement{200000}
+LIDARMeasurement400K ::= LIDARMeasurement{400000}
 
 END

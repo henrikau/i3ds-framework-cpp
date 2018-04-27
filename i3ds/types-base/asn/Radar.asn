@@ -20,26 +20,25 @@
 
 Radar-Types DEFINITIONS ::=
 BEGIN
-IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-SampleAttributes FROM SampleAttribute-Types
+IMPORTS SampleAttributes FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
-T-UInt32 FROM TASTE-BasicTypes
+T-UInt32, T-Boolean FROM TASTE-BasicTypes
 DepthMap, DepthValidityList FROM DepthMap-Types;
 
---- Radar command.
-RadarCommand ::=
-CHOICE
+--- Radar region command.
+RadarRegion ::=
+SEQUENCE
 {
-   sensor-command  SensorCommand,
-   set-region      PlanarRegion
+    enable   T-Boolean,
+    region   PlanarRegion
 }
 
 --- Radar configuration.
 RadarConfiguration ::=
 SEQUENCE
 {
-   config-sensor  SensorConfiguration,
-   config-region  PlanarRegion
+   region-enabled   T-Boolean,
+   region           RadarRegion
 }
 
 --- Radar measurement.
@@ -49,7 +48,12 @@ SEQUENCE
    attributes  SampleAttributes,
    distances   DepthMap{maxDepthMapSize},
    validity    DepthValidityList{maxDepthMapSize},
-   region      PlanarRegion
+   region      RadarRegion
 }
+
+--- Radar measurements for 100K, 200K, 400K sample points.
+RadarMeasurement100K ::= RadarMeasurement{100000}
+RadarMeasurement200K ::= RadarMeasurement{200000}
+RadarMeasurement400K ::= RadarMeasurement{400000}
 
 END

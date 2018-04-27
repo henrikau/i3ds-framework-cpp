@@ -20,23 +20,8 @@
 
 IMU-Types DEFINITIONS ::=
 BEGIN
-IMPORTS SensorCommand, SensorConfiguration FROM SensorSuite-Types
-SampleAttributes FROM SampleAttribute-Types
+IMPORTS SampleAttributes FROM SampleAttribute-Types
 Vector3d FROM Eigen-Types;
-
---- IMU command.
-IMUCommand ::=
-CHOICE
-{
-   sensor-command  SensorCommand
-}
-
---- IMU configuration.
-IMUConfiguration ::=
-SEQUENCE
-{
-   config-sensor  SensorConfiguration
-}
 
 --- IMU measurement definition
 IMUMeasurement ::=
