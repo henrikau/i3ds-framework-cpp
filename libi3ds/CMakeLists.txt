@@ -51,6 +51,7 @@ set (SRCS
   src/periodic.cpp
   src/sensor.cpp
   src/sensor_client.cpp
+  src/client_factory.cpp
   src/camera_sensor.cpp
   src/camera_client.cpp
   src/tof_camera_sensor.cpp

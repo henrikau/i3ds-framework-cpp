@@ -21,6 +21,8 @@ class CameraClient : public SensorClient
 {
 public:
 
+  typedef std::shared_ptr<CameraClient> Ptr;
+
   CameraClient(Context::Ptr context, NodeID sensor);
 
   void set_exposure(ExposureTime exposure, SensorGain gain);

@@ -21,6 +21,8 @@ class ToFCameraClient : public SensorClient
 {
 public:
 
+  typedef std::shared_ptr<ToFCameraClient> Ptr;
+
   ToFCameraClient(Context::Ptr context, NodeID sensor);
 
   void set_region(bool enable, PlanarRegion region);
