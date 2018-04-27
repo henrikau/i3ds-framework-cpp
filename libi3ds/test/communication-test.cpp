@@ -16,9 +16,9 @@
 #include <iostream>
 #include <map>
 
-#include "i3ds/core/communication.hpp"
-#include "i3ds/core/exception.hpp"
-#include "i3ds/utils/address_server.hpp"
+#include "i3ds/communication.hpp"
+#include "i3ds/exception.hpp"
+#include "i3ds/address_server.hpp"
 
 using namespace i3ds;
 

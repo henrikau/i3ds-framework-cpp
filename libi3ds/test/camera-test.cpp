@@ -16,9 +16,9 @@
 #include <chrono>
 #include <iostream>
 
-#include "i3ds/core/subscriber.hpp"
-#include "i3ds/emulators/emulated_camera.hpp"
-#include "i3ds/sensors/camera_client.hpp"
+#include "i3ds/subscriber.hpp"
+#include "i3ds/emulated_camera.hpp"
+#include "i3ds/camera_client.hpp"
 
 using namespace i3ds;
 

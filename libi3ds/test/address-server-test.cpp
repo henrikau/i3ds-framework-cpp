@@ -13,7 +13,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "i3ds/utils/address_server.hpp"
+#include "i3ds/address_server.hpp"
 
 using namespace i3ds;
 

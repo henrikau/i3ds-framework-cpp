@@ -16,9 +16,9 @@
 #include <chrono>
 #include <iostream>
 
-#include "i3ds/core/subscriber.hpp"
-#include "i3ds/emulators/emulated_tof_camera.hpp"
-#include "i3ds/sensors/tof_camera_client.hpp"
+#include "i3ds/subscriber.hpp"
+#include "i3ds/emulated_tof_camera.hpp"
+#include "i3ds/tof_camera_client.hpp"
 
 using namespace i3ds;
 
