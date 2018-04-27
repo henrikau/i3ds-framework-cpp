@@ -37,6 +37,8 @@ asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
 # libi3ds
 ################################################################################
 
+include_directories ("src/")
+
 set (SRCS
   ${ASN1_SRCS} ${ASN1_HDRS}
   src/communication.cpp
