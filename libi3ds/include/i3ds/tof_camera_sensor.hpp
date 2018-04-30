@@ -54,7 +54,7 @@ public:
 
 protected:
 
-  // Handler for ToF-camera auto exposure command.
+  // Handler for ToF-camera region of interest command.
   virtual void handle_region(RegionService::Data& command);
 
   // Handler for camera configuration query.

@@ -57,9 +57,6 @@ private:
 
   bool send_sample(unsigned long timestamp_us);
 
-  const int resx_;
-  const int resy_;
-
   bool region_enabled_;
   PlanarRegion region_;
 

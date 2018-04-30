@@ -20,20 +20,18 @@ i3ds::EmulatedToFCamera::Create(Context::Ptr context, NodeID node)
 
 i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node)
   : ToFCamera(node),
-    resx_(640),
-    resy_(480),
     sampler_(std::bind(&i3ds::EmulatedToFCamera::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
-  region_.size_x = resx_;
-  region_.size_y = resy_;
+  region_.size_x = 640;
+  region_.size_y = 480;
   region_.offset_x = 0;
   region_.offset_y = 0;
 
   ToFMeasurement500KCodec::Initialize(frame_);
 
-  frame_.region.size_x = resx_;
-  frame_.region.size_y = resy_;
+  frame_.region.size_x = region_.size_x;
+  frame_.region.size_y = region_.size_y;
 }
 
 i3ds::EmulatedToFCamera::~EmulatedToFCamera()

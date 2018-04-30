@@ -28,8 +28,6 @@ struct F
 {
   F()
     : node(1),
-      resx(800),
-      resy(600),
       context(Context::Create()),
       camera(context, node),
       server(context),
@@ -48,7 +46,6 @@ struct F
   }
 
   const NodeID node;
-  const int resx, resy;
 
   Context::Ptr context;
   EmulatedToFCamera camera;
