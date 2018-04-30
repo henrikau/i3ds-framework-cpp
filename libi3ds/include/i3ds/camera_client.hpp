@@ -25,16 +25,16 @@ public:
 
   CameraClient(Context::Ptr context, NodeID sensor);
 
-  void set_exposure(ExposureTime exposure, SensorGain gain);
-  void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
+  void set_exposure(ShutterTime shutter, SensorGain gain);
+  void set_auto_exposure(bool enable, ShutterTime max_shutter, SensorGain max_gain);
   void set_region(bool enable, PlanarRegion region);
   void set_flash(bool enable, FlashStrength strength);
   void set_pattern(bool enable, PatternSequence sequence);
 
-  ExposureTime exposure() const {return config_.response.exposure;}
+  ShutterTime shutter() const {return config_.response.shutter;}
   SensorGain gain() const {return config_.response.gain;}
   bool auto_exposure_enabled() const {return config_.response.auto_exposure_enabled;}
-  ExposureTime max_exposure() const {return config_.response.max_exposure;}
+  ShutterTime max_shutter() const {return config_.response.max_shutter;}
   SensorGain max_gain() const {return config_.response.max_gain;}
   bool region_enabled() const {return config_.response.region_enabled;}
   PlanarRegion region() const {return config_.response.region;}

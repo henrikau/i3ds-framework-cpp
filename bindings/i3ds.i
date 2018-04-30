@@ -133,16 +133,16 @@ public:
 
   CameraClient(Context::Ptr context, NodeID sensor);
 
-  void set_exposure(ExposureTime exposure, SensorGain gain);
-  void set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain);
+  void set_exposure(ShutterTime shutter, SensorGain gain);
+  void set_auto_exposure(bool enable, ShutterTime max_shutter, SensorGain max_gain);
   void set_region(bool enable, PlanarRegion region);
   void set_flash(bool enable, FlashStrength strength);
   void set_pattern(bool enable, PatternSequence sequence);
 
-  ExposureTime exposure() const;
+  ShutterTime shutter() const;
   SensorGain gain() const;
   bool auto_exposure_enabled() const;
-  ExposureTime max_exposure() const;
+  ShutterTime max_shutter() const;
   SensorGain max_gain() const;
   bool region_enabled() const;
   PlanarRegion region() const;

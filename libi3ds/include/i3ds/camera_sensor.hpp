@@ -54,8 +54,8 @@ public:
   // Destructor for camera.
   virtual ~Camera() {};
 
-  // Get exposure time for camera in microseconds.
-  virtual ExposureTime exposure() const = 0;
+  // Get shutter time for camera in microseconds.
+  virtual ShutterTime shutter() const = 0;
 
   // Get gain for camera in decibel.
   virtual SensorGain gain() const = 0;
@@ -63,8 +63,8 @@ public:
   // Get auto exposure for camera.
   virtual bool auto_exposure_enabled() const {return false;}
 
-  // Get exposure time limit for camera with auto exposure in microseconds.
-  virtual ExposureTime max_exposure() const {return 0;}
+  // Get shutter time limit for camera with auto exposure in microseconds.
+  virtual ShutterTime max_shutter() const {return 0;}
 
   // Get gain limit for camera with auto exposure in decibel.
   virtual SensorGain max_gain() const {return 0.0;}
@@ -96,15 +96,15 @@ protected:
   virtual void handle_exposure(ExposureService::Data& command) = 0;
 
   // Handler for camera auto exposure command.
-  virtual void handle_region(RegionService::Data& command);
-
-  // Handler for camera auto exposure command.
   virtual void handle_auto_exposure(AutoExposureService::Data& command);
 
-  // Handler for camera auto exposure command.
+  // Handler for camera region command.
+  virtual void handle_region(RegionService::Data& command);
+
+  // Handler for camera flash command.
   virtual void handle_flash(FlashService::Data& command);
 
-  // Handler for camera auto exposure command.
+  // Handler for camera pattern command.
   virtual void handle_pattern(PatternService::Data& command);
 
   // Handler for camera configuration query.

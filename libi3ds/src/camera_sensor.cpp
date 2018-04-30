@@ -53,10 +53,10 @@ i3ds::Camera::handle_pattern(PatternService::Data& command)
 void
 i3ds::Camera::handle_configuration(ConfigurationService::Data& config) const
 {
-  config.response.exposure = exposure();
+  config.response.shutter = shutter();
   config.response.gain = gain();
   config.response.auto_exposure_enabled = auto_exposure_enabled();
-  config.response.max_exposure = max_exposure();
+  config.response.max_shutter = max_shutter();
   config.response.max_gain = max_gain();
   config.response.region_enabled = region_enabled();
   config.response.region = region();

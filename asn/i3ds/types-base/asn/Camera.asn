@@ -26,8 +26,8 @@ T-UInt8, T-UInt32, T-Boolean FROM TASTE-BasicTypes
 T-Float, T-UInt16 FROM TASTE-ExtendedTypes
 Frame-mode-t, ImageFrame FROM Frame-Types;
 
---- Exposure time in microseconds
-ExposureTime ::= T-UInt32
+--- Shutter time in microseconds
+ShutterTime ::= T-UInt32
 
 --- Sensor gain in decibel, range is camera dependent
 SensorGain ::= T-Float
@@ -36,7 +36,7 @@ SensorGain ::= T-Float
 CameraExposure ::=
 SEQUENCE
 {
-    exposure   ExposureTime,
+    shutter    ShutterTime,
     gain       SensorGain
 }
 
@@ -45,7 +45,7 @@ CameraAutoExposure ::=
 SEQUENCE
 {
     enable         T-Boolean,
-    max-exposure   ExposureTime,
+    max-shutter    ShutterTime,
     max-gain       SensorGain
 }
 
@@ -86,10 +86,10 @@ SEQUENCE
 CameraConfiguration ::=
 SEQUENCE
 {
-   exposure                ExposureTime,
+   shutter                 ShutterTime,
    gain                    SensorGain,
    auto-exposure-enabled   T-Boolean,
-   max-exposure            ExposureTime,
+   max-shutter             ShutterTime,
    max-gain                SensorGain,
    region-enabled          T-Boolean,
    region                  PlanarRegion,

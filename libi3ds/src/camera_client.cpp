@@ -23,23 +23,23 @@ i3ds::CameraClient::load_config()
 }
 
 void
-i3ds::CameraClient::set_exposure(ExposureTime exposure, SensorGain gain)
+i3ds::CameraClient::set_exposure(ShutterTime shutter, SensorGain gain)
 {
   Camera::ExposureService::Data command;
 
-  command.request.exposure = exposure;
+  command.request.shutter = shutter;
   command.request.gain = gain;
 
   Call<Camera::ExposureService>(command);
 }
 
 void
-i3ds::CameraClient::set_auto_exposure(bool enable, ExposureTime max_exposure, SensorGain max_gain)
+i3ds::CameraClient::set_auto_exposure(bool enable, ShutterTime max_shutter, SensorGain max_gain)
 {
   Camera::AutoExposureService::Data command;
 
   command.request.enable = enable;
-  command.request.max_exposure = max_exposure;
+  command.request.max_shutter = max_shutter;
   command.request.max_gain = max_gain;
 
   Call<Camera::AutoExposureService>(command);

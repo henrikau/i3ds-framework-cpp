@@ -77,20 +77,20 @@ BOOST_AUTO_TEST_CASE(camera_command)
   client.set_state(activate);
   BOOST_CHECK_EQUAL(camera.state(), standby);
 
-  BOOST_CHECK_EQUAL(camera.exposure(), 0);
+  BOOST_CHECK_EQUAL(camera.shutter(), 0);
   BOOST_CHECK_CLOSE(camera.gain(), 0.0, 1e-6);
   client.set_exposure(1000, 1.0);
-  BOOST_CHECK_EQUAL(camera.exposure(), 1000);
+  BOOST_CHECK_EQUAL(camera.shutter(), 1000);
   BOOST_CHECK_CLOSE(camera.gain(), 1.0, 1e-6);
 
   BOOST_CHECK_EQUAL(camera.auto_exposure_enabled(), false);
-  BOOST_CHECK_EQUAL(camera.max_exposure(), 0);
+  BOOST_CHECK_EQUAL(camera.max_shutter(), 0);
   BOOST_CHECK_CLOSE(camera.max_gain(), 0.0, 1e-6);
 
   client.set_auto_exposure(true, 10000, 1.0);
 
   BOOST_CHECK_EQUAL(camera.auto_exposure_enabled(), true);
-  BOOST_CHECK_EQUAL(camera.max_exposure(), 10000);
+  BOOST_CHECK_EQUAL(camera.max_shutter(), 10000);
   BOOST_CHECK_CLOSE(camera.max_gain(), 1.0, 1e-6);
 
   PlanarRegion r1 = {300, 200, 150, 100};
@@ -127,10 +127,10 @@ BOOST_AUTO_TEST_CASE(camera_command)
 
 BOOST_AUTO_TEST_CASE(camera_configuration_query)
 {
-  ExposureTime exposure = 0.01;
+  ShutterTime shutter = 0.01;
   SensorGain gain = 2.0;
   bool auto_exposure_enabled = true;
-  ExposureTime max_exposure = 0.1;
+  ShutterTime max_shutter = 0.1;
   SensorGain max_gain = 3.0;
   bool region_enabled = true;
   PlanarRegion region = {300, 200, 150, 100};
@@ -141,19 +141,19 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
   client.set_state(activate);
 
-  client.set_exposure(exposure, gain);
-  client.set_auto_exposure(auto_exposure_enabled, max_exposure, max_gain);
+  client.set_exposure(shutter, gain);
+  client.set_auto_exposure(auto_exposure_enabled, max_shutter, max_gain);
   client.set_region(region_enabled, region);
   client.set_flash(flash_enabled, flash_strength);
   client.set_pattern(pattern_enabled, pattern_sequence);
 
   client.load_config();
 
-  BOOST_CHECK_EQUAL(exposure, client.exposure());
+  BOOST_CHECK_EQUAL(shutter, client.shutter());
   BOOST_CHECK_CLOSE(gain, client.gain(), 1e-6);
 
   BOOST_CHECK_EQUAL(auto_exposure_enabled, client.auto_exposure_enabled());
-  BOOST_CHECK_EQUAL(max_exposure, client.max_exposure());
+  BOOST_CHECK_EQUAL(max_shutter, client.max_shutter());
   BOOST_CHECK_CLOSE(max_gain, client.max_gain(), 1e-6);
 
   BOOST_CHECK_EQUAL(region_enabled, client.region_enabled());

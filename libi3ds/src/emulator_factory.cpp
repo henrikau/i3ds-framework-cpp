@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "i3ds/emulator_factory.hpp"
+
 #include "i3ds/emulated_camera.hpp"
 #include "i3ds/emulated_tof_camera.hpp"
 

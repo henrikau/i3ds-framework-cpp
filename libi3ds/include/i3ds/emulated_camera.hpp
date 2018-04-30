@@ -13,11 +13,11 @@
 
 #include <memory>
 
-#include "topic.hpp"
-#include "publisher.hpp"
-#include "periodic.hpp"
+#include "i3ds/topic.hpp"
+#include "i3ds/publisher.hpp"
+#include "i3ds/periodic.hpp"
 
-#include "camera_sensor.hpp"
+#include "i3ds/camera_sensor.hpp"
 
 #define BOOST_LOG_DYN_LINK
 
@@ -47,10 +47,10 @@ public:
   virtual ~EmulatedCamera();
 
   // Getters.
-  virtual ExposureTime exposure() const {return exposure_;}
+  virtual ShutterTime shutter() const {return shutter_;}
   virtual SensorGain gain() const {return gain_;}
   virtual bool auto_exposure_enabled() const {return auto_exposure_enabled_;}
-  virtual ExposureTime max_exposure() const {return max_exposure_;}
+  virtual ShutterTime max_shutter() const {return max_shutter_;}
   virtual SensorGain max_gain() const {return max_gain_;}
   virtual bool region_enabled() const {return region_enabled_;}
   virtual PlanarRegion region() const {return region_;}
@@ -92,10 +92,10 @@ protected:
     return region_.size_x * region_.size_y * prop_.pixel_size;
   }
 
-  ExposureTime exposure_;
+  ShutterTime shutter_;
   SensorGain gain_;
   bool auto_exposure_enabled_;
-  ExposureTime max_exposure_;
+  ShutterTime max_shutter_;
   SensorGain max_gain_;
   bool region_enabled_;
   PlanarRegion region_;

@@ -54,11 +54,11 @@ print_camera_settings(i3ds::CameraClient *camera)
   std::cout << "\"state\" : \"" << state_string << "\"," << std::endl;
   std::cout << "\"temperature\" : " << camera->temperature().kelvin << "," << std::endl;
 
-  std::cout << "\"exposure\" : " << camera->exposure() << "," << std::endl;
+  std::cout << "\"shutter\" : " << camera->shutter() << "," << std::endl;
   std::cout << "\"gain\" : " << camera->gain() << "," << std::endl;
 
   std::cout << "\"auto-exposure-enabled\" : " << camera->auto_exposure_enabled() << "," << std::endl;
-  std::cout << "\"max-exposure\" : " << camera->max_exposure() << "," << std::endl;
+  std::cout << "\"max-shutter\" : " << camera->max_shutter() << "," << std::endl;
   std::cout << "\"max-gain\" : " << camera->max_gain() << "," << std::endl;
 
   std::cout << "\"region-enabled\" : " << camera->region_enabled() << "," << std::endl;
@@ -78,8 +78,8 @@ print_camera_settings(i3ds::CameraClient *camera)
 int main(int argc, char *argv[])
 {
   unsigned int node_id;
-  unsigned int rate, exposure, min_exposure, max_exposure;
-  double gain, min_gain, max_gain;
+  unsigned int rate, shutter, max_shutter;
+  double gain, max_gain;
   unsigned int flash_strength, pattern_sequence;
   bool enable_auto, enable_region, enable_flash, enable_pattern;
   PlanarRegion region;
@@ -101,14 +101,12 @@ int main(int argc, char *argv[])
   ("quite,q", "Quiet ouput")
   ("print", "Print the camera configuration")
 
-  ("exposure", po::value(&exposure), "Exposure time in microseconds, gain is optional")
-  ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set exposure")
+  ("shutter", po::value(&shutter), "Shutter time in microseconds, gain is optional")
+  ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set shutter time")
 
   ("auto-exposure", po::value(&enable_auto), "Enable camera auto exposure")
-  ("auto-min-exposure", po::value(&min_exposure)->default_value(0), "Min auto exposure time in microseconds")
-  ("auto-max-exposure", po::value(&max_exposure)->default_value(100000), "Max auto exposure time in microseconds")
-  ("auto-min-gain", po::value(&min_gain)->default_value(0.0), "Min auto gain in decibel")
-  ("auto-max-gain", po::value(&max_gain)->default_value(100.0), "Max auto gain in decibel")
+  ("auto-max-shutter", po::value(&max_shutter)->default_value(100000), "Max auto exposure shutter time in microseconds")
+  ("auto-max-gain", po::value(&max_gain)->default_value(100.0), "Max auto exposure gain in decibel")
 
   ("region", po::value(&enable_region), "Enable camera region of interest (ROI)")
   ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
@@ -182,24 +180,24 @@ int main(int argc, char *argv[])
     }
 
   // Either set manual exposure or auto exposure, allow further commands.
-  if (vm.count("exposure"))
+  if (vm.count("shutter"))
     {
-      BOOST_LOG_TRIVIAL(info) << "Set exposure: " << exposure << " [us] " << gain << " [dB]";
-      camera.set_exposure(exposure, gain);
+      BOOST_LOG_TRIVIAL(info) << "Set exposure: " << shutter << " [us] " << gain << " [dB]";
+      camera.set_exposure(shutter, gain);
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }
   else if (vm.count("auto-exposure"))
     {
       if (enable_auto)
         {
-          BOOST_LOG_TRIVIAL(info) << "Enable auto exposure: " << max_exposure << " [us] " << max_gain << " [dB]";
+          BOOST_LOG_TRIVIAL(info) << "Enable auto exposure: " << max_shutter << " [us] " << max_gain << " [dB]";
         }
       else
         {
           BOOST_LOG_TRIVIAL(info) << "Disable auto exposure";
         }
 
-      camera.set_auto_exposure(enable_auto, max_exposure, max_gain);
+      camera.set_auto_exposure(enable_auto, max_shutter, max_gain);
 
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }

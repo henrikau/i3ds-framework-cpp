@@ -20,11 +20,11 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FramePro
 {
   BOOST_LOG_TRIVIAL(info) << "Create emulated camera...";
 
-  exposure_ = 0;
+  shutter_ = 0;
   gain_ = 0.0;
 
   auto_exposure_enabled_ = false;
-  max_exposure_ = 0;
+  max_shutter_ = 0;
   max_gain_ = 0.0;
 
   region_.size_x = prop.width;
@@ -81,7 +81,7 @@ i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 {
   BOOST_LOG_TRIVIAL(info) << "handle_exposure() " << node();
   auto_exposure_enabled_ = false;
-  exposure_ = command.request.exposure;
+  shutter_ = command.request.shutter;
   gain_ = command.request.gain;
 }
 
@@ -93,7 +93,7 @@ i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 
   if (command.request.enable)
     {
-      max_exposure_ = command.request.max_exposure;
+      max_shutter_ = command.request.max_shutter;
       max_gain_ = command.request.max_gain;
     }
 }
