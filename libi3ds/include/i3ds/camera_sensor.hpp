@@ -16,6 +16,7 @@
 #include "sensor.hpp"
 #include "service.hpp"
 #include "codec.hpp"
+#include "topic.hpp"
 
 namespace i3ds
 {
@@ -109,6 +110,21 @@ protected:
 
   // Handler for camera configuration query.
   virtual void handle_configuration(ConfigurationService::Data& config) const;
+};
+
+template<typename T>
+class FrameSensor
+{
+public:
+
+  // Defintion for frame measurement topic.
+  typedef Topic<128, T> FrameTopic;
+
+  // Constructor for frame sensor.
+  FrameSensor() {};
+
+  // Destructor for image sensor.
+  virtual ~FrameSensor() {};
 };
 
 } // namespace i3ds

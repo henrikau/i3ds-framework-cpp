@@ -113,16 +113,16 @@ protected:
 };
 
 template<typename T>
-class EmulatedMonoCamera : public EmulatedCamera
+class EmulatedMonoCamera : public EmulatedCamera, public FrameSensor<T>
 {
 public:
 
-  typedef Topic<128, T> ImageMeasurement;
+  typedef typename FrameSensor<T>::FrameTopic FrameTopic;
 
   EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
     : EmulatedCamera(context, id, prop)
   {
-    ImageMeasurement::Codec::Initialize(frame_);
+    T::Initialize(frame_);
   }
 
   virtual ~EmulatedMonoCamera() {};
@@ -139,26 +139,26 @@ protected:
 
     frame_.image.nCount = size;
 
-    publisher_.Send<ImageMeasurement>(frame_);
+    publisher_.Send<FrameTopic>(frame_);
 
     return true;
   }
 
-  typename ImageMeasurement::Data frame_;
+  typename T::Data frame_;
 };
 
 
 template<typename T>
-class EmulatedStereoCamera : public EmulatedCamera
+class EmulatedStereoCamera : public EmulatedCamera, public FrameSensor<T>
 {
 public:
 
-  typedef Topic<128, T> ImageMeasurement;
+  typedef typename FrameSensor<T>::FrameTopic FrameTopic;
 
   EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
     : EmulatedCamera(context, id, prop)
   {
-    ImageMeasurement::Codec::Initialize(frame_);
+    T::Initialize(frame_);
   }
 
   virtual ~EmulatedStereoCamera() {};
@@ -176,12 +176,12 @@ protected:
                              << timestamp_us << " "
                              << size / 512.0 << "KiB";
 
-    publisher_.Send<ImageMeasurement>(frame_);
+    publisher_.Send<FrameTopic>(frame_);
 
     return true;
   }
 
-  typename ImageMeasurement::Data frame_;
+  typename T::Data frame_;
 };
 
 } // namespace i3ds

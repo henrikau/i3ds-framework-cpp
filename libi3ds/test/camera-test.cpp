@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 int received;
 
 void
-handle_measurement(TestCamera::ImageMeasurement::Data& data)
+handle_measurement(TestCamera::FrameTopic::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
   received++;
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<TestCamera::ImageMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<TestCamera::FrameTopic>(client.node(), &handle_measurement);
 
   SampleRate rate = 100000;
 
