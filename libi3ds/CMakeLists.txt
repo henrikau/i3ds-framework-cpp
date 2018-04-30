@@ -59,6 +59,9 @@ set (SRCS
   src/emulated_camera.cpp
   src/emulated_imu.cpp
   src/emulated_tof_camera.cpp
+  src/emulated_radar.cpp
+  src/radar_sensor.cpp
+  src/radar_client.cpp
   )
 
 set (LIBS
@@ -89,6 +92,7 @@ set(TESTS
   imu-test
   sensor-test
   tof-camera-test
+  radar-test
 )
 
 configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
