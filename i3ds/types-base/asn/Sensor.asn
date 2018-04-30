@@ -50,8 +50,8 @@ SEQUENCE
    temperature  Temperature
 }
 
--- Sample rate given as microseconds between periodic samples, 0 is aperiodic.
-SampleRate ::= T-UInt32
+-- Sample period given as microseconds between samples, 0 is aperiodic.
+SamplePeriod ::= T-UInt32
 
 -- Sample count to acquire, where 0 is inifinite.
 SampleCount ::= T-UInt32
@@ -60,17 +60,17 @@ SampleCount ::= T-UInt32
 SampleCommand ::=
 SEQUENCE
 {
-   rate    SampleRate,  -- Rate of sampling when operational.
-   count   SampleCount  -- Number of samples when operational.
+   period  SamplePeriod,  -- Period of sampling when operational.
+   count   SampleCount    -- Number of samples when operational.
 }
 
 --- Sensor configuration common for all sensor classes.
 SensorConfiguration ::=
 SEQUENCE
 {
-   device   T-String,    -- String identifying the sensor device.
-   rate     SampleRate,  -- Rate of sampling when operational.
-   count    SampleCount  -- Configured number of samples.
+   device   T-String,      -- String identifying the sensor device.
+   period   SamplePeriod,  -- Period of sampling when operational.
+   count    SampleCount    -- Configured number of samples.
 }
 
 END
