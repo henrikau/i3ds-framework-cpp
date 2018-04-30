@@ -11,6 +11,7 @@ set (LIBS
   )
 
 set (APPS
+  i3ds_camera_capture
   i3ds_configure_camera
   )
 
