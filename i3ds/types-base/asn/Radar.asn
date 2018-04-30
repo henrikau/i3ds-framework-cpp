@@ -38,7 +38,7 @@ RadarConfiguration ::=
 SEQUENCE
 {
    region-enabled   T-Boolean,
-   region           RadarRegion
+   region           PlanarRegion
 }
 
 --- Radar measurement.
@@ -48,7 +48,7 @@ SEQUENCE
    attributes  SampleAttributes,
    distances   DepthMap{maxDepthMapSize},
    validity    DepthValidityList{maxDepthMapSize},
-   region      RadarRegion
+   region      PlanarRegion
 }
 
 --- Radar measurements for 100K, 200K, 400K sample points.
