@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#define BOOST_TEST_MODULE imu_test
+#define BOOST_TEST_MODULE star_tracker_test
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/test/unit_test.hpp>
@@ -17,8 +17,8 @@
 #include <iostream>
 
 #include "i3ds/subscriber.hpp"
-#include "i3ds/emulated_imu.hpp"
-#include "i3ds/imu_client.hpp"
+#include "i3ds/emulated_star_tracker.hpp"
+#include "i3ds/star_tracker_client.hpp"
 
 using namespace i3ds;
 
@@ -30,11 +30,11 @@ struct F
     : node(1),
       context(Context::Create()),
       server(context),
-      imu(context, node),
+      st(context, node),
       client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    imu.Attach(server);
+    st.Attach(server);
     server.Start();
     client.set_timeout(1000);
   }
@@ -49,28 +49,28 @@ struct F
 
   Context::Ptr context;
   Server server;
-  EmulatedIMU imu;
-  IMUClient client;
+  EmulatedStarTracker st;
+  StarTrackerClient client;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(imu_creation)
+BOOST_AUTO_TEST_CASE(star_tracker_creation)
 {
-  BOOST_CHECK_EQUAL(imu.node(), node);
-  BOOST_CHECK_EQUAL(imu.state(), inactive);
-  BOOST_CHECK_EQUAL(imu.rate(), 0);
+  BOOST_CHECK_EQUAL(st.node(), node);
+  BOOST_CHECK_EQUAL(st.state(), inactive);
+  BOOST_CHECK_EQUAL(st.rate(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(imu_state_command)
+BOOST_AUTO_TEST_CASE(star_tracker_state_command)
 {
-  BOOST_CHECK_EQUAL(imu.state(), inactive);
+  BOOST_CHECK_EQUAL(st.state(), inactive);
   client.set_state(activate);
-  BOOST_CHECK_EQUAL(imu.state(), standby);
+  BOOST_CHECK_EQUAL(st.state(), standby);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,24 +78,22 @@ BOOST_AUTO_TEST_CASE(imu_state_command)
 int received;
 
 void
-handle_measurement(EmulatedIMU::EmulatedIMUMeasurement::Data& data)
+handle_measurement(EmulatedStarTracker::EmulatedStarTrackerMeasurement::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[0], 1.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[1], 2.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[2], 3.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[0], 4.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[1], 5.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[2], 6.0);
+  BOOST_CHECK_EQUAL(data.position.arr[0], 1.0);
+  BOOST_CHECK_EQUAL(data.position.arr[1], 2.0);
+  BOOST_CHECK_EQUAL(data.position.arr[2], 3.0);
+  BOOST_CHECK_EQUAL(data.position.arr[3], 4.0);
   received++;
 }
 
-BOOST_AUTO_TEST_CASE(camera_sampling)
+BOOST_AUTO_TEST_CASE(star_tracker_sampling)
 {
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedIMU::EmulatedIMUMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<EmulatedStarTracker::EmulatedStarTrackerMeasurement>(client.node(), &handle_measurement);
 
 
   SampleRate rate = 100000;
