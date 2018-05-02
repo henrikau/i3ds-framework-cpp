@@ -36,13 +36,14 @@ signal_handler(int signum)
 void
 render_image(unsigned char* image, int rows, int cols, int type)
 {
-  int cv_type = CV_8UC1;
+  int cv_type = CV_16UC1;
   if (type == mode_rgb)
     {
-      cv_type = CV_8UC3;
+      cv_type = CV_16UC3;
     }
   cv::Mat frame(rows, cols, cv_type, image);
   cv::imshow("Camera feed", frame);
+  cv::waitKey(100); // Apparently needed to render image properly
 }
 
 void
