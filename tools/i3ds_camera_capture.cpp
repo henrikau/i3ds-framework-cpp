@@ -16,6 +16,8 @@
 #include "i3ds/Camera.h"
 
 #include <boost/program_options.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 namespace po = boost::program_options;
 
@@ -32,27 +34,42 @@ signal_handler(int signum)
 }
 
 void
+render_image(unsigned char* image, int rows, int cols, int type)
+{
+  int cv_type = CV_8UC1;
+  if (type == mode_rgb)
+    {
+      cv_type = CV_8UC3;
+    }
+  cv::Mat frame(rows, cols, cv_type, image);
+  cv::imshow("Camera feed", frame);
+}
+
+void
 handle_measurement1M(FrameTopic1M::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  int rows = data.region.size_y;
+  int cols = data.region.size_x;
+  render_image(static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode);
 }
 
 void
 handle_measurement4M(FrameTopic4M::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  int rows = data.region.size_y;
+  int cols = data.region.size_x;
+  render_image(static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode);
 }
 
 void
 handle_measurement8M(FrameTopic8M::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-}
-
-void
-render_image(char* image, size_t size)
-{
-  // TODO: Implement and call from handler-functions
+  int rows = data.region.size_y;
+  int cols = data.region.size_x;
+  render_image(static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode);
 }
 
 int main(int argc, char *argv[])
@@ -77,6 +94,7 @@ int main(int argc, char *argv[])
       return -1;
     }
 
+  cv::namedWindow("Camera feed", cv::WINDOW_AUTOSIZE);
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Subscriber subscriber(context);
 

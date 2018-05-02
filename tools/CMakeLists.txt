@@ -1,4 +1,5 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
+find_package (OpenCV REQUIRED)
 
 set (SRCS
   )
@@ -8,6 +9,7 @@ set (LIBS
   i3ds
   zmq
   pthread
+  ${OpenCV_LIBS}
   )
 
 set (APPS
