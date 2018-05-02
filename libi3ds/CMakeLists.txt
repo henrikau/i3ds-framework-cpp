@@ -62,6 +62,9 @@ set (SRCS
   src/emulated_radar.cpp
   src/radar_sensor.cpp
   src/radar_client.cpp
+  src/emulated_lidar.cpp
+  src/lidar_sensor.cpp
+  src/lidar_client.cpp
   )
 
 set (LIBS
@@ -93,6 +96,7 @@ set(TESTS
   sensor-test
   tof-camera-test
   radar-test
+  lidar-test
 )
 
 configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)

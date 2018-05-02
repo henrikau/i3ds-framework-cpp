@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////\file
+///
+///   Copyright 2018 SINTEF AS
+///
+///   This Source Code Form is subject to the terms of the Mozilla
+///   Public License, v. 2.0. If a copy of the MPL was not distributed
+///   with this file, You can obtain one at https://mozilla.org/MPL/2.0/
+///
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef __I3DS_LIDAR_HPP
+#define __I3DS_LIDAR_HPP
+
+#include "LIDAR.h"
+
+#include "sensor.hpp"
+#include "service.hpp"
+#include "codec.hpp"
+
+namespace i3ds
+{
+
+CODEC(LIDARRegion);
+CODEC(LIDARConfiguration);
+
+CODEC(LIDARMeasurement100K);
+CODEC(LIDARMeasurement200K);
+CODEC(LIDARMeasurement400K);
+
+class LIDAR : public Sensor
+{
+public:
+
+  // LIDAR services.
+  typedef Command<16, LIDARRegionCodec>        RegionService;
+  typedef Query  <17, LIDARConfigurationCodec> ConfigurationService;
+
+  // Constructor and destructor.
+  LIDAR(NodeID node) : Sensor(node) {};
+  virtual ~LIDAR() {};
+
+  // Get the region of interest enabled for LIDAR.
+  virtual bool region_enabled() const {return false;}
+
+  // Get the region of interest for the LIDAR.
+  virtual PolarRegion region() const {return {0,0,0,0};}
+
+  // Attach handlers to the server.
+  virtual void Attach(Server& server);
+
+protected:
+
+  // Handler for LIDAR region of interest command.
+  virtual void handle_region(RegionService::Data& command);
+
+  // Handler for LIDAR configuration query.
+  virtual void handle_configuration(ConfigurationService::Data& config) const;
+};
+
+} // namespace i3ds
+
+#endif
