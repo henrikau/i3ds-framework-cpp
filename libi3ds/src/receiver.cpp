@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#include "i3ds/receiver.hpp"
-#include "i3ds/exception.hpp"
+#include <i3ds/receiver.hpp>
+#include <i3ds/exception.hpp>
 
 i3ds::Receiver::Receiver(Context::Ptr context)
   : context_(context), timeout_ms_(100), running_(false)

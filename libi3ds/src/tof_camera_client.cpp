@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/tof_camera_client.hpp"
+#include <i3ds/tof_camera_client.hpp>
 
 i3ds::ToFCameraClient::ToFCameraClient(Context::Ptr context, NodeID sensor)
   : SensorClient(context, sensor)

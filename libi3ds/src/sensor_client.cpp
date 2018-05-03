@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/sensor_client.hpp"
+#include <i3ds/sensor_client.hpp>
 
 i3ds::SensorClient::SensorClient(Context::Ptr context, NodeID sensor)
   : Client(context, sensor)

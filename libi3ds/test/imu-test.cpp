@@ -16,9 +16,9 @@
 #include <chrono>
 #include <iostream>
 
-#include "i3ds/subscriber.hpp"
-#include "i3ds/emulated_imu.hpp"
-#include "i3ds/imu_client.hpp"
+#include <i3ds/subscriber.hpp>
+#include <i3ds/emulated_imu.hpp>
+#include <i3ds/imu_client.hpp>
 
 using namespace i3ds;
 

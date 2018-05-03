@@ -8,8 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/radar_sensor.hpp"
-#include "i3ds/exception.hpp"
+#include <i3ds/radar_sensor.hpp>
+#include <i3ds/exception.hpp>
 
 void
 i3ds::Radar::Attach(Server& server)

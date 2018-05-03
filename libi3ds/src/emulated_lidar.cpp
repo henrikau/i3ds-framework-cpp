@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "i3ds/emulated_lidar.hpp"
+#include <i3ds/emulated_lidar.hpp>
 
 i3ds::EmulatedLIDAR::Ptr
 i3ds::EmulatedLIDAR::Create(Context::Ptr context, NodeID node)

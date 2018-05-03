@@ -31,7 +31,9 @@ ${I3DS_ASN1_DIR}/StarTracker.asn
 ${I3DS_ASN1_DIR}/ToFCamera.asn
 )
 
-asn1cc_generate_c (ASN1_SRCS ASN1_HDRS ${ASN1_FILES})
+set (ASN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/i3ds")
+
+asn1cc_generate_c (ASN1_SRCS ASN1_HDRS "${ASN_OUTPUT_DIR}" ${ASN1_FILES})
 
 ################################################################################
 # libi3ds

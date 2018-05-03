@@ -11,8 +11,8 @@
 #ifndef __I3DS_CLIENT_HPP
 #define __I3DS_CLIENT_HPP
 
-#include "communication.hpp"
-#include "codec.hpp"
+#include <i3ds/communication.hpp>
+#include <i3ds/codec.hpp>
 
 namespace i3ds
 {

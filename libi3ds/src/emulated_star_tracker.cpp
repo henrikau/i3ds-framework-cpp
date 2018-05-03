@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "i3ds/emulated_star_tracker.hpp"
+#include <i3ds/emulated_star_tracker.hpp>
 
 i3ds::EmulatedStarTracker::EmulatedStarTracker(Context::Ptr context, NodeID node)
   : StarTracker(node),

@@ -16,9 +16,9 @@
 #include <chrono>
 #include <iostream>
 
-#include "i3ds/subscriber.hpp"
-#include "i3ds/emulated_star_tracker.hpp"
-#include "i3ds/star_tracker_client.hpp"
+#include <i3ds/subscriber.hpp>
+#include <i3ds/emulated_star_tracker.hpp>
+#include <i3ds/star_tracker_client.hpp>
 
 using namespace i3ds;
 

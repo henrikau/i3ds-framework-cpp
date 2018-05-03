@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "i3ds/emulated_imu.hpp"
+#include <i3ds/emulated_imu.hpp>
 
 i3ds::EmulatedIMU::EmulatedIMU(Context::Ptr context, NodeID node)
   : IMU(node),

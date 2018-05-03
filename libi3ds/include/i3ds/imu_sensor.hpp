@@ -11,11 +11,11 @@
 #ifndef __I3DS_IMU_HPP
 #define __I3DS_IMU_HPP
 
-#include "IMU.h"
+#include <i3ds/IMU.h>
 
-#include "sensor.hpp"
-#include "service.hpp"
-#include "codec.hpp"
+#include <i3ds/sensor.hpp>
+#include <i3ds/service.hpp>
+#include <i3ds/codec.hpp>
 
 namespace i3ds
 {

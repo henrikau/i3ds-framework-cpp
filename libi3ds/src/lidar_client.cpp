@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/lidar_client.hpp"
+#include <i3ds/lidar_client.hpp>
 
 i3ds::LIDARClient::LIDARClient(Context::Ptr context, NodeID sensor)
   : SensorClient(context, sensor)

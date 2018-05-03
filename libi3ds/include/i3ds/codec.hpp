@@ -14,8 +14,8 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "communication.hpp"
-#include "exception.hpp"
+#include <i3ds/communication.hpp>
+#include <i3ds/exception.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Macro to create codec wrapper for ASN.1 uPER encode/decode functions.

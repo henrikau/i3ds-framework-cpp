@@ -8,8 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/lidar_sensor.hpp"
-#include "i3ds/exception.hpp"
+#include <i3ds/lidar_sensor.hpp>
+#include <i3ds/exception.hpp>
 
 void
 i3ds::LIDAR::Attach(Server& server)

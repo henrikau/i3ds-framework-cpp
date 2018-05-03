@@ -13,7 +13,7 @@
 
 #include <thread>
 
-#include "communication.hpp"
+#include <i3ds/communication.hpp>
 
 namespace i3ds
 {

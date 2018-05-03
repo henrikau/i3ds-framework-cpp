@@ -18,10 +18,10 @@
 #include <vector>
 #include <iostream>
 
-#include "i3ds/codec.hpp"
-#include "i3ds/server.hpp"
-#include "i3ds/client.hpp"
-#include "i3ds/sensor.hpp"
+#include <i3ds/codec.hpp>
+#include <i3ds/server.hpp>
+#include <i3ds/client.hpp>
+#include <i3ds/sensor.hpp>
 
 using namespace i3ds;
 

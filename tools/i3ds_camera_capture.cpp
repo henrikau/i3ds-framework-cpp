@@ -11,9 +11,9 @@
 #include <iostream>
 #include <csignal>
 
-#include "i3ds/subscriber.hpp"
-#include "i3ds/camera_sensor.hpp"
-#include "i3ds/Camera.h"
+#include <i3ds/subscriber.hpp>
+#include <i3ds/camera_sensor.hpp>
+#include <i3ds/Camera.h>
 
 #include <boost/program_options.hpp>
 #include <opencv2/core/core.hpp>
@@ -27,7 +27,7 @@ typedef i3ds::FrameSensor<i3ds::CameraMeasurement8MCodec>::FrameTopic FrameTopic
 
 volatile bool running;
 
-void 
+void
 signal_handler(int signum)
 {
   running = false;
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     {
       sleep(1);
     }
-  
+
   subscriber.Stop();
 
   return 0;

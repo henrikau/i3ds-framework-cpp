@@ -11,11 +11,11 @@
 #ifndef __I3DS_EMULATED_IMU_HPP
 #define __I3DS_EMULATED_IMU_HPP
 
-#include "topic.hpp"
-#include "publisher.hpp"
-#include "periodic.hpp"
+#include <i3ds/topic.hpp>
+#include <i3ds/publisher.hpp>
+#include <i3ds/periodic.hpp>
 
-#include "imu_sensor.hpp"
+#include <i3ds/imu_sensor.hpp>
 
 namespace i3ds
 {

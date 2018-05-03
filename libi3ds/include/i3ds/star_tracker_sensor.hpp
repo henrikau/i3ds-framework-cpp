@@ -11,11 +11,11 @@
 #ifndef __I3DS_STAR_TRACKER_HPP
 #define __I3DS_STAR_TRACKER_HPP
 
-#include "StarTracker.h"
+#include <i3ds/StarTracker.h>
 
-#include "sensor.hpp"
-#include "service.hpp"
-#include "codec.hpp"
+#include <i3ds/sensor.hpp>
+#include <i3ds/service.hpp>
+#include <i3ds/codec.hpp>
 
 namespace i3ds
 {

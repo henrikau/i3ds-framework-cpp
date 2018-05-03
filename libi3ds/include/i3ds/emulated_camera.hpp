@@ -13,11 +13,11 @@
 
 #include <memory>
 
-#include "topic.hpp"
-#include "publisher.hpp"
-#include "periodic.hpp"
+#include <i3ds/topic.hpp>
+#include <i3ds/publisher.hpp>
+#include <i3ds/periodic.hpp>
 
-#include "camera_sensor.hpp"
+#include <i3ds/camera_sensor.hpp>
 
 #define BOOST_LOG_DYN_LINK
 

@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/client.hpp"
+#include <i3ds/client.hpp>
 
 i3ds::Client::Client(Context::Ptr context, NodeID node)
   : node_(node),

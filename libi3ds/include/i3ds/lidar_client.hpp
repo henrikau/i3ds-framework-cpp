@@ -11,8 +11,8 @@
 #ifndef __I3DS_LIDAR_CLIENT_HPP
 #define __I3DS_LIDAR_CLIENT_HPP
 
-#include "sensor_client.hpp"
-#include "lidar_sensor.hpp"
+#include <i3ds/sensor_client.hpp>
+#include <i3ds/lidar_sensor.hpp>
 
 namespace i3ds
 {

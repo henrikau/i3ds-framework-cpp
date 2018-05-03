@@ -11,8 +11,8 @@
 #ifndef __I3DS_SENSOR_CLIENT_HPP
 #define __I3DS_SENSOR_CLIENT_HPP
 
-#include "client.hpp"
-#include "sensor.hpp"
+#include <i3ds/client.hpp>
+#include <i3ds/sensor.hpp>
 
 namespace i3ds
 {

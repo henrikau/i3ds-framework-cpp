@@ -11,11 +11,11 @@
 #ifndef __I3DS_RADAR_HPP
 #define __I3DS_RADAR_HPP
 
-#include "Radar.h"
+#include <i3ds/Radar.h>
 
-#include "sensor.hpp"
-#include "service.hpp"
-#include "codec.hpp"
+#include <i3ds/sensor.hpp>
+#include <i3ds/service.hpp>
+#include <i3ds/codec.hpp>
 
 namespace i3ds
 {

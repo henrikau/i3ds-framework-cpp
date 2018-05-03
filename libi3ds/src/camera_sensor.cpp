@@ -8,8 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/camera_sensor.hpp"
-#include "i3ds/exception.hpp"
+#include <i3ds/camera_sensor.hpp>
+#include <i3ds/exception.hpp>
 
 void
 i3ds::Camera::Attach(Server& server)

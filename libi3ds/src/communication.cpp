@@ -8,8 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/communication.hpp"
-#include "i3ds/exception.hpp"
+#include <i3ds/communication.hpp>
+#include <i3ds/exception.hpp>
 
 #include <iostream>
 #include <stdexcept>

@@ -14,7 +14,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "Common.h"
+#include <i3ds/Common.h>
 
 namespace i3ds
 {

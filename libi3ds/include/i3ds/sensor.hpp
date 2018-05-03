@@ -13,14 +13,14 @@
 
 #include <memory>
 
-#include "Common.h"
-#include "Sensor.h"
+#include <i3ds/Common.h>
+#include <i3ds/Sensor.h>
 
-#include "communication.hpp"
-#include "service.hpp"
-#include "server.hpp"
-#include "codec.hpp"
-#include "exception.hpp"
+#include <i3ds/communication.hpp>
+#include <i3ds/service.hpp>
+#include <i3ds/server.hpp>
+#include <i3ds/codec.hpp>
+#include <i3ds/exception.hpp>
 
 namespace i3ds
 {

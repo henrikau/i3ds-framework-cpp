@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/camera_client.hpp"
+#include <i3ds/camera_client.hpp>
 
 i3ds::CameraClient::CameraClient(Context::Ptr context, NodeID sensor)
   : SensorClient(context, sensor)

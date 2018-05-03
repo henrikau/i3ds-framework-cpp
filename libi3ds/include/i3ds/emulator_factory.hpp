@@ -11,10 +11,10 @@
 #ifndef __I3DS_EMULATOR_FACTORY_HPP
 #define __I3DS_EMULATOR_FACTORY_HPP
 
-#include "communication.hpp"
-#include "sensor.hpp"
-#include "camera_sensor.hpp"
-#include "tof_camera_sensor.hpp"
+#include <i3ds/communication.hpp>
+#include <i3ds/sensor.hpp>
+#include <i3ds/camera_sensor.hpp>
+#include <i3ds/tof_camera_sensor.hpp>
 
 namespace i3ds
 {

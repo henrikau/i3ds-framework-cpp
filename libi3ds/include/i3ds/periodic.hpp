@@ -15,7 +15,7 @@
 #include <functional>
 #include <chrono>
 
-#include "sensor.hpp"
+#include <i3ds/sensor.hpp>
 
 namespace i3ds
 {

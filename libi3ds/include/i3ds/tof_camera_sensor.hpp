@@ -11,11 +11,11 @@
 #ifndef __I3DS_TOF_CAMERA_HPP
 #define __I3DS_TOF_CAMERA_HPP
 
-#include "ToFCamera.h"
+#include <i3ds/ToFCamera.h>
 
-#include "sensor.hpp"
-#include "service.hpp"
-#include "codec.hpp"
+#include <i3ds/sensor.hpp>
+#include <i3ds/service.hpp>
+#include <i3ds/codec.hpp>
 
 namespace i3ds
 {

@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-#include "i3ds/emulated_tof_camera.hpp"
+#include <i3ds/emulated_tof_camera.hpp>
 
 i3ds::EmulatedToFCamera::Ptr
 i3ds::EmulatedToFCamera::Create(Context::Ptr context, NodeID node)

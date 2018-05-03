@@ -15,10 +15,10 @@
 #include <unordered_map>
 #include <functional>
 
-#include "receiver.hpp"
-#include "communication.hpp"
-#include "exception.hpp"
-#include "service.hpp"
+#include <i3ds/receiver.hpp>
+#include <i3ds/communication.hpp>
+#include <i3ds/exception.hpp>
+#include <i3ds/service.hpp>
 
 namespace i3ds
 {

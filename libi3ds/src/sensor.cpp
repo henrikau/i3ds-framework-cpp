@@ -11,7 +11,7 @@
 #include <iostream>
 #include <cassert>
 
-#include "i3ds/sensor.hpp"
+#include <i3ds/sensor.hpp>
 
 i3ds::Sensor::Sensor(NodeID node)
   : node_(node)

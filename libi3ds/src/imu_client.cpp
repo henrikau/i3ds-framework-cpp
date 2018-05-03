@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "i3ds/imu_client.hpp"
+#include <i3ds/imu_client.hpp>
 
 i3ds::IMUClient::IMUClient(Context::Ptr context, NodeID sensor)
   : SensorClient(context, sensor)
