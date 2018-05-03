@@ -73,3 +73,12 @@ i3ds::Client::Stop()
 {
   socket_.reset();
 }
+
+template<>
+void i3ds::Client::Check<CommandResponse>(CommandResponse& response)
+{
+  if (response.result != success)
+    {
+      throw CommandError(response.result, to_string(response.message));
+    }
+}

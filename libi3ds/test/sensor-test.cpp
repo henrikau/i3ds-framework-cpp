@@ -118,9 +118,15 @@ void TestClient::test_legal_state_command(StateCommand sc)
 
 void TestClient::test_illegal_state_command(StateCommand sc)
 {
-  ResultCode r = issue_state_command(sc);
-
-  BOOST_CHECK_EQUAL(r, error_state);
+  try
+    {
+      issue_state_command(sc);
+      BOOST_CHECK(false);
+    }
+  catch (CommandError e)
+    {
+      BOOST_CHECK_EQUAL(e.result(), error_state);
+    }
 }
 
 ResultCode TestClient::issue_rate_command(SampleRate rate)
@@ -145,16 +151,15 @@ void TestClient::test_legal_rate_command(SampleRate rate)
 
 void TestClient::test_illegal_rate_command(SampleRate rate, ResultCode error)
 {
-  ResultCode r = issue_rate_command(rate);
-
-  BOOST_CHECK_EQUAL(r, error);
-}
-
-void TestClient::test_unsupported_rate_command(SampleRate rate, ResultCode error)
-{
-  ResultCode r = issue_rate_command(rate);
-
-  BOOST_CHECK_EQUAL(r, error);
+  try
+    {
+      issue_rate_command(rate);
+      BOOST_CHECK(false);
+    }
+  catch (CommandError e)
+    {
+      BOOST_CHECK_EQUAL(e.result(), error);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -274,7 +279,7 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.rate(), 1000);
 
-  client.test_unsupported_rate_command(2000000, error_value);
+  client.test_illegal_rate_command(2000000, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.rate(), 1000);
 
@@ -282,10 +287,10 @@ BOOST_AUTO_TEST_CASE(sensor_rate_command)
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.rate(), 2000);
 
-  client.test_unsupported_rate_command(10, error_value);
+  client.test_illegal_rate_command(10, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
-  client.test_unsupported_rate_command(2000000, error_value);
+  client.test_illegal_rate_command(2000000, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
   // Test from OPERATIONAL (illegal).

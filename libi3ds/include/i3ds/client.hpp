@@ -13,6 +13,7 @@
 
 #include <i3ds/communication.hpp>
 #include <i3ds/codec.hpp>
+#include <i3ds/service.hpp>
 
 namespace i3ds
 {
@@ -47,6 +48,7 @@ public:
     Message response;
     Receive(T::endpoint, response);
     Decode<typename T::ResponseCodec>(response, data.response);
+    Check<typename T::ResponseCodec::Data>(data.response);
   }
 
   // Execute call for client, returns true if successful.
@@ -70,6 +72,10 @@ public:
   void set_timeout(int t) {timeout_ = t;}
 
 private:
+
+  // Check the response, do nothing in general case.
+  template<typename T>
+  void Check(T& response) {};
 
   // Reset socket if receive fails.
   void Reset();
@@ -95,6 +101,10 @@ private:
   // The timeout for waiting on requests.
   int timeout_;
 };
+
+// Template specialization for commands to raise CommandError.
+template<>
+void Client::Check<CommandResponse>(CommandResponse& response);
 
 } // namespace i3ds
 
