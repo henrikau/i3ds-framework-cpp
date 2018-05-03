@@ -84,13 +84,15 @@ handle_measurement(EmulatedIMU::EmulatedIMUMeasurement::Data& data)
   BOOST_CHECK_EQUAL(data.linear_accel.arr[0], 1.0);
   BOOST_CHECK_EQUAL(data.linear_accel.arr[1], 2.0);
   BOOST_CHECK_EQUAL(data.linear_accel.arr[2], 3.0);
+  BOOST_CHECK_EQUAL(data.linear_accel.nCount, 3);
   BOOST_CHECK_EQUAL(data.angular_rate.arr[0], 4.0);
   BOOST_CHECK_EQUAL(data.angular_rate.arr[1], 5.0);
   BOOST_CHECK_EQUAL(data.angular_rate.arr[2], 6.0);
+  BOOST_CHECK_EQUAL(data.angular_rate.nCount, 3);
   received++;
 }
 
-BOOST_AUTO_TEST_CASE(camera_sampling)
+BOOST_AUTO_TEST_CASE(imu_sampling)
 {
   received = 0;
   Subscriber subscriber(context);
@@ -110,7 +112,6 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
 
   client.set_state(stop);
 
-  std::chrono::milliseconds(100);
   subscriber.Stop();
 
   BOOST_CHECK_GT(received, 0);

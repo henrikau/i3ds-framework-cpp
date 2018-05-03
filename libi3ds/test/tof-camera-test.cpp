@@ -57,7 +57,7 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_creation)
+BOOST_AUTO_TEST_CASE(tof_camera_creation)
 {
   BOOST_CHECK_EQUAL(camera.node(), node);
   BOOST_CHECK_EQUAL(camera.state(), inactive);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(camera_creation)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_command)
+BOOST_AUTO_TEST_CASE(tof_camera_command)
 {
   BOOST_CHECK_EQUAL(camera.state(), inactive);
   client.set_state(activate);
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(camera_command)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_configuration_query)
+BOOST_AUTO_TEST_CASE(tof_camera_configuration_query)
 {
   bool region_enabled = true;
   PlanarRegion region = {300, 200, 150, 100};
@@ -115,7 +115,7 @@ handle_measurement(EmulatedToFCamera::ToFMeasurement::Data& data)
   received++;
 }
 
-BOOST_AUTO_TEST_CASE(camera_sampling)
+BOOST_AUTO_TEST_CASE(tof_camera_sampling)
 {
   received = 0;
   Subscriber subscriber(context);
@@ -135,7 +135,6 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
 
   client.set_state(stop);
 
-  std::chrono::milliseconds(100);
   subscriber.Stop();
 
   BOOST_CHECK_GT(received, 0);

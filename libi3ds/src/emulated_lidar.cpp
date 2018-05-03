@@ -84,6 +84,7 @@ i3ds::EmulatedLIDAR::send_sample(unsigned long timestamp_us)
 
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;
+  frame_.region = region_;
 
   publisher_.Send<LIDARMeasurement>(frame_);
 

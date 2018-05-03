@@ -108,7 +108,6 @@ BOOST_AUTO_TEST_CASE(star_tracker_sampling)
 
   client.set_state(stop);
 
-  std::chrono::milliseconds(100);
   subscriber.Stop();
 
   BOOST_CHECK_GT(received, 0);

@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(lidar_command)
   client.set_state(activate);
   BOOST_CHECK_EQUAL(lidar.state(), standby);
 
-  PolarRegion r1 = {300, 200, 150, 100};
+  PolarRegion r1 = {-300.0, -200.0, 600, 400};
 
   client.set_region(true, r1);
 
@@ -112,6 +112,10 @@ void
 handle_measurement(EmulatedLIDAR::LIDARMeasurement::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  BOOST_CHECK_EQUAL(data.region.offset_x, -300.0);
+  BOOST_CHECK_EQUAL(data.region.offset_y, -200.0);
+  BOOST_CHECK_EQUAL(data.region.size_x, 600.0);
+  BOOST_CHECK_EQUAL(data.region.size_y, 400.0);
   received++;
 }
 
@@ -124,9 +128,11 @@ BOOST_AUTO_TEST_CASE(lidar_sampling)
 
 
   SampleRate rate = 100000;
+  PolarRegion r1 = {-300.0, -200.0, 600, 400};
 
   client.set_state(activate);
   client.set_rate(rate);
+  client.set_region(true, r1);
   client.set_state(start);
 
   subscriber.Start();
@@ -135,7 +141,6 @@ BOOST_AUTO_TEST_CASE(lidar_sampling)
 
   client.set_state(stop);
 
-  std::chrono::milliseconds(100);
   subscriber.Stop();
 
   BOOST_CHECK_GT(received, 0);

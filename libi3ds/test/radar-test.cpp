@@ -112,6 +112,10 @@ void
 handle_measurement(EmulatedRadar::RadarMeasurement::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  BOOST_CHECK_EQUAL(data.region.offset_x, 400);
+  BOOST_CHECK_EQUAL(data.region.offset_y, 300);
+  BOOST_CHECK_EQUAL(data.region.size_x, 150);
+  BOOST_CHECK_EQUAL(data.region.size_y, 100);
   received++;
 }
 
@@ -122,11 +126,12 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
 
   subscriber.Attach<EmulatedRadar::RadarMeasurement>(client.node(), &handle_measurement);
 
-
   SampleRate rate = 100000;
+  PlanarRegion region = {400, 300, 150, 100};
 
   client.set_state(activate);
   client.set_rate(rate);
+  client.set_region(true, region);
   client.set_state(start);
 
   subscriber.Start();
@@ -135,7 +140,6 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
 
   client.set_state(stop);
 
-  std::chrono::milliseconds(100);
   subscriber.Stop();
 
   BOOST_CHECK_GT(received, 0);
