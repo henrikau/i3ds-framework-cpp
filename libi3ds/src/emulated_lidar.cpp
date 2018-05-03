@@ -28,7 +28,7 @@ i3ds::EmulatedLIDAR::EmulatedLIDAR(Context::Ptr context, NodeID node)
   region_.offset_x = 0;
   region_.offset_y = 0;
 
-  LIDARMeasurement100KCodec::Initialize(frame_);
+  LIDARMeasurement400KCodec::Initialize(frame_);
 
   frame_.region.size_x = region_.size_x;
   frame_.region.size_y = region_.size_y;

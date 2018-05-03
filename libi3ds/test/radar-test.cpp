@@ -29,12 +29,12 @@ struct F
   F()
     : node(1),
       context(Context::Create()),
-      radar(context, node),
+      radar(EmulatedRadar::Create(context, node)),
       server(context),
       client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    radar.Attach(server);
+    radar->Attach(server);
     server.Start();
     client.set_timeout(1000);
   }
@@ -48,7 +48,7 @@ struct F
   const NodeID node;
 
   Context::Ptr context;
-  EmulatedRadar radar;
+  EmulatedRadar::Ptr radar;
   Server server;
   RadarClient client;
 };
@@ -59,26 +59,26 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(radar_creation)
 {
-  BOOST_CHECK_EQUAL(radar.node(), node);
-  BOOST_CHECK_EQUAL(radar.state(), inactive);
-  BOOST_CHECK_EQUAL(radar.rate(), 0);
+  BOOST_CHECK_EQUAL(radar->node(), node);
+  BOOST_CHECK_EQUAL(radar->state(), inactive);
+  BOOST_CHECK_EQUAL(radar->rate(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 BOOST_AUTO_TEST_CASE(radar_command)
 {
-  BOOST_CHECK_EQUAL(radar.state(), inactive);
+  BOOST_CHECK_EQUAL(radar->state(), inactive);
   client.set_state(activate);
-  BOOST_CHECK_EQUAL(radar.state(), standby);
+  BOOST_CHECK_EQUAL(radar->state(), standby);
 
   PlanarRegion r1 = {300, 200, 150, 100};
 
   client.set_region(true, r1);
 
-  BOOST_CHECK_EQUAL(radar.region_enabled(), true);
+  BOOST_CHECK_EQUAL(radar->region_enabled(), true);
 
-  PlanarRegion r2 = radar.region();
+  PlanarRegion r2 = radar->region();
 
   BOOST_CHECK_EQUAL(r1.size_x, r2.size_x);
   BOOST_CHECK_EQUAL(r1.size_y, r2.size_y);

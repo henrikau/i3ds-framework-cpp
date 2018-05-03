@@ -26,6 +26,13 @@ public:
 
   typedef Topic<128, StarTrackerMeasurementCodec> EmulatedStarTrackerMeasurement;
 
+  typedef std::shared_ptr<EmulatedStarTracker> Ptr;
+
+  static Ptr Create(Context::Ptr context, NodeID id)
+    {
+      return std::make_shared<EmulatedStarTracker>(context, id);
+    }
+
   EmulatedStarTracker(Context::Ptr context, NodeID id);
   virtual ~EmulatedStarTracker();
 

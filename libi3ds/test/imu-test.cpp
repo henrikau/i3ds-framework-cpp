@@ -30,11 +30,11 @@ struct F
     : node(1),
       context(Context::Create()),
       server(context),
-      imu(context, node),
+      imu(EmulatedIMU::Create(context, node)),
       client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    imu.Attach(server);
+    imu->Attach(server);
     server.Start();
     client.set_timeout(1000);
   }
@@ -49,7 +49,7 @@ struct F
 
   Context::Ptr context;
   Server server;
-  EmulatedIMU imu;
+  EmulatedIMU::Ptr imu;
   IMUClient client;
 };
 
@@ -59,18 +59,18 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(imu_creation)
 {
-  BOOST_CHECK_EQUAL(imu.node(), node);
-  BOOST_CHECK_EQUAL(imu.state(), inactive);
-  BOOST_CHECK_EQUAL(imu.rate(), 0);
+  BOOST_CHECK_EQUAL(imu->node(), node);
+  BOOST_CHECK_EQUAL(imu->state(), inactive);
+  BOOST_CHECK_EQUAL(imu->rate(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 BOOST_AUTO_TEST_CASE(imu_state_command)
 {
-  BOOST_CHECK_EQUAL(imu.state(), inactive);
+  BOOST_CHECK_EQUAL(imu->state(), inactive);
   client.set_state(activate);
-  BOOST_CHECK_EQUAL(imu.state(), standby);
+  BOOST_CHECK_EQUAL(imu->state(), standby);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

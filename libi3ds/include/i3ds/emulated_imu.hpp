@@ -26,6 +26,13 @@ public:
 
   typedef Topic<128, IMUMeasurementCodec> EmulatedIMUMeasurement;
 
+  typedef std::shared_ptr<EmulatedIMU> Ptr;
+
+  static Ptr Create(Context::Ptr context, NodeID id)
+    {
+      return std::make_shared<EmulatedIMU>(context, id);
+    }
+
   EmulatedIMU(Context::Ptr context, NodeID id);
   virtual ~EmulatedIMU();
 

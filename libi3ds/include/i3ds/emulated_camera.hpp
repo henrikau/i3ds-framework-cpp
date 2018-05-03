@@ -119,6 +119,13 @@ public:
 
   typedef typename FrameSensor<T>::FrameTopic FrameTopic;
 
+  typedef std::shared_ptr<EmulatedMonoCamera<T>> Ptr;
+
+  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop)
+    {
+      return std::make_shared<EmulatedMonoCamera<T>>(context, id, prop);
+    }
+
   EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
     : EmulatedCamera(context, id, prop)
   {
@@ -154,6 +161,13 @@ class EmulatedStereoCamera : public EmulatedCamera, public FrameSensor<T>
 public:
 
   typedef typename FrameSensor<T>::FrameTopic FrameTopic;
+
+  typedef std::shared_ptr<EmulatedMonoCamera<T>> Ptr;
+
+  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop) 
+    {
+      return std::make_shared<EmulatedStereoCamera<T>>(context, id, prop);
+    }
 
   EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
     : EmulatedCamera(context, id, prop)

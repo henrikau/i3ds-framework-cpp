@@ -24,7 +24,7 @@ using namespace i3ds;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef EmulatedMonoCamera<CameraMeasurement1MCodec> TestCamera;
+typedef EmulatedMonoCamera<CameraMeasurement8MCodec> TestCamera;
 
 struct F
 {
@@ -32,19 +32,19 @@ struct F
     : node(1),
       context(Context::Create()),
       prop( {mode_mono, 12, 2, 640, 480}),
-  camera(context, node, prop),
-  server(context),
-  client(context, node)
+      camera(TestCamera::Create(context, node, prop)),
+      server(context),
+      client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    camera.Attach(server);
+    camera->Attach(server);
     server.Start();
     client.set_timeout(1000);
   }
 
   ~F()
   {
-    BOOST_TEST_MESSAGE( "teardown fixture" );
+    BOOST_TEST_MESSAGE("teardown fixture");
     server.Stop();
   }
 
@@ -53,7 +53,7 @@ struct F
   Context::Ptr context;
 
   FrameProperties prop;
-  TestCamera camera;
+  TestCamera::Ptr camera;
   Server server;
   CameraClient client;
 };
@@ -64,63 +64,63 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(camera_creation)
 {
-  BOOST_CHECK_EQUAL(camera.node(), node);
-  BOOST_CHECK_EQUAL(camera.state(), inactive);
-  BOOST_CHECK_EQUAL(camera.rate(), 0);
+  BOOST_CHECK_EQUAL(camera->node(), node);
+  BOOST_CHECK_EQUAL(camera->state(), inactive);
+  BOOST_CHECK_EQUAL(camera->rate(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 BOOST_AUTO_TEST_CASE(camera_command)
 {
-  BOOST_CHECK_EQUAL(camera.state(), inactive);
+  BOOST_CHECK_EQUAL(camera->state(), inactive);
   client.set_state(activate);
-  BOOST_CHECK_EQUAL(camera.state(), standby);
+  BOOST_CHECK_EQUAL(camera->state(), standby);
 
-  BOOST_CHECK_EQUAL(camera.shutter(), 0);
-  BOOST_CHECK_CLOSE(camera.gain(), 0.0, 1e-6);
+  BOOST_CHECK_EQUAL(camera->shutter(), 0);
+  BOOST_CHECK_CLOSE(camera->gain(), 0.0, 1e-6);
   client.set_exposure(1000, 1.0);
-  BOOST_CHECK_EQUAL(camera.shutter(), 1000);
-  BOOST_CHECK_CLOSE(camera.gain(), 1.0, 1e-6);
+  BOOST_CHECK_EQUAL(camera->shutter(), 1000);
+  BOOST_CHECK_CLOSE(camera->gain(), 1.0, 1e-6);
 
-  BOOST_CHECK_EQUAL(camera.auto_exposure_enabled(), false);
-  BOOST_CHECK_EQUAL(camera.max_shutter(), 0);
-  BOOST_CHECK_CLOSE(camera.max_gain(), 0.0, 1e-6);
+  BOOST_CHECK_EQUAL(camera->auto_exposure_enabled(), false);
+  BOOST_CHECK_EQUAL(camera->max_shutter(), 0);
+  BOOST_CHECK_CLOSE(camera->max_gain(), 0.0, 1e-6);
 
   client.set_auto_exposure(true, 10000, 1.0);
 
-  BOOST_CHECK_EQUAL(camera.auto_exposure_enabled(), true);
-  BOOST_CHECK_EQUAL(camera.max_shutter(), 10000);
-  BOOST_CHECK_CLOSE(camera.max_gain(), 1.0, 1e-6);
+  BOOST_CHECK_EQUAL(camera->auto_exposure_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->max_shutter(), 10000);
+  BOOST_CHECK_CLOSE(camera->max_gain(), 1.0, 1e-6);
 
   PlanarRegion r1 = {300, 200, 150, 100};
 
   client.set_region(true, r1);
 
-  BOOST_CHECK_EQUAL(camera.region_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->region_enabled(), true);
 
-  PlanarRegion r2 = camera.region();
+  PlanarRegion r2 = camera->region();
 
   BOOST_CHECK_EQUAL(r1.size_x, r2.size_x);
   BOOST_CHECK_EQUAL(r1.size_y, r2.size_y);
   BOOST_CHECK_EQUAL(r1.offset_x, r2.offset_x);
   BOOST_CHECK_EQUAL(r1.offset_y, r2.offset_y);
 
-  BOOST_CHECK_EQUAL(camera.flash_enabled(), false);
-  BOOST_CHECK_EQUAL(camera.flash_strength(), 0);
+  BOOST_CHECK_EQUAL(camera->flash_enabled(), false);
+  BOOST_CHECK_EQUAL(camera->flash_strength(), 0);
 
   client.set_flash(true, 128);
 
-  BOOST_CHECK_EQUAL(camera.flash_enabled(), true);
-  BOOST_CHECK_EQUAL(camera.flash_strength(), 128);
+  BOOST_CHECK_EQUAL(camera->flash_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->flash_strength(), 128);
 
-  BOOST_CHECK_EQUAL(camera.pattern_enabled(), false);
-  BOOST_CHECK_EQUAL(camera.pattern_sequence(), 0);
+  BOOST_CHECK_EQUAL(camera->pattern_enabled(), false);
+  BOOST_CHECK_EQUAL(camera->pattern_sequence(), 0);
 
   client.set_pattern(true, 1);
 
-  BOOST_CHECK_EQUAL(camera.pattern_enabled(), true);
-  BOOST_CHECK_EQUAL(camera.pattern_sequence(), 1);
+  BOOST_CHECK_EQUAL(camera->pattern_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->pattern_sequence(), 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
