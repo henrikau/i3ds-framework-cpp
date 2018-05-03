@@ -31,6 +31,9 @@ class LIDAR : public Sensor
 {
 public:
 
+  // Shared pointer for LIDAR interfaces.
+  typedef std::shared_ptr<LIDAR> Ptr;
+
   // LIDAR services.
   typedef Command<16, LIDARRegionCodec>        RegionService;
   typedef Query  <17, LIDARConfigurationCodec> ConfigurationService;

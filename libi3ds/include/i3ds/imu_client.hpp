@@ -21,6 +21,8 @@ class IMUClient : public SensorClient
 {
 public:
 
+  typedef std::shared_ptr<IMUClient> Ptr;
+
   IMUClient(Context::Ptr context, NodeID sensor);
 
 };

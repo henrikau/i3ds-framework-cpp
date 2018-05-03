@@ -73,6 +73,7 @@ set (SRCS
 
 set (LIBS
   zmq
+  pthread
   ${Boost_LIBRARIES}
   )
 

@@ -31,6 +31,9 @@ class Radar : public Sensor
 {
 public:
 
+  // Shared pointer for radar interfaces.
+  typedef std::shared_ptr<Radar> Ptr;
+
   // Radar services.
   typedef Command<16, RadarRegionCodec>        RegionService;
   typedef Query  <17, RadarConfigurationCodec> ConfigurationService;

@@ -26,6 +26,9 @@ class IMU : public Sensor
 {
 public:
 
+  // Shared pointer for IMU interfaces.
+  typedef std::shared_ptr<IMU> Ptr;
+
   // Constructor and destructor.
   IMU(NodeID node) : Sensor(node) {};
   virtual ~IMU() {};

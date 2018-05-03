@@ -21,6 +21,8 @@ class LIDARClient : public SensorClient
 {
 public:
 
+  typedef std::shared_ptr<LIDARClient> Ptr;
+
   LIDARClient(Context::Ptr context, NodeID sensor);
 
   void set_region(bool enable, PolarRegion region);

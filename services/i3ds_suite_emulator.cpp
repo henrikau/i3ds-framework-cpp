@@ -78,7 +78,6 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create factory";
   i3ds::EmulatorFactory factory(context, base_id);
 
-
   BOOST_LOG_TRIVIAL(trace) << "Create TIR camera";
   sensors.push_back(factory.CreateTIRCamera());
 
@@ -90,6 +89,18 @@ int main(int argc, char** argv)
 
   BOOST_LOG_TRIVIAL(trace) << "Create ToF camera";
   sensors.push_back(factory.CreateToFCamera());
+
+  BOOST_LOG_TRIVIAL(trace) << "Create LIDAR";
+  sensors.push_back(factory.CreateLIDAR());
+
+  BOOST_LOG_TRIVIAL(trace) << "Create radar";
+  sensors.push_back(factory.CreateRadar());
+
+  BOOST_LOG_TRIVIAL(trace) << "Create star tracker";
+  sensors.push_back(factory.CreateStarTracker());
+
+  BOOST_LOG_TRIVIAL(trace) << "Create IMU";
+  sensors.push_back(factory.CreateIMU());
 
   for (auto s : sensors)
     {

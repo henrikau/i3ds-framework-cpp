@@ -24,15 +24,3 @@ i3ds::ClientFactory::ClientFactory(Context::Ptr context)
 i3ds::ClientFactory::~ClientFactory()
 {
 }
-
-i3ds::ToFCameraClient::Ptr
-i3ds::ClientFactory::CreateToFCamera(NodeID node)
-{
-  return std::make_shared<ToFCameraClient>(context_, node);
-}
-
-i3ds::CameraClient::Ptr
-i3ds::ClientFactory::CreateCamera(NodeID node)
-{
-  return std::make_shared<CameraClient>(context_, node);
-}

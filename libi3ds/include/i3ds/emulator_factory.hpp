@@ -15,6 +15,10 @@
 #include <i3ds/sensor.hpp>
 #include <i3ds/camera_sensor.hpp>
 #include <i3ds/tof_camera_sensor.hpp>
+#include <i3ds/radar_sensor.hpp>
+#include <i3ds/lidar_sensor.hpp>
+#include <i3ds/imu_sensor.hpp>
+#include <i3ds/star_tracker_sensor.hpp>
 
 namespace i3ds
 {
@@ -30,6 +34,10 @@ public:
   Camera::Ptr CreateTIRCamera();
   Camera::Ptr CreateHRCamera();
   Camera::Ptr CreateStereoCamera();
+  Radar::Ptr CreateRadar();
+  LIDAR::Ptr CreateLIDAR();
+  IMU::Ptr CreateIMU();
+  StarTracker::Ptr CreateStarTracker();
 
 private:
 

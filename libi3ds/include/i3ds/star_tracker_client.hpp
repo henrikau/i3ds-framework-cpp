@@ -21,8 +21,9 @@ class StarTrackerClient : public SensorClient
 {
 public:
 
-  StarTrackerClient(Context::Ptr context, NodeID sensor);
+  typedef std::shared_ptr<StarTrackerClient> Ptr;
 
+  StarTrackerClient(Context::Ptr context, NodeID sensor);
 };
 
 } // namespace i3ds

@@ -21,6 +21,8 @@ class RadarClient : public SensorClient
 {
 public:
 
+  typedef std::shared_ptr<RadarClient> Ptr;
+
   RadarClient(Context::Ptr context, NodeID sensor);
 
   void set_region(bool enable, PlanarRegion region);

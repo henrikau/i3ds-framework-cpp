@@ -11,11 +11,10 @@
 #ifndef __I3DS_CLIENT_FACTORY_HPP
 #define __I3DS_CLIENT_FACTORY_HPP
 
-#include <i3ds/communication.hpp>
+#include <type_traits>
 
+#include <i3ds/communication.hpp>
 #include <i3ds/sensor_client.hpp>
-#include <i3ds/camera_client.hpp>
-#include <i3ds/tof_camera_client.hpp>
 
 namespace i3ds
 {
@@ -30,9 +29,13 @@ public:
 
   ClientFactory(Context::Ptr context);
   virtual ~ClientFactory();
-
-  ToFCameraClient::Ptr CreateToFCamera(NodeID node);
-  CameraClient::Ptr CreateCamera(NodeID node);
+  
+  template<typename T>
+  typename T::Ptr Create(NodeID node)
+  {
+    static_assert(std::is_base_of<SensorClient, T>::value);
+    return std::make_shared<T>(context_, node);
+  }
 
 private:
 
