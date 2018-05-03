@@ -6,6 +6,11 @@
 #include "i3ds/client_factory.hpp"
 #include "i3ds/sensor_client.hpp"
 #include "i3ds/camera_client.hpp"
+#include "i3ds/tof_camera_client.hpp"
+#include "i3ds/radar_client.hpp"
+#include "i3ds/imu_client.hpp"
+#include "i3ds/star_tracker_client.hpp"
+#include "i3ds/lidar_client.hpp"
 
 using namespace i3ds;
 %}
@@ -21,6 +26,11 @@ using namespace i3ds;
 %shared_ptr(i3ds::Client)
 %shared_ptr(i3ds::SensorClient)
 %shared_ptr(i3ds::CameraClient)
+%shared_ptr(i3ds::ToFCameraClient)
+%shared_ptr(i3ds::RadarClient)
+%shared_ptr(i3ds::StarTrackerClient)
+%shared_ptr(i3ds::IMUClient)
+%shared_ptr(i3ds::LIDARClient)
 
 typedef long long asn1SccSint;
 typedef unsigned long long asn1SccUint;
@@ -81,6 +91,13 @@ typedef struct {
     T_UInt16 size_x;
     T_UInt16 size_y;
 } PlanarRegion;
+
+typedef struct {
+    T_Float offset_x;
+    T_Float offset_y;
+    T_Float size_x;
+    T_Float size_y;
+} PolarRegion;
 
 namespace i3ds {
   
@@ -154,6 +171,72 @@ public:
   virtual void load_config();
 };
 
+class ToFCameraClient : public SensorClient
+{
+public:
+
+  typedef std::shared_ptr<ToFCameraClient> Ptr;
+
+  ToFCameraClient(Context::Ptr context, NodeID sensor);
+
+  void set_region(bool enable, PlanarRegion region);
+
+  bool region_enabled() const;
+  PlanarRegion region() const;
+
+  virtual void load_config();
+};
+
+class RadarClient : public SensorClient
+{
+public:
+
+  typedef std::shared_ptr<RadarClient> Ptr;
+
+  RadarClient(Context::Ptr context, NodeID sensor);
+
+  void set_region(bool enable, PlanarRegion region);
+
+  bool region_enabled() const;
+  PlanarRegion region() const;
+
+  virtual void load_config();
+};
+
+class LIDARClient : public SensorClient
+{
+public:
+
+  typedef std::shared_ptr<LIDARClient> Ptr;
+
+  LIDARClient(Context::Ptr context, NodeID sensor);
+
+  void set_region(bool enable, PolarRegion region);
+
+  bool region_enabled() const;
+  PolarRegion region() const;
+
+  virtual void load_config();
+};
+
+class IMUClient : public SensorClient
+{
+public:
+
+  typedef std::shared_ptr<IMUClient> Ptr;
+
+  IMUClient(Context::Ptr context, NodeID sensor);
+};
+
+class StarTrackerClient : public SensorClient
+{
+public:
+
+  typedef std::shared_ptr<StarTrackerClient> Ptr;
+
+  StarTrackerClient(Context::Ptr context, NodeID sensor);
+};
+
 class ClientFactory
 {
 public:
@@ -164,15 +247,21 @@ public:
 
   ClientFactory(Context::Ptr context);
   virtual ~ClientFactory();
-
-  ToFCameraClient::Ptr CreateToFCamera(NodeID node);
-  CameraClient::Ptr CreateCamera(NodeID node);
-
-private:
-
-  Context::Ptr context_;
-  NodeID next_id_;
+  
+  template<typename T>
+  typename T::Ptr Create(NodeID node)
+  {
+    static_assert(std::is_base_of<SensorClient, T>::value);
+    return std::make_shared<T>(context_, node);
+  }
 };
+
+%template(Camera) ClientFactory::Create<CameraClient>;
+%template(ToFCamera) ClientFactory::Create<ToFCameraClient>;
+%template(Radar) ClientFactory::Create<RadarClient>;
+%template(LIDAR) ClientFactory::Create<LIDARClient>;
+%template(StarTracker) ClientFactory::Create<StarTrackerClient>;
+%template(IMU) ClientFactory::Create<IMUClient>;
   
 %clearnodefaultctor;
 } // namespace i3ds
