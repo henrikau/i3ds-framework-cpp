@@ -8,7 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
+#define BOOST_LOG_DYN_LINK
+#include <boost/log/trivial.hpp>
 
 #include <i3ds/emulated_imu.hpp>
 
@@ -17,45 +18,52 @@ i3ds::EmulatedIMU::EmulatedIMU(Context::Ptr context, NodeID node)
     sampler_(std::bind(&i3ds::EmulatedIMU::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
+  BOOST_LOG_TRIVIAL(info) << "Create emulated IMU with NodeID: " << node;
   IMUMeasurementCodec::Initialize(frame_);
 }
 
 i3ds::EmulatedIMU::~EmulatedIMU()
 {
+  BOOST_LOG_TRIVIAL(info) << "Destroy emulated IMU with NodeID: " << node();
 }
 
 void
 i3ds::EmulatedIMU::do_activate()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " do_activate()";
 }
 
 void
 i3ds::EmulatedIMU::do_start()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " do_start()";
   sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedIMU::do_stop()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " do_stop()";
   sampler_.Stop();
 }
 
 void
 i3ds::EmulatedIMU::do_deactivate()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " do_deactivate()";
 }
 
 bool
 i3ds::EmulatedIMU::is_rate_supported(SampleRate rate)
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " is_rate_supported()";
   return 0 < rate && rate <= 10000000;
 }
 
 bool
 i3ds::EmulatedIMU::send_sample(unsigned long timestamp_us)
 {
-  std::cout << "Send: " << timestamp_us << std::endl;
+  BOOST_LOG_TRIVIAL(trace) << "Emulated IMU with NodeID: " << node() << " sends sample at " << timestamp_us;
 
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;

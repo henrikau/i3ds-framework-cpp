@@ -8,8 +8,6 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
-
 #include <i3ds/emulated_camera.hpp>
 
 i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FrameProperties prop)
@@ -18,7 +16,7 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FramePro
     sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
-  BOOST_LOG_TRIVIAL(info) << "Create emulated camera...";
+  BOOST_LOG_TRIVIAL(info) << "Create emulated camera with NodeID: " << node;
 
   shutter_ = 0;
   gain_ = 0.0;
@@ -41,45 +39,46 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FramePro
 
 i3ds::EmulatedCamera::~EmulatedCamera()
 {
+  BOOST_LOG_TRIVIAL(info) << "Destroy emulated camera with NodeID: " << node();
 }
 
 void
 i3ds::EmulatedCamera::do_activate()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_activate() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_activate()";
 }
 
 void
 i3ds::EmulatedCamera::do_start()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_start() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_start()";
   sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedCamera::do_stop()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_stop() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_stop()";
   sampler_.Stop();
 }
 
 void
 i3ds::EmulatedCamera::do_deactivate()
 {
-  BOOST_LOG_TRIVIAL(info) << "do_deactivate() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_deactivate()";
 }
 
 bool
 i3ds::EmulatedCamera::is_rate_supported(SampleRate rate)
 {
-  BOOST_LOG_TRIVIAL(info) << "is_rate_supported() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " is_rate_supported()";
   return 0 < rate && rate <= 10000000;
 }
 
 void
 i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_exposure() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_exposure()";
   auto_exposure_enabled_ = false;
   shutter_ = command.request.shutter;
   gain_ = command.request.gain;
@@ -88,7 +87,7 @@ i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
 void
 i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_auto_exposure() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_auto_exposure()";
   auto_exposure_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -101,7 +100,7 @@ i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
 void
 i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_region() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_region()";
   region_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -113,7 +112,7 @@ i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
 void
 i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "handle_flash() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_flash()";
   flash_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -125,7 +124,7 @@ i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
 void
 i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "do_pattern() " << node();
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_pattern()";
   pattern_enabled_ = command.request.enable;
 
   if (command.request.enable)

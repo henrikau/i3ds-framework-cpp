@@ -8,7 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
+#define BOOST_LOG_DYN_LINK
+#include <boost/log/trivial.hpp>
 
 #include <i3ds/emulated_tof_camera.hpp>
 
@@ -23,6 +24,8 @@ i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node)
     sampler_(std::bind(&i3ds::EmulatedToFCamera::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
+  BOOST_LOG_TRIVIAL(info) << "Create emulated ToF camera with NodeID: " << node;
+
   region_.size_x = 640;
   region_.size_y = 480;
   region_.offset_x = 0;
@@ -36,39 +39,46 @@ i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node)
 
 i3ds::EmulatedToFCamera::~EmulatedToFCamera()
 {
+  BOOST_LOG_TRIVIAL(info) << "Destroy emulated ToF camera with NodeID: " << node();
 }
 
 void
 i3ds::EmulatedToFCamera::do_activate()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " do_activate()";
 }
 
 void
 i3ds::EmulatedToFCamera::do_start()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " do_start()";
   sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedToFCamera::do_stop()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " do_stop()";
   sampler_.Stop();
 }
 
 void
 i3ds::EmulatedToFCamera::do_deactivate()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " do_deactivate()";
 }
 
 bool
 i3ds::EmulatedToFCamera::is_rate_supported(SampleRate rate)
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " is_rate_supported()";
   return 0 < rate && rate <= 10000000;
 }
 
 void
 i3ds::EmulatedToFCamera::handle_region(RegionService::Data& command)
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " handle_region()";
   region_enabled_ = command.request.enable;
 
   if (command.request.enable)
@@ -80,7 +90,7 @@ i3ds::EmulatedToFCamera::handle_region(RegionService::Data& command)
 bool
 i3ds::EmulatedToFCamera::send_sample(unsigned long timestamp_us)
 {
-  std::cout << "Send: " << timestamp_us << std::endl;
+  BOOST_LOG_TRIVIAL(trace) << "Emulated ToF camera with NodeID: " << node() << " sends sample at " << timestamp_us;
 
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;

@@ -8,7 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
+#define BOOST_LOG_DYN_LINK
+#include <boost/log/trivial.hpp>
 
 #include <i3ds/emulated_star_tracker.hpp>
 
@@ -17,45 +18,52 @@ i3ds::EmulatedStarTracker::EmulatedStarTracker(Context::Ptr context, NodeID node
     sampler_(std::bind(&i3ds::EmulatedStarTracker::send_sample, this, std::placeholders::_1)),
     publisher_(context, node)
 {
+  BOOST_LOG_TRIVIAL(info) << "Create emulated star tracker with NodeID: " << node;
   StarTrackerMeasurementCodec::Initialize(frame_);
 }
 
 i3ds::EmulatedStarTracker::~EmulatedStarTracker()
 {
+  BOOST_LOG_TRIVIAL(info) << "Destroy emulated star tracker with NodeID: " << node();
 }
 
 void
 i3ds::EmulatedStarTracker::do_activate()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " do_activate()";
 }
 
 void
 i3ds::EmulatedStarTracker::do_start()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " do_start()";
   sampler_.Start(rate());
 }
 
 void
 i3ds::EmulatedStarTracker::do_stop()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " do_stop()";
   sampler_.Stop();
 }
 
 void
 i3ds::EmulatedStarTracker::do_deactivate()
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " do_deactivate()";
 }
 
 bool
 i3ds::EmulatedStarTracker::is_rate_supported(SampleRate rate)
 {
+  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " is_rate_supported()";
   return 0 < rate && rate <= 10000000;
 }
 
 bool
 i3ds::EmulatedStarTracker::send_sample(unsigned long timestamp_us)
 {
-  std::cout << "Send: " << timestamp_us << std::endl;
+  BOOST_LOG_TRIVIAL(trace) << "Emulated star tracker with NodeID: " << node() << " sends sample at " << timestamp_us;
 
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;
