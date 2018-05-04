@@ -15,13 +15,13 @@ if (SWIG_FOUND)
 
     set (PYTHON_SWIG_SRC ${CMAKE_CURRENT_SOURCE_DIR}/python.i)
 
-    set_property(SOURCE ${PYTHON_SWIG_SRC} PROPERTY CPLUSPLUS ON) 
-    set_property(SOURCE ${PYTHON_SWIG_SRC} PROPERTY SWIG_MODULE_NAME i3ds)
-    set_property(SOURCE ${PYTHON_SWIG_SRC} PROPERTY SWIG_FLAGS "${SWIG_FLAGS}")
+    set_source_files_properties(${PYTHON_SWIG_SRC} PROPERTIES CPLUSPLUS ON)
+    set_source_files_properties(${PYTHON_SWIG_SRC} PROPERTIES SWIG_FLAGS "${SWIG_FLAGS}")
+    set_source_files_properties(${PYTHON_SWIG_SRC} PROPERTIES SWIG_MODULE_NAME i3ds)
 
     set(SWIG_MODULE_i3ds_python_EXTRA_DEPS "${CMAKE_CURRENT_SOURCE_DIR}/i3ds.i")
 
-    swig_add_library(i3ds_python LANGUAGE python SOURCES ${PYTHON_SWIG_SRC})
+    swig_add_module(i3ds_python python ${PYTHON_SWIG_SRC})
     swig_link_libraries(i3ds_python i3ds ${PYTHON_LIBRARIES})
 
     set_source_files_properties(${swig_generated_file_fullname}

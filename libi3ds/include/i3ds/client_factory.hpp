@@ -33,7 +33,7 @@ public:
   template<typename T>
   typename T::Ptr Create(NodeID node)
   {
-    static_assert(std::is_base_of<SensorClient, T>::value);
+    static_assert(std::is_base_of<SensorClient, T>::value, "Not a SensorClient");
     return std::make_shared<T>(context_, node);
   }
 
