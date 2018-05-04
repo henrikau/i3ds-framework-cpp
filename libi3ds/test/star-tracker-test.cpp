@@ -14,7 +14,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <chrono>
-#include <iostream>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_star_tracker.hpp>
@@ -80,7 +79,8 @@ int received;
 void
 handle_measurement(EmulatedStarTracker::EmulatedStarTrackerMeasurement::Data& data)
 {
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+
   BOOST_CHECK_EQUAL(data.position.arr[0], 1.0);
   BOOST_CHECK_EQUAL(data.position.arr[1], 2.0);
   BOOST_CHECK_EQUAL(data.position.arr[2], 3.0);

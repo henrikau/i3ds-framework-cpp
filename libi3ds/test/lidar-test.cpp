@@ -14,7 +14,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <chrono>
-#include <iostream>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_lidar.hpp>
@@ -111,7 +110,8 @@ int received;
 void
 handle_measurement(EmulatedLIDAR::LIDARMeasurement::Data& data)
 {
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+
   BOOST_CHECK_EQUAL(data.region.offset_x, -300.0);
   BOOST_CHECK_EQUAL(data.region.offset_y, -200.0);
   BOOST_CHECK_EQUAL(data.region.size_x, 600.0);

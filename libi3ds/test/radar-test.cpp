@@ -14,7 +14,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <chrono>
-#include <iostream>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_radar.hpp>
@@ -111,7 +110,8 @@ int received;
 void
 handle_measurement(EmulatedRadar::RadarMeasurement::Data& data)
 {
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+
   BOOST_CHECK_EQUAL(data.region.offset_x, 400);
   BOOST_CHECK_EQUAL(data.region.offset_y, 300);
   BOOST_CHECK_EQUAL(data.region.size_x, 150);

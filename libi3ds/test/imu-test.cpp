@@ -14,7 +14,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <chrono>
-#include <iostream>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_imu.hpp>
@@ -80,7 +79,8 @@ int received;
 void
 handle_measurement(EmulatedIMU::EmulatedIMUMeasurement::Data& data)
 {
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+
   BOOST_CHECK_EQUAL(data.linear_accel.arr[0], 1.0);
   BOOST_CHECK_EQUAL(data.linear_accel.arr[1], 2.0);
   BOOST_CHECK_EQUAL(data.linear_accel.arr[2], 3.0);
