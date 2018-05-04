@@ -8,8 +8,6 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
-
 #include <i3ds/subscriber.hpp>
 
 i3ds::Subscriber::Subscriber(Context::Ptr context)

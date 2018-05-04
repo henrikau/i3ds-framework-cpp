@@ -11,10 +11,8 @@
 #include <zmq.hpp>
 #include <string>
 #include <map>
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <unistd.h>
 #include <thread>
 
 #include <i3ds/address_server.hpp>

@@ -11,7 +11,6 @@
 #include <i3ds/communication.hpp>
 #include <i3ds/exception.hpp>
 
-#include <iostream>
 #include <stdexcept>
 
 void i3ds_message_free(void* data, void* hint)
