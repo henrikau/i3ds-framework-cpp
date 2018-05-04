@@ -104,10 +104,8 @@ void Encode(Message& message, const typename T::Data& data)
 {
   BitStream bs;
 
-  bs.buf = (byte*) calloc(T::max_size, sizeof(byte));
-  bs.count = T::max_size;
-  bs.currentByte = 0;
-  bs.currentBit = 0;
+  // Quicker to use AttachBuffer with calloc than Init with malloc. Init zeroes with memset internally.
+  BitStream_AttachBuffer(&bs, (unsigned char*) calloc(T::max_size, sizeof(unsigned char)), T::max_size);
 
   int errcode = 0;
 
@@ -117,7 +115,7 @@ void Encode(Message& message, const typename T::Data& data)
       throw CodecError("Cannot encode: Bad data " + std::to_string(errcode));
     }
 
-  message.set_payload(bs.buf, bs.currentByte + 1, false);
+  message.set_payload(bs.buf, BitStream_GetLength(&bs), false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,11 +135,7 @@ template<typename T>
 void Decode(const Message& message, typename T::Data& data)
 {
   BitStream bs;
-
-  bs.buf = (byte*) message.data();
-  bs.count = message.size();
-  bs.currentByte = 0;
-  bs.currentBit = 0;
+  BitStream_AttachBuffer(&bs, (unsigned char*) message.data(), message.size());
 
   int errcode = 0;
 
