@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   ("rate", po::value(&rate), "Sensor rate in microseconds")
 
   ("verbose,v", "Print verbose output")
-  ("quite,q", "Quiet ouput")
+  ("quiet,q", "Quiet output")
   ("print", "Print the camera configuration")
 
   ("shutter", po::value(&shutter), "Shutter time in microseconds, gain is optional")
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
       return -1;
     }
 
-  if (vm.count("quite"))
+  if (vm.count("quiet"))
     {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
     }

@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   ("help", "Produce this message")
   ("base", po::value(&base_id)->default_value(10), "Base node ID of sensors")
   ("verbose,v", "Print verbose output")
-  ("quite,q", "Quiet ouput")
+  ("quiet,q", "Quiet output")
   ;
 
   po::variables_map vm;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
       return -1;
     }
 
-  if (vm.count("quite"))
+  if (vm.count("quiet"))
     {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
     }
