@@ -68,7 +68,7 @@ i3ds::EmulatorFactory::CreateTIRCamera()
   prop.width = 640;
   prop.height = 480;
 
-  return std::make_shared<EmulatedMonoCamera<CameraMeasurement8MCodec> >(context_, next_id_++, prop);
+  return std::make_shared<EmulatedMonoCamera<Camera::MonoFrame8MTopic> >(context_, next_id_++, prop);
 }
 
 i3ds::Camera::Ptr
@@ -82,7 +82,7 @@ i3ds::EmulatorFactory::CreateHRCamera(std::string sample_image_dir)
   prop.width = 2048;
   prop.height = 2048;
 
-  return std::make_shared<EmulatedMonoCamera<CameraMeasurement8MCodec> >(context_, next_id_++, prop, sample_image_dir);
+  return std::make_shared<EmulatedMonoCamera<Camera::MonoFrame8MTopic> >(context_, next_id_++, prop, sample_image_dir);
 }
 
 i3ds::Camera::Ptr
@@ -96,5 +96,5 @@ i3ds::EmulatorFactory::CreateStereoCamera(std::string sample_image_dir)
   prop.width = 2048;
   prop.height = 2048;
 
-  return std::make_shared<EmulatedStereoCamera<StereoCameraMeasurement8MCodec> >(context_, next_id_++, prop, sample_image_dir);
+  return std::make_shared<EmulatedStereoCamera<Camera::StereoFrame8MTopic> >(context_, next_id_++, prop, sample_image_dir);
 }

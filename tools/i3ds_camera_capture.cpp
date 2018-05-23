@@ -21,12 +21,6 @@
 
 namespace po = boost::program_options;
 
-typedef i3ds::FrameSensor<i3ds::CameraMeasurement1MCodec>::FrameTopic FrameTopic1M;
-typedef i3ds::FrameSensor<i3ds::CameraMeasurement4MCodec>::FrameTopic FrameTopic4M;
-typedef i3ds::FrameSensor<i3ds::CameraMeasurement8MCodec>::FrameTopic FrameTopic8M;
-typedef i3ds::FrameSensor<i3ds::StereoCameraMeasurement4MCodec>::FrameTopic StereoFrameTopic4M;
-typedef i3ds::FrameSensor<i3ds::StereoCameraMeasurement8MCodec>::FrameTopic StereoFrameTopic8M;
-
 volatile bool running;
 
 void
@@ -112,10 +106,10 @@ int main(int argc, char *argv[])
       switch(size)
         {
         case 4:
-          subscriber.Attach<StereoFrameTopic4M>(node, &handle_stereo_frame<StereoFrameTopic4M>);
+          subscriber.Attach<i3ds::Camera::StereoFrame4MTopic>(node, &handle_stereo_frame<i3ds::Camera::StereoFrame4MTopic>);
           break;
         case 8:
-          subscriber.Attach<StereoFrameTopic8M>(node, &handle_stereo_frame<StereoFrameTopic8M>);
+          subscriber.Attach<i3ds::Camera::StereoFrame8MTopic>(node, &handle_stereo_frame<i3ds::Camera::StereoFrame8MTopic>);
           break;
         default:
           std::cout << "Invalid image size: " << size;
@@ -129,13 +123,13 @@ int main(int argc, char *argv[])
       switch(size)
         {
         case 1:
-          subscriber.Attach<FrameTopic1M>(node, &handle_mono_frame<FrameTopic1M>);
+          subscriber.Attach<i3ds::Camera::MonoFrame1MTopic>(node, &handle_mono_frame<i3ds::Camera::MonoFrame1MTopic>);
           break;
         case 4:
-          subscriber.Attach<FrameTopic4M>(node, &handle_mono_frame<FrameTopic4M>);
+          subscriber.Attach<i3ds::Camera::MonoFrame4MTopic>(node, &handle_mono_frame<i3ds::Camera::MonoFrame4MTopic>);
           break;
         case 8:
-          subscriber.Attach<FrameTopic8M>(node, &handle_mono_frame<FrameTopic8M>);
+          subscriber.Attach<i3ds::Camera::MonoFrame8MTopic>(node, &handle_mono_frame<i3ds::Camera::MonoFrame8MTopic>);
           break;
         default:
           std::cout << "Invalid image size: " << size;

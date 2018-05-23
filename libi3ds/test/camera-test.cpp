@@ -23,7 +23,7 @@ using namespace i3ds;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef EmulatedMonoCamera<CameraMeasurement8MCodec> TestCamera;
+typedef EmulatedMonoCamera<Camera::MonoFrame8MTopic> TestCamera;
 
 struct F
 {
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 int received;
 
 void
-handle_measurement(TestCamera::FrameTopic::Data& data)
+handle_measurement(Camera::MonoFrame8MTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
 
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<TestCamera::FrameTopic>(client.node(), &handle_measurement);
+  subscriber.Attach<Camera::MonoFrame8MTopic>(client.node(), &handle_measurement);
 
   SampleRate rate = 100000;
   PlanarRegion region = {400, 300, 150, 100};

@@ -83,8 +83,8 @@ protected:
 
   void fetch_next_image();
 
-  template<typename T>
-  void set_meta(typename T::Data& frame, unsigned long timestamp_us)
+  template<typename FrameTopic>
+  void set_meta(typename FrameTopic::Data& frame, unsigned long timestamp_us)
     {
       frame.attributes.timestamp.microseconds = timestamp_us;
       frame.attributes.validity = sample_valid;
@@ -136,24 +136,23 @@ protected:
 
 };
 
-template<typename T>
-class EmulatedMonoCamera : public EmulatedCamera, public FrameSensor<T>
+template<typename FrameTopic>
+class EmulatedMonoCamera : public EmulatedCamera
 {
 public:
 
-  typedef typename FrameSensor<T>::FrameTopic FrameTopic;
 
-  typedef std::shared_ptr<EmulatedMonoCamera<T>> Ptr;
+  typedef std::shared_ptr<EmulatedMonoCamera<FrameTopic>> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
     {
-      return std::make_shared<EmulatedMonoCamera<T>>(context, id, prop, sample_dir);
+      return std::make_shared<EmulatedMonoCamera<FrameTopic>>(context, id, prop, sample_dir);
     }
 
   EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
     : EmulatedCamera(context, id, prop, sample_dir)
   {
-    T::Initialize(frame_);
+    FrameTopic::Codec::Initialize(frame_);
   }
 
   virtual ~EmulatedMonoCamera() {};
@@ -162,7 +161,7 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us)
   {
-    set_meta<T>(frame_, timestamp_us);
+    set_meta<FrameTopic>(frame_, timestamp_us);
     frame_.image.nCount = frame_.region.size_x  * frame_.region.size_y * frame_.pixel_size;
     if (!sample_images_.empty())
       {
@@ -178,28 +177,26 @@ protected:
     return true;
   }
 
-  typename T::Data frame_;
+  typename FrameTopic::Data frame_;
 };
 
 
-template<typename T>
-class EmulatedStereoCamera : public EmulatedCamera, public FrameSensor<T>
+template<typename FrameTopic>
+class EmulatedStereoCamera : public EmulatedCamera
 {
 public:
 
-  typedef typename FrameSensor<T>::FrameTopic FrameTopic;
-
-  typedef std::shared_ptr<EmulatedMonoCamera<T>> Ptr;
+  typedef std::shared_ptr<EmulatedMonoCamera<FrameTopic>> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "") 
     {
-      return std::make_shared<EmulatedStereoCamera<T>>(context, id, prop, sample_dir);
+      return std::make_shared<EmulatedStereoCamera<FrameTopic>>(context, id, prop, sample_dir);
     }
 
   EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
     : EmulatedCamera(context, id, prop, sample_dir)
   {
-    T::Initialize(frame_);
+    FrameTopic::Codec::Initialize(frame_);
   }
 
   virtual ~EmulatedStereoCamera() {};
@@ -208,7 +205,7 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us)
   {
-    set_meta<T>(frame_, timestamp_us);
+    set_meta<FrameTopic>(frame_, timestamp_us);
     frame_.region.size_x *= 2;
     int size = frame_.region.size_x  * frame_.region.size_y * frame_.pixel_size;
     frame_.image_left.nCount = size;
@@ -229,7 +226,7 @@ protected:
     return true;
   }
 
-  typename T::Data frame_;
+  typename FrameTopic::Data frame_;
 };
 
 } // namespace i3ds

@@ -24,7 +24,7 @@
 #include <i3ds/communication.hpp>
 #include <i3ds/subscriber.hpp>
 #include <i3ds/sensor_client.hpp>
-#include <i3ds/emulated_camera.hpp>
+#include <i3ds/camera_sensor.hpp>
 #include <i3ds/emulated_tof_camera.hpp>
 #include <i3ds/emulated_radar.hpp>
 #include <i3ds/emulated_lidar.hpp>
@@ -33,12 +33,6 @@
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
-
-typedef i3ds::FrameSensor<i3ds::CameraMeasurement1MCodec>::FrameTopic MonoFrameTopic1M;
-typedef i3ds::FrameSensor<i3ds::CameraMeasurement4MCodec>::FrameTopic MonoFrameTopic4M;
-typedef i3ds::FrameSensor<i3ds::CameraMeasurement8MCodec>::FrameTopic MonoFrameTopic8M;
-typedef i3ds::FrameSensor<i3ds::StereoCameraMeasurement4MCodec>::FrameTopic StereoFrameTopic4M;
-typedef i3ds::FrameSensor<i3ds::StereoCameraMeasurement8MCodec>::FrameTopic StereoFrameTopic8M;
 
 volatile bool running;
 
@@ -194,23 +188,23 @@ main(int argc, char *argv[])
 
   if (sensor_type == "mono1m")
     {
-      delay_recorder.Attach<MonoFrameTopic1M>();
+      delay_recorder.Attach<i3ds::Camera::MonoFrame1MTopic>();
     }
   else if (sensor_type == "mono4m")
     {
-      delay_recorder.Attach<MonoFrameTopic4M>();
+      delay_recorder.Attach<i3ds::Camera::MonoFrame4MTopic>();
     }
   else if (sensor_type == "mono8m" || sensor_type == "tir" || sensor_type == "hr")
     {
-      delay_recorder.Attach<MonoFrameTopic8M>();
+      delay_recorder.Attach<i3ds::Camera::MonoFrame8MTopic>();
     }
   else if (sensor_type == "stereo4m")
     {
-      delay_recorder.Attach<StereoFrameTopic4M>();
+      delay_recorder.Attach<i3ds::Camera::StereoFrame4MTopic>();
     }
   else if (sensor_type == "stereo8m" || sensor_type == "stereo")
     {
-      delay_recorder.Attach<StereoFrameTopic8M>();
+      delay_recorder.Attach<i3ds::Camera::StereoFrame8MTopic>();
     }
   else if (sensor_type == "tof")
     {

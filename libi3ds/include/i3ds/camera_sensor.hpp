@@ -49,6 +49,13 @@ public:
   typedef Command<20, CameraPatternCodec>       PatternService;
   typedef Query  <21, CameraConfigurationCodec> ConfigurationService;
 
+  // Camera topics
+  typedef Topic<128, CameraMeasurement1MCodec> MonoFrame1MTopic;
+  typedef Topic<129, CameraMeasurement4MCodec> MonoFrame4MTopic;
+  typedef Topic<130, CameraMeasurement8MCodec> MonoFrame8MTopic;
+  typedef Topic<131, StereoCameraMeasurement4MCodec> StereoFrame4MTopic;
+  typedef Topic<132, StereoCameraMeasurement8MCodec> StereoFrame8MTopic;
+
   // Constructor for camera.
   Camera(NodeID node) : Sensor(node) {};
 
@@ -110,21 +117,6 @@ protected:
 
   // Handler for camera configuration query.
   virtual void handle_configuration(ConfigurationService::Data& config) const;
-};
-
-template<typename T>
-class FrameSensor
-{
-public:
-
-  // Defintion for frame measurement topic.
-  typedef Topic<128, T> FrameTopic;
-
-  // Constructor for frame sensor.
-  FrameSensor() {};
-
-  // Destructor for image sensor.
-  virtual ~FrameSensor() {};
 };
 
 } // namespace i3ds
