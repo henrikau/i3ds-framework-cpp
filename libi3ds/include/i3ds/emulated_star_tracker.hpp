@@ -24,8 +24,6 @@ class EmulatedStarTracker : public StarTracker
 {
 public:
 
-  typedef Topic<128, StarTrackerMeasurementCodec> EmulatedStarTrackerMeasurement;
-
   typedef std::shared_ptr<EmulatedStarTracker> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID id)

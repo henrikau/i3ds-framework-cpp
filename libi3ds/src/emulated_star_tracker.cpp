@@ -74,7 +74,7 @@ i3ds::EmulatedStarTracker::send_sample(unsigned long timestamp_us)
   frame_.position.arr[2] = 3.0;
   frame_.position.arr[3] = 4.0;
 
-  publisher_.Send<EmulatedStarTrackerMeasurement>(frame_);
+  publisher_.Send<MeasurementTopic>(frame_);
 
   return true;
 }

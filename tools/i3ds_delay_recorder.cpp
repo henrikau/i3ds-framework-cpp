@@ -28,8 +28,8 @@
 #include <i3ds/emulated_tof_camera.hpp>
 #include <i3ds/emulated_radar.hpp>
 #include <i3ds/emulated_lidar.hpp>
-#include <i3ds/emulated_star_tracker.hpp>
-#include <i3ds/emulated_imu.hpp>
+#include <i3ds/star_tracker_sensor.hpp>
+#include <i3ds/imu_sensor.hpp>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -226,11 +226,11 @@ main(int argc, char *argv[])
     }
   else if (sensor_type == "st")
     {
-      delay_recorder.Attach<i3ds::EmulatedStarTracker::EmulatedStarTrackerMeasurement>();
+      delay_recorder.Attach<i3ds::StarTracker::MeasurementTopic>();
     }
   else if (sensor_type == "imu")
     {
-      delay_recorder.Attach<i3ds::EmulatedIMU::EmulatedIMUMeasurement>();
+      delay_recorder.Attach<i3ds::IMU::MeasurementTopic>();
     }
   else
     {

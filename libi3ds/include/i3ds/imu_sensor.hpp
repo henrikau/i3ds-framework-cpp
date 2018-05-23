@@ -13,6 +13,7 @@
 
 #include <i3ds/IMU.h>
 
+#include <i3ds/topic.hpp>
 #include <i3ds/sensor.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
@@ -25,6 +26,8 @@ CODEC(IMUMeasurement);
 class IMU : public Sensor
 {
 public:
+
+  typedef Topic<128, IMUMeasurementCodec> MeasurementTopic;
 
   // Shared pointer for IMU interfaces.
   typedef std::shared_ptr<IMU> Ptr;

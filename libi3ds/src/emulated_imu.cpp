@@ -77,7 +77,7 @@ i3ds::EmulatedIMU::send_sample(unsigned long timestamp_us)
   frame_.angular_rate.arr[1] = 5.0;
   frame_.angular_rate.arr[2] = 6.0;
 
-  publisher_.Send<EmulatedIMUMeasurement>(frame_);
+  publisher_.Send<MeasurementTopic>(frame_);
 
   return true;
 }

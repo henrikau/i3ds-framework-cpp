@@ -11,7 +11,6 @@
 #ifndef __I3DS_EMULATED_IMU_HPP
 #define __I3DS_EMULATED_IMU_HPP
 
-#include <i3ds/topic.hpp>
 #include <i3ds/publisher.hpp>
 #include <i3ds/periodic.hpp>
 
@@ -23,8 +22,6 @@ namespace i3ds
 class EmulatedIMU : public IMU
 {
 public:
-
-  typedef Topic<128, IMUMeasurementCodec> EmulatedIMUMeasurement;
 
   typedef std::shared_ptr<EmulatedIMU> Ptr;
 

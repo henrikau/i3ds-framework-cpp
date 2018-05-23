@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(imu_state_command)
 int received;
 
 void
-handle_measurement(EmulatedIMU::EmulatedIMUMeasurement::Data& data)
+handle_measurement(IMU::MeasurementTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
 
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(imu_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedIMU::EmulatedIMUMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<IMU::MeasurementTopic>(client.node(), &handle_measurement);
 
 
   SampleRate rate = 100000;

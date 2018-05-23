@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(star_tracker_state_command)
 int received;
 
 void
-handle_measurement(EmulatedStarTracker::EmulatedStarTrackerMeasurement::Data& data)
+handle_measurement(StarTracker::MeasurementTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(star_tracker_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedStarTracker::EmulatedStarTrackerMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<StarTracker::MeasurementTopic>(client.node(), &handle_measurement);
 
 
   SampleRate rate = 100000;
