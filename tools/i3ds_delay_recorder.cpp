@@ -92,7 +92,10 @@ public:
     {
     }
 
-  virtual ~DelayRecorder() {}
+  virtual ~DelayRecorder() 
+    {
+      output_file_.close();
+    }
 
   template <typename T>
   void
