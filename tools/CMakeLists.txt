@@ -17,6 +17,7 @@ set (APPS
   i3ds_configure_camera
   i3ds_configure_sensor
   i3ds_delay_recorder
+  i3ds_record
   )
 
 foreach(a ${APPS})
