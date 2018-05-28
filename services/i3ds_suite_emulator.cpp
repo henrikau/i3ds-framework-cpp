@@ -38,6 +38,7 @@ void signal_handler(int signum)
 int main(int argc, char** argv)
 {
   unsigned int base_id;
+  std::string sample_image_dir;
   std::vector<i3ds::Sensor::Ptr> sensors;
 
   po::options_description desc("Allowed suite emulator options");
@@ -45,6 +46,7 @@ int main(int argc, char** argv)
   desc.add_options()
   ("help", "Produce this message")
   ("base", po::value(&base_id)->default_value(10), "Base node ID of sensors")
+  ("samples", po::value(&sample_image_dir)->default_value(""), "Directory with sample images for HR and stereo camera")
   ("verbose,v", "Print verbose output")
   ("quiet,q", "Quiet output")
   ;
@@ -82,10 +84,10 @@ int main(int argc, char** argv)
   sensors.push_back(factory.CreateTIRCamera());
 
   BOOST_LOG_TRIVIAL(trace) << "Create HR camera";
-  sensors.push_back(factory.CreateHRCamera());
+  sensors.push_back(factory.CreateHRCamera(sample_image_dir));
 
   BOOST_LOG_TRIVIAL(trace) << "Create stereo camera";
-  sensors.push_back(factory.CreateStereoCamera());
+  sensors.push_back(factory.CreateStereoCamera(sample_image_dir));
 
   BOOST_LOG_TRIVIAL(trace) << "Create ToF camera";
   sensors.push_back(factory.CreateToFCamera());

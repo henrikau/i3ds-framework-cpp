@@ -8,9 +8,14 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "boost/filesystem/operations.hpp"
+#include "boost/filesystem/path.hpp"
+
 #include <i3ds/emulated_camera.hpp>
 
-i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FrameProperties prop)
+namespace fs = boost::filesystem;
+
+i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FrameProperties prop, std::string sample_dir)
   : Camera(node),
     prop_(prop),
     sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
@@ -35,6 +40,41 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FramePro
 
   pattern_enabled_ = false;
   pattern_sequence_ = 0;
+
+  if (sample_dir != "")
+    {
+      try
+        {
+          std::vector<std::string> file_names;
+          fs::path full_path( fs::initial_path<fs::path>() );
+          full_path = fs::system_complete(fs::path(sample_dir));
+
+          if (fs::exists(full_path) &&
+              fs::is_directory(full_path))
+            {
+              fs::directory_iterator end_iter;
+              for (fs::directory_iterator dir_itr(full_path);
+                   dir_itr != end_iter;
+                   ++dir_itr)
+                {
+                  if (fs::is_regular_file(dir_itr->status()))
+                    {
+                      file_names.push_back(dir_itr->path().string());
+                    }
+                }
+              std::sort(file_names.begin(), file_names.end());
+              for (std::string file_name : file_names)
+                {
+                  sample_images_.push_back(cv::imread(file_name, CV_LOAD_IMAGE_COLOR));
+                  BOOST_LOG_TRIVIAL(trace) << "Emulated camera loaded file: " << file_name;
+                }
+            }
+        }
+      catch (std::exception e)
+        { // If anything fails, sample_images_ remains empty, and is not used
+          BOOST_LOG_TRIVIAL(warning) << "Error loading sample images: " << e.what();
+        }
+    }
 }
 
 i3ds::EmulatedCamera::~EmulatedCamera()
@@ -130,5 +170,17 @@ i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
   if (command.request.enable)
     {
       pattern_sequence_ = command.request.sequence;
+    }
+}
+
+void
+i3ds::EmulatedCamera::fetch_next_image()
+{
+  if (!sample_images_.empty())
+    {
+      if (++current_image_index_ >= sample_images_.size())
+        {
+          current_image_index_ = 0;
+        }
     }
 }

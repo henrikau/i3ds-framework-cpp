@@ -32,8 +32,8 @@ public:
 
   ToFCamera::Ptr CreateToFCamera();
   Camera::Ptr CreateTIRCamera();
-  Camera::Ptr CreateHRCamera();
-  Camera::Ptr CreateStereoCamera();
+  Camera::Ptr CreateHRCamera(std::string sample_image_dir = "");
+  Camera::Ptr CreateStereoCamera(std::string sample_image_dir = "");
   Radar::Ptr CreateRadar();
   LIDAR::Ptr CreateLIDAR();
   IMU::Ptr CreateIMU();

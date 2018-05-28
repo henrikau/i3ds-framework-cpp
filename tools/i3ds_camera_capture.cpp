@@ -36,64 +36,43 @@ signal_handler(int signum)
 }
 
 void
-render_image(std::string window_name, unsigned char* image, int rows, int cols, int type)
+render_image(std::string window_name, unsigned char* image, int rows, int cols, int type, int pixel_size)
 {
   int cv_type = CV_16UC1;
   if (type == mode_rgb)
     {
-      cv_type = CV_16UC3;
+      if (pixel_size == 3) cv_type = CV_8UC3;
+      if (pixel_size == 6) cv_type = CV_16UC3;
+    }
+  else
+    {
+      if (pixel_size == 1) cv_type = CV_8UC1;
+      if (pixel_size == 2) cv_type = CV_16UC1;
     }
   cv::Mat frame(rows, cols, cv_type, image);
   cv::imshow(window_name, frame);
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
-
+template <typename T>
 void
-handle_measurement1M(FrameTopic1M::Data& data)
+handle_mono_frame(typename T::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
   int rows = data.region.size_y;
   int cols = data.region.size_x;
-  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode);
+  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode, data.pixel_size);
 }
 
+template <typename T>
 void
-handle_measurement4M(FrameTopic4M::Data& data)
-{
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-  int rows = data.region.size_y;
-  int cols = data.region.size_x;
-  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode);
-}
-
-void
-handle_measurement8M(FrameTopic8M::Data& data)
-{
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-  int rows = data.region.size_y;
-  int cols = data.region.size_x;
-  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode);
-}
-
-void
-handle_stereo_measurement4M(StereoFrameTopic4M::Data& data)
+handle_stereo_frame(typename T::Data& data)
 {
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
   int rows = data.region.size_y;
   int cols = data.region.size_x / 2;
-  render_image("Left camera feed", static_cast<unsigned char*>(data.image_left.arr), rows, cols, data.frame_mode);
-  render_image("Right camera feed", static_cast<unsigned char*>(data.image_right.arr), rows, cols, data.frame_mode);
-}
-
-void
-handle_stereo_measurement8M(StereoFrameTopic8M::Data& data)
-{
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-  int rows = data.region.size_y;
-  int cols = data.region.size_x;
-  render_image("Left camera feed", static_cast<unsigned char*>(data.image_left.arr), rows, cols, data.frame_mode);
-  render_image("Right camera feed", static_cast<unsigned char*>(data.image_right.arr), rows, cols, data.frame_mode);
+  render_image("Left camera feed", static_cast<unsigned char*>(data.image_left.arr), rows, cols, data.frame_mode, data.pixel_size);
+  render_image("Right camera feed", static_cast<unsigned char*>(data.image_right.arr), rows, cols, data.frame_mode, data.pixel_size);
 }
 
 int main(int argc, char *argv[])
@@ -133,10 +112,10 @@ int main(int argc, char *argv[])
       switch(size)
         {
         case 4:
-          subscriber.Attach<StereoFrameTopic4M>(node, &handle_stereo_measurement4M);
+          subscriber.Attach<StereoFrameTopic4M>(node, &handle_stereo_frame<StereoFrameTopic4M>);
           break;
         case 8:
-          subscriber.Attach<StereoFrameTopic8M>(node, &handle_stereo_measurement8M);
+          subscriber.Attach<StereoFrameTopic8M>(node, &handle_stereo_frame<StereoFrameTopic8M>);
           break;
         default:
           std::cout << "Invalid image size: " << size;
@@ -150,13 +129,13 @@ int main(int argc, char *argv[])
       switch(size)
         {
         case 1:
-          subscriber.Attach<FrameTopic1M>(node, &handle_measurement1M);
+          subscriber.Attach<FrameTopic1M>(node, &handle_mono_frame<FrameTopic1M>);
           break;
         case 4:
-          subscriber.Attach<FrameTopic4M>(node, &handle_measurement4M);
+          subscriber.Attach<FrameTopic4M>(node, &handle_mono_frame<FrameTopic4M>);
           break;
         case 8:
-          subscriber.Attach<FrameTopic8M>(node, &handle_measurement8M);
+          subscriber.Attach<FrameTopic8M>(node, &handle_mono_frame<FrameTopic8M>);
           break;
         default:
           std::cout << "Invalid image size: " << size;

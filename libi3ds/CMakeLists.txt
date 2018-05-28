@@ -1,5 +1,6 @@
 find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
 find_package (ASN1CC REQUIRED)
+find_package (OpenCV REQUIRED)
 
 ################################################################################
 # ASN.1 generation
@@ -75,6 +76,7 @@ set (LIBS
   zmq
   pthread
   ${Boost_LIBRARIES}
+  ${OpenCV_LIBS}
   )
 
 add_library (i3ds SHARED ${SRCS})

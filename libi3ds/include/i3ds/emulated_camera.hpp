@@ -24,6 +24,8 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 namespace logging = boost::log;
 
@@ -43,7 +45,7 @@ class EmulatedCamera : public Camera
 {
 public:
 
-  EmulatedCamera(Context::Ptr context, NodeID id, FrameProperties prop);
+  EmulatedCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "");
   virtual ~EmulatedCamera();
 
   // Getters.
@@ -79,18 +81,37 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us) = 0;
 
-  template<typename T>
-  int set_meta(typename T::Data& frame, unsigned long timestamp_us)
-  {
-    frame.attributes.timestamp.microseconds = timestamp_us;
-    frame.attributes.validity = sample_valid;
-    frame.frame_mode = prop_.mode;
-    frame.data_depth = prop_.data_depth;
-    frame.pixel_size = prop_.pixel_size;
-    frame.region = region_;
+  void fetch_next_image();
 
-    return region_.size_x * region_.size_y * prop_.pixel_size;
-  }
+  template<typename T>
+  void set_meta(typename T::Data& frame, unsigned long timestamp_us)
+    {
+      frame.attributes.timestamp.microseconds = timestamp_us;
+      frame.attributes.validity = sample_valid;
+      if (!sample_images_.empty())
+        {
+          fetch_next_image();
+          cv::Mat current_image = sample_images_[current_image_index_];
+          frame.region.size_x = current_image.cols;
+          frame.region.size_y = current_image.rows;
+          if (current_image.depth() == CV_16U)
+            {
+              frame.pixel_size = current_image.channels() * 2;
+            }
+          else
+            {
+              frame.pixel_size = current_image.channels();
+            }
+          frame.frame_mode = mode_rgb;
+        }
+      else
+        {
+          frame.frame_mode = prop_.mode;
+          frame.data_depth = prop_.data_depth;
+          frame.pixel_size = prop_.pixel_size;
+          frame.region = region_;
+        }
+    }
 
   ShutterTime shutter_;
   SensorGain gain_;
@@ -110,6 +131,9 @@ protected:
 
   Publisher publisher_;
 
+  std::vector<cv::Mat> sample_images_;
+  unsigned int current_image_index_;
+
 };
 
 template<typename T>
@@ -121,13 +145,13 @@ public:
 
   typedef std::shared_ptr<EmulatedMonoCamera<T>> Ptr;
 
-  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop)
+  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
     {
-      return std::make_shared<EmulatedMonoCamera<T>>(context, id, prop);
+      return std::make_shared<EmulatedMonoCamera<T>>(context, id, prop, sample_dir);
     }
 
-  EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
-    : EmulatedCamera(context, id, prop)
+  EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
+    : EmulatedCamera(context, id, prop, sample_dir)
   {
     T::Initialize(frame_);
   }
@@ -138,13 +162,16 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us)
   {
-    int size = set_meta<T>(frame_, timestamp_us);
-
+    set_meta<T>(frame_, timestamp_us);
+    frame_.image.nCount = frame_.region.size_x  * frame_.region.size_y * frame_.pixel_size;
+    if (!sample_images_.empty())
+      {
+        memcpy(frame_.image.arr, sample_images_[current_image_index_].data, frame_.image.nCount);
+      }
+        
     BOOST_LOG_TRIVIAL(trace) << "Send mono frame: "
                              << timestamp_us << " "
-                             << size / 1024.0 << "KiB";
-
-    frame_.image.nCount = size;
+                             << frame_.image.nCount / 1024.0 << "KiB";
 
     publisher_.Send<FrameTopic>(frame_);
 
@@ -164,13 +191,13 @@ public:
 
   typedef std::shared_ptr<EmulatedMonoCamera<T>> Ptr;
 
-  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop) 
+  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "") 
     {
-      return std::make_shared<EmulatedStereoCamera<T>>(context, id, prop);
+      return std::make_shared<EmulatedStereoCamera<T>>(context, id, prop, sample_dir);
     }
 
-  EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop)
-    : EmulatedCamera(context, id, prop)
+  EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
+    : EmulatedCamera(context, id, prop, sample_dir)
   {
     T::Initialize(frame_);
   }
@@ -181,10 +208,17 @@ protected:
 
   virtual bool send_sample(unsigned long timestamp_us)
   {
-    int size = set_meta<T>(frame_, timestamp_us);
-
+    set_meta<T>(frame_, timestamp_us);
+    frame_.region.size_x *= 2;
+    int size = frame_.region.size_x  * frame_.region.size_y * frame_.pixel_size;
     frame_.image_left.nCount = size;
     frame_.image_right.nCount = size;
+
+    if (!sample_images_.empty())
+      {
+        memcpy(frame_.image_left.arr, sample_images_[current_image_index_].data, frame_.image_left.nCount);
+        memcpy(frame_.image_right.arr, sample_images_[current_image_index_].data, frame_.image_right.nCount);
+      }
 
     BOOST_LOG_TRIVIAL(trace) << "Send stereo frame: "
                              << timestamp_us << " "
