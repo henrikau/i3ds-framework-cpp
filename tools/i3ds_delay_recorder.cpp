@@ -27,7 +27,7 @@
 #include <i3ds/camera_sensor.hpp>
 #include <i3ds/tof_camera_sensor.hpp>
 #include <i3ds/radar_sensor.hpp>
-#include <i3ds/emulated_lidar.hpp>
+#include <i3ds/lidar_sensor.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
 #include <i3ds/imu_sensor.hpp>
 
@@ -222,9 +222,17 @@ main(int argc, char *argv[])
     {
       delay_recorder.Attach<i3ds::ToFCamera::Measurement2MTopic>();
     }
-  else if (sensor_type == "lidar")
+  else if (sensor_type == "lidar100K")
     {
-      delay_recorder.Attach<i3ds::EmulatedLIDAR::LIDARMeasurement>();
+      delay_recorder.Attach<i3ds::LIDAR::Measurement100KTopic>();
+    }
+  else if (sensor_type == "lidar200K")
+    {
+      delay_recorder.Attach<i3ds::LIDAR::Measurement200KTopic>();
+    }
+  else if (sensor_type == "lidar400K" || sensor_type == "lidar")
+    {
+      delay_recorder.Attach<i3ds::LIDAR::Measurement400KTopic>();
     }
   else if (sensor_type == "radar100K")
     {

@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(lidar_configuration_query)
 int received;
 
 void
-handle_measurement(EmulatedLIDAR::LIDARMeasurement::Data& data)
+handle_measurement(LIDAR::Measurement400KTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(lidar_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedLIDAR::LIDARMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<LIDAR::Measurement400KTopic>(client.node(), &handle_measurement);
 
 
   SampleRate rate = 100000;

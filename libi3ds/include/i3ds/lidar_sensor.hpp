@@ -16,6 +16,7 @@
 #include <i3ds/sensor.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
+#include <i3ds/topic.hpp>
 
 namespace i3ds
 {
@@ -37,6 +38,11 @@ public:
   // LIDAR services.
   typedef Command<16, LIDARRegionCodec>        RegionService;
   typedef Query  <17, LIDARConfigurationCodec> ConfigurationService;
+
+  // LIDAR topics
+  typedef Topic<128, LIDARMeasurement100KCodec> Measurement100KTopic;
+  typedef Topic<129, LIDARMeasurement200KCodec> Measurement200KTopic;
+  typedef Topic<130, LIDARMeasurement400KCodec> Measurement400KTopic;
 
   // Constructor and destructor.
   LIDAR(NodeID node) : Sensor(node) {};

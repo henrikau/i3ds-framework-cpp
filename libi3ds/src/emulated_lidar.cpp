@@ -31,7 +31,7 @@ i3ds::EmulatedLIDAR::EmulatedLIDAR(Context::Ptr context, NodeID node)
   region_.offset_x = 0;
   region_.offset_y = 0;
 
-  LIDARMeasurement400KCodec::Initialize(frame_);
+  MeasurementTopic::Codec::Initialize(frame_);
 
   frame_.region.size_x = region_.size_x;
   frame_.region.size_y = region_.size_y;
@@ -96,7 +96,7 @@ i3ds::EmulatedLIDAR::send_sample(unsigned long timestamp_us)
   frame_.attributes.validity = sample_valid;
   frame_.region = region_;
 
-  publisher_.Send<LIDARMeasurement>(frame_);
+  publisher_.Send<MeasurementTopic>(frame_);
 
   return true;
 }

@@ -26,7 +26,7 @@ class EmulatedLIDAR : public LIDAR
 {
 public:
 
-  typedef Topic<128, LIDARMeasurement400KCodec> LIDARMeasurement;
+  typedef LIDAR::Measurement400KTopic MeasurementTopic;
 
   typedef std::shared_ptr<EmulatedLIDAR> Ptr;
 
@@ -63,7 +63,7 @@ private:
   Sampler sampler_;
 
   Publisher publisher_;
-  LIDARMeasurement400K frame_;
+  MeasurementTopic::Data frame_;
 };
 
 } // namespace i3ds
