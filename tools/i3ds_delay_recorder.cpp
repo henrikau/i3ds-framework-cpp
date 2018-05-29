@@ -26,7 +26,7 @@
 #include <i3ds/sensor_client.hpp>
 #include <i3ds/camera_sensor.hpp>
 #include <i3ds/tof_camera_sensor.hpp>
-#include <i3ds/emulated_radar.hpp>
+#include <i3ds/radar_sensor.hpp>
 #include <i3ds/emulated_lidar.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
 #include <i3ds/imu_sensor.hpp>
@@ -186,23 +186,23 @@ main(int argc, char *argv[])
   running = true;
   signal(SIGINT, signal_handler);
 
-  if (sensor_type == "mono1m")
+  if (sensor_type == "mono1M")
     {
       delay_recorder.Attach<i3ds::Camera::MonoFrame1MTopic>();
     }
-  else if (sensor_type == "mono4m")
+  else if (sensor_type == "mono4M")
     {
       delay_recorder.Attach<i3ds::Camera::MonoFrame4MTopic>();
     }
-  else if (sensor_type == "mono8m" || sensor_type == "tir" || sensor_type == "hr")
+  else if (sensor_type == "mono8M" || sensor_type == "tir" || sensor_type == "hr")
     {
       delay_recorder.Attach<i3ds::Camera::MonoFrame8MTopic>();
     }
-  else if (sensor_type == "stereo4m")
+  else if (sensor_type == "stereo4M")
     {
       delay_recorder.Attach<i3ds::Camera::StereoFrame4MTopic>();
     }
-  else if (sensor_type == "stereo8m" || sensor_type == "stereo")
+  else if (sensor_type == "stereo8M" || sensor_type == "stereo")
     {
       delay_recorder.Attach<i3ds::Camera::StereoFrame8MTopic>();
     }
@@ -226,9 +226,17 @@ main(int argc, char *argv[])
     {
       delay_recorder.Attach<i3ds::EmulatedLIDAR::LIDARMeasurement>();
     }
-  else if (sensor_type == "radar")
+  else if (sensor_type == "radar100K")
     {
-      delay_recorder.Attach<i3ds::EmulatedRadar::RadarMeasurement>();
+      delay_recorder.Attach<i3ds::Radar::Measurement100KTopic>();
+    }
+  else if (sensor_type == "radar200K")
+    {
+      delay_recorder.Attach<i3ds::Radar::Measurement200KTopic>();
+    }
+  else if (sensor_type == "radar400K" || sensor_type == "radar")
+    {
+      delay_recorder.Attach<i3ds::Radar::Measurement400KTopic>();
     }
   else if (sensor_type == "st")
     {

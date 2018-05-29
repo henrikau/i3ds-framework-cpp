@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(radar_configuration_query)
 int received;
 
 void
-handle_measurement(EmulatedRadar::RadarMeasurement::Data& data)
+handle_measurement(Radar::Measurement400KTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedRadar::RadarMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<Radar::Measurement400KTopic>(client.node(), &handle_measurement);
 
   SampleRate rate = 100000;
   PlanarRegion region = {400, 300, 150, 100};

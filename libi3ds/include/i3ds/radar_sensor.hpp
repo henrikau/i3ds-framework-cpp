@@ -16,6 +16,7 @@
 #include <i3ds/sensor.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
+#include <i3ds/topic.hpp>
 
 namespace i3ds
 {
@@ -37,6 +38,11 @@ public:
   // Radar services.
   typedef Command<16, RadarRegionCodec>        RegionService;
   typedef Query  <17, RadarConfigurationCodec> ConfigurationService;
+
+  // Radar topics.
+  typedef Topic<128, RadarMeasurement100KCodec> Measurement100KTopic;
+  typedef Topic<129, RadarMeasurement200KCodec> Measurement200KTopic;
+  typedef Topic<130, RadarMeasurement400KCodec> Measurement400KTopic;
 
   // Constructor and destructor.
   Radar(NodeID node) : Sensor(node) {};

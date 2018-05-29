@@ -26,7 +26,7 @@ class EmulatedRadar : public Radar
 {
 public:
 
-  typedef Topic<128, RadarMeasurement400KCodec> RadarMeasurement;
+  typedef Radar::Measurement400KTopic MeasurementTopic;
 
   typedef std::shared_ptr<EmulatedRadar> Ptr;
 
@@ -63,7 +63,7 @@ private:
   Sampler sampler_;
 
   Publisher publisher_;
-  RadarMeasurement400K frame_;
+  MeasurementTopic::Data frame_;
 };
 
 } // namespace i3ds
