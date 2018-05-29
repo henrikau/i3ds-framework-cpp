@@ -26,7 +26,7 @@ class EmulatedToFCamera : public ToFCamera
 {
 public:
 
-  typedef Topic<128, ToFMeasurement500KCodec> ToFMeasurement;
+  typedef ToFCamera::Measurement2MTopic MeasurementTopic;
 
   typedef std::shared_ptr<EmulatedToFCamera> Ptr;
 
@@ -63,7 +63,7 @@ private:
   Sampler sampler_;
 
   Publisher publisher_;
-  ToFMeasurement500K frame_;
+  MeasurementTopic::Data frame_;
 };
 
 } // namespace i3ds

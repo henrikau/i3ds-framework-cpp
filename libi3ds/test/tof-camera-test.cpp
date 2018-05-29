@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(tof_camera_configuration_query)
 int received;
 
 void
-handle_measurement(EmulatedToFCamera::ToFMeasurement::Data& data)
+handle_measurement(ToFCamera::Measurement2MTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
   received++;
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(tof_camera_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<EmulatedToFCamera::ToFMeasurement>(client.node(), &handle_measurement);
+  subscriber.Attach<ToFCamera::Measurement2MTopic>(client.node(), &handle_measurement);
 
 
   SampleRate rate = 100000;

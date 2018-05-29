@@ -16,6 +16,7 @@
 #include <i3ds/sensor.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
+#include <i3ds/topic.hpp>
 
 namespace i3ds
 {
@@ -38,6 +39,12 @@ public:
   // ToFCamera services.
   typedef Command<16, ToFRegionCodec>        RegionService;
   typedef Query  <17, ToFConfigurationCodec> ConfigurationService;
+
+  // ToFCamera topics.
+  typedef Topic<128, ToFMeasurement250KCodec> Measurement250KTopic;
+  typedef Topic<129, ToFMeasurement500KCodec> Measurement500KTopic;
+  typedef Topic<130, ToFMeasurement1MCodec> Measurement1MTopic;
+  typedef Topic<131, ToFMeasurement2MCodec> Measurement2MTopic;
 
   // Constructor and destructor.
   ToFCamera(NodeID node) : Sensor(node) {};

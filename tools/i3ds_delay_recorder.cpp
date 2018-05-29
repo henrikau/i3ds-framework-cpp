@@ -25,7 +25,7 @@
 #include <i3ds/subscriber.hpp>
 #include <i3ds/sensor_client.hpp>
 #include <i3ds/camera_sensor.hpp>
-#include <i3ds/emulated_tof_camera.hpp>
+#include <i3ds/tof_camera_sensor.hpp>
 #include <i3ds/emulated_radar.hpp>
 #include <i3ds/emulated_lidar.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
@@ -206,9 +206,21 @@ main(int argc, char *argv[])
     {
       delay_recorder.Attach<i3ds::Camera::StereoFrame8MTopic>();
     }
-  else if (sensor_type == "tof")
+  else if (sensor_type == "tof250K")
     {
-      delay_recorder.Attach<i3ds::EmulatedToFCamera::ToFMeasurement>();
+      delay_recorder.Attach<i3ds::ToFCamera::Measurement250KTopic>();
+    }
+  else if (sensor_type == "tof500K")
+    {
+      delay_recorder.Attach<i3ds::ToFCamera::Measurement500KTopic>();
+    }
+  else if (sensor_type == "tof1M")
+    {
+      delay_recorder.Attach<i3ds::ToFCamera::Measurement1MTopic>();
+    }
+  else if (sensor_type == "tof2M" || sensor_type == "tof")
+    {
+      delay_recorder.Attach<i3ds::ToFCamera::Measurement2MTopic>();
     }
   else if (sensor_type == "lidar")
     {

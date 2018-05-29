@@ -31,7 +31,7 @@ i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node)
   region_.offset_x = 0;
   region_.offset_y = 0;
 
-  ToFMeasurement500KCodec::Initialize(frame_);
+  MeasurementTopic::Codec::Initialize(frame_);
 
   frame_.region.size_x = region_.size_x;
   frame_.region.size_y = region_.size_y;
@@ -95,7 +95,7 @@ i3ds::EmulatedToFCamera::send_sample(unsigned long timestamp_us)
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
-  publisher_.Send<ToFMeasurement>(frame_);
+  publisher_.Send<MeasurementTopic>(frame_);
 
   return true;
 }
