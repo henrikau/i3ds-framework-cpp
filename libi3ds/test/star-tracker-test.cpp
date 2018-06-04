@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(star_tracker_creation)
 {
   BOOST_CHECK_EQUAL(st->node(), node);
   BOOST_CHECK_EQUAL(st->state(), inactive);
-  BOOST_CHECK_EQUAL(st->rate(), 0);
+  BOOST_CHECK_EQUAL(st->period(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,15 +96,15 @@ BOOST_AUTO_TEST_CASE(star_tracker_sampling)
   subscriber.Attach<StarTracker::MeasurementTopic>(client.node(), &handle_measurement);
 
 
-  SampleRate rate = 100000;
+  SamplePeriod period = 100000;
 
   client.set_state(activate);
-  client.set_rate(rate);
+  client.set_period(period);
   client.set_state(start);
 
   subscriber.Start();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 2));
 
   client.set_state(stop);
 

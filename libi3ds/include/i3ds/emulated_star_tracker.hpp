@@ -27,15 +27,15 @@ public:
   typedef std::shared_ptr<EmulatedStarTracker> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID id)
-    {
-      return std::make_shared<EmulatedStarTracker>(context, id);
-    }
+  {
+    return std::make_shared<EmulatedStarTracker>(context, id);
+  }
 
   EmulatedStarTracker(Context::Ptr context, NodeID id);
   virtual ~EmulatedStarTracker();
 
-  // Supported rate.
-  virtual bool is_rate_supported(SampleRate rate);
+  // Supported period.
+  virtual bool is_period_supported(SamplePeriod period);
 
 protected:
 

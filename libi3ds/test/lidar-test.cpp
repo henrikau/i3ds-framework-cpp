@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(lidar_creation)
 {
   BOOST_CHECK_EQUAL(lidar->node(), node);
   BOOST_CHECK_EQUAL(lidar->state(), inactive);
-  BOOST_CHECK_EQUAL(lidar->rate(), 0);
+  BOOST_CHECK_EQUAL(lidar->period(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,17 +127,17 @@ BOOST_AUTO_TEST_CASE(lidar_sampling)
   subscriber.Attach<LIDAR::Measurement400KTopic>(client.node(), &handle_measurement);
 
 
-  SampleRate rate = 100000;
+  SamplePeriod period = 100000;
   PolarRegion r1 = {-300.0, -200.0, 600, 400};
 
   client.set_state(activate);
-  client.set_rate(rate);
+  client.set_period(period);
   client.set_region(true, r1);
   client.set_state(start);
 
   subscriber.Start();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 2));
 
   client.set_state(stop);
 

@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(radar_creation)
 {
   BOOST_CHECK_EQUAL(radar->node(), node);
   BOOST_CHECK_EQUAL(radar->state(), inactive);
-  BOOST_CHECK_EQUAL(radar->rate(), 0);
+  BOOST_CHECK_EQUAL(radar->period(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,17 +126,17 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
 
   subscriber.Attach<Radar::Measurement400KTopic>(client.node(), &handle_measurement);
 
-  SampleRate rate = 100000;
+  SamplePeriod period = 100000;
   PlanarRegion region = {400, 300, 150, 100};
 
   client.set_state(activate);
-  client.set_rate(rate);
+  client.set_period(period);
   client.set_region(true, region);
   client.set_state(start);
 
   subscriber.Start();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 2));
 
   client.set_state(stop);
 

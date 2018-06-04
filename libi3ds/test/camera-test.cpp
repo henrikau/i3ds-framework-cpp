@@ -31,9 +31,9 @@ struct F
     : node(1),
       context(Context::Create()),
       prop( {mode_mono, 12, 2, 640, 480}),
-      camera(TestCamera::Create(context, node, prop)),
-      server(context),
-      client(context, node)
+  camera(TestCamera::Create(context, node, prop)),
+  server(context),
+  client(context, node)
   {
     BOOST_TEST_MESSAGE("setup fixture");
     camera->Attach(server);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(camera_creation)
 {
   BOOST_CHECK_EQUAL(camera->node(), node);
   BOOST_CHECK_EQUAL(camera->state(), inactive);
-  BOOST_CHECK_EQUAL(camera->rate(), 0);
+  BOOST_CHECK_EQUAL(camera->period(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,17 +191,17 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
 
   subscriber.Attach<Camera::MonoFrame8MTopic>(client.node(), &handle_measurement);
 
-  SampleRate rate = 100000;
+  SamplePeriod period = 100000;
   PlanarRegion region = {400, 300, 150, 100};
 
   client.set_state(activate);
-  client.set_rate(rate);
+  client.set_period(period);
   client.set_region(true, region);
   client.set_state(start);
 
   subscriber.Start();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 2));
 
   client.set_state(stop);
 

@@ -21,13 +21,13 @@
 namespace i3ds
 {
 
-CODEC(IMUMeasurement);
+CODEC(IMUMeasurement20);
 
 class IMU : public Sensor
 {
 public:
 
-  typedef Topic<128, IMUMeasurementCodec> MeasurementTopic;
+  typedef Topic<128, IMUMeasurement20Codec> MeasurementTopic;
 
   // Shared pointer for IMU interfaces.
   typedef std::shared_ptr<IMU> Ptr;

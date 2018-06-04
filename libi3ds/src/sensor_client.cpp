@@ -39,12 +39,13 @@ i3ds::SensorClient::set_state(StateCommand state)
 }
 
 void
-i3ds::SensorClient::set_rate(SampleRate rate)
+i3ds::SensorClient::set_period(SamplePeriod period)
 {
   Sensor::SampleService::Data command;
 
-  command.request.rate = rate;
-  command.request.count = 0;
+  command.request.period = period;
+  command.request.batch_size = 1;
+  command.request.batch_count = 0;
 
   Call<Sensor::SampleService>(command);
 }

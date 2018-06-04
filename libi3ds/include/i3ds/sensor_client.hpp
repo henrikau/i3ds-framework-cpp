@@ -24,7 +24,7 @@ public:
   SensorClient(Context::Ptr context, NodeID sensor);
 
   void set_state(StateCommand state);
-  void set_rate(SampleRate rate);
+  void set_period(SamplePeriod period);
 
   SensorState state() const {return status_.response.state;}
   Temperature temperature() const {return status_.response.temperature;}

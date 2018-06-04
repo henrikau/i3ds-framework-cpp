@@ -13,7 +13,7 @@
 #include <i3ds/periodic.hpp>
 
 i3ds::Sampler::Sampler(Operation operation)
-  : operation_(operation), rate_(0), running_(false)
+  : operation_(operation), period_(0), running_(false)
 {
 }
 
@@ -23,9 +23,9 @@ i3ds::Sampler::~Sampler()
 }
 
 void
-i3ds::Sampler::Start(SampleRate rate)
+i3ds::Sampler::Start(SamplePeriod period)
 {
-  rate_ = std::chrono::microseconds(rate);
+  period_ = std::chrono::microseconds(period);
   running_ = true;
 
   worker_ = std::thread(&i3ds::Sampler::Run, this);
@@ -53,6 +53,6 @@ i3ds::Sampler::Run()
       std::this_thread::sleep_until(next);
 
       more = operation_(std::chrono::duration_cast<std::chrono::microseconds>(next.time_since_epoch()).count());
-      next += rate_;
+      next += period_;
     }
 }

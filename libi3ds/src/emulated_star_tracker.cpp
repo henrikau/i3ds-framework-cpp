@@ -37,7 +37,7 @@ void
 i3ds::EmulatedStarTracker::do_start()
 {
   BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " do_start()";
-  sampler_.Start(rate());
+  sampler_.Start(period());
 }
 
 void
@@ -54,10 +54,10 @@ i3ds::EmulatedStarTracker::do_deactivate()
 }
 
 bool
-i3ds::EmulatedStarTracker::is_rate_supported(SampleRate rate)
+i3ds::EmulatedStarTracker::is_period_supported(SamplePeriod period)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " is_rate_supported()";
-  return 0 < rate && rate <= 10000000;
+  BOOST_LOG_TRIVIAL(info) << "Emulated star tracker with NodeID: " << node() << " is_period_supported()";
+  return 0 < period && period <= 10000000;
 }
 
 bool

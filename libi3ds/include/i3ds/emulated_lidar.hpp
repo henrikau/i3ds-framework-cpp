@@ -39,8 +39,8 @@ public:
   virtual bool region_enabled() const {return region_enabled_;}
   virtual PolarRegion region() const {return region_;}
 
-  // Supported rate.
-  virtual bool is_rate_supported(SampleRate rate);
+  // Supported period.
+  virtual bool is_period_supported(SamplePeriod period);
 
 protected:
 

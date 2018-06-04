@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(imu_creation)
 {
   BOOST_CHECK_EQUAL(imu->node(), node);
   BOOST_CHECK_EQUAL(imu->state(), inactive);
-  BOOST_CHECK_EQUAL(imu->rate(), 0);
+  BOOST_CHECK_EQUAL(imu->period(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,14 +81,16 @@ handle_measurement(IMU::MeasurementTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
 
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[0], 1.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[1], 2.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[2], 3.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.nCount, 3);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[0], 4.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[1], 5.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[2], 6.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.nCount, 3);
+  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].nCount, 3);
+  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].arr[0], 1.0);
+  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].arr[1], 2.0);
+  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].arr[2], 3.0);
+
+  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].nCount, 3);
+  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].arr[0], 4.0);
+  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].arr[1], 5.0);
+  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].arr[2], 6.0);
+
   received++;
 }
 
@@ -100,15 +102,15 @@ BOOST_AUTO_TEST_CASE(imu_sampling)
   subscriber.Attach<IMU::MeasurementTopic>(client.node(), &handle_measurement);
 
 
-  SampleRate rate = 100000;
+  SamplePeriod period = 100000;
 
   client.set_state(activate);
-  client.set_rate(rate);
+  client.set_period(period);
   client.set_state(start);
 
   subscriber.Start();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(rate * 2));
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 2));
 
   client.set_state(stop);
 

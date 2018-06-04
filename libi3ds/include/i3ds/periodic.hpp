@@ -34,8 +34,8 @@ public:
   Sampler(Operation operation);
   virtual ~Sampler();
 
-  // Starts sampler in a separate thread with periodic rate.
-  void Start(SampleRate rate);
+  // Starts sampler in a separate thread with given period.
+  void Start(SamplePeriod period);
 
   // Stop the sampler if running.
   void Stop();
@@ -50,8 +50,8 @@ private:
   // Sample operation.
   Operation operation_;
 
-  // Rate of periodic sampling.
-  clock::duration rate_;
+  // Period of sampling.
+  clock::duration period_;
 
   // Running flag.
   volatile bool running_;

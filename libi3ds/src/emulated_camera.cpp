@@ -71,7 +71,8 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, FramePro
             }
         }
       catch (std::exception e)
-        { // If anything fails, sample_images_ remains empty, and is not used
+        {
+          // If anything fails, sample_images_ remains empty, and is not used
           BOOST_LOG_TRIVIAL(warning) << "Error loading sample images: " << e.what();
         }
     }
@@ -92,7 +93,7 @@ void
 i3ds::EmulatedCamera::do_start()
 {
   BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_start()";
-  sampler_.Start(rate());
+  sampler_.Start(period());
 }
 
 void
@@ -109,10 +110,10 @@ i3ds::EmulatedCamera::do_deactivate()
 }
 
 bool
-i3ds::EmulatedCamera::is_rate_supported(SampleRate rate)
+i3ds::EmulatedCamera::is_period_supported(SamplePeriod period)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " is_rate_supported()";
-  return 0 < rate && rate <= 10000000;
+  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " is_period_supported()";
+  return 0 < period && period <= 10000000;
 }
 
 void

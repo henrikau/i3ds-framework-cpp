@@ -133,7 +133,7 @@ public:
   SensorClient(Context::Ptr context, NodeID sensor);
 
   void set_state(StateCommand state);
-  void set_rate(SampleRate rate);
+  void set_period(SamplePeriod period);
 
   SensorState state() const;
   Temperature temperature() const;

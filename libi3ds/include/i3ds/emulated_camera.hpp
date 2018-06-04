@@ -61,8 +61,8 @@ public:
   virtual bool pattern_enabled() const {return pattern_enabled_;}
   virtual PatternSequence pattern_sequence() const {return pattern_sequence_;}
 
-  // Supported rate.
-  virtual bool is_rate_supported(SampleRate rate);
+  // Supported period.
+  virtual bool is_period_supported(SamplePeriod period);
 
 protected:
 
@@ -85,33 +85,33 @@ protected:
 
   template<typename FrameTopic>
   void set_meta(typename FrameTopic::Data& frame, unsigned long timestamp_us)
-    {
-      frame.attributes.timestamp.microseconds = timestamp_us;
-      frame.attributes.validity = sample_valid;
-      if (!sample_images_.empty())
-        {
-          fetch_next_image();
-          cv::Mat current_image = sample_images_[current_image_index_];
-          frame.region.size_x = current_image.cols;
-          frame.region.size_y = current_image.rows;
-          if (current_image.depth() == CV_16U)
-            {
-              frame.pixel_size = current_image.channels() * 2;
-            }
-          else
-            {
-              frame.pixel_size = current_image.channels();
-            }
-          frame.frame_mode = mode_rgb;
-        }
-      else
-        {
-          frame.frame_mode = prop_.mode;
-          frame.data_depth = prop_.data_depth;
-          frame.pixel_size = prop_.pixel_size;
-          frame.region = region_;
-        }
-    }
+  {
+    frame.attributes.timestamp.microseconds = timestamp_us;
+    frame.attributes.validity = sample_valid;
+    if (!sample_images_.empty())
+      {
+        fetch_next_image();
+        cv::Mat current_image = sample_images_[current_image_index_];
+        frame.region.size_x = current_image.cols;
+        frame.region.size_y = current_image.rows;
+        if (current_image.depth() == CV_16U)
+          {
+            frame.pixel_size = current_image.channels() * 2;
+          }
+        else
+          {
+            frame.pixel_size = current_image.channels();
+          }
+        frame.frame_mode = mode_rgb;
+      }
+    else
+      {
+        frame.frame_mode = prop_.mode;
+        frame.data_depth = prop_.data_depth;
+        frame.pixel_size = prop_.pixel_size;
+        frame.region = region_;
+      }
+  }
 
   ShutterTime shutter_;
   SensorGain gain_;
@@ -145,9 +145,9 @@ public:
   typedef std::shared_ptr<EmulatedMonoCamera<FrameTopic>> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
-    {
-      return std::make_shared<EmulatedMonoCamera<FrameTopic>>(context, id, prop, sample_dir);
-    }
+  {
+    return std::make_shared<EmulatedMonoCamera<FrameTopic>>(context, id, prop, sample_dir);
+  }
 
   EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
     : EmulatedCamera(context, id, prop, sample_dir)
@@ -167,7 +167,7 @@ protected:
       {
         memcpy(frame_.image.arr, sample_images_[current_image_index_].data, frame_.image.nCount);
       }
-        
+
     BOOST_LOG_TRIVIAL(trace) << "Send mono frame: "
                              << timestamp_us << " "
                              << frame_.image.nCount / 1024.0 << "KiB";
@@ -188,10 +188,10 @@ public:
 
   typedef std::shared_ptr<EmulatedMonoCamera<FrameTopic>> Ptr;
 
-  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "") 
-    {
-      return std::make_shared<EmulatedStereoCamera<FrameTopic>>(context, id, prop, sample_dir);
-    }
+  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
+  {
+    return std::make_shared<EmulatedStereoCamera<FrameTopic>>(context, id, prop, sample_dir);
+  }
 
   EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
     : EmulatedCamera(context, id, prop, sample_dir)

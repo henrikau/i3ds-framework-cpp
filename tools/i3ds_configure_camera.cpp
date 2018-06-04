@@ -78,7 +78,7 @@ print_camera_settings(i3ds::CameraClient *camera)
 int main(int argc, char *argv[])
 {
   unsigned int node_id;
-  unsigned int rate, shutter, max_shutter;
+  unsigned int period, shutter, max_shutter;
   double gain, max_gain;
   unsigned int flash_strength, pattern_sequence;
   bool enable_auto, enable_region, enable_flash, enable_pattern;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   ("stop", "Stop the sensor")
   ("deactivate", "Deactivate the sensor")
 
-  ("rate", po::value(&rate), "Sensor rate in microseconds")
+  ("period", po::value(&period), "Sensor period in microseconds")
 
   ("verbose,v", "Print verbose output")
   ("quiet,q", "Quiet output")
@@ -171,11 +171,11 @@ int main(int argc, char *argv[])
       return 0;
     }
 
-  // Set rate, allow further commands.
-  if (vm.count("rate"))
+  // Set period, allow further commands.
+  if (vm.count("period"))
     {
-      BOOST_LOG_TRIVIAL(info) << "Set rate: " << rate << " [us]";
-      camera.set_rate(rate);
+      BOOST_LOG_TRIVIAL(info) << "Set period: " << period << " [us]";
+      camera.set_period(period);
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }
 

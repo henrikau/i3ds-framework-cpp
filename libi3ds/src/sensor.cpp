@@ -16,7 +16,7 @@ i3ds::Sensor::Sensor(NodeID node)
   : node_(node)
 {
   state_ = inactive;
-  rate_ = 0.0;
+  period_ = 0.0;
 }
 
 i3ds::Sensor::~Sensor()
@@ -69,11 +69,11 @@ i3ds::Sensor::check_failure() const
 }
 
 void
-i3ds::Sensor::check_rate_supported(SampleRate rate)
+i3ds::Sensor::check_period_supported(SamplePeriod period)
 {
-  if (!is_rate_supported(rate))
+  if (!is_period_supported(period))
     {
-      throw CommandError(error_value, "Sample rate not supported: " + std::to_string(rate));
+      throw CommandError(error_value, "Sample period not supported: " + std::to_string(period));
     }
 }
 
@@ -139,9 +139,9 @@ void
 i3ds::Sensor::handle_sample(SampleService::Data& sample)
 {
   check_standby();
-  check_rate_supported(sample.request.rate);
+  check_period_supported(sample.request.period);
 
-  rate_ = sample.request.rate;
+  period_ = sample.request.period;
 }
 
 void
@@ -154,6 +154,7 @@ i3ds::Sensor::handle_status(StatusService::Data& status) const
 void
 i3ds::Sensor::handle_configuration(ConfigurationService::Data& config) const
 {
-  config.response.rate = rate();
-  config.response.count = 0; // FIXME
+  config.response.period = period();
+  config.response.batch_size = 1; // FIXME
+  config.response.batch_count = 0; // FIXME
 }

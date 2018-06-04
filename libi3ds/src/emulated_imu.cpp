@@ -19,7 +19,7 @@ i3ds::EmulatedIMU::EmulatedIMU(Context::Ptr context, NodeID node)
     publisher_(context, node)
 {
   BOOST_LOG_TRIVIAL(info) << "Create emulated IMU with NodeID: " << node;
-  IMUMeasurementCodec::Initialize(frame_);
+  IMUMeasurement20Codec::Initialize(frame_);
 }
 
 i3ds::EmulatedIMU::~EmulatedIMU()
@@ -37,7 +37,7 @@ void
 i3ds::EmulatedIMU::do_start()
 {
   BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " do_start()";
-  sampler_.Start(rate());
+  sampler_.Start(period());
 }
 
 void
@@ -54,10 +54,10 @@ i3ds::EmulatedIMU::do_deactivate()
 }
 
 bool
-i3ds::EmulatedIMU::is_rate_supported(SampleRate rate)
+i3ds::EmulatedIMU::is_period_supported(SamplePeriod period)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " is_rate_supported()";
-  return 0 < rate && rate <= 10000000;
+  BOOST_LOG_TRIVIAL(info) << "Emulated IMU with NodeID: " << node() << " is_period_supported()";
+  return 0 < period && period <= 10000000;
 }
 
 bool
@@ -68,14 +68,17 @@ i3ds::EmulatedIMU::send_sample(unsigned long timestamp_us)
   frame_.attributes.timestamp.microseconds = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
-  frame_.linear_accel.nCount = 3;
-  frame_.linear_accel.arr[0] = 1.0;
-  frame_.linear_accel.arr[1] = 2.0;
-  frame_.linear_accel.arr[2] = 3.0;
-  frame_.angular_rate.nCount = 3;
-  frame_.angular_rate.arr[0] = 4.0;
-  frame_.angular_rate.arr[1] = 5.0;
-  frame_.angular_rate.arr[2] = 6.0;
+  frame_.linear_accel.nCount = 1;
+  frame_.linear_accel.arr[0].nCount = 3;
+  frame_.linear_accel.arr[0].arr[0] = 1.0;
+  frame_.linear_accel.arr[0].arr[1] = 2.0;
+  frame_.linear_accel.arr[0].arr[2] = 3.0;
+
+  frame_.angular_rate.nCount = 1;
+  frame_.angular_rate.arr[0].nCount = 3;
+  frame_.angular_rate.arr[0].arr[0] = 4.0;
+  frame_.angular_rate.arr[0].arr[1] = 5.0;
+  frame_.angular_rate.arr[0].arr[2] = 6.0;
 
   publisher_.Send<MeasurementTopic>(frame_);
 
