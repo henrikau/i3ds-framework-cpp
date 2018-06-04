@@ -101,11 +101,10 @@ BOOST_AUTO_TEST_CASE(imu_sampling)
 
   subscriber.Attach<IMU::MeasurementTopic>(client.node(), &handle_measurement);
 
-
   SamplePeriod period = 100000;
 
   client.set_state(activate);
-  client.set_period(period);
+  client.set_sampling(period);
   client.set_state(start);
 
   subscriber.Start();

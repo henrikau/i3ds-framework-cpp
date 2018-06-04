@@ -40,7 +40,7 @@ public:
   virtual PolarRegion region() const {return region_;}
 
   // Supported period.
-  virtual bool is_period_supported(SamplePeriod period);
+  virtual bool is_sampling_supported(SampleCommand sample);
 
 protected:
 

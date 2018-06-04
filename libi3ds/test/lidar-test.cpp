@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(lidar_sampling)
   PolarRegion r1 = {-300.0, -200.0, 600, 400};
 
   client.set_state(activate);
-  client.set_period(period);
+  client.set_sampling(period);
   client.set_region(true, r1);
   client.set_state(start);
 

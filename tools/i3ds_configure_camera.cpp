@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
   if (vm.count("period"))
     {
       BOOST_LOG_TRIVIAL(info) << "Set period: " << period << " [us]";
-      camera.set_period(period);
+      camera.set_sampling(period);
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }
 

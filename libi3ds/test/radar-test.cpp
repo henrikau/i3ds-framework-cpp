@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
   PlanarRegion region = {400, 300, 150, 100};
 
   client.set_state(activate);
-  client.set_period(period);
+  client.set_sampling(period);
   client.set_region(true, region);
   client.set_state(start);
 

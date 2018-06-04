@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(tof_camera_sampling)
   SamplePeriod period = 100000;
 
   client.set_state(activate);
-  client.set_period(period);
+  client.set_sampling(period);
   client.set_state(start);
 
   subscriber.Start();

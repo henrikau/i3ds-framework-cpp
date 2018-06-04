@@ -69,10 +69,10 @@ i3ds::EmulatedToFCamera::do_deactivate()
 }
 
 bool
-i3ds::EmulatedToFCamera::is_period_supported(SamplePeriod period)
+i3ds::EmulatedToFCamera::is_sampling_supported(SampleCommand sample)
 {
   BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " is_period_supported()";
-  return 0 < period && period <= 10000000;
+  return sample.batch_size == 1 && (0 < sample.period && sample.period <= 10000000);
 }
 
 void

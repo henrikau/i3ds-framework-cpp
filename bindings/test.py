@@ -3,7 +3,7 @@ import i3ds
 def test_camera(factory):
     s = factory.Camera(11)
     s.set_state(i3ds.activate)
-    s.set_rate(100000)
+    s.set_sampling(100000)
     s.set_exposure(10000, 1.0)
     s.set_region(True, (600,400,100,100))
     s.set_flash(True, 128)
@@ -15,7 +15,7 @@ def test_camera(factory):
 def test_tof_camera(factory):
     s = factory.ToFCamera(13)
     s.set_state(i3ds.activate)
-    s.set_rate(100000)
+    s.set_sampling(100000)
     s.set_region(True, (200,200,100,100))
     s.set_state(i3ds.start)
     s.set_state(i3ds.stop)
@@ -24,7 +24,7 @@ def test_tof_camera(factory):
 def test_lidar(factory):
     s = factory.LIDAR(14)
     s.set_state(i3ds.activate)
-    s.set_rate(100000)
+    s.set_sampling(100000)
     s.set_region(True, (0.3,-0.4,0.1,0.2))
     s.set_state(i3ds.start)
     s.set_state(i3ds.stop)
@@ -33,7 +33,7 @@ def test_lidar(factory):
 def test_radar(factory):
     s = factory.Radar(15)
     s.set_state(i3ds.activate)
-    s.set_rate(100000)
+    s.set_sampling(100000)
     s.set_region(True, (10,20,30,10))
     s.set_state(i3ds.start)
     s.set_state(i3ds.stop)
@@ -42,7 +42,7 @@ def test_radar(factory):
 def test_star_tracker(factory):
     s = factory.Radar(16)
     s.set_state(i3ds.activate)
-    s.set_rate(100000)
+    s.set_sampling(100000)
     s.set_state(i3ds.start)
     s.set_state(i3ds.stop)
     s.set_state(i3ds.deactivate)    
@@ -50,7 +50,7 @@ def test_star_tracker(factory):
 def test_imu(factory):
     s = factory.IMU(17)
     s.set_state(i3ds.activate)
-    s.set_rate(100000)
+    s.set_sampling(100000)
     s.set_state(i3ds.start)
     s.set_state(i3ds.stop)
     s.set_state(i3ds.deactivate)    

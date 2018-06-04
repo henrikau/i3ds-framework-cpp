@@ -88,6 +88,12 @@ public:
   // Get sensor period in microseconds between samples.
   inline SamplePeriod period() const {return period_;}
 
+  // Get number of samples per batch.
+  inline BatchSize batch_size() const {return batch_size_;}
+
+  // Get number of batches to acquire when operational (0 is infinite).
+  inline BatchCount batch_count() const {return batch_count_;}
+
   // Get temperature in Kelvin (defaults to 0.0).
   virtual double temperature() const {return 0.0;}
 
@@ -103,11 +109,11 @@ public:
   // Sensor action when activated.
   virtual void do_deactivate() = 0;
 
-  // Throws exception if period is not supported.
-  void check_period_supported(SamplePeriod period);
+  // Throws exception if sample configuration is not supported.
+  void check_sampling_supported(SampleCommand sample);
 
-  // Returns true if period is supported.
-  virtual bool is_period_supported(SamplePeriod period) = 0;
+  // Returns true if sample configuration is supported.
+  virtual bool is_sampling_supported(SampleCommand sample) = 0;
 
   // Attach handlers to the server.
   virtual void Attach(Server& server);
@@ -127,8 +133,11 @@ private:
   void handle_configuration(ConfigurationService::Data& config) const;
 
   const NodeID node_;
+
   SensorState state_;
   SamplePeriod period_;
+  BatchSize batch_size_;
+  BatchCount batch_count_;
 };
 
 } // namespace i3ds

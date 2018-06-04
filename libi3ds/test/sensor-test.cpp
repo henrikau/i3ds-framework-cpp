@@ -36,7 +36,7 @@ public:
 
   virtual double temperature() const {return 300.0;}
 
-  virtual bool is_period_supported(SamplePeriod period);
+  virtual bool is_sampling_supported(SampleCommand sample);
 
 protected:
 
@@ -61,11 +61,11 @@ public:
   void test_legal_state_command(StateCommand cmd);
   void test_illegal_state_command(StateCommand cmd);
 
-  ResultCode issue_period_command(SamplePeriod period);
+  ResultCode issue_sample_command(SamplePeriod period, BatchSize batch_size);
 
-  void test_legal_period_command(SamplePeriod period);
-  void test_illegal_period_command(SamplePeriod period, ResultCode error);
-  void test_unsupported_period_command(SamplePeriod period, ResultCode error);
+  void test_legal_sample_command(SamplePeriod period, BatchSize batch_size);
+  void test_illegal_sample_command(SamplePeriod period, BatchSize batch_size, ResultCode error);
+  void test_unsupported_sample_command(SamplePeriod period, BatchSize batch_size, ResultCode error);
 };
 
 TestSensor::TestSensor(NodeID node) : Sensor(node)
@@ -85,11 +85,13 @@ void TestSensor::test_no_callback()
   BOOST_CHECK_EQUAL(callbacks.size(), 0);
 }
 
-bool TestSensor::is_period_supported(SamplePeriod period)
+bool TestSensor::is_sampling_supported(SampleCommand sample)
 {
-  log("support_period");
+  log("is_sampling_supported");
 
-  return (1000 <= period && period <= 1000000);
+  return (1 <= sample.batch_size && sample.batch_size <= 10) &&
+         (1000 <= sample.period && sample.period <= 1000000) &&
+         (sample.batch_count == 0);
 }
 
 TestClient::TestClient(Context::Ptr context, NodeID sensor)
@@ -129,13 +131,13 @@ void TestClient::test_illegal_state_command(StateCommand sc)
     }
 }
 
-ResultCode TestClient::issue_period_command(SamplePeriod period)
+ResultCode TestClient::issue_sample_command(SamplePeriod period, BatchSize batch_size)
 {
   Sensor::SampleService::Data command;
   Sensor::SampleService::Initialize(command);
 
   command.request.period = period;
-  command.request.batch_size = 1;
+  command.request.batch_size = batch_size;
   command.request.batch_count = 0;
 
   Call<Sensor::SampleService>(command);
@@ -143,18 +145,18 @@ ResultCode TestClient::issue_period_command(SamplePeriod period)
   return command.response.result;
 }
 
-void TestClient::test_legal_period_command(SamplePeriod period)
+void TestClient::test_legal_sample_command(SamplePeriod period, BatchSize batch_size)
 {
-  ResultCode r = issue_period_command(period);
+  ResultCode r = issue_sample_command(period, batch_size);
 
   BOOST_CHECK_EQUAL(r, success);
 }
 
-void TestClient::test_illegal_period_command(SamplePeriod period, ResultCode error)
+void TestClient::test_illegal_sample_command(SamplePeriod period, BatchSize batch_size, ResultCode error)
 {
   try
     {
-      issue_period_command(period);
+      issue_sample_command(period, batch_size);
       BOOST_CHECK(false);
     }
   catch (CommandError e)
@@ -203,6 +205,8 @@ BOOST_AUTO_TEST_CASE(sensor_creation)
   BOOST_CHECK_EQUAL(sensor.node(), id);
   BOOST_CHECK_EQUAL(sensor.state(), inactive);
   BOOST_CHECK_EQUAL(sensor.period(), 0.0);
+  BOOST_CHECK_EQUAL(sensor.batch_size(), 1);
+  BOOST_CHECK_EQUAL(sensor.batch_count(), 0);
   BOOST_CHECK_CLOSE(sensor.temperature(), 300.0, 0.01);
 }
 
@@ -264,41 +268,50 @@ BOOST_AUTO_TEST_CASE(sensor_state_command)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(sensor_period_command)
+BOOST_AUTO_TEST_CASE(sensor_sample_command)
 {
   // Test from INACTIVE (illegal).
   BOOST_CHECK_EQUAL(sensor.state(), inactive);
 
-  client.test_illegal_period_command(10000, error_state);
+  client.test_illegal_sample_command(10000, 1, error_state);
   sensor.test_no_callback();
 
   // Test from STANDBY (legal).
   client.test_legal_state_command(activate);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
-  client.test_legal_period_command(1000);
+  client.test_legal_sample_command(1000, 2);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.period(), 1000);
+  BOOST_CHECK_EQUAL(sensor.batch_size(), 2);
 
-  client.test_illegal_period_command(2000000, error_value);
+  client.test_illegal_sample_command(2000000, 1, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.period(), 1000);
+  BOOST_CHECK_EQUAL(sensor.batch_size(), 2);
 
-  client.test_legal_period_command(2000);
+  client.test_legal_sample_command(2000, 3);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.period(), 2000);
+  BOOST_CHECK_EQUAL(sensor.batch_size(), 3);
 
-  client.test_illegal_period_command(10, error_value);
+  client.test_illegal_sample_command(10, 1, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
-  client.test_illegal_period_command(2000000, error_value);
+  client.test_illegal_sample_command(2000000, 1, error_value);
+  BOOST_CHECK_EQUAL(sensor.state(), standby);
+
+  client.test_illegal_sample_command(1000, 0, error_value);
+  BOOST_CHECK_EQUAL(sensor.state(), standby);
+
+  client.test_illegal_sample_command(1000, 100, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
 
   // Test from OPERATIONAL (illegal).
   client.test_legal_state_command(start);
   BOOST_CHECK_EQUAL(sensor.state(), operational);
 
-  client.test_illegal_period_command(10000, error_state);
+  client.test_illegal_sample_command(10000, 1, error_state);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
