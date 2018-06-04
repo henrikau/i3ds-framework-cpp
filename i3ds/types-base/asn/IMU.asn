@@ -26,7 +26,7 @@ T-UInt8, T-UInt32 FROM TASTE-BasicTypes
 Vector3d FROM Eigen-Types;
 
 --- IMU series.
-IMUSamples{T-UInt32: maxSamples} ::= SEQUENCE (SIZE(0..maxSamples)) OF Vector3D
+IMUSamples{T-UInt32: maxSamples} ::= SEQUENCE (SIZE(0..maxSamples)) OF Vector3d
 
 --- IMU measurement definition where number of samples equals batch size
 IMUMeasurement{T-UInt32: maxSamples} ::=

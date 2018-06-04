@@ -22,7 +22,7 @@ Frame-Types DEFINITIONS ::=
 BEGIN
 IMPORTS SampleAttributes FROM SampleAttribute-Types
 PlanarRegion FROM Region-Types
-T-UInt32 FROM TASTE-BasicTypes
+T-UInt8, T-UInt32 FROM TASTE-BasicTypes
 T-UInt16 FROM TASTE-ExtendedTypes;
 
 --- Legal frame modes adapted from SARGON
