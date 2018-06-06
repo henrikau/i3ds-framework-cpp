@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <csignal>
+#include <cmath>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/camera_sensor.hpp>
@@ -38,13 +39,13 @@ render_image(std::string window_name, unsigned char* image, int rows, int cols, 
     {
       if (pixel_size == 3) cv_type = CV_8UC3;
       if (pixel_size == 6) cv_type = CV_16UC3;
-      scaling_factor = 8 * (pixel_size/3) / data_depth;
+      scaling_factor = pow(2,(8 * (pixel_size/3) - data_depth));
     }
   else
     {
       if (pixel_size == 1) cv_type = CV_8UC1;
       if (pixel_size == 2) cv_type = CV_16UC1;
-      scaling_factor = 8 * pixel_size / data_depth;
+      scaling_factor = pow(2,(8 * pixel_size - data_depth));
     }
   cv::Mat frame(rows, cols, cv_type, image);
   if (scaling_factor != 1)
