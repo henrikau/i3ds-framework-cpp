@@ -30,20 +30,27 @@ signal_handler(int signum)
 }
 
 void
-render_image(std::string window_name, unsigned char* image, int rows, int cols, int type, int pixel_size)
+render_image(std::string window_name, unsigned char* image, int rows, int cols, int type, int pixel_size, int data_depth)
 {
   int cv_type = CV_16UC1;
+  double scaling_factor = 1;
   if (type == mode_rgb)
     {
       if (pixel_size == 3) cv_type = CV_8UC3;
       if (pixel_size == 6) cv_type = CV_16UC3;
+      scaling_factor = 8 * (pixel_size/3) / data_depth;
     }
   else
     {
       if (pixel_size == 1) cv_type = CV_8UC1;
       if (pixel_size == 2) cv_type = CV_16UC1;
+      scaling_factor = 8 * pixel_size / data_depth;
     }
   cv::Mat frame(rows, cols, cv_type, image);
+  if (scaling_factor != 1)
+    {
+      frame *= scaling_factor;
+    }
   cv::imshow(window_name, frame);
   cv::waitKey(5); // Apparently needed to render image properly
 }
@@ -55,7 +62,7 @@ handle_mono_frame(typename T::Data& data)
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
   int rows = data.region.size_y;
   int cols = data.region.size_x;
-  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode, data.pixel_size);
+  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode, data.pixel_size, data.data_depth);
 }
 
 template <typename T>
@@ -65,8 +72,8 @@ handle_stereo_frame(typename T::Data& data)
   std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
   int rows = data.region.size_y;
   int cols = data.region.size_x / 2;
-  render_image("Left camera feed", static_cast<unsigned char*>(data.image_left.arr), rows, cols, data.frame_mode, data.pixel_size);
-  render_image("Right camera feed", static_cast<unsigned char*>(data.image_right.arr), rows, cols, data.frame_mode, data.pixel_size);
+  render_image("Left camera feed", static_cast<unsigned char*>(data.image_left.arr), rows, cols, data.frame_mode, data.pixel_size, data.data_depth);
+  render_image("Right camera feed", static_cast<unsigned char*>(data.image_right.arr), rows, cols, data.frame_mode, data.pixel_size, data.data_depth);
 }
 
 int main(int argc, char *argv[])
