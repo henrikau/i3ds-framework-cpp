@@ -70,6 +70,7 @@ The framework has the following build dependencies:
 * ZMQ libraries
 * Boost framework (program options and unit test)
 * SWIG and Python development files for optional Python binding
+* asn1scc: https://confluence.code.sintef.no/display/I3DS/ASN.1+compiler
 
 To build and install the framework with CMake do the following:
 
