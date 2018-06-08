@@ -85,6 +85,10 @@ typedef enum {
     failure = 3
 } SensorState;
 
+typedef T_UInt32 SamplePeriod;
+typedef T_UInt32 BatchSize;
+typedef T_UInt32 BatchCount;
+
 typedef struct {
     T_UInt16 offset_x;
     T_UInt16 offset_y;

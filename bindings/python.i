@@ -29,8 +29,14 @@
 %typemap(in) NodeID = int;
 %typemap(out) NodeID = int;
 
-%typemap(in) SampleRate = int;
-%typemap(out) SampleRate = int;
+%typemap(in) SamplePeriod = int;
+%typemap(out) SamplePeriod = int;
+
+%typemap(in) BatchSize = int;
+%typemap(out) BatchSize = int;
+
+%typemap(in) BatchCount = int;
+%typemap(out) BatchCount = int;
 
 %typemap(in) ShutterTime = int;
 %typemap(out) ShutterTime = int;
