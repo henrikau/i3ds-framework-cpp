@@ -19,6 +19,7 @@ set (APPS
   i3ds_delay_recorder
   i3ds_record
   i3ds_replay
+  i3ds_codec_performance_test
   )
 
 foreach(a ${APPS})
