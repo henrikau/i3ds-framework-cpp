@@ -6,30 +6,33 @@ find_package (OpenCV REQUIRED)
 # ASN.1 generation
 ################################################################################
 
-set (ESROCOS_ASN1_DIR ${PROJECT_SOURCE_DIR}/asn/esrocos/types-base/asn)
-set (I3DS_ASN1_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
+set (ESROCOS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/esrocos/types-base/asn)
+set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
+set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
+set (I3DS_EXTRA_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-extra/asn)
 
 set (ASN1_FILES
-${ESROCOS_ASN1_DIR}/Eigen.asn
-${ESROCOS_ASN1_DIR}/Point.asn
-${ESROCOS_ASN1_DIR}/taste-extended.asn
-${ESROCOS_ASN1_DIR}/taste-types.asn
-${ESROCOS_ASN1_DIR}/Temperature.asn
-${ESROCOS_ASN1_DIR}/Time.asn
-${I3DS_ASN1_DIR}/Analog.asn
-${I3DS_ASN1_DIR}/Common.asn
-${I3DS_ASN1_DIR}/DepthMap.asn
-${I3DS_ASN1_DIR}/IMU.asn
-${I3DS_ASN1_DIR}/PointCloud.asn
-${I3DS_ASN1_DIR}/Sensor.asn
-${I3DS_ASN1_DIR}/Camera.asn
-${I3DS_ASN1_DIR}/Frame.asn
-${I3DS_ASN1_DIR}/LIDAR.asn
-${I3DS_ASN1_DIR}/Radar.asn
-${I3DS_ASN1_DIR}/Region.asn
-${I3DS_ASN1_DIR}/SampleAttribute.asn
-${I3DS_ASN1_DIR}/StarTracker.asn
-${I3DS_ASN1_DIR}/ToFCamera.asn
+${ESROCOS_BASE_DIR}/Eigen.asn
+${ESROCOS_BASE_DIR}/Point.asn
+${ESROCOS_BASE_DIR}/taste-extended.asn
+${ESROCOS_BASE_DIR}/taste-types.asn
+${ESROCOS_BASE_DIR}/Temperature.asn
+${ESROCOS_BASE_DIR}/Time.asn
+${I3DS_BASE_DIR}/Analog.asn
+${I3DS_BASE_DIR}/Common.asn
+${I3DS_BASE_DIR}/DepthMap.asn
+${I3DS_BASE_DIR}/IMU.asn
+${I3DS_BASE_DIR}/PointCloud.asn
+${I3DS_BASE_DIR}/Sensor.asn
+${I3DS_BASE_DIR}/Camera.asn
+${I3DS_BASE_DIR}/Frame.asn
+${I3DS_BASE_DIR}/LIDAR.asn
+${I3DS_BASE_DIR}/Radar.asn
+${I3DS_BASE_DIR}/Region.asn
+${I3DS_BASE_DIR}/SampleAttribute.asn
+${I3DS_BASE_DIR}/StarTracker.asn
+${I3DS_BASE_DIR}/ToFCamera.asn
+${I3DS_EXTRA_DIR}/Trigger.asn
 )
 
 set (ASN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/i3ds")
@@ -58,11 +61,6 @@ set (SRCS
   src/tof_camera_sensor.cpp
   src/tof_camera_client.cpp
   src/imu_client.cpp
-  src/emulator_factory.cpp
-  src/emulated_camera.cpp
-  src/emulated_imu.cpp
-  src/emulated_tof_camera.cpp
-  src/emulated_radar.cpp
   src/radar_sensor.cpp
   src/radar_client.cpp
   src/emulated_lidar.cpp
@@ -71,6 +69,13 @@ set (SRCS
   src/emulated_star_tracker.cpp
   src/star_tracker_client.cpp
   src/analog_client.cpp
+  src/trigger.cpp
+  src/trigger_client.cpp
+  src/emulator_factory.cpp
+  src/emulated_camera.cpp
+  src/emulated_imu.cpp
+  src/emulated_tof_camera.cpp
+  src/emulated_radar.cpp
   src/emulated_tactile.cpp
   )
 
