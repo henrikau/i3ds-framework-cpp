@@ -206,8 +206,9 @@ main(int argc, char *argv[])
   unsigned int n_replications = 100;
 
   std::cout << "libi3ds codec performance test." << std::endl;
-  std::cout << "The value 'us/f' is number of microsectonds pere byte for camera measurements" << std::endl;
+  std::cout << "The value 'us/f' is number of microseconds per byte for camera measurements" << std::endl;
   std::cout << "and microseconds per float for the rest." << std::endl << std::endl;
+
   std::cout << "8 MiB Camera big mono frame timing statistics:" << std::endl;
   mono_camera_test<i3ds::MonoFrame8MCodec>(n_replications, 2048, 2048, 2, 12);
 
