@@ -50,9 +50,9 @@ i3ds::Sampler::Run()
 
   while (running_ && more)
     {
-      std::this_thread::sleep_until(next);
-
       more = operation_(std::chrono::duration_cast<std::chrono::microseconds>(next.time_since_epoch()).count());
+
       next += period_;
+      std::this_thread::sleep_until(next);
     }
 }

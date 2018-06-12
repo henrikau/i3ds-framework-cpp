@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(star_tracker_sampling)
 
   subscriber.Start();
 
-  std::this_thread::sleep_for(std::chrono::microseconds(period * 2));
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 5));
 
   client.set_state(stop);
 
