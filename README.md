@@ -29,11 +29,15 @@ subscribe topic in `topic.hpp`.
 
 Basic sensor functionality with the state machine is defined in
 `sensor.hpp`. More specific sensor interfaces such as a camera in
-`camera.hpp` inherit from this class, and the concrete device
+`camera_sensor.hpp` inherit from this class, and the concrete device
 interfaces inherit from these again and override the service methods
-they support. Emulated sensor are defined for all main classes. These
-allow for testing of commands and queries, but do not produce
-meaningful sensor data as of now.
+they support. The corresponding client classes (like `camera_client.hpp`
+can be used by client applications to send commands to the sensors.
+Emulated sensor are defined for all main classes. These
+allow for testing of commands and queries, but are not guaranteed to
+produce meaningful sensor data as of now. The emulated camera can be
+given a file path to a directory containing image files, and will send
+these images on loop.
 
 ## Services
 
@@ -56,8 +60,18 @@ Use the `--help` argument to get the detailed usage.
 
 The following tools are provided:
 
-* Configuration tools for the different sensor interfaces.
-* A camera capture tool for capturing image frames.
+* `i3ds_camera_capture`: A camera capture tool for capturing 
+image frames.
+* `i3ds_codec_performance_test`: A test suite to check the 
+encoding and decoding times of different message types.
+* `i3ds_configure_camera`: Configuration tool for camera sensors.
+* `i3ds_configure_sensor`: Configuration tool for a generic sensor.
+* `i3ds_delay_recorder`: Tool for recording transport delays in 
+a CSV file.
+* `i3ds_record`: Tool for recording measurements and writing them
+to a log file.
+* `i3ds_replay`: Tool for replaying measurement logs created with
+`i3ds_record`.
 
 Use the `--help` argument to get the detailed usage.
 
@@ -70,7 +84,23 @@ The framework has the following build dependencies:
 * ZMQ libraries
 * Boost framework (program options and unit test)
 * SWIG and Python development files for optional Python binding
+* OpenCV development files for some of the tools
 * asn1scc: https://confluence.code.sintef.no/display/I3DS/ASN.1+compiler
+
+On Ubuntu 16.04, the packages you should need are:
+* build-essential
+* cmake
+* antlr3 
+* fsharp
+* libzmq3-dev
+* libboost-dev
+* libboost-test-dev
+* libboost-log-dev
+* libboost-program-options-dev
+* swig
+* python-dev
+* opencv
+* libopencv-dev
 
 To build and install the framework with CMake do the following:
 
