@@ -106,6 +106,7 @@ main(int argc, char *argv[])
   signal(SIGINT, signal_handler);
 
   long long delay; 
+  input_file.read((char*)&delay, sizeof(long long)); // First delay in the file is 0
   long long start_time;
   while(running)
     {
@@ -116,12 +117,12 @@ main(int argc, char *argv[])
       start_time = get_current_time_in_us();
       i3ds::Message msg;
       msg.set_address(i3ds::Address(node_id, endpoint_id));
-      input_file.read((char*)&delay, sizeof(long long));
       input_file.read((char*)buffer, msg_size);
       msg.set_payload(buffer, msg_size);
       publisher->Send(msg);
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
       // PROBLEM: message is not received in other end until after sleep
+      input_file.read((char*)&delay, sizeof(long long));
       std::this_thread::sleep_for(std::chrono::microseconds(delay-(get_current_time_in_us()-start_time)));
     }
 
