@@ -57,7 +57,7 @@ main(int argc, char *argv[])
   unsigned int n_messages;
   std::string file_name;
 
-  po::options_description desc("Allowed delay recorder options");
+  po::options_description desc("Records measurements and stores them in a log file\n  Available options");
 
   desc.add_options()
    ("help,h", "Produce this message")

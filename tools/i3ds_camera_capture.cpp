@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   int node;
   int size;
   bool stereo;
-  po::options_description desc("Allowed options");
+  po::options_description desc("Displays mono or stereo video stream\n  Available options");
 
   desc.add_options()
   ("help,h", "Produce this message")

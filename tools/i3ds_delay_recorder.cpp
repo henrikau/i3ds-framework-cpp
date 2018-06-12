@@ -139,7 +139,7 @@ main(int argc, char *argv[])
   std::string sensor_type;
   std::string output_file;
 
-  po::options_description desc("Allowed delay recorder options");
+  po::options_description desc("Measures delay between the message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
 
   desc.add_options()
    ("help,h", "Produce this message")

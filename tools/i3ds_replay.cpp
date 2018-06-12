@@ -50,7 +50,7 @@ main(int argc, char *argv[])
   std::string file_name;
   size_t msg_size;
 
-  po::options_description desc("Allowed delay recorder options");
+  po::options_description desc("Replays a log file recorded with i3ds_record\n  Available options");
 
   desc.add_options()
    ("help,h", "Produce this message")

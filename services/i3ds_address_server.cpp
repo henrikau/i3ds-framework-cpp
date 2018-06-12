@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   std::string filename;
   int port;
 
-  po::options_description desc("Allowed manager options");
+  po::options_description desc("Run a service for querying zmq addresses for nodes on the network\n  Available options");
 
   desc.add_options()
   ("help", "Produce this message")
