@@ -77,6 +77,7 @@ set (SRCS
   src/emulated_tof_camera.cpp
   src/emulated_radar.cpp
   src/emulated_tactile.cpp
+  src/measurement_proxy.cpp
   )
 
 set (LIBS
@@ -113,6 +114,7 @@ set(TESTS
   lidar-test
   star-tracker-test
   tactile-test
+  measurement-proxy-test
 )
 
 configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)

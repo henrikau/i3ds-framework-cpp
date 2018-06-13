@@ -13,6 +13,7 @@ set (LIBS
 set (APPS
   i3ds_suite_emulator
   i3ds_address_server
+  i3ds_measurement_proxy
   )
 
 foreach(a ${APPS})
