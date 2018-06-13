@@ -134,7 +134,7 @@ namespace std
 {
 
 template <>
-class hash<i3ds::Address>
+struct hash<i3ds::Address>
 {
 public:
   size_t operator()(const i3ds::Address& address) const
@@ -145,7 +145,7 @@ public:
 };
 
 template<>
-class equal_to<i3ds::Address>
+struct equal_to<i3ds::Address>
 {
 public:
   size_t operator()(const i3ds::Address& a, const i3ds::Address& b) const

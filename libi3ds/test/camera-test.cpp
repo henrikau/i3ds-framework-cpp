@@ -126,10 +126,10 @@ BOOST_AUTO_TEST_CASE(camera_command)
 
 BOOST_AUTO_TEST_CASE(camera_configuration_query)
 {
-  ShutterTime shutter = 0.01;
+  ShutterTime shutter = 10000;
   SensorGain gain = 2.0;
   bool auto_exposure_enabled = true;
-  ShutterTime max_shutter = 0.1;
+  ShutterTime max_shutter = 100000;
   SensorGain max_gain = 3.0;
   bool region_enabled = true;
   PlanarRegion region = {300, 200, 150, 100};

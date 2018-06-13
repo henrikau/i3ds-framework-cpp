@@ -176,7 +176,7 @@ i3ds::Socket::Attach(NodeID node)
         }
       else
         {
-          throw CommunicationError("Invalid bind/connect field in config file for " + node);
+          throw CommunicationError("Invalid bind/connect field in config file for " + std::to_string(node));
         }
     }
   attached_.insert(node);

@@ -40,7 +40,6 @@ public:
 private:
 
   Context::Ptr context_;
-  NodeID next_id_;
 };
 
 } // namespace i3ds
