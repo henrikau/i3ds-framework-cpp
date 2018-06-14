@@ -53,11 +53,11 @@ main(int argc, char *argv[])
   po::options_description desc("Allowed delay recorder options");
 
   desc.add_options()
-   ("help,h", "Produce this message")
-   ("input,i", po::value<std::string>(&file_name)->required(), "Name of log file")
-   ("verbose,v", "Print verbose output")
-   ("quiet,q", "Quiet ouput")
-   ;
+  ("help,h", "Produce this message")
+  ("input,i", po::value<std::string>(&file_name)->required(), "Name of log file")
+  ("verbose,v", "Print verbose output")
+  ("quiet,q", "Quiet ouput")
+  ;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -76,8 +76,8 @@ main(int argc, char *argv[])
     {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
     }
-  
-  try 
+
+  try
     {
       po::notify(vm);
     }
@@ -92,7 +92,7 @@ main(int argc, char *argv[])
   input_file.read((char*)&endpoint_id, sizeof(unsigned int));
   input_file.read((char*)&msg_size, sizeof(size_t));
 
-  BOOST_LOG_TRIVIAL(info) << "Replaying messages of size " << msg_size 
+  BOOST_LOG_TRIVIAL(info) << "Replaying messages of size " << msg_size
                           << " from node ID " <<  node_id
                           << " with endpoint ID " << endpoint_id;
 
@@ -105,7 +105,7 @@ main(int argc, char *argv[])
   running = true;
   signal(SIGINT, signal_handler);
 
-  long long delay; 
+  long long delay;
   long long start_time;
   while(running)
     {
@@ -118,7 +118,8 @@ main(int argc, char *argv[])
       msg.set_address(i3ds::Address(node_id, endpoint_id));
       input_file.read((char*)&delay, sizeof(long long));
       input_file.read((char*)buffer, msg_size);
-      msg.set_payload(buffer, msg_size);
+      // FIXME: Handle multipart messages.
+      msg.append_payload(buffer, msg_size);
       publisher->Send(msg);
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
       // PROBLEM: message is not received in other end until after sleep

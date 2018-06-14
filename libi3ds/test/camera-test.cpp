@@ -23,15 +23,13 @@ using namespace i3ds;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef EmulatedMonoCamera<Camera::MonoFrame8MTopic> TestCamera;
-
 struct F
 {
   F()
     : node(1),
       context(Context::Create()),
-      prop( {mode_mono, 12, 2, 640, 480}),
-  camera(TestCamera::Create(context, node, prop)),
+      prop( {mode_mono, 12, 2, 640, 480, 1, ""}),
+  camera(EmulatedCamera::Create(context, node, prop)),
   server(context),
   client(context, node)
   {
@@ -51,8 +49,8 @@ struct F
 
   Context::Ptr context;
 
-  FrameProperties prop;
-  TestCamera::Ptr camera;
+  CameraProperties prop;
+  EmulatedCamera::Ptr camera;
   Server server;
   CameraClient client;
 };
@@ -173,14 +171,14 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 int received;
 
 void
-handle_measurement(Camera::MonoFrame8MTopic::Data& data)
+handle_measurement(Camera::FrameTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp.microseconds);
 
-  BOOST_CHECK_EQUAL(data.region.offset_x, 400);
-  BOOST_CHECK_EQUAL(data.region.offset_y, 300);
-  BOOST_CHECK_EQUAL(data.region.size_x, 150);
-  BOOST_CHECK_EQUAL(data.region.size_y, 100);
+  BOOST_CHECK_EQUAL(data.descriptor.region.offset_x, 0);
+  BOOST_CHECK_EQUAL(data.descriptor.region.offset_y, 0);
+  BOOST_CHECK_EQUAL(data.descriptor.region.size_x, 640);
+  BOOST_CHECK_EQUAL(data.descriptor.region.size_y, 480);
   received++;
 }
 
@@ -189,14 +187,12 @@ BOOST_AUTO_TEST_CASE(camera_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<Camera::MonoFrame8MTopic>(client.node(), &handle_measurement);
+  subscriber.Attach<Camera::FrameTopic>(client.node(), &handle_measurement);
 
   SamplePeriod period = 100000;
-  PlanarRegion region = {400, 300, 150, 100};
 
   client.set_state(activate);
   client.set_sampling(period);
-  client.set_region(true, region);
   client.set_state(start);
 
   subscriber.Start();

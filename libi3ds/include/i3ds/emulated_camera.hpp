@@ -32,20 +32,29 @@ namespace logging = boost::log;
 namespace i3ds
 {
 
-struct FrameProperties
+struct CameraProperties
 {
   Frame_mode_t mode;
   int data_depth;
   int pixel_size;
   int width;
   int height;
+  int image_count;
+  std::string sample_dir;
 };
 
 class EmulatedCamera : public Camera
 {
 public:
 
-  EmulatedCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "");
+  typedef std::shared_ptr<EmulatedCamera> Ptr;
+
+  static Ptr Create(Context::Ptr context, NodeID id, CameraProperties prop)
+  {
+    return std::make_shared<EmulatedCamera>(context, id, prop);
+  }
+
+  EmulatedCamera(Context::Ptr context, NodeID id, CameraProperties prop);
   virtual ~EmulatedCamera();
 
   // Getters.
@@ -79,39 +88,9 @@ protected:
   virtual void handle_flash(FlashService::Data& command);
   virtual void handle_pattern(PatternService::Data& command);
 
-  virtual bool send_sample(unsigned long timestamp_us) = 0;
-
-  void fetch_next_image();
-
-  template<typename FrameTopic>
-  void set_meta(typename FrameTopic::Data& frame, unsigned long timestamp_us)
-  {
-    frame.attributes.timestamp.microseconds = timestamp_us;
-    frame.attributes.validity = sample_valid;
-    if (!sample_images_.empty())
-      {
-        fetch_next_image();
-        cv::Mat current_image = sample_images_[current_image_index_];
-        frame.region.size_x = current_image.cols;
-        frame.region.size_y = current_image.rows;
-        if (current_image.depth() == CV_16U)
-          {
-            frame.pixel_size = current_image.channels() * 2;
-          }
-        else
-          {
-            frame.pixel_size = current_image.channels();
-          }
-        frame.frame_mode = mode_rgb;
-      }
-    else
-      {
-        frame.frame_mode = prop_.mode;
-        frame.data_depth = prop_.data_depth;
-        frame.pixel_size = prop_.pixel_size;
-        frame.region = region_;
-      }
-  }
+  void load_images();
+  cv::Mat next_image();
+  bool send_sample(unsigned long timestamp_us);
 
   ShutterTime shutter_;
   SensorGain gain_;
@@ -125,108 +104,13 @@ protected:
   bool pattern_enabled_;
   PatternSequence pattern_sequence_;
 
-  FrameProperties prop_;
+  CameraProperties prop_;
 
   Sampler sampler_;
-
   Publisher publisher_;
 
   std::vector<cv::Mat> sample_images_;
   unsigned int current_image_index_;
-
-};
-
-template<typename FrameTopic>
-class EmulatedMonoCamera : public EmulatedCamera
-{
-public:
-
-
-  typedef std::shared_ptr<EmulatedMonoCamera<FrameTopic>> Ptr;
-
-  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
-  {
-    return std::make_shared<EmulatedMonoCamera<FrameTopic>>(context, id, prop, sample_dir);
-  }
-
-  EmulatedMonoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
-    : EmulatedCamera(context, id, prop, sample_dir)
-  {
-    FrameTopic::Codec::Initialize(frame_);
-  }
-
-  virtual ~EmulatedMonoCamera() {};
-
-protected:
-
-  virtual bool send_sample(unsigned long timestamp_us)
-  {
-    set_meta<FrameTopic>(frame_, timestamp_us);
-    frame_.image.nCount = frame_.region.size_x  * frame_.region.size_y * frame_.pixel_size;
-    if (!sample_images_.empty())
-      {
-        memcpy(frame_.image.arr, sample_images_[current_image_index_].data, frame_.image.nCount);
-      }
-
-    BOOST_LOG_TRIVIAL(trace) << "Send mono frame: "
-                             << timestamp_us << " "
-                             << frame_.image.nCount / 1024.0 << "KiB";
-
-    publisher_.Send<FrameTopic>(frame_);
-
-    return true;
-  }
-
-  typename FrameTopic::Data frame_;
-};
-
-
-template<typename FrameTopic>
-class EmulatedStereoCamera : public EmulatedCamera
-{
-public:
-
-  typedef std::shared_ptr<EmulatedMonoCamera<FrameTopic>> Ptr;
-
-  static Ptr Create(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
-  {
-    return std::make_shared<EmulatedStereoCamera<FrameTopic>>(context, id, prop, sample_dir);
-  }
-
-  EmulatedStereoCamera(Context::Ptr context, NodeID id, FrameProperties prop, std::string sample_dir = "")
-    : EmulatedCamera(context, id, prop, sample_dir)
-  {
-    FrameTopic::Codec::Initialize(frame_);
-  }
-
-  virtual ~EmulatedStereoCamera() {};
-
-protected:
-
-  virtual bool send_sample(unsigned long timestamp_us)
-  {
-    set_meta<FrameTopic>(frame_, timestamp_us);
-    frame_.region.size_x *= 2;
-    int size = frame_.region.size_x  * frame_.region.size_y * frame_.pixel_size;
-    frame_.image_left.nCount = size;
-    frame_.image_right.nCount = size;
-
-    if (!sample_images_.empty())
-      {
-        memcpy(frame_.image_left.arr, sample_images_[current_image_index_].data, frame_.image_left.nCount);
-        memcpy(frame_.image_right.arr, sample_images_[current_image_index_].data, frame_.image_right.nCount);
-      }
-
-    BOOST_LOG_TRIVIAL(trace) << "Send stereo frame: "
-                             << timestamp_us << " "
-                             << size / 512.0 << "KiB";
-
-    publisher_.Send<FrameTopic>(frame_);
-
-    return true;
-  }
-
-  typename FrameTopic::Data frame_;
 };
 
 } // namespace i3ds

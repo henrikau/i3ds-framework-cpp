@@ -11,6 +11,7 @@
 #include <i3ds/communication.hpp>
 #include <i3ds/exception.hpp>
 
+#include <iostream>
 #include <stdexcept>
 
 void i3ds_message_free(void* data, void* hint)
@@ -48,9 +49,34 @@ i3ds::Address::to_string() const
 }
 
 void
-i3ds::Message::set_payload(byte* data, size_t size, bool copy)
+i3ds::Message::append_payload(const byte* data, size_t size, bool copy)
 {
-  payload_ = zmq::message_t(data, size, copy ? NULL : &i3ds_message_free);
+  if (copy)
+    {
+      payload_.push_back(zmq::message_t((const void*) data, size));
+    }
+  else
+    {
+      payload_.push_back(zmq::message_t((void*) data, size, &i3ds_message_free));
+    }
+}
+
+byte*
+i3ds::Message::data(int i)
+{
+  return i < payloads() ? payload_[i].data<byte>() : NULL;
+}
+
+const byte*
+i3ds::Message::data(int i) const
+{
+  return i < payloads() ? payload_[i].data<byte>() : NULL;
+}
+
+size_t
+i3ds::Message::size(int i) const
+{
+  return i < payloads() ? payload_[i].size() : 0;
 }
 
 i3ds::Context::Context(std::string addr_srv_addr)
@@ -185,19 +211,32 @@ i3ds::Socket::Attach(NodeID node)
 void
 i3ds::Socket::Send(Message& message)
 {
+  const int n = message.payload_.size();
   const std::string a = message.address().to_string();
   zmq::message_t header(a.c_str(), a.size());
 
-  socket_.send(header, ZMQ_SNDMORE);
-  socket_.send(message.payload_);
+  socket_.send(header, n > 0 ? ZMQ_SNDMORE : 0);
+
+  for (int i = 0; i < n; i++)
+    {
+      zmq::message_t msg;
+
+      msg.move(&message.payload_.at(i));
+      socket_.send(msg, i < (n - 1) ? ZMQ_SNDMORE : 0);
+    }
+
+  message.payload_.clear();
 }
 
 void
 i3ds::Socket::Receive(Message& message, int timeout_ms)
 {
+  message.payload_.clear();
+
   socket_.setsockopt(ZMQ_RCVTIMEO, &timeout_ms, sizeof(int));
 
   zmq::message_t header;
+  bool more;
 
   if (!socket_.recv(&header))
     {
@@ -209,14 +248,20 @@ i3ds::Socket::Receive(Message& message, int timeout_ms)
       throw CommunicationError("Header must be 8 bytes is " + std::to_string(header.size()));
     }
 
-  if (!header.more())
-    {
-      throw CommunicationError("Received message without payload frame");
-    }
-
   message.set_address(Address(std::string(header.data<char>(), header.size())));
 
-  socket_.recv(&message.payload_);
+  more = header.more();
+
+  while (more)
+    {
+      message.payload_.push_back(zmq::message_t());
+
+      zmq::message_t* msg = &message.payload_.back();
+
+      socket_.recv(msg);
+
+      more = msg->more();
+    }
 }
 
 void

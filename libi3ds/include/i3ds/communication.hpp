@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <vector>
 #include <zmq.hpp>
 
 #include <i3ds/Common.h>
@@ -45,27 +46,35 @@ public:
   inline NodeID node() const {return address().node;}
   inline EndpointID endpoint() const {return address().endpoint;}
 
-  inline byte* data() {return payload_.data<byte>();}
-  inline const byte* data() const {return payload_.data<byte>();}
-  inline size_t size() const {return payload_.size();}
-
   // Set address of message.
   void set_address(Address address) {address_ = address;}
 
-  // Set payload allocated.
+  // Get number of payloads.
+  int payloads() const {return payload_.size();}
+
+  // Check if message has payloads.
+  bool has_payload() const {return payloads() > 0;}
+
+  // Get payload i.
+  byte* data(int i = 0);
+
+  // Get payload i as const.
+  const byte* data(int i = 0) const;
+
+  // Get size of payload i.
+  size_t size(int i = 0) const;
+
+  // Append payload to message.
   //
   // If copy is false the message will take ownership and free data after use.
-  void set_payload(byte* data, size_t size, bool copy = true);
-
-  // Check if message has non-zero payload.
-  bool has_payload() const {return size() > 0;}
+  void append_payload(const byte* data, size_t size, bool copy = true);
 
 private:
 
   friend class Socket;
 
   Address address_;
-  zmq::message_t payload_;
+  std::vector<zmq::message_t> payload_;
 };
 
 class Context

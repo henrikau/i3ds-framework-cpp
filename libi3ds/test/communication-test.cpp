@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 
 #include <i3ds/communication.hpp>
 #include <i3ds/exception.hpp>
@@ -24,13 +25,20 @@ using namespace i3ds;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Initialize(Message& msg, Address address, const std::string& data)
+void Append(Message& msg, std::string data)
 {
-  msg.set_payload((byte*) data.c_str(), data.size());
-  msg.set_address(address);
+  msg.append_payload((const byte*) data.c_str(), data.size());
 }
 
-void Initialize(Message& msg, Address address, size_t size)
+void Append(Message& msg, const std::vector<std::string>& data)
+{
+  for (unsigned int i = 0; i < data.size(); i++)
+    {
+      Append(msg, data[i]);
+    }
+}
+
+void Append(Message& msg, size_t size)
 {
   byte* data = (byte*) malloc(size);
 
@@ -39,10 +47,12 @@ void Initialize(Message& msg, Address address, size_t size)
       data[i] = i % 0xFF;
     }
 
-  msg.set_payload(data, size);
-  msg.set_address(address);
+  msg.append_payload(data, size, false);
+}
 
-  free(data);
+void Initialize(Message& msg, Address address)
+{
+  msg.set_address(address);
 }
 
 void check_message(const Message& msg, const Address& address, const std::string data)
@@ -51,8 +61,25 @@ void check_message(const Message& msg, const Address& address, const std::string
 
   BOOST_CHECK_EQUAL(a.node, address.node);
   BOOST_CHECK_EQUAL(a.endpoint, address.endpoint);
-  BOOST_CHECK_EQUAL(msg.size(), data.size());
-  BOOST_CHECK_EQUAL(memcmp(msg.data(), data.c_str(), msg.size()), 0);
+  BOOST_CHECK_EQUAL(msg.payloads(), 1);
+  BOOST_CHECK_EQUAL(msg.size(0), data.size());
+  BOOST_CHECK_EQUAL(memcmp(msg.data(0), data.c_str(), msg.size(0)), 0);
+}
+
+void check_message(const Message& msg, const Address& address, const std::vector<std::string>& data)
+{
+  Address a = msg.address();
+
+  BOOST_CHECK_EQUAL(a.node, address.node);
+  BOOST_CHECK_EQUAL(a.endpoint, address.endpoint);
+  BOOST_CHECK_EQUAL(msg.payloads(), data.size());
+
+  for (unsigned int i = 0; i < data.size(); i++)
+    {
+      std::cout << "Data " << std::string((const char*) msg.data(i), msg.size(i)) << std::endl;
+      BOOST_CHECK_EQUAL(msg.size(i), data[i].size());
+      BOOST_CHECK_EQUAL(memcmp(msg.data(i), data[i].c_str(), msg.size(i)), 0);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,8 +144,10 @@ BOOST_AUTO_TEST_CASE(create_message_payload)
 
   std::string data = "Hello world!";
 
-  Initialize(msg, address, data);
+  Initialize(msg, address);
+  Append(msg, data);
 
+  BOOST_CHECK_EQUAL(msg.payloads(), 1);
   BOOST_CHECK_EQUAL(data.size(), msg.size());
   BOOST_CHECK_EQUAL(memcmp(data.c_str(), msg.data(), data.size()), 0);
 }
@@ -135,14 +164,16 @@ BOOST_AUTO_TEST_CASE(request_response_pattern)
 
   Message req, res, copy;
 
-  Initialize(req, address, "Hello?");
+  Initialize(req, address);
+  Append(req, "Hello?");
 
   client->Send(req);
   server->Receive(copy);
 
   check_message(copy, address, "Hello?");
 
-  Initialize(res, address, "World!");
+  Initialize(res, address);
+  Append(res, "World!");
 
   server->Send(res);
   client->Receive(copy);
@@ -157,6 +188,13 @@ BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
   Socket::Ptr publisher = Socket::Publisher(context);
   Socket::Ptr subscriber = Socket::Subscriber(context);
 
+  std::vector<std::string> text;
+
+  text.push_back("Hello");
+  text.push_back("brave");
+  text.push_back("new");
+  text.push_back("world!");
+
   publisher->Attach(address.node);
 
   subscriber->Attach(address.node);
@@ -167,12 +205,13 @@ BOOST_AUTO_TEST_CASE(publish_subscribe_pattern)
 
   Message msg, copy;
 
-  Initialize(msg, address, "Hello world!");
+  Initialize(msg, address);
+  Append(msg, text);
 
   publisher->Send(msg);
   subscriber->Receive(copy);
 
-  check_message(copy, address, "Hello world!");
+  check_message(copy, address, text);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

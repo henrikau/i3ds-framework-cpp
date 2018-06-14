@@ -31,23 +31,28 @@ signal_handler(int signum)
 }
 
 void
-render_image(std::string window_name, unsigned char* image, int rows, int cols, int type, int pixel_size, int data_depth)
+render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
 {
+  int rows = desc.region.size_y;
+  int cols = desc.region.size_x;
+  int pixel_size = desc.pixel_size;
+
   int cv_type = CV_16UC1;
   double scaling_factor = 1;
-  if (type == mode_rgb)
+
+  if (desc.frame_mode == mode_rgb)
     {
-      if (pixel_size == 3) cv_type = CV_8UC3;
-      if (pixel_size == 6) cv_type = CV_16UC3;
-      scaling_factor = pow(2,(8 * (pixel_size/3) - data_depth));
+      if (pixel_size == 3) { cv_type = CV_8UC3; }
+      if (pixel_size == 6) { cv_type = CV_16UC3; }
+      scaling_factor = pow(2,(8 * (pixel_size/3) - desc.data_depth));
     }
   else
     {
-      if (pixel_size == 1) cv_type = CV_8UC1;
-      if (pixel_size == 2) cv_type = CV_16UC1;
-      scaling_factor = pow(2,(8 * pixel_size - data_depth));
+      if (pixel_size == 1) { cv_type = CV_8UC1; }
+      if (pixel_size == 2) { cv_type = CV_16UC1; }
+      scaling_factor = pow(2,(8 * pixel_size - desc.data_depth));
     }
-  cv::Mat frame(rows, cols, cv_type, image);
+  cv::Mat frame(rows, cols, cv_type, (void*) image);
   if (scaling_factor != 1)
     {
       frame *= scaling_factor;
@@ -56,31 +61,30 @@ render_image(std::string window_name, unsigned char* image, int rows, int cols, 
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
-template <typename T>
 void
-handle_mono_frame(typename T::Data& data)
+handle_frame(i3ds::Camera::FrameTopic::Data& data)
 {
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-  int rows = data.region.size_y;
-  int cols = data.region.size_x;
-  render_image("Camera feed", static_cast<unsigned char*>(data.image.arr), rows, cols, data.frame_mode, data.pixel_size, data.data_depth);
-}
+  std::cout << "Recv: " << data.descriptor.attributes.timestamp.microseconds << std::endl;
 
-template <typename T>
-void
-handle_stereo_frame(typename T::Data& data)
-{
-  std::cout << "Recv: " << data.attributes.timestamp.microseconds << std::endl;
-  int rows = data.region.size_y;
-  int cols = data.region.size_x / 2;
-  render_image("Left camera feed", static_cast<unsigned char*>(data.image_left.arr), rows, cols, data.frame_mode, data.pixel_size, data.data_depth);
-  render_image("Right camera feed", static_cast<unsigned char*>(data.image_right.arr), rows, cols, data.frame_mode, data.pixel_size, data.data_depth);
+  switch (data.descriptor.image_count)
+    {
+    case 1:
+      render_image("Camera feed", data.image[0].data, data.descriptor);
+      break;
+
+    case 2:
+      render_image("Camera feed left", data.image[0].data, data.descriptor);
+      render_image("Camera feed right", data.image[1].data, data.descriptor);
+      break;
+
+    default:
+      break;
+    }
 }
 
 int main(int argc, char *argv[])
 {
   int node;
-  int size;
   bool stereo;
   po::options_description desc("Allowed options");
 
@@ -88,7 +92,6 @@ int main(int argc, char *argv[])
   ("help,h", "Produce this message")
   ("node,n", po::value<int>(&node)->default_value(10), "Node ID of camera")
   ("stereo", po::value<bool>(&stereo)->default_value(false), "capture stereo feed")
-  ("size,s", po::value<int>(&size)->default_value(1), "Image size: 1, 4 or 8 MiB")
   ;
 
   po::variables_map vm;
@@ -111,40 +114,13 @@ int main(int argc, char *argv[])
     {
       cv::namedWindow("Left camera feed", cv::WINDOW_AUTOSIZE);
       cv::namedWindow("Right camera feed", cv::WINDOW_AUTOSIZE);
-      switch(size)
-        {
-        case 4:
-          subscriber.Attach<i3ds::Camera::StereoFrame4MTopic>(node, &handle_stereo_frame<i3ds::Camera::StereoFrame4MTopic>);
-          break;
-        case 8:
-          subscriber.Attach<i3ds::Camera::StereoFrame8MTopic>(node, &handle_stereo_frame<i3ds::Camera::StereoFrame8MTopic>);
-          break;
-        default:
-          std::cout << "Invalid image size: " << size;
-          std::cout << ". Available options for stereo are: 4 or 8" << std::endl;
-          exit(-1);
-        }
     }
   else
     {
       cv::namedWindow("Camera feed", cv::WINDOW_AUTOSIZE);
-      switch(size)
-        {
-        case 1:
-          subscriber.Attach<i3ds::Camera::MonoFrame1MTopic>(node, &handle_mono_frame<i3ds::Camera::MonoFrame1MTopic>);
-          break;
-        case 4:
-          subscriber.Attach<i3ds::Camera::MonoFrame4MTopic>(node, &handle_mono_frame<i3ds::Camera::MonoFrame4MTopic>);
-          break;
-        case 8:
-          subscriber.Attach<i3ds::Camera::MonoFrame8MTopic>(node, &handle_mono_frame<i3ds::Camera::MonoFrame8MTopic>);
-          break;
-        default:
-          std::cout << "Invalid image size: " << size;
-          std::cout << ". Available options are: 1, 4 or 8" << std::endl;
-          exit(-1);
-        }
     }
+
+  subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame);
   subscriber.Start();
 
   while(running)

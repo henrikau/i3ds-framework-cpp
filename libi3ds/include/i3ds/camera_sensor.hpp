@@ -12,8 +12,8 @@
 #define __I3DS_CAMERA_HPP
 
 #include <i3ds/Camera.h>
-#include <i3ds/Frame.h>
 
+#include <i3ds/frame.hpp>
 #include <i3ds/sensor.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
@@ -28,12 +28,6 @@ CODEC(CameraRegion);
 CODEC(CameraFlash);
 CODEC(CameraPattern);
 CODEC(CameraConfiguration);
-
-CODEC(MonoFrame1M);
-CODEC(MonoFrame4M);
-CODEC(MonoFrame8M);
-CODEC(StereoFrame4M);
-CODEC(StereoFrame8M);
 
 class Camera : public Sensor
 {
@@ -51,11 +45,7 @@ public:
   typedef Query  <21, CameraConfigurationCodec> ConfigurationService;
 
   // Camera topics
-  typedef Topic<128, MonoFrame1MCodec> MonoFrame1MTopic;
-  typedef Topic<129, MonoFrame4MCodec> MonoFrame4MTopic;
-  typedef Topic<130, MonoFrame8MCodec> MonoFrame8MTopic;
-  typedef Topic<131, StereoFrame4MCodec> StereoFrame4MTopic;
-  typedef Topic<132, StereoFrame8MCodec> StereoFrame8MTopic;
+  typedef Topic<128, FrameCodec> FrameTopic;
 
   // Constructor for camera.
   Camera(NodeID node) : Sensor(node) {};
