@@ -18,6 +18,7 @@
 #include <i3ds/lidar_sensor.hpp>
 #include <i3ds/radar_sensor.hpp>
 #include <i3ds/analog_sensor.hpp>
+#include <i3ds/frame.hpp>
 
 class Timeseries {
 private: 
@@ -64,20 +65,21 @@ operator<<(std::ostream& os, const Timeseries& rhs)
 
 template <typename Codec>
 void
-run_test(typename Codec::Data& data, unsigned int n_replications, unsigned int floats_per_measurement)
+run_test(std::shared_ptr<typename Codec::Data> data, unsigned int n_replications, unsigned int floats_per_measurement)
 {
   Timeseries encode_times;  
   Timeseries decode_times;  
   Timeseries total_times;  
-  i3ds::Message message;
   std::chrono::high_resolution_clock::time_point start_time, done_encoding_time, done_decoding_time;
 
   for (unsigned int i = 0; i < n_replications; ++i)
     {
+      i3ds::Message message;
+      auto decode_buffer = std::make_shared<typename Codec::Data>();
       start_time = std::chrono::high_resolution_clock::now();
-      i3ds::Encode<Codec>(message, data);
+      i3ds::Encode<Codec>(message, *data);
       done_encoding_time = std::chrono::high_resolution_clock::now();
-      i3ds::Decode<Codec>(message, data);
+      i3ds::Decode<Codec>(message, *decode_buffer); 
       done_decoding_time = std::chrono::high_resolution_clock::now();
 
       auto encoding_time = std::chrono::duration_cast<std::chrono::microseconds>(done_encoding_time-start_time);
@@ -106,42 +108,36 @@ create_measurement()
   return measurement;
 }
 
-template <typename Codec>
 void
-mono_camera_test(unsigned int n_replications, unsigned int size_x, unsigned int size_y, unsigned int pixel_size, unsigned int data_depth)
+camera_test(unsigned int n_replications, unsigned int size_x, unsigned int size_y, unsigned int pixel_size, unsigned int data_depth, bool stereo)
 {
-  auto camera_frame = create_measurement<Codec>();
-  camera_frame->region.size_x = size_x;
-  camera_frame->region.size_y = size_y;
-  camera_frame->pixel_size = pixel_size;
-  camera_frame->data_depth = data_depth;
-  unsigned int image_byte_count = camera_frame->region.size_x * camera_frame->region.size_y * camera_frame->pixel_size;
-  camera_frame->image.nCount = image_byte_count;
-  for (unsigned int i = 0; i < image_byte_count; ++i)
+  auto camera_frame = std::make_shared<i3ds::FrameCodec::Data>();
+  i3ds::FrameCodec::Initialize(*camera_frame);
+  camera_frame->descriptor.attributes.timestamp.microseconds = 123456789;
+  camera_frame->descriptor.attributes.validity = sample_valid;
+  camera_frame->descriptor.region.size_x = size_x;
+  camera_frame->descriptor.region.size_y = size_y;
+  camera_frame->descriptor.pixel_size = pixel_size;
+  camera_frame->descriptor.data_depth = data_depth;
+  unsigned int image_byte_count = camera_frame->descriptor.region.size_x
+                                * camera_frame->descriptor.region.size_y
+                                * camera_frame->descriptor.pixel_size;
+  i3ds::Image img;
+  img.size = image_byte_count;
+  byte* buffer = static_cast<byte*>(malloc(image_byte_count));
+  memset(buffer, 127, image_byte_count);
+  img.data = buffer;
+  camera_frame->image.push_back(img);
+  if (stereo) 
     {
-      camera_frame->image.arr[i] = 127;
+      camera_frame->image.push_back(img);
+      run_test<i3ds::FrameCodec>(camera_frame, n_replications, image_byte_count*2);
     }
-  run_test<Codec>(*camera_frame, n_replications, image_byte_count);
-}
-
-template <typename Codec>
-void
-stereo_camera_test(unsigned int n_replications, unsigned int size_x, unsigned int size_y, unsigned int pixel_size, unsigned int data_depth)
-{
-  auto camera_frame = create_measurement<Codec>();
-  camera_frame->region.size_x = size_x;
-  camera_frame->region.size_y = size_y;
-  camera_frame->pixel_size = pixel_size;
-  camera_frame->data_depth = data_depth;
-  unsigned int image_byte_count = camera_frame->region.size_x/2 * camera_frame->region.size_y * camera_frame->pixel_size;
-  camera_frame->image_left.nCount = image_byte_count;
-  camera_frame->image_right.nCount = image_byte_count;
-  for (unsigned int i = 0; i < image_byte_count; ++i)
+  else
     {
-      camera_frame->image_left.arr[i] = 127;
-      camera_frame->image_right.arr[i] = 127;
+      run_test<i3ds::FrameCodec>(camera_frame, n_replications, image_byte_count);
     }
-  run_test<Codec>(*camera_frame, n_replications, image_byte_count*2);
+  free(buffer);
 }
 
 template <typename Codec>
@@ -161,7 +157,7 @@ lidar_test(unsigned int n_replications, unsigned int n_points)
   lidar_data->points.nCount = n_points;
   
   std::cout << n_points << " point LIDAR measurement timing statistics:" << std::endl;
-  run_test<Codec>(*lidar_data, n_replications, n_points*3 + 4);
+  run_test<Codec>(lidar_data, n_replications, n_points*3 + 4);
 }
 
 template <typename Codec>
@@ -180,7 +176,7 @@ radar_test(unsigned int n_replications, unsigned int n_points)
   radar_data->validity.nCount = n_points;
   
   std::cout << n_points << " point radar measurement timing statistics:" << std::endl;
-  run_test<Codec>(*radar_data, n_replications, n_points);
+  run_test<Codec>(radar_data, n_replications, n_points);
 }
 
 template <typename Codec>
@@ -197,7 +193,7 @@ analog_test(unsigned int n_replications, unsigned int n_points)
   analog_data->batch_size = n_points;
   
   std::cout << n_points << " analog measurements timing statistics:" << std::endl;
-  run_test<Codec>(*analog_data, n_replications, n_points);
+  run_test<Codec>(analog_data, n_replications, n_points);
 }
 
 int
@@ -209,20 +205,20 @@ main(int argc, char *argv[])
   std::cout << "The value 'us/f' is number of microseconds per byte for camera measurements" << std::endl;
   std::cout << "and microseconds per float for the rest." << std::endl << std::endl;
 
-  std::cout << "8 MiB Camera big mono frame timing statistics:" << std::endl;
-  mono_camera_test<i3ds::MonoFrame8MCodec>(n_replications, 2048, 2048, 2, 12);
+  std::cout << "640 x 480 px mono frame:" << std::endl;
+  camera_test(n_replications, 640, 480, 2, 16, false);
 
-  std::cout << "8 MiB Camera small mono frame timing statistics:" << std::endl;
-  mono_camera_test<i3ds::MonoFrame8MCodec>(n_replications, 640, 480, 2, 16);
+  std::cout << "1920 x 1080 px mono frame:" << std::endl;
+  camera_test(n_replications, 1920, 1080, 2, 12, false);
 
-  std::cout << "4 MiB Camera mono frame timing statistics:" << std::endl;
-  mono_camera_test<i3ds::MonoFrame4MCodec>(n_replications, 1920, 1080, 2, 12);
+  std::cout << "2048 x 2048 px mono frame:" << std::endl;
+  camera_test(n_replications, 2048, 2048, 2, 12, false);
 
-  std::cout << "8 MiB Camera big stereo frame timing statistics:" << std::endl;
-  stereo_camera_test<i3ds::StereoFrame8MCodec>(n_replications, 2*2048, 2048, 2, 12);
+  std::cout << "1920 x 1080 px stereo frame:" << std::endl;
+  camera_test(n_replications, 1920, 1080, 2, 12, true);
 
-  std::cout << "4 MiB Camera stereo frame timing statistics:" << std::endl;
-  stereo_camera_test<i3ds::StereoFrame4MCodec>(n_replications, 2*1920, 1080, 2, 12);
+  std::cout << "2048 x 2048 px stereo frame:" << std::endl;
+  camera_test(n_replications, 2048, 2048, 2, 12, true);
 
   lidar_test<i3ds::LIDARMeasurement200KCodec>(n_replications, 200000);
   radar_test<i3ds::RadarMeasurement400KCodec>(n_replications, 400000);
