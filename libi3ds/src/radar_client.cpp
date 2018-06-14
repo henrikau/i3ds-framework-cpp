@@ -19,6 +19,7 @@ i3ds::RadarClient::RadarClient(Context::Ptr context, NodeID sensor)
 void
 i3ds::RadarClient::load_config()
 {
+  i3ds::SensorClient::load_config();
   Call<Radar::ConfigurationService>(config_);
 }
 

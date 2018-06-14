@@ -126,6 +126,9 @@ BOOST_AUTO_TEST_CASE(camera_command)
 
 BOOST_AUTO_TEST_CASE(camera_configuration_query)
 {
+  SamplePeriod period = 100000;
+  BatchSize batch_size = 1;
+  BatchCount batch_count = 1;
   ShutterTime shutter = 10000;
   SensorGain gain = 2.0;
   bool auto_exposure_enabled = true;
@@ -140,6 +143,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
   client.set_state(activate);
 
+  client.set_sampling(period, batch_size, batch_count);
   client.set_exposure(shutter, gain);
   client.set_auto_exposure(auto_exposure_enabled, max_shutter, max_gain);
   client.set_region(region_enabled, region);
@@ -147,6 +151,10 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   client.set_pattern(pattern_enabled, pattern_sequence);
 
   client.load_config();
+
+  BOOST_CHECK_EQUAL(period, client.period());
+  BOOST_CHECK_EQUAL(batch_size, client.batch_size());
+  BOOST_CHECK_EQUAL(batch_count, client.batch_count());
 
   BOOST_CHECK_EQUAL(shutter, client.shutter());
   BOOST_CHECK_CLOSE(gain, client.gain(), 1e-6);

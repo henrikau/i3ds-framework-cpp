@@ -13,6 +13,8 @@
 i3ds::SensorClient::SensorClient(Context::Ptr context, NodeID sensor)
   : Client(context, sensor)
 {
+  Sensor::StatusService::Initialize(status_);
+  Sensor::ConfigurationService::Initialize(config_);
 }
 
 void
@@ -21,6 +23,11 @@ i3ds::SensorClient::load_status()
   Call<Sensor::StatusService>(status_);
 }
 
+void 
+i3ds::SensorClient::load_config()
+{
+  Call<Sensor::ConfigurationService>(config_);
+}
 void
 i3ds::SensorClient::load_all()
 {

@@ -19,6 +19,7 @@ i3ds::ToFCameraClient::ToFCameraClient(Context::Ptr context, NodeID sensor)
 void
 i3ds::ToFCameraClient::load_config()
 {
+  i3ds::SensorClient::load_config();
   Call<ToFCamera::ConfigurationService>(config_);
 }
 

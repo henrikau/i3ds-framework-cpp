@@ -19,6 +19,7 @@ i3ds::LIDARClient::LIDARClient(Context::Ptr context, NodeID sensor)
 void
 i3ds::LIDARClient::load_config()
 {
+  i3ds::SensorClient::load_config();
   Call<LIDAR::ConfigurationService>(config_);
 }
 

@@ -28,14 +28,18 @@ public:
 
   SensorState state() const {return status_.response.state;}
   Temperature temperature() const {return status_.response.temperature;}
+  SamplePeriod period() const {return config_.response.period;}
+  BatchSize batch_size() const {return config_.response.batch_size;}
+  BatchCount batch_count() const {return config_.response.batch_count;}
 
   void load_status();
-  virtual void load_config() {};
+  virtual void load_config();
   virtual void load_all();
 
 private:
 
   Sensor::StatusService::Data status_;
+  Sensor::ConfigurationService::Data config_;
 };
 
 } // namespace i3ds

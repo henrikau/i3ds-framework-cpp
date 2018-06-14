@@ -19,9 +19,8 @@
 #include <iostream>
 
 #include <i3ds/codec.hpp>
-#include <i3ds/server.hpp>
-#include <i3ds/client.hpp>
 #include <i3ds/sensor.hpp>
+#include <i3ds/sensor_client.hpp>
 
 using namespace i3ds;
 
@@ -50,7 +49,7 @@ protected:
   virtual void do_deactivate() {log("do_deactivate");}
 };
 
-class TestClient : public Client
+class TestClient : public SensorClient
 {
 public:
 
@@ -95,7 +94,7 @@ bool TestSensor::is_sampling_supported(SampleCommand sample)
 }
 
 TestClient::TestClient(Context::Ptr context, NodeID sensor)
-  : Client(context, sensor)
+  : SensorClient(context, sensor)
 {
 }
 
@@ -285,6 +284,10 @@ BOOST_AUTO_TEST_CASE(sensor_sample_command)
   BOOST_CHECK_EQUAL(sensor.period(), 1000);
   BOOST_CHECK_EQUAL(sensor.batch_size(), 2);
 
+  client.load_all();
+  BOOST_CHECK_EQUAL(client.period(), 1000);
+  BOOST_CHECK_EQUAL(client.batch_size(), 2);
+
   client.test_illegal_sample_command(2000000, 1, error_value);
   BOOST_CHECK_EQUAL(sensor.state(), standby);
   BOOST_CHECK_EQUAL(sensor.period(), 1000);
@@ -312,6 +315,7 @@ BOOST_AUTO_TEST_CASE(sensor_sample_command)
   BOOST_CHECK_EQUAL(sensor.state(), operational);
 
   client.test_illegal_sample_command(10000, 1, error_state);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
