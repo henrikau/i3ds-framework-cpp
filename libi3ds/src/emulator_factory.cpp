@@ -60,41 +60,47 @@ i3ds::EmulatorFactory::CreateIMU()
 i3ds::Camera::Ptr
 i3ds::EmulatorFactory::CreateTIRCamera()
 {
-  FrameProperties prop;
+  CameraProperties prop;
 
   prop.mode = mode_mono;
   prop.data_depth = 16;
   prop.pixel_size = 2;
   prop.width = 640;
   prop.height = 480;
+  prop.image_count = 1;
+  prop.sample_dir = "";
 
-  return std::make_shared<EmulatedMonoCamera<Camera::MonoFrame8MTopic> >(context_, next_id_++, prop);
+  return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
 }
 
 i3ds::Camera::Ptr
 i3ds::EmulatorFactory::CreateHRCamera(std::string sample_image_dir)
 {
-  FrameProperties prop;
+  CameraProperties prop;
 
   prop.mode = mode_mono;
   prop.data_depth = 12;
   prop.pixel_size = 2;
   prop.width = 2048;
   prop.height = 2048;
+  prop.image_count = 1;
+  prop.sample_dir = sample_image_dir;
 
-  return std::make_shared<EmulatedMonoCamera<Camera::MonoFrame8MTopic> >(context_, next_id_++, prop, sample_image_dir);
+  return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
 }
 
 i3ds::Camera::Ptr
 i3ds::EmulatorFactory::CreateStereoCamera(std::string sample_image_dir)
 {
-  FrameProperties prop;
+  CameraProperties prop;
 
   prop.mode = mode_mono;
   prop.data_depth = 12;
   prop.pixel_size = 2;
   prop.width = 2048;
   prop.height = 2048;
+  prop.image_count = 2;
+  prop.sample_dir = sample_image_dir;
 
-  return std::make_shared<EmulatedStereoCamera<Camera::StereoFrame8MTopic> >(context_, next_id_++, prop, sample_image_dir);
+  return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
 }

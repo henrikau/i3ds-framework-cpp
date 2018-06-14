@@ -40,7 +40,7 @@ def test_radar(factory):
     s.set_state(i3ds.deactivate)    
 
 def test_star_tracker(factory):
-    s = factory.Radar(16)
+    s = factory.StarTracker(16)
     s.set_state(i3ds.activate)
     s.set_sampling(100000)
     s.set_state(i3ds.start)

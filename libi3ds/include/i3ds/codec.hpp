@@ -115,7 +115,7 @@ void Encode(Message& message, const typename T::Data& data)
       throw CodecError("Cannot encode: Bad data " + std::to_string(errcode));
     }
 
-  message.set_payload(bs.buf, BitStream_GetLength(&bs), false);
+  message.append_payload(bs.buf, BitStream_GetLength(&bs), false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
