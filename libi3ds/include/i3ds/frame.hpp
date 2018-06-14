@@ -80,7 +80,7 @@ inline void Decode<FrameCodec>(const Message& message, FrameCodec::Data& data)
 
   const int n = message.payloads();
 
-  for (int i = 0; i < n; i++)
+  for (int i = 1; i < n; i++)
     {
       const Image image = {message.data(i), message.size(i)};
 

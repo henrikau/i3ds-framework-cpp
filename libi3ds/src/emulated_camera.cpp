@@ -180,11 +180,13 @@ i3ds::EmulatedCamera::load_images()
     }
   else
     {
+      BOOST_LOG_TRIVIAL(trace) << "Emulated camera generating noise images";
+
       for (int i = 0; i < 10; i++)
         {
-          cv::Mat img(prop_.height, prop_.width, CV_16U, cv::Scalar(0));
+          cv::Mat img(prop_.height, prop_.width, CV_16UC1, cv::Scalar(0));
 
-          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << 16) - 1));
+          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << 15) - 1));
 
           sample_images_.push_back(img);
         }
@@ -219,7 +221,13 @@ i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
   d->region.size_x = current_image.cols;
   d->region.size_y = current_image.rows;
 
-  if (current_image.depth() == CV_16U)
+  BOOST_LOG_TRIVIAL(trace) << "Image: "
+                           << current_image.cols << " cols, "
+                           << current_image.rows << " rows, "
+                           << current_image.channels() << " chan, "
+                           << current_image.depth() << " depth";
+
+  if (current_image.depth() == CV_16UC1)
     {
       d->data_depth = 16;
       d->pixel_size = current_image.channels() * 2;
