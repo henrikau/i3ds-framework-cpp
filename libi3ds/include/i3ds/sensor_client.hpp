@@ -21,6 +21,8 @@ class SensorClient : public Client
 {
 public:
 
+  typedef std::shared_ptr<SensorClient> Ptr;
+  
   SensorClient(Context::Ptr context, NodeID sensor);
 
   void set_state(StateCommand state);

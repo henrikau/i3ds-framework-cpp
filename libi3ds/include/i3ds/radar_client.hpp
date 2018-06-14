@@ -22,9 +22,12 @@ class RadarClient : public SensorClient
 public:
 
   typedef std::shared_ptr<RadarClient> Ptr;
+  static Ptr Create(Context::Ptr context, NodeID id)
+  {
+    return std::make_shared<RadarClient>(context, id);
+  }
 
   RadarClient(Context::Ptr context, NodeID sensor);
-
   void set_region(bool enable, PlanarRegion region);
 
   bool region_enabled() const {return config_.response.region_enabled;}

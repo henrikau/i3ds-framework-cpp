@@ -22,6 +22,10 @@ class ToFCameraClient : public SensorClient
 public:
 
   typedef std::shared_ptr<ToFCameraClient> Ptr;
+  static Ptr Create(Context::Ptr context, NodeID id)
+  {
+    return std::make_shared<ToFCameraClient>(context, id);
+  }
 
   ToFCameraClient(Context::Ptr context, NodeID sensor);
 

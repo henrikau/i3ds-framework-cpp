@@ -18,6 +18,7 @@
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_star_tracker.hpp>
 #include <i3ds/star_tracker_client.hpp>
+#include <i3ds/common_tests.hpp>
 
 using namespace i3ds;
 
@@ -30,12 +31,12 @@ struct F
       context(Context::Create()),
       server(context),
       st(EmulatedStarTracker::Create(context, node)),
-      client(context, node)
+      client(StarTrackerClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
     st->Attach(server);
     server.Start();
-    client.set_timeout(1000);
+    client->set_timeout(1000);
   }
 
   ~F()
@@ -49,7 +50,7 @@ struct F
   Context::Ptr context;
   Server server;
   EmulatedStarTracker::Ptr st;
-  StarTrackerClient client;
+  StarTrackerClient::Ptr client;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
@@ -58,18 +59,14 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(star_tracker_creation)
 {
-  BOOST_CHECK_EQUAL(st->node(), node);
-  BOOST_CHECK_EQUAL(st->state(), inactive);
-  BOOST_CHECK_EQUAL(st->period(), 0);
+  test_sensor_creation(st, node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(star_tracker_state_command)
+BOOST_AUTO_TEST_CASE(star_tracker_sample_settings)
 {
-  BOOST_CHECK_EQUAL(st->state(), inactive);
-  client.set_state(activate);
-  BOOST_CHECK_EQUAL(st->state(), standby);
+  test_sample_settings(client);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,20 +90,20 @@ BOOST_AUTO_TEST_CASE(star_tracker_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<StarTracker::MeasurementTopic>(client.node(), &handle_measurement);
+  subscriber.Attach<StarTracker::MeasurementTopic>(client->node(), &handle_measurement);
 
 
   SamplePeriod period = 100000;
 
-  client.set_state(activate);
-  client.set_sampling(period);
-  client.set_state(start);
+  client->set_state(activate);
+  client->set_sampling(period);
+  client->set_state(start);
 
   subscriber.Start();
 
   std::this_thread::sleep_for(std::chrono::microseconds(period * 5));
 
-  client.set_state(stop);
+  client->set_state(stop);
 
   subscriber.Stop();
 

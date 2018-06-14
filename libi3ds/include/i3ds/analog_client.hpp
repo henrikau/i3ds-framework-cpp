@@ -22,6 +22,10 @@ class AnalogClient : public SensorClient
 public:
 
   typedef std::shared_ptr<AnalogClient> Ptr;
+  static Ptr Create(Context::Ptr context, NodeID id)
+  {
+    return std::make_shared<AnalogClient>(context, id);
+  }
 
   AnalogClient(Context::Ptr context, NodeID sensor);
 

@@ -18,6 +18,7 @@
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_radar.hpp>
 #include <i3ds/radar_client.hpp>
+#include <i3ds/common_tests.hpp>
 
 using namespace i3ds;
 
@@ -30,12 +31,12 @@ struct F
       context(Context::Create()),
       radar(EmulatedRadar::Create(context, node)),
       server(context),
-      client(context, node)
+      client(RadarClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
     radar->Attach(server);
     server.Start();
-    client.set_timeout(1000);
+    client->set_timeout(1000);
   }
 
   ~F()
@@ -49,7 +50,7 @@ struct F
   Context::Ptr context;
   EmulatedRadar::Ptr radar;
   Server server;
-  RadarClient client;
+  RadarClient::Ptr client;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
@@ -58,49 +59,21 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(radar_creation)
 {
-  BOOST_CHECK_EQUAL(radar->node(), node);
-  BOOST_CHECK_EQUAL(radar->state(), inactive);
-  BOOST_CHECK_EQUAL(radar->period(), 0);
+  test_sensor_creation(radar, node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(radar_command)
+BOOST_AUTO_TEST_CASE(radar_sample_settings)
 {
-  BOOST_CHECK_EQUAL(radar->state(), inactive);
-  client.set_state(activate);
-  BOOST_CHECK_EQUAL(radar->state(), standby);
-
-  PlanarRegion r1 = {300, 200, 150, 100};
-
-  client.set_region(true, r1);
-
-  BOOST_CHECK_EQUAL(radar->region_enabled(), true);
-
-  PlanarRegion r2 = radar->region();
-
-  BOOST_CHECK_EQUAL(r1.size_x, r2.size_x);
-  BOOST_CHECK_EQUAL(r1.size_y, r2.size_y);
-  BOOST_CHECK_EQUAL(r1.offset_x, r2.offset_x);
-  BOOST_CHECK_EQUAL(r1.offset_y, r2.offset_y);
+  test_sample_settings(client);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(radar_configuration_query)
+BOOST_AUTO_TEST_CASE(radar_region)
 {
-  bool region_enabled = true;
-  PlanarRegion region = {300, 200, 150, 100};
-
-  client.set_state(activate);
-  client.set_region(region_enabled, region);
-  client.load_config();
-
-  BOOST_CHECK_EQUAL(region_enabled, client.region_enabled());
-  BOOST_CHECK_EQUAL(region.size_x, client.region().size_x);
-  BOOST_CHECK_EQUAL(region.size_y, client.region().size_y);
-  BOOST_CHECK_EQUAL(region.offset_x, client.region().offset_x);
-  BOOST_CHECK_EQUAL(region.offset_y, client.region().offset_y);
+  test_region<PlanarRegion, EmulatedRadar, RadarClient>(radar, client);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,21 +97,21 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<Radar::Measurement400KTopic>(client.node(), &handle_measurement);
+  subscriber.Attach<Radar::Measurement400KTopic>(client->node(), &handle_measurement);
 
   SamplePeriod period = 100000;
   PlanarRegion region = {400, 300, 150, 100};
 
-  client.set_state(activate);
-  client.set_sampling(period);
-  client.set_region(true, region);
-  client.set_state(start);
+  client->set_state(activate);
+  client->set_sampling(period);
+  client->set_region(true, region);
+  client->set_state(start);
 
   subscriber.Start();
 
   std::this_thread::sleep_for(std::chrono::microseconds(period * 5));
 
-  client.set_state(stop);
+  client->set_state(stop);
 
   subscriber.Stop();
 

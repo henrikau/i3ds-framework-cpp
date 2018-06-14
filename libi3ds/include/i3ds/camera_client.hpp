@@ -22,6 +22,10 @@ class CameraClient : public SensorClient
 public:
 
   typedef std::shared_ptr<CameraClient> Ptr;
+  static Ptr Create(Context::Ptr context, NodeID id)
+  {
+    return std::make_shared<CameraClient>(context, id);
+  }
 
   CameraClient(Context::Ptr context, NodeID sensor);
 

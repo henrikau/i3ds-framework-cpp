@@ -22,6 +22,10 @@ class LIDARClient : public SensorClient
 public:
 
   typedef std::shared_ptr<LIDARClient> Ptr;
+  static Ptr Create(Context::Ptr context, NodeID id)
+  {
+    return std::make_shared<LIDARClient>(context, id);
+  }
 
   LIDARClient(Context::Ptr context, NodeID sensor);
 

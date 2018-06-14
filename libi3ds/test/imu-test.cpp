@@ -18,6 +18,7 @@
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_imu.hpp>
 #include <i3ds/imu_client.hpp>
+#include <i3ds/common_tests.hpp>
 
 using namespace i3ds;
 
@@ -30,12 +31,12 @@ struct F
       context(Context::Create()),
       server(context),
       imu(EmulatedIMU::Create(context, node)),
-      client(context, node)
+      client(IMUClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
     imu->Attach(server);
     server.Start();
-    client.set_timeout(1000);
+    client->set_timeout(1000);
   }
 
   ~F()
@@ -49,7 +50,7 @@ struct F
   Context::Ptr context;
   Server server;
   EmulatedIMU::Ptr imu;
-  IMUClient client;
+  IMUClient::Ptr client;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
@@ -58,18 +59,14 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(imu_creation)
 {
-  BOOST_CHECK_EQUAL(imu->node(), node);
-  BOOST_CHECK_EQUAL(imu->state(), inactive);
-  BOOST_CHECK_EQUAL(imu->period(), 0);
+  test_sensor_creation(imu, node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(imu_state_command)
+BOOST_AUTO_TEST_CASE(imu_sample_settings)
 {
-  BOOST_CHECK_EQUAL(imu->state(), inactive);
-  client.set_state(activate);
-  BOOST_CHECK_EQUAL(imu->state(), standby);
+  test_sample_settings(client);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,19 +96,19 @@ BOOST_AUTO_TEST_CASE(imu_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<IMU::MeasurementTopic>(client.node(), &handle_measurement);
+  subscriber.Attach<IMU::MeasurementTopic>(client->node(), &handle_measurement);
 
   SamplePeriod period = 100000;
 
-  client.set_state(activate);
-  client.set_sampling(period);
-  client.set_state(start);
+  client->set_state(activate);
+  client->set_sampling(period);
+  client->set_state(start);
 
   subscriber.Start();
 
   std::this_thread::sleep_for(std::chrono::microseconds(period * 5));
 
-  client.set_state(stop);
+  client->set_state(stop);
 
   subscriber.Stop();
 
