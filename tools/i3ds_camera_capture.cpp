@@ -37,25 +37,18 @@ render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
   int rows = desc.region.size_y;
   int cols = desc.region.size_x;
   int pixel_size = desc.pixel_size;
-  size_t size = rows * cols * pixel_size;
-
-  std::cout << rows << "," << cols << "," << size << std::endl;
 
   int cv_type = CV_16UC1;
   double scaling_factor = 1;
 
   if (desc.frame_mode == mode_rgb)
     {
-      std::cout << "RGB " << pixel_size << " " << desc.data_depth << std::endl;
-
       if (pixel_size == 3) { cv_type = CV_8UC3; }
       if (pixel_size == 6) { cv_type = CV_16UC3; }
       scaling_factor = pow(2,(8 * (pixel_size/3) - desc.data_depth));
     }
   else
     {
-      std::cout << "Mono " << pixel_size << " " << desc.data_depth << std::endl;
-
       if (pixel_size == 1) { cv_type = CV_8UC1; }
       if (pixel_size == 2) { cv_type = CV_16UC1; }
       scaling_factor = pow(2,(8 * pixel_size - desc.data_depth));
@@ -65,7 +58,6 @@ render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
 
   if (scaling_factor != 1)
     {
-      std::cout << "Scaling " << scaling_factor << std::endl;
       frame *= scaling_factor;
     }
 
@@ -83,8 +75,8 @@ handle_frame(i3ds::Camera::FrameTopic::Data& data)
       break;
 
     case 2:
-      render_image("Camera feed left", data.image_data(0), data.descriptor);
-      render_image("Camera feed right", data.image_data(0), data.descriptor);
+      render_image("Left camera feed", data.image_data(0), data.descriptor);
+      render_image("Right camera feed", data.image_data(0), data.descriptor);
       break;
 
     default:

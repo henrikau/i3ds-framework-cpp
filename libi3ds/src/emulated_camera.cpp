@@ -186,7 +186,7 @@ i3ds::EmulatedCamera::load_images()
         {
           cv::Mat img(prop_.height, prop_.width, CV_16UC1, cv::Scalar(0));
 
-          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << 15) - 1));
+          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << 16) - 1));
 
           sample_images_.push_back(img);
         }
