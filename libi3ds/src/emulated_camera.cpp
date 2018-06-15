@@ -241,21 +241,16 @@ i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
   d->frame_mode = mode_mono;
   d->image_count = prop_.image_count;
 
-  const int size = d->region.size_x  * d->region.size_y * d->pixel_size;
+  const int size = image_size(*d);
 
   for (unsigned int i = 0; i < d->image_count; i++)
     {
-      Image image;
-
-      image.size = size;
-      image.data = current_image.data;
-
-      frame.image.push_back(image);
+      frame.append_image(current_image.data, size);
     }
 
   BOOST_LOG_TRIVIAL(trace) << timestamp_us
                            << ": Send frame with "
-                           << d->image_count << " images of "
+                           << frame.images() << " images of "
                            << size / 1024.0 << " KiB";
 
   publisher_.Send<FrameTopic>(frame);

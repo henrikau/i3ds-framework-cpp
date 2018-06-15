@@ -20,16 +20,36 @@ namespace i3ds
 
 CODEC(FrameDescriptor);
 
-struct Image
-{
-  const byte* data;
-  size_t size;
-};
+struct FrameCodec;
 
-struct Frame
+inline size_t image_size(const FrameDescriptor& desc)
 {
+  return desc.region.size_x  * desc.region.size_y * desc.pixel_size;
+}
+
+class Frame
+{
+public:
+
   FrameDescriptor descriptor;
-  std::vector<Image> image;
+
+  inline int images() const {return image_.size();}
+
+  inline size_t image_size(int i) const {return image_.at(i).size;}
+  inline const byte* image_data(int i) const {return image_.at(i).data;}
+
+  inline void append_image(const byte* data, size_t size) {image_.push_back({data, size});}
+  inline void clear_images() {image_.clear();}
+
+private:
+
+  struct Image
+  {
+    const byte* data;
+    size_t size;
+  };
+
+  std::vector<Image> image_;
 };
 
 struct FrameCodec
@@ -41,6 +61,7 @@ struct FrameCodec
   static inline void Initialize(Data& val)
   {
     FrameDescriptorCodec::Initialize(val.descriptor);
+    val.clear_images();
   };
 
   static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
@@ -63,9 +84,9 @@ inline void Encode<FrameCodec>(Message& message, const FrameCodec::Data& data)
 {
   Encode<FrameDescriptorCodec>(message, data.descriptor);
 
-  for (unsigned int i = 0; i < data.image.size(); i++)
+  for (int i = 0; i < data.images(); i++)
     {
-      message.append_payload(data.image[i].data, data.image[i].size);
+      message.append_payload(data.image_data(i), data.image_size(i));
     }
 }
 
@@ -78,13 +99,11 @@ inline void Decode<FrameCodec>(const Message& message, FrameCodec::Data& data)
 {
   Decode<FrameDescriptorCodec>(message, data.descriptor);
 
-  const int n = message.payloads();
+  data.clear_images();
 
-  for (int i = 1; i < n; i++)
+  for (int i = 1; i < message.payloads(); i++)
     {
-      const Image image = {message.data(i), message.size(i)};
-
-      data.image.push_back(image);
+      data.append_image(message.data(i), message.size(i));
     }
 }
 

@@ -80,19 +80,15 @@ render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
 void
 handle_frame(i3ds::Camera::FrameTopic::Data& data)
 {
-  std::cout << "Recv: " << data.descriptor.attributes.timestamp.microseconds
-            << " Count: " << data.image.size()
-            << " Size: " << data.image.at(0).size << std::endl;
-
   switch (data.descriptor.image_count)
     {
     case 1:
-      render_image("Camera feed", data.image[0].data, data.descriptor);
+      render_image("Camera feed", data.image_data(0), data.descriptor);
       break;
 
     case 2:
-      render_image("Camera feed left", data.image[0].data, data.descriptor);
-      render_image("Camera feed right", data.image[1].data, data.descriptor);
+      render_image("Camera feed left", data.image_data(0), data.descriptor);
+      render_image("Camera feed right", data.image_data(0), data.descriptor);
       break;
 
     default:

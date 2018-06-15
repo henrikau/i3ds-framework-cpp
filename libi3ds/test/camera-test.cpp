@@ -22,6 +22,8 @@
 
 using namespace i3ds;
 
+CameraProperties* camera_prop;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 struct F
@@ -29,7 +31,7 @@ struct F
   F()
     : node(1),
       context(Context::Create()),
-      prop( {mode_mono, 12, 2, 640, 480, 1, ""}),
+      prop( {mode_mono, 16, 2, 640, 480, 1, ""}),
   camera(EmulatedCamera::Create(context, node, prop)),
   server(context),
   client(CameraClient::Create(context, node))
@@ -38,6 +40,8 @@ struct F
     camera->Attach(server);
     server.Start();
     client->set_timeout(1000);
+
+    camera_prop = &prop;
   }
 
   ~F()
@@ -164,10 +168,24 @@ handle_measurement(Camera::FrameTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp.microseconds);
 
+  BOOST_CHECK_EQUAL(data.descriptor.frame_mode, camera_prop->mode);
+  BOOST_CHECK_EQUAL(data.descriptor.data_depth, camera_prop->data_depth);
+  BOOST_CHECK_EQUAL(data.descriptor.pixel_size, camera_prop->pixel_size);
   BOOST_CHECK_EQUAL(data.descriptor.region.offset_x, 0);
   BOOST_CHECK_EQUAL(data.descriptor.region.offset_y, 0);
-  BOOST_CHECK_EQUAL(data.descriptor.region.size_x, 640);
-  BOOST_CHECK_EQUAL(data.descriptor.region.size_y, 480);
+  BOOST_CHECK_EQUAL(data.descriptor.region.size_x, camera_prop->width);
+  BOOST_CHECK_EQUAL(data.descriptor.region.size_y, camera_prop->height);
+  BOOST_CHECK_EQUAL(data.descriptor.image_count, camera_prop->image_count);
+  BOOST_CHECK_EQUAL(data.descriptor.image_count, data.images());
+
+  const int size = image_size(data.descriptor);
+
+  for (int i = 0; i < data.images(); i++)
+    {
+      BOOST_CHECK(data.image_data(i));
+      BOOST_CHECK_EQUAL(data.image_size(i), size);
+    }
+
   received++;
 }
 
