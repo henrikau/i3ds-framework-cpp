@@ -61,9 +61,7 @@ render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
       scaling_factor = pow(2,(8 * pixel_size - desc.data_depth));
     }
 
-  void* data = strndup((const char*) image, size);
-
-  cv::Mat frame(rows, cols, cv_type, data);
+  cv::Mat frame(rows, cols, cv_type, (byte*) image);
 
   if (scaling_factor != 1)
     {
@@ -73,8 +71,6 @@ render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
 
   cv::imshow(window_name, frame);
   cv::waitKey(5); // Apparently needed to render image properly
-
-  free(data);
 }
 
 void
