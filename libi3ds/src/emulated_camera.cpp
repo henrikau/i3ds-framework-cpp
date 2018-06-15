@@ -12,6 +12,7 @@
 #include "boost/filesystem/path.hpp"
 
 #include <i3ds/emulated_camera.hpp>
+#include <i3ds/opencv_convertion.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -208,18 +209,10 @@ bool
 i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
 {
   FrameTopic::Data frame;
-
   FrameTopic::Initialize(frame);
-
-  FrameDescriptor* d = &frame.descriptor;
-
-  d->attributes.timestamp.microseconds = timestamp_us;
-  d->attributes.validity = sample_valid;
-
   cv::Mat current_image = next_image();
 
-  d->region.size_x = current_image.cols;
-  d->region.size_y = current_image.rows;
+  set_descriptor_from_mat(frame, current_image, timestamp_us, mode_mono, prop_.image_count);
 
   BOOST_LOG_TRIVIAL(trace) << "Image: "
                            << current_image.cols << " cols, "
@@ -227,31 +220,15 @@ i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
                            << current_image.channels() << " chan, "
                            << current_image.depth() << " depth";
 
-  if (current_image.depth() == CV_16UC1)
+  for (int i = 0; i < prop_.image_count; i++)
     {
-      d->data_depth = 16;
-      d->pixel_size = current_image.channels() * 2;
-    }
-  else
-    {
-      d->data_depth = 8;
-      d->pixel_size = current_image.channels();
-    }
-
-  d->frame_mode = mode_mono;
-  d->image_count = prop_.image_count;
-
-  const int size = image_size(*d);
-
-  for (unsigned int i = 0; i < d->image_count; i++)
-    {
-      frame.append_image(current_image.data, size);
+      add_image_data(frame, current_image);
     }
 
   BOOST_LOG_TRIVIAL(trace) << timestamp_us
                            << ": Send frame with "
                            << frame.images() << " images of "
-                           << size / 1024.0 << " KiB";
+                           << image_size(frame.descriptor) / 1024.0 << " KiB";
 
   publisher_.Send<FrameTopic>(frame);
 

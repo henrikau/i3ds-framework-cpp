@@ -15,7 +15,8 @@
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/camera_sensor.hpp>
-#include <i3ds/Camera.h>
+#include <i3ds/frame.hpp>
+#include <i3ds/opencv_convertion.hpp>
 
 #include <boost/program_options.hpp>
 #include <opencv2/core/core.hpp>
@@ -32,36 +33,10 @@ signal_handler(int signum)
 }
 
 void
-render_image(std::string window_name, const byte* image, FrameDescriptor& desc)
+render_image(std::string window_name, const i3ds::Frame& frame, int image_number)
 {
-  int rows = desc.region.size_y;
-  int cols = desc.region.size_x;
-  int pixel_size = desc.pixel_size;
-
-  int cv_type = CV_16UC1;
-  double scaling_factor = 1;
-
-  if (desc.frame_mode == mode_rgb)
-    {
-      if (pixel_size == 3) { cv_type = CV_8UC3; }
-      if (pixel_size == 6) { cv_type = CV_16UC3; }
-      scaling_factor = pow(2,(8 * (pixel_size/3) - desc.data_depth));
-    }
-  else
-    {
-      if (pixel_size == 1) { cv_type = CV_8UC1; }
-      if (pixel_size == 2) { cv_type = CV_16UC1; }
-      scaling_factor = pow(2,(8 * pixel_size - desc.data_depth));
-    }
-
-  cv::Mat frame(rows, cols, cv_type, (byte*) image);
-
-  if (scaling_factor != 1)
-    {
-      frame *= scaling_factor;
-    }
-
-  cv::imshow(window_name, frame);
+  cv::Mat mat = frame_to_cv_mat(frame, image_number);
+  cv::imshow(window_name, mat);
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
@@ -71,12 +46,12 @@ handle_frame(i3ds::Camera::FrameTopic::Data& data)
   switch (data.descriptor.image_count)
     {
     case 1:
-      render_image("Camera feed", data.image_data(0), data.descriptor);
+      render_image("Camera feed", data, 0);
       break;
 
     case 2:
-      render_image("Left camera feed", data.image_data(0), data.descriptor);
-      render_image("Right camera feed", data.image_data(0), data.descriptor);
+      render_image("Left camera feed", data, 0);
+      render_image("Right camera feed", data, 1);
       break;
 
     default:

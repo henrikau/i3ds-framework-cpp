@@ -78,6 +78,7 @@ set (SRCS
   src/emulated_radar.cpp
   src/emulated_tactile.cpp
   src/measurement_proxy.cpp
+  src/opencv_convertion.cpp
   )
 
 set (LIBS
