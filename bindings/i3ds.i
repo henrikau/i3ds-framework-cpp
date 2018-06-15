@@ -141,6 +141,9 @@ public:
 
   SensorState state() const;
   Temperature temperature() const;
+  SamplePeriod period() const;
+  BatchSize batch_size() const;
+  BatchCount batch_count() const;
 
   void load_status();
   virtual void load_config();
