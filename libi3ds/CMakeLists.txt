@@ -79,6 +79,7 @@ set (SRCS
   src/emulated_tactile.cpp
   src/measurement_proxy.cpp
   src/opencv_convertion.cpp
+  src/sensor_configurator.cpp
   )
 
 set (LIBS
