@@ -77,7 +77,7 @@ private:
     long long current_time_as_int = std::chrono::duration_cast<std::chrono::microseconds>
                                     (current_time_.time_since_epoch()).count();
     long long delay = current_time_as_int - message.descriptor.attributes.timestamp.microseconds;
-    records.push_back({node_id_,i3ds::FrameCodec::max_size, message.attributes.timestamp.microseconds,
+    records.push_back({node_id_,i3ds::FrameCodec::max_size, message.descriptor.attributes.timestamp.microseconds,
                        current_time_as_int, delay
                       });
     BOOST_LOG_TRIVIAL(trace) << "Received message at " << current_time_as_int;
@@ -114,16 +114,6 @@ public:
     subscriber_.Attach<T>(node_id_, std::bind(&DelayRecorder::handle_measurement<T>, this, _1));
   }
 
-  template <>
-  void
-  Attach<i3ds::Camera::FrameTopic>()
-  {
-    using std::placeholders::_1;
-    subscriber_.Attach<i3ds::Camera::FrameTopic>(node_id_, std::bind(&DelayRecorder::handle_frame, this, _1));
-  }
-
-
-
   void Start()
   {
     if (!output_file_.is_open())
@@ -157,6 +147,13 @@ public:
   }
 };
 
+  template <>
+  void
+  DelayRecorder::Attach<i3ds::Camera::FrameTopic>()
+  {
+    using std::placeholders::_1;
+    subscriber_.Attach<i3ds::Camera::FrameTopic>(node_id_, std::bind(&DelayRecorder::handle_frame, this, _1));
+  }
 
 int
 main(int argc, char *argv[])
