@@ -35,6 +35,8 @@ i3ds::EmulatedLIDAR::EmulatedLIDAR(Context::Ptr context, NodeID node)
 
   frame_.region.size_x = region_.size_x;
   frame_.region.size_y = region_.size_y;
+
+  set_device_name("Emulated LIDAR");
 }
 
 i3ds::EmulatedLIDAR::~EmulatedLIDAR()

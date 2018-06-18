@@ -42,6 +42,8 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, CameraPr
   pattern_enabled_ = false;
   pattern_sequence_ = 0;
 
+  set_device_name("Emulated camera");
+
   load_images();
 }
 

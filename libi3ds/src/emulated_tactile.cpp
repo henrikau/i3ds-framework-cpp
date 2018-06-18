@@ -24,6 +24,7 @@ i3ds::EmulatedTactile::EmulatedTactile(Context::Ptr context, NodeID node)
   BOOST_LOG_TRIVIAL(info) << "Create emulated tactile sensor with NodeID: " << node;
   MeasurementTopic::Codec::Initialize(frame_);
   frame_.series = series_count_;
+  set_device_name("Emulated tactile sensor");
 }
 
 i3ds::EmulatedTactile::~EmulatedTactile()

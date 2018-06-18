@@ -158,7 +158,15 @@ i3ds::Sensor::handle_status(StatusService::Data& status) const
 void
 i3ds::Sensor::handle_configuration(ConfigurationService::Data& config) const
 {
+  config.response.device = device_name();
   config.response.period = period();
   config.response.batch_size = batch_size();
   config.response.batch_count = batch_count();
+}
+
+void
+i3ds::Sensor::set_device_name(std::string device_name)
+{
+  strncpy((char*)device_name_.arr, device_name.c_str(), 256);
+  device_name_.nCount = strlen((const char*)device_name_.arr);
 }

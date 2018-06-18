@@ -144,6 +144,7 @@ public:
   SamplePeriod period() const;
   BatchSize batch_size() const;
   BatchCount batch_count() const;
+  std::string device_name() const;
 
   void load_status();
   virtual void load_config();

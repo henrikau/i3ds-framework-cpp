@@ -134,6 +134,7 @@ i3ds::SensorConfigurator::print_sensor_status(i3ds::SensorClient& client)
     }
 
   std::cout << "{" << std::endl;
+  std::cout << "\"device_name\" : \"" << client.device_name() << "\"," << std::endl;
   std::cout << "\"node\" : " << client.node() << "," << std::endl;
   std::cout << "\"state\" : \"" << state_string << "\"," << std::endl;
   std::cout << "\"temperature\" : " << client.temperature().kelvin << "," << std::endl;

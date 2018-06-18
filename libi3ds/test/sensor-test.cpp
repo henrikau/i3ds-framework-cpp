@@ -69,6 +69,7 @@ public:
 
 TestSensor::TestSensor(NodeID node) : Sensor(node)
 {
+  set_device_name("Test sensor");
 }
 
 void TestSensor::test_callback_and_clear(std::string callback)
@@ -316,6 +317,14 @@ BOOST_AUTO_TEST_CASE(sensor_sample_command)
 
   client.test_illegal_sample_command(10000, 1, error_state);
 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(test_device_name)
+{
+  client.load_all();
+  BOOST_CHECK_EQUAL(client.device_name(), "Test sensor");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

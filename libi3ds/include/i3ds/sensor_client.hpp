@@ -34,6 +34,8 @@ public:
   BatchSize batch_size() const {return config_.response.batch_size;}
   BatchCount batch_count() const {return config_.response.batch_count;}
 
+  std::string device_name() const {return std::string((const char*)config_.response.device.arr, config_.response.device.nCount);}
+
   void load_status();
   virtual void load_config();
   virtual void load_all();

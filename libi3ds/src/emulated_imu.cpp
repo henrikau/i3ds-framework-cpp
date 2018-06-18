@@ -20,6 +20,7 @@ i3ds::EmulatedIMU::EmulatedIMU(Context::Ptr context, NodeID node)
 {
   BOOST_LOG_TRIVIAL(info) << "Create emulated IMU with NodeID: " << node;
   IMUMeasurement20Codec::Initialize(frame_);
+  set_device_name("Emulated IMU");
 }
 
 i3ds::EmulatedIMU::~EmulatedIMU()

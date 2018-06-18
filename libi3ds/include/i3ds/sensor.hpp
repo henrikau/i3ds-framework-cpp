@@ -94,6 +94,9 @@ public:
   // Get number of batches to acquire when operational (0 is infinite).
   inline BatchCount batch_count() const {return batch_count_;}
 
+  // Get name of sensor implementation
+  virtual T_String device_name() const {return device_name_;}
+
   // Get temperature in Kelvin (defaults to 0.0).
   virtual double temperature() const {return 0.0;}
 
@@ -118,6 +121,11 @@ public:
   // Attach handlers to the server.
   virtual void Attach(Server& server);
 
+protected:
+
+  // Set the name of the sensor implementation
+  void set_device_name(std::string device_name);
+
 private:
 
   // Handler for state command.
@@ -138,6 +146,7 @@ private:
   SamplePeriod period_;
   BatchSize batch_size_;
   BatchCount batch_count_;
+  T_String device_name_;
 };
 
 } // namespace i3ds

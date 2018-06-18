@@ -145,6 +145,8 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
   client->load_config();
 
+  BOOST_CHECK_EQUAL("Emulated camera", client->device_name());
+
   BOOST_CHECK_EQUAL(shutter, client->shutter());
   BOOST_CHECK_CLOSE(gain, client->gain(), 1e-6);
 

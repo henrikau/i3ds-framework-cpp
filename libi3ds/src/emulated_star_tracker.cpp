@@ -20,6 +20,7 @@ i3ds::EmulatedStarTracker::EmulatedStarTracker(Context::Ptr context, NodeID node
 {
   BOOST_LOG_TRIVIAL(info) << "Create emulated star tracker with NodeID: " << node;
   StarTrackerMeasurementCodec::Initialize(frame_);
+  set_device_name("Emulated star tracker");
 }
 
 i3ds::EmulatedStarTracker::~EmulatedStarTracker()
