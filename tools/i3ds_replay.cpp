@@ -23,33 +23,15 @@
 #include <boost/program_options.hpp>
 
 #include <i3ds/communication.hpp>
+#include <i3ds/message_recording.hpp>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
-volatile bool running;
-
-void
-signal_handler(int signum)
-{
-  running = false;
-}
-
-
-uint64_t
-get_current_time_in_us()
-{
-  using namespace std::chrono;
-  return duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
-}
-
 int
 main(int argc, char *argv[])
 {
-  NodeID node_id;
-  EndpointID endpoint_id;
   std::string file_name;
-  size_t msg_size;
 
   po::options_description desc("Replays a log file recorded with i3ds_record\n  Available options");
 
@@ -88,50 +70,22 @@ main(int argc, char *argv[])
       return -1;
     }
 
-  std::ifstream input_file(file_name, std::ios::binary);
-  input_file.read((char*)&node_id, sizeof(NodeID));
-  input_file.read((char*)&endpoint_id, sizeof(EndpointID));
+  i3ds::SessionRecording recording;
+  recording.load_from_file(file_name);
 
-  BOOST_LOG_TRIVIAL(info) << "Replaying messages from node ID " <<  node_id
-                          << " with endpoint ID " << endpoint_id;
-
-  byte* buffer = (byte*)malloc(10000000);
+  BOOST_LOG_TRIVIAL(info) << "Replaying messages from node ID " <<  recording.node_id
+                          << " with endpoint ID " << recording.endpoint_id;
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Socket::Ptr publisher = i3ds::Socket::Publisher(context);
-  publisher->Attach(node_id);
+  publisher->Attach(recording.node_id);
 
-  running = true;
-  signal(SIGINT, signal_handler);
-
-  uint64_t delay;
-  input_file.read((char*)&delay, sizeof(uint64_t)); // First delay in the file is 0
-  uint64_t start_time;
-  uint32_t payloads;
-  while(running)
+  for (i3ds::MessageRecord r : recording.records)
     {
-      if (input_file.eof())
-        {
-          break;
-        }
-      start_time = get_current_time_in_us();
-      i3ds::Message msg;
-      msg.set_address(i3ds::Address(node_id, endpoint_id));
-      input_file.read((char*)&payloads, sizeof(uint32_t));
-      for (uint32_t i = 0; i < payloads; ++i)
-        {
-          input_file.read((char*)&msg_size, sizeof(size_t));
-          input_file.read((char*)buffer, msg_size);
-          msg.append_payload(buffer, msg_size);
-        }
-      publisher->Send(msg);
+      std::this_thread::sleep_for(std::chrono::microseconds(r.delay));
+      publisher->Send(*(r.msg));
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
-      input_file.read((char*)&delay, sizeof(uint64_t));
-      std::this_thread::sleep_for(std::chrono::microseconds(delay-(get_current_time_in_us()-start_time)));
     }
-
-  input_file.close();
-  free(buffer);
 
   return 0;
 }

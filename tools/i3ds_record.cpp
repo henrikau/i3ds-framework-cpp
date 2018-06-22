@@ -9,7 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
-#include <fstream>
 #include <functional>
 #include <csignal>
 #include <chrono>
@@ -23,6 +22,7 @@
 #include <boost/program_options.hpp>
 
 #include <i3ds/communication.hpp>
+#include <i3ds/message_recording.hpp>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -35,34 +35,6 @@ signal_handler(int signum)
   running = false;
 }
 
-
-uint64_t
-get_current_time_in_us()
-{
-  using namespace std::chrono;
-  return duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
-}
-
-struct MessageRecord
-{
-  uint64_t delay;
-  std::shared_ptr<i3ds::Message> msg;
-  MessageRecord() : delay(0), msg(std::make_shared<i3ds::Message>()) {}
-};
-
-void
-write_msg_to_file(std::ofstream &output_file, uint64_t delay, const std::shared_ptr<i3ds::Message> msg)
-{
-  uint32_t payloads = msg->payloads();
-  output_file.write((char*)&delay, sizeof(uint64_t));
-  output_file.write((char*)&payloads, sizeof(uint32_t));
-  for (uint32_t i = 0; i < payloads; ++i)
-    {
-      size_t msg_size = msg->size(i);
-      output_file.write((char*)(&msg_size), sizeof(size_t));
-      output_file.write((char*)(msg->data(i)), msg_size);
-    }
-}
 
 int
 main(int argc, char *argv[])
@@ -119,46 +91,38 @@ main(int argc, char *argv[])
   i3ds::Socket::Ptr subscriber = i3ds::Socket::Subscriber(context);
   subscriber->Attach(node_id);
   subscriber->Filter(i3ds::Address(node_id, endpoint_id));
-  std::vector<MessageRecord> records;
+
+  i3ds::SessionRecording recording;
+  recording.node_id = node_id;
+  recording.endpoint_id = endpoint_id;
 
   running = true;
   signal(SIGINT, signal_handler);
 
   uint64_t current_msg_time = 0;
   uint64_t prev_msg_time = 0;
-  uint32_t messages_received = 0;
   while(running)
     {
-      MessageRecord record;
+      i3ds::MessageRecord record;
       subscriber->Receive(*(record.msg));
-      current_msg_time = get_current_time_in_us();
-      if (messages_received > 0)
+      current_msg_time = i3ds::get_current_time_in_us();
+      if (!recording.records.empty()) // Keep first message delay 0
         {
           record.delay = current_msg_time - prev_msg_time;;
         }
       BOOST_LOG_TRIVIAL(trace) << "Receviced message after: " << record.delay << " microseconds";
       BOOST_LOG_TRIVIAL(trace) << "message has: " << record.msg->payloads() << " paylods";
-      records.push_back(record);
-      messages_received++;
-      if (n_messages > 0 && messages_received >= n_messages)
+      recording.records.push_back(record);
+      if (n_messages > 0 && recording.records.size() >= n_messages)
         {
           break;
         }
       prev_msg_time = current_msg_time;
     }
 
-  std::ofstream output_file(file_name, std::ios::binary);
-  BOOST_LOG_TRIVIAL(info) << "Writing node_id: " << node_id << " endpoint_id: " << endpoint_id;
-  output_file.write((char*)&node_id, sizeof(NodeID));
-  output_file.write((char*)&endpoint_id, sizeof(EndpointID));
-  BOOST_LOG_TRIVIAL(info) << "Wrote node_id: " << node_id << " endpoint_id: " << endpoint_id;
-  for (MessageRecord r : records)
-    {
-      write_msg_to_file(output_file, r.delay, r.msg);
-    }
-  output_file.close();
+  BOOST_LOG_TRIVIAL(info) << "Stopping. Received " << recording.records.size() << " messages.";
 
-  BOOST_LOG_TRIVIAL(info) << "Stopping. Received " << messages_received << " messages.";
+  recording.write_to_file(file_name);
   BOOST_LOG_TRIVIAL(info) << "Output written to " << file_name;
 
   return 0;

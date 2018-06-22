@@ -80,6 +80,7 @@ set (SRCS
   src/measurement_proxy.cpp
   src/opencv_convertion.cpp
   src/sensor_configurator.cpp
+  src/message_recording.cpp
   )
 
 set (LIBS
