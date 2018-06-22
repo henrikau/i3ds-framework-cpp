@@ -13,6 +13,7 @@
 #include <csignal>
 #include <chrono>
 #include <thread>
+#include <cstdint>
 
 #define BOOST_LOG_DYN_LINK
 
@@ -35,7 +36,7 @@ signal_handler(int signum)
 }
 
 
-long long
+uint64_t
 get_current_time_in_us()
 {
   using namespace std::chrono;
@@ -45,8 +46,8 @@ get_current_time_in_us()
 int
 main(int argc, char *argv[])
 {
-  unsigned int node_id;
-  unsigned int endpoint_id;
+  NodeID node_id;
+  EndpointID endpoint_id;
   std::string file_name;
   size_t msg_size;
 
@@ -88,15 +89,13 @@ main(int argc, char *argv[])
     }
 
   std::ifstream input_file(file_name, std::ios::binary);
-  input_file.read((char*)&node_id, sizeof(unsigned int));
-  input_file.read((char*)&endpoint_id, sizeof(unsigned int));
-  input_file.read((char*)&msg_size, sizeof(size_t));
+  input_file.read((char*)&node_id, sizeof(NodeID));
+  input_file.read((char*)&endpoint_id, sizeof(EndpointID));
 
-  BOOST_LOG_TRIVIAL(info) << "Replaying messages of size " << msg_size
-                          << " from node ID " <<  node_id
+  BOOST_LOG_TRIVIAL(info) << "Replaying messages from node ID " <<  node_id
                           << " with endpoint ID " << endpoint_id;
 
-  byte* buffer = (byte*)malloc(msg_size);
+  byte* buffer = (byte*)malloc(10000000);
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Socket::Ptr publisher = i3ds::Socket::Publisher(context);
@@ -105,9 +104,10 @@ main(int argc, char *argv[])
   running = true;
   signal(SIGINT, signal_handler);
 
-  long long delay;
-  input_file.read((char*)&delay, sizeof(long long)); // First delay in the file is 0
-  long long start_time;
+  uint64_t delay;
+  input_file.read((char*)&delay, sizeof(uint64_t)); // First delay in the file is 0
+  uint64_t start_time;
+  uint32_t payloads;
   while(running)
     {
       if (input_file.eof())
@@ -117,13 +117,16 @@ main(int argc, char *argv[])
       start_time = get_current_time_in_us();
       i3ds::Message msg;
       msg.set_address(i3ds::Address(node_id, endpoint_id));
-      input_file.read((char*)buffer, msg_size);
-      // FIXME: Handle multipart messages.
-      msg.append_payload(buffer, msg_size);
+      input_file.read((char*)&payloads, sizeof(uint32_t));
+      for (uint32_t i = 0; i < payloads; ++i)
+        {
+          input_file.read((char*)&msg_size, sizeof(size_t));
+          input_file.read((char*)buffer, msg_size);
+          msg.append_payload(buffer, msg_size);
+        }
       publisher->Send(msg);
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
-      // PROBLEM: message is not received in other end until after sleep
-      input_file.read((char*)&delay, sizeof(long long));
+      input_file.read((char*)&delay, sizeof(uint64_t));
       std::this_thread::sleep_for(std::chrono::microseconds(delay-(get_current_time_in_us()-start_time)));
     }
 
