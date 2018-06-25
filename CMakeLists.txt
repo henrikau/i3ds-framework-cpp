@@ -14,6 +14,20 @@ set (PROJECT_VERSION "1.0")
 set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scripts)
 set (DEBUG $ENV{DEBUG})
 
+option(BUILD_EMBEDDED "Build for embedded systems" OFF)
+
+if (BUILD_EMBEDDED)
+  if(NOT DEFINED CMAKE_FIND_ROOT_PATH)
+    MESSAGE(FATAL_ERROR "CMAKE_FIND_ROOT_PATH path must be set when compiling for embedded")
+  endif(NOT DEFINED CMAKE_FIND_ROOT_PATH)
+  SET(CMAKE_C_COMPILER "aarch64-linux-gnu-gcc")
+  SET(CMAKE_CXX_COMPILER "aarch64-linux-gnu-g++")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
+
+  include_directories(${ZMQHPP_INCLUDE_DIR})
+endif (BUILD_EMBEDDED)
+
 enable_testing ()
 
 ################################################################################
@@ -98,6 +112,8 @@ include_directories (BEFORE "libi3ds/include/")
 include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/libi3ds")
 
 add_subdirectory (libi3ds)
-add_subdirectory (services)
-add_subdirectory (tools)
-add_subdirectory (bindings)
+if (NOT(BUILD_EMBEDDED))
+  add_subdirectory (services)
+  add_subdirectory (tools)
+  add_subdirectory (bindings)
+endif (NOT(BUILD_EMBEDDED))

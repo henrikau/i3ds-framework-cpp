@@ -1,6 +1,9 @@
-find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
 find_package (ASN1CC REQUIRED)
+find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
+
+if (NOT(BUILD_EMBEDDED))
 find_package (OpenCV REQUIRED)
+endif()
 
 ################################################################################
 # ASN.1 generation
@@ -71,16 +74,24 @@ set (SRCS
   src/analog_client.cpp
   src/trigger.cpp
   src/trigger_client.cpp
-  src/emulator_factory.cpp
-  src/emulated_camera.cpp
   src/emulated_imu.cpp
-  src/emulated_tof_camera.cpp
   src/emulated_radar.cpp
   src/emulated_tactile.cpp
   src/measurement_proxy.cpp
-  src/opencv_convertion.cpp
   src/sensor_configurator.cpp
   src/message_recording.cpp
+  )
+
+set (CAMERA_EMULATORS
+  src/emulator_factory.cpp
+  src/emulated_camera.cpp
+  src/opencv_convertion.cpp
+  src/emulated_tof_camera.cpp
+  )
+
+set (ALL_SRCS
+  ${SRCS}
+  ${CAMERA_EMULATORS}
   )
 
 set (LIBS
@@ -90,8 +101,14 @@ set (LIBS
   ${OpenCV_LIBS}
   )
 
-add_library (i3ds SHARED ${SRCS})
+if (BUILD_EMBEDDED)
+  add_library (i3ds SHARED ${SRCS})
+else(BUILD_EMBEDDED)
+  add_library (i3ds SHARED ${ALL_SRCS})
+endif(BUILD_EMBEDDED)
+
 target_link_libraries (i3ds ${LIBS})
+
 
 set_target_properties (
   i3ds PROPERTIES
@@ -108,17 +125,23 @@ install (FILES ${ASN1_HDRS} DESTINATION include/i3ds)
 
 set(TESTS
   address-server-test
-  camera-test
   communication-test
   imu-test
   sensor-test
-  tof-camera-test
   radar-test
   lidar-test
   star-tracker-test
   tactile-test
   measurement-proxy-test
 )
+
+if(NOT(BUILD_EMBEDDED))
+  set(TESTS
+    ${TESTS}
+    camera-test
+    tof-camera-test
+    )
+endif(NOT(BUILD_EMBEDDED))
 
 configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
