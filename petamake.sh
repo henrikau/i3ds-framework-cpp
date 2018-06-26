@@ -10,7 +10,6 @@ cd build_petalinux
 cmake .. -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" \
       -DCMAKE_CXX_COMPILER="aarch64-linux-gnu-c++" \
       -DCMAKE_FIND_ROOT_PATH="$BSP_ROOT" \
-      -DZMQHPP_INCLUDE_DIR=external \
       -DBUILD_EMBEDDED=ON \
       -DBUILD_TOOLS=OFF \
       -DBUILD_TESTS=OFF \

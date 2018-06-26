@@ -2,9 +2,7 @@ find_package (ASN1CC REQUIRED)
 if(BUILD_TESTS)
   find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
 
-  if (NOT(BUILD_EMBEDDED))
-    find_package (OpenCV REQUIRED)
-  endif (NOT(BUILD_EMBEDDED))
+  find_package (OpenCV QUIET)
 endif(BUILD_TESTS)
 
 ################################################################################
@@ -80,6 +78,7 @@ set (LIB_SRCS
   )
 
 set (EMULATOR_SRCS
+  src/emulator_factory.cpp
   src/emulated_lidar.cpp
   src/emulated_star_tracker.cpp
   src/emulated_imu.cpp
@@ -88,7 +87,6 @@ set (EMULATOR_SRCS
   )
 
 set (CAMERA_EMULATOR_SRCS
-  src/emulator_factory.cpp
   src/emulated_camera.cpp
   src/opencv_convertion.cpp
   src/emulated_tof_camera.cpp
@@ -106,18 +104,18 @@ set (SRCS ${LIB_SRCS} )
 # Add emulators to sources if tests are built.
 # Do not add camera emulators on embedded
 if (BUILD_TESTS)
-  if (BUILD_EMBEDDED)
-    set (SRCS
-      ${SRCS}
-      ${EMULATOR_SRCS}
-      )
-  else(BUILD_EMBEDDED)
+  if (OpenCV_FOUND)
     set (SRCS
       ${SRCS}
       ${EMULATOR_SRCS}
       ${CAMERA_EMULATOR_SRCS}
       )
-  endif(BUILD_EMBEDDED)
+  else (OpenCV_FOUND)
+    set (SRCS
+      ${SRCS}
+      ${EMULATOR_SRCS}
+      )
+  endif (OpenCV_FOUND)
 endif(BUILD_TESTS)
 
 add_library (i3ds SHARED ${SRCS})
@@ -128,6 +126,8 @@ set_target_properties (
   i3ds PROPERTIES
   VERSION ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION})
+
+target_compile_definitions(i3ds PRIVATE CAMERA_EMULATORS=${OpenCV_FOUND})
 
 install (TARGETS i3ds DESTINATION lib)
 install (DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.hpp")
@@ -150,13 +150,13 @@ if (BUILD_TESTS)
     measurement-proxy-test
     )
 
-  if(NOT(BUILD_EMBEDDED))
+  if (OpenCV_FOUND)
     set(TESTS
       ${TESTS}
       camera-test
       tof-camera-test
       )
-  endif(NOT(BUILD_EMBEDDED))
+  endif (OpenCV_FOUND)
 
   configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 

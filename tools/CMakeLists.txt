@@ -1,5 +1,5 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
-find_package (OpenCV REQUIRED)
+find_package (OpenCV QUIET)
 
 set (SRCS
   )
@@ -13,7 +13,6 @@ set (LIBS
   )
 
 set (APPS
-  i3ds_camera_capture
   i3ds_configure_camera
   i3ds_configure_sensor
   i3ds_configure_lidar
@@ -24,6 +23,10 @@ set (APPS
   i3ds_replay
   i3ds_codec_performance_test
   )
+
+if (OpenCV_FOUND)
+    set (APPS ${APPS} i3ds_camera_capture)
+endif()
 
 foreach(a ${APPS})
   add_executable (${a} ${a}.cpp ${SRCS})

@@ -10,12 +10,16 @@
 
 #include <i3ds/emulator_factory.hpp>
 
-#include <i3ds/emulated_camera.hpp>
-#include <i3ds/emulated_tof_camera.hpp>
 #include <i3ds/emulated_radar.hpp>
 #include <i3ds/emulated_lidar.hpp>
 #include <i3ds/emulated_star_tracker.hpp>
 #include <i3ds/emulated_imu.hpp>
+
+#if CAMERA_EMULATORS
+#include <i3ds/emulated_camera.hpp>
+#include <i3ds/emulated_tof_camera.hpp>
+#endif
+
 
 i3ds::EmulatorFactory::EmulatorFactory(Context::Ptr context, NodeID base_id)
   : context_(context),
@@ -25,12 +29,6 @@ i3ds::EmulatorFactory::EmulatorFactory(Context::Ptr context, NodeID base_id)
 
 i3ds::EmulatorFactory::~EmulatorFactory()
 {
-}
-
-i3ds::ToFCamera::Ptr
-i3ds::EmulatorFactory::CreateToFCamera()
-{
-  return std::make_shared<EmulatedToFCamera>(context_, next_id_++);
 }
 
 i3ds::Radar::Ptr
@@ -55,6 +53,14 @@ i3ds::IMU::Ptr
 i3ds::EmulatorFactory::CreateIMU()
 {
   return std::make_shared<EmulatedIMU>(context_, next_id_++);
+}
+
+
+#if CAMERA_EMULATORS
+i3ds::ToFCamera::Ptr
+i3ds::EmulatorFactory::CreateToFCamera()
+{
+  return std::make_shared<EmulatedToFCamera>(context_, next_id_++);
 }
 
 i3ds::Camera::Ptr
@@ -104,3 +110,4 @@ i3ds::EmulatorFactory::CreateStereoCamera(std::string sample_image_dir)
 
   return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
 }
+#endif
