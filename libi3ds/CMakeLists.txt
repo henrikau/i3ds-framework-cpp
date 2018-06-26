@@ -1,9 +1,11 @@
 find_package (ASN1CC REQUIRED)
-find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
+if(BUILD_TESTS)
+  find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
 
-if (NOT(BUILD_EMBEDDED))
-find_package (OpenCV REQUIRED)
-endif()
+  if (NOT(BUILD_EMBEDDED))
+    find_package (OpenCV REQUIRED)
+  endif (NOT(BUILD_EMBEDDED))
+endif(BUILD_TESTS)
 
 ################################################################################
 # ASN.1 generation
@@ -46,7 +48,7 @@ asn1cc_generate_c (ASN1_SRCS ASN1_HDRS "${ASN_OUTPUT_DIR}" ${ASN1_FILES})
 # libi3ds
 ################################################################################
 
-set (SRCS
+set (LIB_SRCS
   ${ASN1_SRCS} ${ASN1_HDRS}
   src/communication.cpp
   src/address_server.cpp
@@ -66,32 +68,30 @@ set (SRCS
   src/imu_client.cpp
   src/radar_sensor.cpp
   src/radar_client.cpp
-  src/emulated_lidar.cpp
   src/lidar_sensor.cpp
   src/lidar_client.cpp
-  src/emulated_star_tracker.cpp
   src/star_tracker_client.cpp
   src/analog_client.cpp
   src/trigger.cpp
   src/trigger_client.cpp
-  src/emulated_imu.cpp
-  src/emulated_radar.cpp
-  src/emulated_tactile.cpp
   src/measurement_proxy.cpp
   src/sensor_configurator.cpp
   src/message_recording.cpp
   )
 
-set (CAMERA_EMULATORS
+set (EMULATOR_SRCS
+  src/emulated_lidar.cpp
+  src/emulated_star_tracker.cpp
+  src/emulated_imu.cpp
+  src/emulated_radar.cpp
+  src/emulated_tactile.cpp
+  )
+
+set (CAMERA_EMULATOR_SRCS
   src/emulator_factory.cpp
   src/emulated_camera.cpp
   src/opencv_convertion.cpp
   src/emulated_tof_camera.cpp
-  )
-
-set (ALL_SRCS
-  ${SRCS}
-  ${CAMERA_EMULATORS}
   )
 
 set (LIBS
@@ -101,14 +101,28 @@ set (LIBS
   ${OpenCV_LIBS}
   )
 
-if (BUILD_EMBEDDED)
-  add_library (i3ds SHARED ${SRCS})
-else(BUILD_EMBEDDED)
-  add_library (i3ds SHARED ${ALL_SRCS})
-endif(BUILD_EMBEDDED)
+set (SRCS ${LIB_SRCS} )
+
+# Add emulators to sources if tests are built.
+# Do not add camera emulators on embedded
+if (BUILD_TESTS)
+  if (BUILD_EMBEDDED)
+    set (SRCS
+      ${SRCS}
+      ${EMULATOR_SRCS}
+      )
+  else(BUILD_EMBEDDED)
+    set (SRCS
+      ${SRCS}
+      ${EMULATOR_SRCS}
+      ${CAMERA_EMULATOR_SRCS}
+      )
+  endif(BUILD_EMBEDDED)
+endif(BUILD_TESTS)
+
+add_library (i3ds SHARED ${SRCS})
 
 target_link_libraries (i3ds ${LIBS})
-
 
 set_target_properties (
   i3ds PROPERTIES
@@ -123,30 +137,32 @@ install (FILES ${ASN1_HDRS} DESTINATION include/i3ds)
 # Unit testing
 ################################################################################
 
-set(TESTS
-  address-server-test
-  communication-test
-  imu-test
-  sensor-test
-  radar-test
-  lidar-test
-  star-tracker-test
-  tactile-test
-  measurement-proxy-test
-)
-
-if(NOT(BUILD_EMBEDDED))
+if (BUILD_TESTS)
   set(TESTS
-    ${TESTS}
-    camera-test
-    tof-camera-test
+    address-server-test
+    communication-test
+    imu-test
+    sensor-test
+    radar-test
+    lidar-test
+    star-tracker-test
+    tactile-test
+    measurement-proxy-test
     )
-endif(NOT(BUILD_EMBEDDED))
 
-configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+  if(NOT(BUILD_EMBEDDED))
+    set(TESTS
+      ${TESTS}
+      camera-test
+      tof-camera-test
+      )
+  endif(NOT(BUILD_EMBEDDED))
 
-foreach(t ${TESTS})
-  add_executable (${t} test/${t}.cpp)
-  target_link_libraries (${t} i3ds)
-  add_test(${t} ${CMAKE_CURRENT_BINARY_DIR}/${t})
-endforeach(t)
+  configure_file(test/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
+  foreach(t ${TESTS})
+    add_executable (${t} test/${t}.cpp)
+    target_link_libraries (${t} i3ds)
+    add_test(${t} ${CMAKE_CURRENT_BINARY_DIR}/${t})
+  endforeach(t)
+endif (BUILD_TESTS)

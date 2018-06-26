@@ -12,6 +12,8 @@ cmake .. -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" \
       -DCMAKE_FIND_ROOT_PATH="$BSP_ROOT" \
       -DZMQHPP_INCLUDE_DIR=external \
       -DBUILD_EMBEDDED=ON \
+      -DBUILD_TOOLS=OFF \
+      -DBUILD_TESTS=OFF \
       -DASN1CC_SRC_ROOT_FOLDER=$ASN1CC_ROOT
 
 make -j4
