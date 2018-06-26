@@ -14,6 +14,23 @@ set (PROJECT_VERSION "1.0")
 set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scripts)
 set (DEBUG $ENV{DEBUG})
 
+option(BUILD_EMBEDDED "Build for embedded systems" OFF)
+option(BUILD_TOOLS    "Build services" ON)
+option(BUILD_TESTS    "Build tests and emulators" ON)
+option(GENERATE_ASN   "Generate ASN files (instead of using pregenerated)" ON)
+
+if (BUILD_EMBEDDED)
+  if(NOT DEFINED CMAKE_FIND_ROOT_PATH)
+    MESSAGE(FATAL_ERROR "CMAKE_FIND_ROOT_PATH path must be set when compiling for embedded")
+  endif(NOT DEFINED CMAKE_FIND_ROOT_PATH)
+  SET(CMAKE_C_COMPILER "aarch64-linux-gnu-gcc")
+  SET(CMAKE_CXX_COMPILER "aarch64-linux-gnu-g++")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
+endif (BUILD_EMBEDDED)
+
+include_directories("external/include")
+
 enable_testing ()
 
 ################################################################################
@@ -94,10 +111,17 @@ endif (NOT CMAKE_C_FLAGS)
 # Add subdirectories with sources of the framework
 ################################################################################
 
-include_directories (BEFORE "libi3ds/include/")
-include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/libi3ds")
-
+if (GENERATE_ASN)
+  include_directories (BEFORE "libi3ds/include/")
+  include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/libi3ds")
+else (GENERATE_ASN)
+  include_directories (BEFORE "libi3ds/include/")
+  include_directories (BEFORE "generated")
+endif (GENERATE_ASN)
+  
 add_subdirectory (libi3ds)
-add_subdirectory (services)
-add_subdirectory (tools)
-add_subdirectory (bindings)
+if (BUILD_TOOLS)
+  add_subdirectory (services)
+  add_subdirectory (tools)
+  add_subdirectory (bindings)
+endif (BUILD_TOOLS)

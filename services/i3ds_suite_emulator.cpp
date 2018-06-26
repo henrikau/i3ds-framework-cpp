@@ -80,6 +80,7 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create factory";
   i3ds::EmulatorFactory factory(context, base_id);
 
+#if CAMERA_EMULATORS
   BOOST_LOG_TRIVIAL(trace) << "Create TIR camera";
   sensors.push_back(factory.CreateTIRCamera());
 
@@ -91,6 +92,7 @@ int main(int argc, char** argv)
 
   BOOST_LOG_TRIVIAL(trace) << "Create ToF camera";
   sensors.push_back(factory.CreateToFCamera());
+#endif
 
   BOOST_LOG_TRIVIAL(trace) << "Create LIDAR";
   sensors.push_back(factory.CreateLIDAR());

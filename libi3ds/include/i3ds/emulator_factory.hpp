@@ -13,12 +13,16 @@
 
 #include <i3ds/communication.hpp>
 #include <i3ds/sensor.hpp>
-#include <i3ds/camera_sensor.hpp>
-#include <i3ds/tof_camera_sensor.hpp>
 #include <i3ds/radar_sensor.hpp>
 #include <i3ds/lidar_sensor.hpp>
 #include <i3ds/imu_sensor.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
+
+#if CAMERA_EMULATORS
+#include <i3ds/camera_sensor.hpp>
+#include <i3ds/tof_camera_sensor.hpp>
+#endif
+
 
 namespace i3ds
 {
@@ -30,14 +34,17 @@ public:
   EmulatorFactory(Context::Ptr context, NodeID base_id);
   virtual ~EmulatorFactory();
 
-  ToFCamera::Ptr CreateToFCamera();
-  Camera::Ptr CreateTIRCamera();
-  Camera::Ptr CreateHRCamera(std::string sample_image_dir = "");
-  Camera::Ptr CreateStereoCamera(std::string sample_image_dir = "");
   Radar::Ptr CreateRadar();
   LIDAR::Ptr CreateLIDAR();
   IMU::Ptr CreateIMU();
   StarTracker::Ptr CreateStarTracker();
+
+#if CAMERA_EMULATORS
+  Camera::Ptr CreateTIRCamera();
+  Camera::Ptr CreateHRCamera(std::string sample_image_dir = "");
+  Camera::Ptr CreateStereoCamera(std::string sample_image_dir = "");
+  ToFCamera::Ptr CreateToFCamera();
+#endif
 
 private:
 
