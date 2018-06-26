@@ -26,8 +26,6 @@ class EmulatedLIDAR : public LIDAR
 {
 public:
 
-  typedef LIDAR::Measurement400KTopic MeasurementTopic;
-
   typedef std::shared_ptr<EmulatedLIDAR> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID node);

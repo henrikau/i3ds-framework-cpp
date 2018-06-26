@@ -23,9 +23,6 @@ namespace i3ds
 
 CODEC(RadarRegion);
 CODEC(RadarConfiguration);
-
-CODEC(RadarMeasurement100K);
-CODEC(RadarMeasurement200K);
 CODEC(RadarMeasurement400K);
 
 class Radar : public Sensor
@@ -40,9 +37,7 @@ public:
   typedef Query  <17, RadarConfigurationCodec> ConfigurationService;
 
   // Radar topics.
-  typedef Topic<128, RadarMeasurement100KCodec> Measurement100KTopic;
-  typedef Topic<129, RadarMeasurement200KCodec> Measurement200KTopic;
-  typedef Topic<130, RadarMeasurement400KCodec> Measurement400KTopic;
+  typedef Topic<128, RadarMeasurement400KCodec> MeasurementTopic;
 
   // Constructor and destructor.
   Radar(NodeID node) : Sensor(node) {};

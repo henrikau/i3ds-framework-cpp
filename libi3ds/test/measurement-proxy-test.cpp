@@ -69,21 +69,19 @@ int subscriber_2_received_count;
 void
 check_measurement(IMU::MeasurementTopic::Data& data)
 {
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].nCount, 3);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].arr[0], 1.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].arr[1], 2.0);
-  BOOST_CHECK_EQUAL(data.linear_accel.arr[0].arr[2], 3.0);
-
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].nCount, 3);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].arr[0], 4.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].arr[1], 5.0);
-  BOOST_CHECK_EQUAL(data.angular_rate.arr[0].arr[2], 6.0);
+  BOOST_CHECK_EQUAL(data.samples.nCount, 1);
+  BOOST_CHECK_EQUAL(data.samples.arr[0].axis_x_rate, 1.0);
+  BOOST_CHECK_EQUAL(data.samples.arr[0].axis_x_acceleration, 2.0);
+  BOOST_CHECK_EQUAL(data.samples.arr[0].axis_y_rate, 3.0);
+  BOOST_CHECK_EQUAL(data.samples.arr[0].axis_y_acceleration, 4.0);
+  BOOST_CHECK_EQUAL(data.samples.arr[0].axis_z_rate, 5.0);
+  BOOST_CHECK_EQUAL(data.samples.arr[0].axis_z_acceleration, 6.0);
 }
 
 void
 subscriber_1_handle_measurement(IMU::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Subscriber 1 received msg at: " << data.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Subscriber 1 received msg at: " << data.attributes.timestamp);
   check_measurement(data);
   subscriber_1_received_count++;
 }
@@ -91,7 +89,7 @@ subscriber_1_handle_measurement(IMU::MeasurementTopic::Data& data)
 void
 subscriber_2_handle_measurement(IMU::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Subscriber 2 received msg at: " << data.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Subscriber 2 received msg at: " << data.attributes.timestamp);
   check_measurement(data);
   subscriber_2_received_count++;
 }

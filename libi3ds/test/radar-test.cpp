@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE(radar_region)
 int received;
 
 void
-handle_measurement(Radar::Measurement400KTopic::Data& data)
+handle_measurement(Radar::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
 
   BOOST_CHECK_EQUAL(data.region.offset_x, 400);
   BOOST_CHECK_EQUAL(data.region.offset_y, 300);
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(radar_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<Radar::Measurement400KTopic>(client->node(), &handle_measurement);
+  subscriber.Attach<Radar::MeasurementTopic>(client->node(), &handle_measurement);
 
   SamplePeriod period = 100000;
   PlanarRegion region = {400, 300, 150, 100};

@@ -63,8 +63,8 @@ private:
     current_time_ = std::chrono::high_resolution_clock::now();
     long long current_time_as_int = std::chrono::duration_cast<std::chrono::microseconds>
                                     (current_time_.time_since_epoch()).count();
-    long long delay = current_time_as_int - message.attributes.timestamp.microseconds;
-    records.push_back({node_id_,T::Codec::max_size, message.attributes.timestamp.microseconds,
+    long long delay = current_time_as_int - message.attributes.timestamp;
+    records.push_back({node_id_,T::Codec::max_size, message.attributes.timestamp,
                        current_time_as_int, delay
                       });
     BOOST_LOG_TRIVIAL(trace) << "Received message at " << current_time_as_int;
@@ -76,8 +76,8 @@ private:
     current_time_ = std::chrono::high_resolution_clock::now();
     long long current_time_as_int = std::chrono::duration_cast<std::chrono::microseconds>
                                     (current_time_.time_since_epoch()).count();
-    long long delay = current_time_as_int - message.descriptor.attributes.timestamp.microseconds;
-    records.push_back({node_id_,i3ds::FrameCodec::max_size, message.descriptor.attributes.timestamp.microseconds,
+    long long delay = current_time_as_int - message.descriptor.attributes.timestamp;
+    records.push_back({node_id_,i3ds::FrameCodec::max_size, message.descriptor.attributes.timestamp,
                        current_time_as_int, delay
                       });
     BOOST_LOG_TRIVIAL(trace) << "Received message at " << current_time_as_int;
@@ -147,13 +147,13 @@ public:
   }
 };
 
-  template <>
-  void
-  DelayRecorder::Attach<i3ds::Camera::FrameTopic>()
-  {
-    using std::placeholders::_1;
-    subscriber_.Attach<i3ds::Camera::FrameTopic>(node_id_, std::bind(&DelayRecorder::handle_frame, this, _1));
-  }
+template <>
+void
+DelayRecorder::Attach<i3ds::Camera::FrameTopic>()
+{
+  using std::placeholders::_1;
+  subscriber_.Attach<i3ds::Camera::FrameTopic>(node_id_, std::bind(&DelayRecorder::handle_frame, this, _1));
+}
 
 int
 main(int argc, char *argv[])
@@ -162,7 +162,8 @@ main(int argc, char *argv[])
   std::string sensor_type;
   std::string output_file;
 
-  po::options_description desc("Measures delay between the message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
+  po::options_description
+  desc("Measures delay between the message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
 
   desc.add_options()
   ("help,h", "Produce this message")
@@ -214,45 +215,17 @@ main(int argc, char *argv[])
     {
       delay_recorder.Attach<i3ds::Camera::FrameTopic>();
     }
-  else if (sensor_type == "tof250K")
+  else if (sensor_type == "tof")
     {
-      delay_recorder.Attach<i3ds::ToFCamera::Measurement250KTopic>();
+      delay_recorder.Attach<i3ds::ToFCamera::MeasurementTopic>();
     }
-  else if (sensor_type == "tof500K")
+  else if (sensor_type == "lidar")
     {
-      delay_recorder.Attach<i3ds::ToFCamera::Measurement500KTopic>();
+      delay_recorder.Attach<i3ds::LIDAR::MeasurementTopic>();
     }
-  else if (sensor_type == "tof1M")
+  else if (sensor_type == "radar")
     {
-      delay_recorder.Attach<i3ds::ToFCamera::Measurement1MTopic>();
-    }
-  else if (sensor_type == "tof2M" || sensor_type == "tof")
-    {
-      delay_recorder.Attach<i3ds::ToFCamera::Measurement2MTopic>();
-    }
-  else if (sensor_type == "lidar100K")
-    {
-      delay_recorder.Attach<i3ds::LIDAR::Measurement100KTopic>();
-    }
-  else if (sensor_type == "lidar200K")
-    {
-      delay_recorder.Attach<i3ds::LIDAR::Measurement200KTopic>();
-    }
-  else if (sensor_type == "lidar400K" || sensor_type == "lidar")
-    {
-      delay_recorder.Attach<i3ds::LIDAR::Measurement400KTopic>();
-    }
-  else if (sensor_type == "radar100K")
-    {
-      delay_recorder.Attach<i3ds::Radar::Measurement100KTopic>();
-    }
-  else if (sensor_type == "radar200K")
-    {
-      delay_recorder.Attach<i3ds::Radar::Measurement200KTopic>();
-    }
-  else if (sensor_type == "radar400K" || sensor_type == "radar")
-    {
-      delay_recorder.Attach<i3ds::Radar::Measurement400KTopic>();
+      delay_recorder.Attach<i3ds::Radar::MeasurementTopic>();
     }
   else if (sensor_type == "st")
     {

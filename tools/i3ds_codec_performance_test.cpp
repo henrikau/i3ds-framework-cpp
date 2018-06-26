@@ -105,7 +105,7 @@ create_measurement()
 {
   auto measurement = std::make_shared<typename Codec::Data>();
   Codec::Initialize(*measurement);
-  measurement->attributes.timestamp.microseconds = 123456789;
+  measurement->attributes.timestamp = 123456789;
   measurement->attributes.validity = sample_valid;
   return measurement;
 }
@@ -118,7 +118,7 @@ camera_test(unsigned int n_replications, unsigned int size_x, unsigned int size_
 
   i3ds::FrameCodec::Initialize(*camera_frame);
 
-  camera_frame->descriptor.attributes.timestamp.microseconds = 123456789;
+  camera_frame->descriptor.attributes.timestamp = 123456789;
   camera_frame->descriptor.attributes.validity = sample_valid;
   camera_frame->descriptor.region.size_x = size_x;
   camera_frame->descriptor.region.size_y = size_y;
@@ -176,7 +176,7 @@ radar_test(unsigned int n_replications, unsigned int n_points)
   for (unsigned int i = 0; i < n_points; ++i)
     {
       radar_data->distances.arr[i] = M_PI;
-      radar_data->validity.arr[i] = measurement_error; // Not 0
+      radar_data->validity.arr[i] = depth_range_error; // Not 0
     }
   radar_data->distances.nCount = n_points;
   radar_data->validity.nCount = n_points;
@@ -228,7 +228,7 @@ main(int argc, char *argv[])
 
   lidar_test<i3ds::LIDARMeasurement200KCodec>(n_replications, 200000);
   radar_test<i3ds::RadarMeasurement400KCodec>(n_replications, 400000);
-  analog_test<i3ds::AnalogMeasurement10KCodec>(n_replications, 10000);
+  analog_test<i3ds::AnalogMeasurement1KCodec>(n_replications, 10000);
 
   return 0;
 }

@@ -23,7 +23,7 @@ class EmulatedTactile : public Analog
 {
 public:
 
-  typedef Analog::Measurement10KTopic MeasurementTopic;
+  typedef Analog::Measurement1KTopic MeasurementTopic;
 
   typedef std::shared_ptr<EmulatedTactile> Ptr;
 

@@ -34,6 +34,8 @@ print_tof_settings(i3ds::ToFCameraClient& tof)
   std::cout << "," << tof.region().size_y;
   std::cout << "," << tof.region().offset_x;
   std::cout << "," << tof.region().offset_y << "]" << "," << std::endl;
+  std::cout << "\"min_depth\" : " << tof.min_depth() << "," << std::endl;
+  std::cout << "\"max_depth\" : " << tof.max_depth() << std::endl;
   std::cout << "}" << std::endl;
 }
 
@@ -42,6 +44,7 @@ int main(int argc, char *argv[])
   i3ds::SensorConfigurator configurator;
   bool enable_region;
   PlanarRegion region;
+  double min_depth, max_depth;
 
   po::options_description desc("Allowed ToF camera control options");
 
@@ -49,11 +52,15 @@ int main(int argc, char *argv[])
   desc.add_options()
   ("print", "Print the ToF camera configuration")
 
-  ("region", po::value(&enable_region), "Enable ToF camera region of interest (ROI). All or no egion parameters must be set, or 0 will be used as default.")
+  ("region", po::value(&enable_region),
+   "Enable ToF camera region of interest (ROI). All or no region parameters must be set.")
   ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
   ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
+
+  ("min-depth", po::value(&min_depth), "Min depth range for ToF")
+  ("max-depth", po::value(&max_depth), "Max depth range for ToF")
   ;
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
@@ -83,6 +90,17 @@ int main(int argc, char *argv[])
         }
 
       tof.set_region(enable_region, region);
+
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
+
+  if (vm.count("min-depth") && vm.count("max-depth"))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Set range: "
+                              << min_depth << " [m],"
+                              << max_depth << " [m]";
+
+      tof.set_range(min_depth, max_depth);
 
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }

@@ -76,7 +76,7 @@ int received;
 void
 handle_measurement(StarTracker::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
 
   BOOST_CHECK_EQUAL(data.position.arr[0], 1.0);
   BOOST_CHECK_EQUAL(data.position.arr[1], 2.0);

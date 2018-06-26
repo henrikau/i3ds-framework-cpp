@@ -51,12 +51,12 @@ i3ds::frame_to_cv_mat(const Frame& frame, int image_number)
 }
 
 void
-i3ds::set_descriptor_from_mat(Frame& frame, const cv::Mat& mat, 
-                        unsigned long timestamp_us, Frame_mode_t mode, int image_count)
+i3ds::set_descriptor_from_mat(Frame& frame, const cv::Mat& mat,
+                              unsigned long timestamp_us, Frame_mode_t mode, int image_count)
 {
   FrameDescriptor* d = &frame.descriptor;
 
-  d->attributes.timestamp.microseconds = timestamp_us;
+  d->attributes.timestamp = timestamp_us;
   d->attributes.validity = sample_valid;
 
   d->region.size_x = mat.cols;

@@ -30,9 +30,12 @@ public:
   ToFCameraClient(Context::Ptr context, NodeID sensor);
 
   void set_region(bool enable, PlanarRegion region);
+  void set_range(double min_depth, double max_depth);
 
   bool region_enabled() const {return config_.response.region_enabled;}
   PlanarRegion region() const {return config_.response.region;}
+  double min_depth() const {return config_.response.min_depth;}
+  double max_depth() const {return config_.response.max_depth;}
 
   virtual void load_config();
 

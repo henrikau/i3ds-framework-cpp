@@ -66,7 +66,7 @@ i3ds::EmulatedStarTracker::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated star tracker with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp.microseconds = timestamp_us;
+  frame_.attributes.timestamp = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
   frame_.position.nCount = 4;

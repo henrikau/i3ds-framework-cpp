@@ -19,6 +19,7 @@ i3ds::ToFCamera::Attach(Server& server)
   Sensor::Attach(server);
 
   server.Attach<RegionService>(node(), std::bind(&i3ds::ToFCamera::handle_region, this, _1));
+  server.Attach<RangeService>(node(), std::bind(&i3ds::ToFCamera::handle_range, this, _1));
   server.Attach<ConfigurationService>(node(), std::bind(&i3ds::ToFCamera::handle_configuration, this, _1));
 }
 
@@ -29,8 +30,16 @@ i3ds::ToFCamera::handle_region(RegionService::Data& command)
 }
 
 void
+i3ds::ToFCamera::handle_range(RangeService::Data& command)
+{
+  throw CommandError(error_unsupported, "Range setting not supported");
+}
+
+void
 i3ds::ToFCamera::handle_configuration(ConfigurationService::Data& config) const
 {
   config.response.region_enabled = region_enabled();
   config.response.region = region();
+  config.response.min_depth = range_min_depth();
+  config.response.max_depth = range_max_depth();
 }

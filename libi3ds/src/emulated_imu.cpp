@@ -66,20 +66,18 @@ i3ds::EmulatedIMU::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated IMU with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp.microseconds = timestamp_us;
+  frame_.attributes.timestamp = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
-  frame_.linear_accel.nCount = 1;
-  frame_.linear_accel.arr[0].nCount = 3;
-  frame_.linear_accel.arr[0].arr[0] = 1.0;
-  frame_.linear_accel.arr[0].arr[1] = 2.0;
-  frame_.linear_accel.arr[0].arr[2] = 3.0;
+  frame_.samples.nCount = 1;
 
-  frame_.angular_rate.nCount = 1;
-  frame_.angular_rate.arr[0].nCount = 3;
-  frame_.angular_rate.arr[0].arr[0] = 4.0;
-  frame_.angular_rate.arr[0].arr[1] = 5.0;
-  frame_.angular_rate.arr[0].arr[2] = 6.0;
+  frame_.samples.arr[0].axis_x_rate = 1.0;
+  frame_.samples.arr[0].axis_x_acceleration = 2.0;
+  frame_.samples.arr[0].axis_y_rate = 3.0;
+  frame_.samples.arr[0].axis_y_acceleration = 4.0;
+  frame_.samples.arr[0].axis_z_rate = 5.0;
+  frame_.samples.arr[0].axis_z_acceleration = 6.0;
+
 
   publisher_.Send<MeasurementTopic>(frame_);
 

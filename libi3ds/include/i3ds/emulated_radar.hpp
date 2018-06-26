@@ -26,8 +26,6 @@ class EmulatedRadar : public Radar
 {
 public:
 
-  typedef Radar::Measurement400KTopic MeasurementTopic;
-
   typedef std::shared_ptr<EmulatedRadar> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID node);

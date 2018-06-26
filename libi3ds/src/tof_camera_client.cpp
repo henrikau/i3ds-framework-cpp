@@ -33,3 +33,14 @@ i3ds::ToFCameraClient::set_region(bool enable, PlanarRegion region)
 
   Call<ToFCamera::RegionService>(command);
 }
+
+void
+i3ds::ToFCameraClient::set_range(double min_depth, double max_depth)
+{
+  ToFCamera::RangeService::Data command;
+
+  command.request.min_depth = min_depth;
+  command.request.max_depth = max_depth;
+
+  Call<ToFCamera::RangeService>(command);
+}

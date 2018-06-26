@@ -22,12 +22,9 @@ namespace i3ds
 {
 
 CODEC(ToFRegion);
+CODEC(ToFRange);
 CODEC(ToFConfiguration);
-
-CODEC(ToFMeasurement250K);
-CODEC(ToFMeasurement500K);
-CODEC(ToFMeasurement1M);
-CODEC(ToFMeasurement2M);
+CODEC(ToFMeasurement400K);
 
 class ToFCamera : public Sensor
 {
@@ -38,13 +35,11 @@ public:
 
   // ToFCamera services.
   typedef Command<16, ToFRegionCodec>        RegionService;
-  typedef Query  <17, ToFConfigurationCodec> ConfigurationService;
+  typedef Command<17, ToFRangeCodec>         RangeService;
+  typedef Query  <18, ToFConfigurationCodec> ConfigurationService;
 
   // ToFCamera topics.
-  typedef Topic<128, ToFMeasurement250KCodec> Measurement250KTopic;
-  typedef Topic<129, ToFMeasurement500KCodec> Measurement500KTopic;
-  typedef Topic<130, ToFMeasurement1MCodec> Measurement1MTopic;
-  typedef Topic<131, ToFMeasurement2MCodec> Measurement2MTopic;
+  typedef Topic<128, ToFMeasurement400KCodec> MeasurementTopic;
 
   // Constructor and destructor.
   ToFCamera(NodeID node) : Sensor(node) {};
@@ -56,6 +51,12 @@ public:
   // Get the region of interest for the ToF-camera.
   virtual PlanarRegion region() const {return {0,0,0,0};}
 
+  // Get the min range configuration of the ToF-camera.
+  virtual double range_min_depth() const {return 0.0;}
+
+  // Get the max range configuration of the ToF-camera.
+  virtual double range_max_depth() const {return 1.0e6;}
+
   // Attach handlers to the server.
   virtual void Attach(Server& server);
 
@@ -63,6 +64,9 @@ protected:
 
   // Handler for ToF-camera region of interest command.
   virtual void handle_region(RegionService::Data& command);
+
+  // Handler for ToF-camera range command.
+  virtual void handle_range(RangeService::Data& command);
 
   // Handler for camera configuration query.
   virtual void handle_configuration(ConfigurationService::Data& config) const;

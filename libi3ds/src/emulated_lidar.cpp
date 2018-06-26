@@ -94,7 +94,7 @@ i3ds::EmulatedLIDAR::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated LIDAR with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp.microseconds = timestamp_us;
+  frame_.attributes.timestamp = timestamp_us;
   frame_.attributes.validity = sample_valid;
   frame_.region = region_;
 

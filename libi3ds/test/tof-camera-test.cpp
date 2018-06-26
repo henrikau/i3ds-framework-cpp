@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE(tof_camera_region)
 int received;
 
 void
-handle_measurement(ToFCamera::Measurement2MTopic::Data& data)
+handle_measurement(ToFCamera::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
   received++;
 }
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(tof_camera_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<ToFCamera::Measurement2MTopic>(client->node(), &handle_measurement);
+  subscriber.Attach<ToFCamera::MeasurementTopic>(client->node(), &handle_measurement);
 
 
   SamplePeriod period = 100000;

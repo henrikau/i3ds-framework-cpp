@@ -168,7 +168,7 @@ int received;
 void
 handle_measurement(Camera::FrameTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp.microseconds);
+  BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp);
 
   BOOST_CHECK_EQUAL(data.descriptor.frame_mode, camera_prop->mode);
   BOOST_CHECK_EQUAL(data.descriptor.data_depth, camera_prop->data_depth);

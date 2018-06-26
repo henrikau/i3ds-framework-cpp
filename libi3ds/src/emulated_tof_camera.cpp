@@ -89,12 +89,23 @@ i3ds::EmulatedToFCamera::handle_region(RegionService::Data& command)
     }
 }
 
+void
+i3ds::EmulatedToFCamera::handle_range(RangeService::Data& command)
+{
+  BOOST_LOG_TRIVIAL(info) << "Emulated ToF camera with NodeID: " << node() << " handle_range()";
+
+  check_standby();
+
+  min_depth_ = std::max(command.request.min_depth, 0.0);
+  max_depth_ = command.request.max_depth;
+}
+
 bool
 i3ds::EmulatedToFCamera::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated ToF camera with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp.microseconds = timestamp_us;
+  frame_.attributes.timestamp = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
   publisher_.Send<MeasurementTopic>(frame_);

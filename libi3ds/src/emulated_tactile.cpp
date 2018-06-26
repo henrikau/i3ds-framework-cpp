@@ -65,7 +65,7 @@ bool
 i3ds::EmulatedTactile::is_sampling_supported(SampleCommand sample)
 {
   BOOST_LOG_TRIVIAL(info) << "Emulated tactile sensor with NodeID: " << node() << " is_period_supported()";
-  return (sample.batch_size >= 1 && sample.batch_size <=10000*series_count_) 
+  return (sample.batch_size >= 1 && sample.batch_size <=10000*series_count_)
          && (0 < sample.period && sample.period <= 10000000);
 }
 
@@ -74,7 +74,7 @@ i3ds::EmulatedTactile::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated tactile sensor with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp.microseconds = timestamp_us;
+  frame_.attributes.timestamp = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
   frame_.samples.nCount = measurement_index_ * series_count_;

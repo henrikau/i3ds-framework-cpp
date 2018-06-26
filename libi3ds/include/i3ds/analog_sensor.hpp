@@ -21,19 +21,14 @@
 namespace i3ds
 {
 
-CODEC(AnalogMeasurement300);
 CODEC(AnalogMeasurement1K);
-CODEC(AnalogMeasurement3K);
-CODEC(AnalogMeasurement10K);
 
 class Analog : public Sensor
 {
 public:
 
-  typedef Topic<128, AnalogMeasurement300Codec> Measurement300Topic;
-  typedef Topic<129, AnalogMeasurement1KCodec> Measurement1KTopic;
-  typedef Topic<130, AnalogMeasurement3KCodec> Measurement3KTopic;
-  typedef Topic<131, AnalogMeasurement10KCodec> Measurement10KTopic;
+  // Topic definitions.
+  typedef Topic<128, AnalogMeasurement1KCodec> Measurement1KTopic;
 
   // Shared pointer for Analog interfaces.
   typedef std::shared_ptr<Analog> Ptr;

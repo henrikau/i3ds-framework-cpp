@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(tactile_sample_settings)
 int received;
 
 void
-handle_measurement(Analog::Measurement10KTopic::Data& data)
+handle_measurement(Analog::Measurement1KTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recived measurement with batch size: " << data.batch_size);
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(tactile_sampling)
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<Analog::Measurement10KTopic>(client->node(), &handle_measurement);
+  subscriber.Attach<Analog::Measurement1KTopic>(client->node(), &handle_measurement);
 
   SamplePeriod period = 100000;
 

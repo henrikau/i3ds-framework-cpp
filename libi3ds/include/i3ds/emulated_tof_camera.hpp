@@ -26,8 +26,6 @@ class EmulatedToFCamera : public ToFCamera
 {
 public:
 
-  typedef ToFCamera::Measurement2MTopic MeasurementTopic;
-
   typedef std::shared_ptr<EmulatedToFCamera> Ptr;
 
   static Ptr Create(Context::Ptr context, NodeID node);
@@ -38,6 +36,8 @@ public:
   // Getters.
   virtual bool region_enabled() const {return region_enabled_;}
   virtual PlanarRegion region() const {return region_;}
+  virtual double range_min_depth() const {return min_depth_;}
+  virtual double range_max_depth() const {return max_depth_;}
 
   // Supported period.
   virtual bool is_sampling_supported(SampleCommand sample);
@@ -52,6 +52,7 @@ protected:
 
   // Handlers.
   virtual void handle_region(RegionService::Data& command);
+  virtual void handle_range(RangeService::Data& command);
 
 private:
 
@@ -59,6 +60,8 @@ private:
 
   bool region_enabled_;
   PlanarRegion region_;
+
+  double min_depth_, max_depth_;
 
   Sampler sampler_;
 
