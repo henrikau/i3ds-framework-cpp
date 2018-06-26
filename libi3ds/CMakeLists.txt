@@ -1,4 +1,3 @@
-find_package (ASN1CC REQUIRED)
 if(BUILD_TESTS)
   find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
 
@@ -9,6 +8,8 @@ endif(BUILD_TESTS)
 # ASN.1 generation
 ################################################################################
 if (GENERATE_ASN)
+  find_package (ASN1CC REQUIRED)
+
   set (ESROCOS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/esrocos/types-base/asn)
   set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
   set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
