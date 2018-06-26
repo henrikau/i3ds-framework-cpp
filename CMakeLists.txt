@@ -17,6 +17,7 @@ set (DEBUG $ENV{DEBUG})
 option(BUILD_EMBEDDED "Build for embedded systems" OFF)
 option(BUILD_TOOLS    "Build services" ON)
 option(BUILD_TESTS    "Build tests and emulators" ON)
+option(GENERATE_ASN   "Generate ASN files (instead of using pregenerated)" ON)
 
 if (BUILD_EMBEDDED)
   if(NOT DEFINED CMAKE_FIND_ROOT_PATH)
@@ -110,9 +111,14 @@ endif (NOT CMAKE_C_FLAGS)
 # Add subdirectories with sources of the framework
 ################################################################################
 
-include_directories (BEFORE "libi3ds/include/")
-include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/libi3ds")
-
+if (GENERATE_ASN)
+  include_directories (BEFORE "libi3ds/include/")
+  include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/libi3ds")
+else (GENERATE_ASN)
+  include_directories (BEFORE "libi3ds/include/")
+  include_directories (BEFORE "generated")
+endif (GENERATE_ASN)
+  
 add_subdirectory (libi3ds)
 if (BUILD_TOOLS)
   add_subdirectory (services)
