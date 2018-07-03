@@ -22,12 +22,12 @@
 namespace i3ds
 {
 
-void 
+void
 test_sensor_creation(Sensor::Ptr sensor, NodeID node)
 {
   BOOST_CHECK_EQUAL(sensor->node(), node);
   BOOST_CHECK_EQUAL(sensor->state(), inactive);
-  BOOST_CHECK_EQUAL(sensor->period(), 0);
+  BOOST_CHECK_EQUAL(sensor->period(), 1000000);
 }
 
 void

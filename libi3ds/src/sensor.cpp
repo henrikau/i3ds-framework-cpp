@@ -15,8 +15,11 @@
 i3ds::Sensor::Sensor(NodeID node)
   : node_(node)
 {
+  // Sensors are initially inactive.
   state_ = inactive;
-  period_ = 0.0;
+
+  // Default setting one sample at 1 Hz.
+  period_ = 1000000;
   batch_size_ = 1;
   batch_count_ = 0;
 }

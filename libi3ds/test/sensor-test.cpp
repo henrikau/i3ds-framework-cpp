@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(sensor_creation)
 {
   BOOST_CHECK_EQUAL(sensor.node(), id);
   BOOST_CHECK_EQUAL(sensor.state(), inactive);
-  BOOST_CHECK_EQUAL(sensor.period(), 0.0);
+  BOOST_CHECK_EQUAL(sensor.period(), 1000000);
   BOOST_CHECK_EQUAL(sensor.batch_size(), 1);
   BOOST_CHECK_EQUAL(sensor.batch_count(), 0);
   BOOST_CHECK_CLOSE(sensor.temperature(), 300.0, 0.01);
