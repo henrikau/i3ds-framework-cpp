@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   ("auto-max-shutter", po::value(&max_shutter)->default_value(100000), "Max auto exposure shutter time in microseconds")
   ("auto-max-gain", po::value(&max_gain)->default_value(100.0), "Max auto exposure gain in decibel")
 
-  ("region", po::value(&enable_region), "Enable camera region of interest (ROI). All or no egion parameters must be set, or 0 will be used as default.")
+  ("region", po::value(&enable_region), "Enable camera region of interest (ROI). Region sizes must be greater than 0.")
   ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
   ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
@@ -123,11 +123,18 @@ int main(int argc, char *argv[])
     {
       if (enable_region)
         {
+          if (region.size_x == 0 || region.size_y == 0)
+            {
+              BOOST_LOG_TRIVIAL(error) << "Must set region sizes larger than 0!";
+              return -1;
+            }
+
           BOOST_LOG_TRIVIAL(info) << "Enable region: ("
-                                  << region.size_x << ","
-                                  << region.size_y << ","
                                   << region.offset_x << ","
-                                  << region.offset_y << ")";
+                                  << region.offset_y << ","
+                                  << region.size_x << ","
+                                  << region.size_y << ")";
+          ;
         }
       else
         {
