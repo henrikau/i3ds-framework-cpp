@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   desc.add_options()
   ("print", "Print the radar configuration")
 
-  ("region", po::value(&enable_region), "Enable radar region of interest (ROI). All or no egion parameters must be set, or 0 will be used as default.")
+  ("region", po::value(&enable_region), "Enable region of interest (ROI). Region sizes must be greater than 0.")
   ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
   ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
@@ -71,11 +71,17 @@ int main(int argc, char *argv[])
     {
       if (enable_region)
         {
+          if (region.size_x == 0 || region.size_y == 0)
+            {
+              BOOST_LOG_TRIVIAL(error) << "Must set region sizes larger than 0!";
+              return -1;
+            }
+
           BOOST_LOG_TRIVIAL(info) << "Enable region: ("
-                                  << region.size_x << ","
-                                  << region.size_y << ","
                                   << region.offset_x << ","
-                                  << region.offset_y << ")";
+                                  << region.offset_y << ","
+                                  << region.size_x << ","
+                                  << region.size_y << ")";
         }
       else
         {
