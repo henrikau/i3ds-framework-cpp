@@ -21,6 +21,7 @@
 #include <boost/log/expressions.hpp>
 #include <boost/program_options.hpp>
 
+#include <i3ds/time.hpp>
 #include <i3ds/communication.hpp>
 #include <i3ds/message_recording.hpp>
 
@@ -47,14 +48,14 @@ main(int argc, char *argv[])
   po::options_description desc("Records measurements and stores them in a log file\n  Available options");
 
   desc.add_options()
-   ("help,h", "Produce this message")
-   ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
-   ("endpoint,e", po::value(&endpoint_id)->required(), "Endpoint ID of measurement")
-   ("messages,m", po::value(&n_messages)->default_value(0), "Number of messages to record. 0 means no limit.")
-   ("output,o", po::value<std::string>(&file_name)->default_value("out.log"), "File name to write output.")
-   ("verbose,v", "Print verbose output")
-   ("quiet,q", "Quiet ouput")
-   ;
+  ("help,h", "Produce this message")
+  ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
+  ("endpoint,e", po::value(&endpoint_id)->required(), "Endpoint ID of measurement")
+  ("messages,m", po::value(&n_messages)->default_value(0), "Number of messages to record. 0 means no limit.")
+  ("output,o", po::value<std::string>(&file_name)->default_value("out.log"), "File name to write output.")
+  ("verbose,v", "Print verbose output")
+  ("quiet,q", "Quiet ouput")
+  ;
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -73,8 +74,8 @@ main(int argc, char *argv[])
     {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
     }
-  
-  try 
+
+  try
     {
       po::notify(vm);
     }
@@ -105,7 +106,7 @@ main(int argc, char *argv[])
     {
       i3ds::MessageRecord record;
       subscriber->Receive(*(record.msg));
-      current_msg_time = i3ds::get_current_time_in_us();
+      current_msg_time = i3ds::get_timestamp();
       if (!recording.records.empty()) // Keep first message delay 0
         {
           record.delay = current_msg_time - prev_msg_time;;

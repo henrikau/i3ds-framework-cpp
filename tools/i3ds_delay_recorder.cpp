@@ -12,7 +12,6 @@
 #include <fstream>
 #include <functional>
 #include <csignal>
-#include <chrono>
 
 #define BOOST_LOG_DYN_LINK
 
@@ -21,6 +20,7 @@
 #include <boost/log/expressions.hpp>
 #include <boost/program_options.hpp>
 
+#include <i3ds/time.hpp>
 #include <i3ds/communication.hpp>
 #include <i3ds/subscriber.hpp>
 #include <i3ds/sensor_client.hpp>
@@ -60,9 +60,7 @@ private:
   void
   handle_measurement(typename T::Data& message)
   {
-    current_time_ = std::chrono::high_resolution_clock::now();
-    long long current_time_as_int = std::chrono::duration_cast<std::chrono::microseconds>
-                                    (current_time_.time_since_epoch()).count();
+    long long current_time_as_int = i3ds::get_timestamp();
     long long delay = current_time_as_int - message.attributes.timestamp;
     records.push_back({node_id_,T::Codec::max_size, message.attributes.timestamp,
                        current_time_as_int, delay
@@ -73,9 +71,7 @@ private:
   void
   handle_frame(i3ds::Camera::FrameTopic::Data& message)
   {
-    current_time_ = std::chrono::high_resolution_clock::now();
-    long long current_time_as_int = std::chrono::duration_cast<std::chrono::microseconds>
-                                    (current_time_.time_since_epoch()).count();
+    long long current_time_as_int = i3ds::get_timestamp();
     long long delay = current_time_as_int - message.descriptor.attributes.timestamp;
     records.push_back({node_id_,i3ds::FrameCodec::max_size, message.descriptor.attributes.timestamp,
                        current_time_as_int, delay
@@ -88,7 +84,6 @@ private:
   unsigned int node_id_;
   std::string file_name_;
   std::ofstream output_file_;
-  std::chrono::high_resolution_clock::time_point current_time_;
   std::vector<MessageRecord> records;
 
 public:
