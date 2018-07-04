@@ -13,29 +13,30 @@ extern "C" {
 
 
 
-typedef enum {
-    valid_measurement = 0,
-    too_far = 1,
-    too_near = 2,
-    measurement_error = 3
+typedef enum
+{
+  depth_valid = 0,
+  depth_range_error = 1,
+  depth_range_error_far = 2,
+  depth_range_error_near = 3
 } Depth_validity_t;
 
-#define Depth_validity_t_REQUIRED_BYTES_FOR_ENCODING       1 
+#define Depth_validity_t_REQUIRED_BYTES_FOR_ENCODING       1
 #define Depth_validity_t_REQUIRED_BITS_FOR_ENCODING        2
-#define Depth_validity_t_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
+#define Depth_validity_t_REQUIRED_BYTES_FOR_ACN_ENCODING   1
 #define Depth_validity_t_REQUIRED_BITS_FOR_ACN_ENCODING    2
-#define Depth_validity_t_REQUIRED_BYTES_FOR_XER_ENCODING   74
+#define Depth_validity_t_REQUIRED_BYTES_FOR_XER_ENCODING   62
 
 void Depth_validity_t_Initialize(Depth_validity_t* pVal);
 flag Depth_validity_t_IsConstraintValid(const Depth_validity_t* val, int* pErrCode);
-#ifndef ERR_Depth_validity_t_unknown_enumeration_value 
+#ifndef ERR_Depth_validity_t_unknown_enumeration_value
 #define ERR_Depth_validity_t_unknown_enumeration_value		1002  /**/
 #endif
-#ifndef ERR_Depth_validity_t 
+#ifndef ERR_Depth_validity_t
 #define ERR_Depth_validity_t		1001  /**/
 #endif
 
- 
+
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
@@ -43,15 +44,15 @@ flag Depth_validity_t_IsConstraintValid(const Depth_validity_t* val, int* pErrCo
  * ========================================================================= */
 
 flag Depth_validity_t_Encode(const Depth_validity_t* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag Depth_validity_t_Decode(Depth_validity_t* pVal, BitStream* pBitStrm, int* pErrCode); 
+flag Depth_validity_t_Decode(Depth_validity_t* pVal, BitStream* pBitStrm, int* pErrCode);
 
 
 #ifdef  __cplusplus
 }
-#define ENUM_valid_measurement	valid_measurement
-#define ENUM_too_far	too_far
-#define ENUM_too_near	too_near
-#define ENUM_measurement_error	measurement_error
+#define ENUM_depth_valid	depth_valid
+#define ENUM_depth_range_error	depth_range_error
+#define ENUM_depth_range_error_far	depth_range_error_far
+#define ENUM_depth_range_error_near	depth_range_error_near
 
 #endif
 

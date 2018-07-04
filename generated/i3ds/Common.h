@@ -12,67 +12,81 @@ extern "C" {
 
 
 
+typedef T_Int64 Timepoint;
+
+#define Timepoint_REQUIRED_BYTES_FOR_ENCODING       8
+#define Timepoint_REQUIRED_BITS_FOR_ENCODING        64
+#define Timepoint_REQUIRED_BYTES_FOR_ACN_ENCODING   8
+#define Timepoint_REQUIRED_BITS_FOR_ACN_ENCODING    64
+#define Timepoint_REQUIRED_BYTES_FOR_XER_ENCODING   43
+
+void Timepoint_Initialize(Timepoint* pVal);
+flag Timepoint_IsConstraintValid(const Timepoint* val, int* pErrCode);
+
+
 typedef asn1SccUint NodeID;
 
-#define NodeID_REQUIRED_BYTES_FOR_ENCODING       3 
+#define NodeID_REQUIRED_BYTES_FOR_ENCODING       3
 #define NodeID_REQUIRED_BITS_FOR_ENCODING        24
-#define NodeID_REQUIRED_BYTES_FOR_ACN_ENCODING   3 
+#define NodeID_REQUIRED_BYTES_FOR_ACN_ENCODING   3
 #define NodeID_REQUIRED_BITS_FOR_ACN_ENCODING    24
 #define NodeID_REQUIRED_BYTES_FOR_XER_ENCODING   37
 
 void NodeID_Initialize(NodeID* pVal);
 flag NodeID_IsConstraintValid(const NodeID* val, int* pErrCode);
-#ifndef ERR_NodeID 
+#ifndef ERR_NodeID
 #define ERR_NodeID		1001  /*(0 .. 16777215)*/
 #endif
 
 typedef asn1SccUint EndpointID;
 
-#define EndpointID_REQUIRED_BYTES_FOR_ENCODING       1 
+#define EndpointID_REQUIRED_BYTES_FOR_ENCODING       1
 #define EndpointID_REQUIRED_BITS_FOR_ENCODING        8
-#define EndpointID_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
+#define EndpointID_REQUIRED_BYTES_FOR_ACN_ENCODING   1
 #define EndpointID_REQUIRED_BITS_FOR_ACN_ENCODING    8
 #define EndpointID_REQUIRED_BYTES_FOR_XER_ENCODING   45
 
 void EndpointID_Initialize(EndpointID* pVal);
 flag EndpointID_IsConstraintValid(const EndpointID* val, int* pErrCode);
-#ifndef ERR_EndpointID 
+#ifndef ERR_EndpointID
 #define ERR_EndpointID		1002  /*(0 .. 255)*/
 #endif
 
-typedef enum {
-    success = 0,
-    error_node_id = 1,
-    error_endpoint_id = 2,
-    error_unsupported = 3,
-    error_state = 4,
-    error_value = 5,
-    error_other = 6
+typedef enum
+{
+  success = 0,
+  error_node_id = 1,
+  error_endpoint_id = 2,
+  error_unsupported = 3,
+  error_state = 4,
+  error_value = 5,
+  error_other = 6
 } ResultCode;
 
-#define ResultCode_REQUIRED_BYTES_FOR_ENCODING       1 
+#define ResultCode_REQUIRED_BYTES_FOR_ENCODING       1
 #define ResultCode_REQUIRED_BITS_FOR_ENCODING        3
-#define ResultCode_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
+#define ResultCode_REQUIRED_BYTES_FOR_ACN_ENCODING   1
 #define ResultCode_REQUIRED_BITS_FOR_ACN_ENCODING    3
 #define ResultCode_REQUIRED_BYTES_FOR_XER_ENCODING   42
 
 void ResultCode_Initialize(ResultCode* pVal);
 flag ResultCode_IsConstraintValid(const ResultCode* val, int* pErrCode);
-#ifndef ERR_ResultCode_unknown_enumeration_value 
+#ifndef ERR_ResultCode_unknown_enumeration_value
 #define ERR_ResultCode_unknown_enumeration_value		1004  /**/
 #endif
-#ifndef ERR_ResultCode 
+#ifndef ERR_ResultCode
 #define ERR_ResultCode		1003  /**/
 #endif
 
-typedef struct {
-    ResultCode result;
-    T_String message;
+typedef struct
+{
+  ResultCode result;
+  T_String message;
 } CommandResponse;
 
-#define CommandResponse_REQUIRED_BYTES_FOR_ENCODING       258 
+#define CommandResponse_REQUIRED_BYTES_FOR_ENCODING       258
 #define CommandResponse_REQUIRED_BITS_FOR_ENCODING        2060
-#define CommandResponse_REQUIRED_BYTES_FOR_ACN_ENCODING   258 
+#define CommandResponse_REQUIRED_BYTES_FOR_ACN_ENCODING   258
 #define CommandResponse_REQUIRED_BITS_FOR_ACN_ENCODING    2060
 #define CommandResponse_REQUIRED_BYTES_FOR_XER_ENCODING   600
 
@@ -80,13 +94,15 @@ void CommandResponse_Initialize(CommandResponse* pVal);
 flag CommandResponse_IsConstraintValid(const CommandResponse* val, int* pErrCode);
 
 
- 
+
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
+flag Timepoint_Encode(const Timepoint* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+flag Timepoint_Decode(Timepoint* pVal, BitStream* pBitStrm, int* pErrCode);
 flag NodeID_Encode(const NodeID* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 flag NodeID_Decode(NodeID* pVal, BitStream* pBitStrm, int* pErrCode);
 flag EndpointID_Encode(const EndpointID* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
@@ -94,7 +110,7 @@ flag EndpointID_Decode(EndpointID* pVal, BitStream* pBitStrm, int* pErrCode);
 flag ResultCode_Encode(const ResultCode* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 flag ResultCode_Decode(ResultCode* pVal, BitStream* pBitStrm, int* pErrCode);
 flag CommandResponse_Encode(const CommandResponse* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag CommandResponse_Decode(CommandResponse* pVal, BitStream* pBitStrm, int* pErrCode); 
+flag CommandResponse_Decode(CommandResponse* pVal, BitStream* pBitStrm, int* pErrCode);
 
 
 #ifdef  __cplusplus

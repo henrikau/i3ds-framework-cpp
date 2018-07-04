@@ -16,218 +16,34 @@ extern "C" {
 
 
 
-typedef struct {    int nCount; 
-    
-    Depth_validity_t arr[2000000];
-} ToFMeasurement2M_validity;
+typedef struct
+{
+  int nCount;
 
-#define ToFMeasurement2M_validity_REQUIRED_BYTES_FOR_ENCODING       500033 
-#define ToFMeasurement2M_validity_REQUIRED_BITS_FOR_ENCODING        4000264
-#define ToFMeasurement2M_validity_REQUIRED_BYTES_FOR_ACN_ENCODING   500003 
-#define ToFMeasurement2M_validity_REQUIRED_BITS_FOR_ACN_ENCODING    4000021
-#define ToFMeasurement2M_validity_REQUIRED_BYTES_FOR_XER_ENCODING   84000055
+  Depth_validity_t arr[400000];
+} ToFMeasurement400K_validity;
 
-void ToFMeasurement2M_validity_Initialize(ToFMeasurement2M_validity* pVal);
-flag ToFMeasurement2M_validity_IsConstraintValid(const ToFMeasurement2M_validity* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement2M_validity 
-#define ERR_ToFMeasurement2M_validity		1001  /*(SIZE(1 .. 2000000))*/
+#define ToFMeasurement400K_validity_REQUIRED_BYTES_FOR_ENCODING       100009
+#define ToFMeasurement400K_validity_REQUIRED_BITS_FOR_ENCODING        800072
+#define ToFMeasurement400K_validity_REQUIRED_BYTES_FOR_ACN_ENCODING   100003
+#define ToFMeasurement400K_validity_REQUIRED_BITS_FOR_ACN_ENCODING    800019
+#define ToFMeasurement400K_validity_REQUIRED_BYTES_FOR_XER_ENCODING   12000059
+
+void ToFMeasurement400K_validity_Initialize(ToFMeasurement400K_validity* pVal);
+flag ToFMeasurement400K_validity_IsConstraintValid(const ToFMeasurement400K_validity* val, int* pErrCode);
+#ifndef ERR_ToFMeasurement400K_validity
+#define ERR_ToFMeasurement400K_validity		1001  /*(SIZE(1 .. 400000))*/
 #endif
 
-typedef struct {    int nCount; 
-    
-    Depth_validity_t arr[1000000];
-} ToFMeasurement1M_validity;
-
-#define ToFMeasurement1M_validity_REQUIRED_BYTES_FOR_ENCODING       250018 
-#define ToFMeasurement1M_validity_REQUIRED_BITS_FOR_ENCODING        2000144
-#define ToFMeasurement1M_validity_REQUIRED_BYTES_FOR_ACN_ENCODING   250003 
-#define ToFMeasurement1M_validity_REQUIRED_BITS_FOR_ACN_ENCODING    2000020
-#define ToFMeasurement1M_validity_REQUIRED_BYTES_FOR_XER_ENCODING   42000055
-
-void ToFMeasurement1M_validity_Initialize(ToFMeasurement1M_validity* pVal);
-flag ToFMeasurement1M_validity_IsConstraintValid(const ToFMeasurement1M_validity* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement1M_validity 
-#define ERR_ToFMeasurement1M_validity		1002  /*(SIZE(1 .. 1000000))*/
-#endif
-
-typedef struct {    int nCount; 
-    
-    Depth_validity_t arr[500000];
-} ToFMeasurement500K_validity;
-
-#define ToFMeasurement500K_validity_REQUIRED_BYTES_FOR_ENCODING       125010 
-#define ToFMeasurement500K_validity_REQUIRED_BITS_FOR_ENCODING        1000080
-#define ToFMeasurement500K_validity_REQUIRED_BYTES_FOR_ACN_ENCODING   125003 
-#define ToFMeasurement500K_validity_REQUIRED_BITS_FOR_ACN_ENCODING    1000019
-#define ToFMeasurement500K_validity_REQUIRED_BYTES_FOR_XER_ENCODING   21000059
-
-void ToFMeasurement500K_validity_Initialize(ToFMeasurement500K_validity* pVal);
-flag ToFMeasurement500K_validity_IsConstraintValid(const ToFMeasurement500K_validity* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement500K_validity 
-#define ERR_ToFMeasurement500K_validity		1003  /*(SIZE(1 .. 500000))*/
-#endif
-
-typedef struct {    int nCount; 
-    
-    Depth_validity_t arr[250000];
-} ToFMeasurement250K_validity;
-
-#define ToFMeasurement250K_validity_REQUIRED_BYTES_FOR_ENCODING       62506 
-#define ToFMeasurement250K_validity_REQUIRED_BITS_FOR_ENCODING        500048
-#define ToFMeasurement250K_validity_REQUIRED_BYTES_FOR_ACN_ENCODING   62503 
-#define ToFMeasurement250K_validity_REQUIRED_BITS_FOR_ACN_ENCODING    500018
-#define ToFMeasurement250K_validity_REQUIRED_BYTES_FOR_XER_ENCODING   10500059
-
-void ToFMeasurement250K_validity_Initialize(ToFMeasurement250K_validity* pVal);
-flag ToFMeasurement250K_validity_IsConstraintValid(const ToFMeasurement250K_validity* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement250K_validity 
-#define ERR_ToFMeasurement250K_validity		1004  /*(SIZE(1 .. 250000))*/
-#endif
-
-typedef struct {    int nCount; 
-    
-    T_Float arr[2000000];
-} ToFMeasurement2M_distances;
-
-#define ToFMeasurement2M_distances_REQUIRED_BYTES_FOR_ENCODING       26000033 
-#define ToFMeasurement2M_distances_REQUIRED_BITS_FOR_ENCODING        208000264
-#define ToFMeasurement2M_distances_REQUIRED_BYTES_FOR_ACN_ENCODING   26000003 
-#define ToFMeasurement2M_distances_REQUIRED_BITS_FOR_ACN_ENCODING    208000021
-#define ToFMeasurement2M_distances_REQUIRED_BYTES_FOR_XER_ENCODING   138000057
-
-void ToFMeasurement2M_distances_Initialize(ToFMeasurement2M_distances* pVal);
-flag ToFMeasurement2M_distances_IsConstraintValid(const ToFMeasurement2M_distances* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement2M_distances 
-#define ERR_ToFMeasurement2M_distances		1005  /*(SIZE(1 .. 2000000))*/
-#endif
-
-typedef struct {    int nCount; 
-    
-    T_Float arr[1000000];
-} ToFMeasurement1M_distances;
-
-#define ToFMeasurement1M_distances_REQUIRED_BYTES_FOR_ENCODING       13000018 
-#define ToFMeasurement1M_distances_REQUIRED_BITS_FOR_ENCODING        104000144
-#define ToFMeasurement1M_distances_REQUIRED_BYTES_FOR_ACN_ENCODING   13000003 
-#define ToFMeasurement1M_distances_REQUIRED_BITS_FOR_ACN_ENCODING    104000020
-#define ToFMeasurement1M_distances_REQUIRED_BYTES_FOR_XER_ENCODING   69000057
-
-void ToFMeasurement1M_distances_Initialize(ToFMeasurement1M_distances* pVal);
-flag ToFMeasurement1M_distances_IsConstraintValid(const ToFMeasurement1M_distances* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement1M_distances 
-#define ERR_ToFMeasurement1M_distances		1006  /*(SIZE(1 .. 1000000))*/
-#endif
-
-typedef struct {    int nCount; 
-    
-    T_Float arr[500000];
-} ToFMeasurement500K_distances;
-
-#define ToFMeasurement500K_distances_REQUIRED_BYTES_FOR_ENCODING       6500010 
-#define ToFMeasurement500K_distances_REQUIRED_BITS_FOR_ENCODING        52000080
-#define ToFMeasurement500K_distances_REQUIRED_BYTES_FOR_ACN_ENCODING   6500003 
-#define ToFMeasurement500K_distances_REQUIRED_BITS_FOR_ACN_ENCODING    52000019
-#define ToFMeasurement500K_distances_REQUIRED_BYTES_FOR_XER_ENCODING   34500061
-
-void ToFMeasurement500K_distances_Initialize(ToFMeasurement500K_distances* pVal);
-flag ToFMeasurement500K_distances_IsConstraintValid(const ToFMeasurement500K_distances* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement500K_distances 
-#define ERR_ToFMeasurement500K_distances		1007  /*(SIZE(1 .. 500000))*/
-#endif
-
-typedef struct {    int nCount; 
-    
-    T_Float arr[250000];
-} ToFMeasurement250K_distances;
-
-#define ToFMeasurement250K_distances_REQUIRED_BYTES_FOR_ENCODING       3250006 
-#define ToFMeasurement250K_distances_REQUIRED_BITS_FOR_ENCODING        26000048
-#define ToFMeasurement250K_distances_REQUIRED_BYTES_FOR_ACN_ENCODING   3250003 
-#define ToFMeasurement250K_distances_REQUIRED_BITS_FOR_ACN_ENCODING    26000018
-#define ToFMeasurement250K_distances_REQUIRED_BYTES_FOR_XER_ENCODING   17250061
-
-void ToFMeasurement250K_distances_Initialize(ToFMeasurement250K_distances* pVal);
-flag ToFMeasurement250K_distances_IsConstraintValid(const ToFMeasurement250K_distances* val, int* pErrCode);
-#ifndef ERR_ToFMeasurement250K_distances 
-#define ERR_ToFMeasurement250K_distances		1008  /*(SIZE(1 .. 250000))*/
-#endif
-
-typedef struct {
-    SampleAttributes attributes;
-    ToFMeasurement250K_distances distances;
-    ToFMeasurement250K_validity validity;
-    PlanarRegion region;
-} ToFMeasurement250K;
-
-#define ToFMeasurement250K_REQUIRED_BYTES_FOR_ENCODING       3312623 
-#define ToFMeasurement250K_REQUIRED_BITS_FOR_ENCODING        26500981
-#define ToFMeasurement250K_REQUIRED_BYTES_FOR_ACN_ENCODING   3312616 
-#define ToFMeasurement250K_REQUIRED_BITS_FOR_ACN_ENCODING    26500921
-#define ToFMeasurement250K_REQUIRED_BYTES_FOR_XER_ENCODING   27751483
-
-void ToFMeasurement250K_Initialize(ToFMeasurement250K* pVal);
-flag ToFMeasurement250K_IsConstraintValid(const ToFMeasurement250K* val, int* pErrCode);
-
-
-typedef struct {
-    SampleAttributes attributes;
-    ToFMeasurement500K_distances distances;
-    ToFMeasurement500K_validity validity;
-    PlanarRegion region;
-} ToFMeasurement500K;
-
-#define ToFMeasurement500K_REQUIRED_BYTES_FOR_ENCODING       6625131 
-#define ToFMeasurement500K_REQUIRED_BITS_FOR_ENCODING        53001045
-#define ToFMeasurement500K_REQUIRED_BYTES_FOR_ACN_ENCODING   6625116 
-#define ToFMeasurement500K_REQUIRED_BITS_FOR_ACN_ENCODING    53000923
-#define ToFMeasurement500K_REQUIRED_BYTES_FOR_XER_ENCODING   55501483
-
-void ToFMeasurement500K_Initialize(ToFMeasurement500K* pVal);
-flag ToFMeasurement500K_IsConstraintValid(const ToFMeasurement500K* val, int* pErrCode);
-
-
-typedef struct {
-    SampleAttributes attributes;
-    ToFMeasurement1M_distances distances;
-    ToFMeasurement1M_validity validity;
-    PlanarRegion region;
-} ToFMeasurement1M;
-
-#define ToFMeasurement1M_REQUIRED_BYTES_FOR_ENCODING       13250147 
-#define ToFMeasurement1M_REQUIRED_BITS_FOR_ENCODING        106001173
-#define ToFMeasurement1M_REQUIRED_BYTES_FOR_ACN_ENCODING   13250116 
-#define ToFMeasurement1M_REQUIRED_BITS_FOR_ACN_ENCODING    106000925
-#define ToFMeasurement1M_REQUIRED_BYTES_FOR_XER_ENCODING   111001479
-
-void ToFMeasurement1M_Initialize(ToFMeasurement1M* pVal);
-flag ToFMeasurement1M_IsConstraintValid(const ToFMeasurement1M* val, int* pErrCode);
-
-
-typedef struct {
-    SampleAttributes attributes;
-    ToFMeasurement2M_distances distances;
-    ToFMeasurement2M_validity validity;
-    PlanarRegion region;
-} ToFMeasurement2M;
-
-#define ToFMeasurement2M_REQUIRED_BYTES_FOR_ENCODING       26500177 
-#define ToFMeasurement2M_REQUIRED_BITS_FOR_ENCODING        212001413
-#define ToFMeasurement2M_REQUIRED_BYTES_FOR_ACN_ENCODING   26500116 
-#define ToFMeasurement2M_REQUIRED_BITS_FOR_ACN_ENCODING    212000927
-#define ToFMeasurement2M_REQUIRED_BYTES_FOR_XER_ENCODING   222001479
-
-void ToFMeasurement2M_Initialize(ToFMeasurement2M* pVal);
-flag ToFMeasurement2M_IsConstraintValid(const ToFMeasurement2M* val, int* pErrCode);
-
-
-typedef struct {
-    T_Boolean enable;
-    PlanarRegion region;
+typedef struct
+{
+  T_Boolean enable;
+  PlanarRegion region;
 } ToFRegion;
 
-#define ToFRegion_REQUIRED_BYTES_FOR_ENCODING       9 
+#define ToFRegion_REQUIRED_BYTES_FOR_ENCODING       9
 #define ToFRegion_REQUIRED_BITS_FOR_ENCODING        65
-#define ToFRegion_REQUIRED_BYTES_FOR_ACN_ENCODING   9 
+#define ToFRegion_REQUIRED_BYTES_FOR_ACN_ENCODING   9
 #define ToFRegion_REQUIRED_BITS_FOR_ACN_ENCODING    65
 #define ToFRegion_REQUIRED_BYTES_FOR_XER_ENCODING   226
 
@@ -235,56 +51,99 @@ void ToFRegion_Initialize(ToFRegion* pVal);
 flag ToFRegion_IsConstraintValid(const ToFRegion* val, int* pErrCode);
 
 
-typedef struct {
-    T_Boolean region_enabled;
-    PlanarRegion region;
+typedef struct
+{
+  T_Float min_depth;
+  T_Float max_depth;
+} ToFRange;
+
+#define ToFRange_REQUIRED_BYTES_FOR_ENCODING       26
+#define ToFRange_REQUIRED_BITS_FOR_ENCODING        208
+#define ToFRange_REQUIRED_BYTES_FOR_ACN_ENCODING   26
+#define ToFRange_REQUIRED_BITS_FOR_ACN_ENCODING    208
+#define ToFRange_REQUIRED_BYTES_FOR_XER_ENCODING   167
+
+void ToFRange_Initialize(ToFRange* pVal);
+flag ToFRange_IsConstraintValid(const ToFRange* val, int* pErrCode);
+
+
+typedef struct
+{
+  T_Boolean region_enabled;
+  PlanarRegion region;
+  T_Float min_depth;
+  T_Float max_depth;
 } ToFConfiguration;
 
-#define ToFConfiguration_REQUIRED_BYTES_FOR_ENCODING       9 
-#define ToFConfiguration_REQUIRED_BITS_FOR_ENCODING        65
-#define ToFConfiguration_REQUIRED_BYTES_FOR_ACN_ENCODING   9 
-#define ToFConfiguration_REQUIRED_BITS_FOR_ACN_ENCODING    65
-#define ToFConfiguration_REQUIRED_BYTES_FOR_XER_ENCODING   256
+#define ToFConfiguration_REQUIRED_BYTES_FOR_ENCODING       35
+#define ToFConfiguration_REQUIRED_BITS_FOR_ENCODING        273
+#define ToFConfiguration_REQUIRED_BYTES_FOR_ACN_ENCODING   35
+#define ToFConfiguration_REQUIRED_BITS_FOR_ACN_ENCODING    273
+#define ToFConfiguration_REQUIRED_BYTES_FOR_XER_ENCODING   402
 
 void ToFConfiguration_Initialize(ToFConfiguration* pVal);
 flag ToFConfiguration_IsConstraintValid(const ToFConfiguration* val, int* pErrCode);
 
 
- 
+typedef struct
+{
+  int nCount;
+
+  T_Float arr[400000];
+} ToFMeasurement400K_distances;
+
+#define ToFMeasurement400K_distances_REQUIRED_BYTES_FOR_ENCODING       5200009
+#define ToFMeasurement400K_distances_REQUIRED_BITS_FOR_ENCODING        41600072
+#define ToFMeasurement400K_distances_REQUIRED_BYTES_FOR_ACN_ENCODING   5200003
+#define ToFMeasurement400K_distances_REQUIRED_BITS_FOR_ACN_ENCODING    41600019
+#define ToFMeasurement400K_distances_REQUIRED_BYTES_FOR_XER_ENCODING   27600061
+
+void ToFMeasurement400K_distances_Initialize(ToFMeasurement400K_distances* pVal);
+flag ToFMeasurement400K_distances_IsConstraintValid(const ToFMeasurement400K_distances* val, int* pErrCode);
+#ifndef ERR_ToFMeasurement400K_distances
+#define ERR_ToFMeasurement400K_distances		1002  /*(SIZE(1 .. 400000))*/
+#endif
+
+typedef struct
+{
+  SampleAttributes attributes;
+  ToFMeasurement400K_distances distances;
+  ToFMeasurement400K_validity validity;
+  PlanarRegion region;
+} ToFMeasurement400K;
+
+#define ToFMeasurement400K_REQUIRED_BYTES_FOR_ENCODING       5300093
+#define ToFMeasurement400K_REQUIRED_BITS_FOR_ENCODING        42400737
+#define ToFMeasurement400K_REQUIRED_BYTES_FOR_ACN_ENCODING   5300079
+#define ToFMeasurement400K_REQUIRED_BITS_FOR_ACN_ENCODING    42400631
+#define ToFMeasurement400K_REQUIRED_BYTES_FOR_XER_ENCODING   39601207
+
+void ToFMeasurement400K_Initialize(ToFMeasurement400K* pVal);
+flag ToFMeasurement400K_IsConstraintValid(const ToFMeasurement400K* val, int* pErrCode);
+
+
+
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag ToFMeasurement2M_validity_Encode(const ToFMeasurement2M_validity* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement2M_validity_Decode(ToFMeasurement2M_validity* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement1M_validity_Encode(const ToFMeasurement1M_validity* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement1M_validity_Decode(ToFMeasurement1M_validity* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement500K_validity_Encode(const ToFMeasurement500K_validity* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement500K_validity_Decode(ToFMeasurement500K_validity* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement250K_validity_Encode(const ToFMeasurement250K_validity* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement250K_validity_Decode(ToFMeasurement250K_validity* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement2M_distances_Encode(const ToFMeasurement2M_distances* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement2M_distances_Decode(ToFMeasurement2M_distances* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement1M_distances_Encode(const ToFMeasurement1M_distances* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement1M_distances_Decode(ToFMeasurement1M_distances* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement500K_distances_Encode(const ToFMeasurement500K_distances* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement500K_distances_Decode(ToFMeasurement500K_distances* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement250K_distances_Encode(const ToFMeasurement250K_distances* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement250K_distances_Decode(ToFMeasurement250K_distances* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement250K_Encode(const ToFMeasurement250K* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement250K_Decode(ToFMeasurement250K* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement500K_Encode(const ToFMeasurement500K* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement500K_Decode(ToFMeasurement500K* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement1M_Encode(const ToFMeasurement1M* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement1M_Decode(ToFMeasurement1M* pVal, BitStream* pBitStrm, int* pErrCode);
-flag ToFMeasurement2M_Encode(const ToFMeasurement2M* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFMeasurement2M_Decode(ToFMeasurement2M* pVal, BitStream* pBitStrm, int* pErrCode);
+flag ToFMeasurement400K_validity_Encode(const ToFMeasurement400K_validity* val, BitStream* pBitStrm, int* pErrCode,
+                                        flag bCheckConstraints);
+flag ToFMeasurement400K_validity_Decode(ToFMeasurement400K_validity* pVal, BitStream* pBitStrm, int* pErrCode);
 flag ToFRegion_Encode(const ToFRegion* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 flag ToFRegion_Decode(ToFRegion* pVal, BitStream* pBitStrm, int* pErrCode);
+flag ToFRange_Encode(const ToFRange* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+flag ToFRange_Decode(ToFRange* pVal, BitStream* pBitStrm, int* pErrCode);
 flag ToFConfiguration_Encode(const ToFConfiguration* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag ToFConfiguration_Decode(ToFConfiguration* pVal, BitStream* pBitStrm, int* pErrCode); 
+flag ToFConfiguration_Decode(ToFConfiguration* pVal, BitStream* pBitStrm, int* pErrCode);
+flag ToFMeasurement400K_distances_Encode(const ToFMeasurement400K_distances* val, BitStream* pBitStrm, int* pErrCode,
+    flag bCheckConstraints);
+flag ToFMeasurement400K_distances_Decode(ToFMeasurement400K_distances* pVal, BitStream* pBitStrm, int* pErrCode);
+flag ToFMeasurement400K_Encode(const ToFMeasurement400K* val, BitStream* pBitStrm, int* pErrCode,
+                               flag bCheckConstraints);
+flag ToFMeasurement400K_Decode(ToFMeasurement400K* pVal, BitStream* pBitStrm, int* pErrCode);
 
 
 #ifdef  __cplusplus

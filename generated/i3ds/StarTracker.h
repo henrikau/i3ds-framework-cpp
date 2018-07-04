@@ -13,30 +13,32 @@ extern "C" {
 
 
 
-typedef struct {
-    SampleAttributes attributes;
-    Quaterniond position;
+typedef struct
+{
+  SampleAttributes attributes;
+  Quaterniond position;
 } StarTrackerMeasurement;
 
-#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ENCODING       155 
-#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ENCODING        1239
-#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ACN_ENCODING   155 
-#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ACN_ENCODING    1239
-#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_XER_ENCODING   1579
+#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ENCODING       119
+#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ENCODING        947
+#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ACN_ENCODING   119
+#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ACN_ENCODING    947
+#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_XER_ENCODING   1303
 
 void StarTrackerMeasurement_Initialize(StarTrackerMeasurement* pVal);
 flag StarTrackerMeasurement_IsConstraintValid(const StarTrackerMeasurement* val, int* pErrCode);
 
 
- 
+
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag StarTrackerMeasurement_Encode(const StarTrackerMeasurement* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag StarTrackerMeasurement_Decode(StarTrackerMeasurement* pVal, BitStream* pBitStrm, int* pErrCode); 
+flag StarTrackerMeasurement_Encode(const StarTrackerMeasurement* val, BitStream* pBitStrm, int* pErrCode,
+                                   flag bCheckConstraints);
+flag StarTrackerMeasurement_Decode(StarTrackerMeasurement* pVal, BitStream* pBitStrm, int* pErrCode);
 
 
 #ifdef  __cplusplus

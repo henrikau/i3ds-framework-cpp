@@ -15,58 +15,60 @@ extern "C" {
 
 
 
-typedef enum {
-    mode_undefined = 0,
-    mode_mono = 1,
-    mode_rgb = 2,
-    mode_bgr = 3,
-    mode_uyvy = 4,
-    mode_rgba = 5,
-    mode_bayer_rggb = 6,
-    mode_bayer_grbg = 7,
-    mode_bayer_bggr = 8,
-    mode_bayer_gbrg = 9,
-    mode_pjpg = 10,
-    mode_jpeg = 11,
-    mode_png = 12,
-    mode_tiff = 13
+typedef enum
+{
+  mode_undefined = 0,
+  mode_mono = 1,
+  mode_rgb = 2,
+  mode_bgr = 3,
+  mode_uyvy = 4,
+  mode_rgba = 5,
+  mode_bayer_rggb = 6,
+  mode_bayer_grbg = 7,
+  mode_bayer_bggr = 8,
+  mode_bayer_gbrg = 9,
+  mode_pjpg = 10,
+  mode_jpeg = 11,
+  mode_png = 12,
+  mode_tiff = 13
 } Frame_mode_t;
 
-#define Frame_mode_t_REQUIRED_BYTES_FOR_ENCODING       1 
+#define Frame_mode_t_REQUIRED_BYTES_FOR_ENCODING       1
 #define Frame_mode_t_REQUIRED_BITS_FOR_ENCODING        4
-#define Frame_mode_t_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
+#define Frame_mode_t_REQUIRED_BYTES_FOR_ACN_ENCODING   1
 #define Frame_mode_t_REQUIRED_BITS_FOR_ACN_ENCODING    4
 #define Frame_mode_t_REQUIRED_BYTES_FOR_XER_ENCODING   50
 
 void Frame_mode_t_Initialize(Frame_mode_t* pVal);
 flag Frame_mode_t_IsConstraintValid(const Frame_mode_t* val, int* pErrCode);
-#ifndef ERR_Frame_mode_t_unknown_enumeration_value 
+#ifndef ERR_Frame_mode_t_unknown_enumeration_value
 #define ERR_Frame_mode_t_unknown_enumeration_value		1002  /**/
 #endif
-#ifndef ERR_Frame_mode_t 
+#ifndef ERR_Frame_mode_t
 #define ERR_Frame_mode_t		1001  /**/
 #endif
 
-typedef struct {
-    SampleAttributes attributes;
-    Frame_mode_t frame_mode;
-    T_UInt8 data_depth;
-    T_UInt8 pixel_size;
-    PlanarRegion region;
-    T_UInt8 image_count;
+typedef struct
+{
+  SampleAttributes attributes;
+  Frame_mode_t frame_mode;
+  T_UInt8 data_depth;
+  T_UInt8 pixel_size;
+  PlanarRegion region;
+  T_UInt8 image_count;
 } FrameDescriptor;
 
-#define FrameDescriptor_REQUIRED_BYTES_FOR_ENCODING       115 
-#define FrameDescriptor_REQUIRED_BITS_FOR_ENCODING        913
-#define FrameDescriptor_REQUIRED_BYTES_FOR_ACN_ENCODING   115 
-#define FrameDescriptor_REQUIRED_BITS_FOR_ACN_ENCODING    913
-#define FrameDescriptor_REQUIRED_BYTES_FOR_XER_ENCODING   1616
+#define FrameDescriptor_REQUIRED_BYTES_FOR_ENCODING       78
+#define FrameDescriptor_REQUIRED_BITS_FOR_ENCODING        621
+#define FrameDescriptor_REQUIRED_BYTES_FOR_ACN_ENCODING   78
+#define FrameDescriptor_REQUIRED_BITS_FOR_ACN_ENCODING    621
+#define FrameDescriptor_REQUIRED_BYTES_FOR_XER_ENCODING   1340
 
 void FrameDescriptor_Initialize(FrameDescriptor* pVal);
 flag FrameDescriptor_IsConstraintValid(const FrameDescriptor* val, int* pErrCode);
 
 
- 
+
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
@@ -76,7 +78,7 @@ flag FrameDescriptor_IsConstraintValid(const FrameDescriptor* val, int* pErrCode
 flag Frame_mode_t_Encode(const Frame_mode_t* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 flag Frame_mode_t_Decode(Frame_mode_t* pVal, BitStream* pBitStrm, int* pErrCode);
 flag FrameDescriptor_Encode(const FrameDescriptor* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag FrameDescriptor_Decode(FrameDescriptor* pVal, BitStream* pBitStrm, int* pErrCode); 
+flag FrameDescriptor_Decode(FrameDescriptor* pVal, BitStream* pBitStrm, int* pErrCode);
 
 
 #ifdef  __cplusplus
