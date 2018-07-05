@@ -28,7 +28,7 @@ i3ds::TriggerClient::set_generator(TriggerGenerator generator, TriggerPeriod per
 
 void
 i3ds::TriggerClient::set_internal_channel(TriggerOutput channel, TriggerGenerator source, TriggerOffset offset,
-    TriggerDuration duration)
+    TriggerDuration duration, bool invert)
 {
   Trigger::InternalChannelService::Data command;
 
@@ -38,6 +38,7 @@ i3ds::TriggerClient::set_internal_channel(TriggerOutput channel, TriggerGenerato
   command.request.source = source;
   command.request.offset = offset;
   command.request.duration = duration;
+  command.request.invert = invert;
 
   Call<Trigger::InternalChannelService>(command);
 }

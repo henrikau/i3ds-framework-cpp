@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   if (vm.count("trigger") && vm.count("generator") && vm.count("width"))
   {
     BOOST_LOG_TRIVIAL(info) << "Sending channel message: " << trigger << " @ " << generator << " - " << width << " + " << delay;
-    trigger_client.set_interal_channel(trigger, generator, delay, width);
+    trigger_client.set_interal_channel(trigger, generator, delay, width, inverted);
     BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
   }
   if (vm.count("trigger") && vm.count("enable")) {

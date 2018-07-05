@@ -32,7 +32,7 @@ public:
   void set_generator(TriggerGenerator generator, TriggerPeriod period);
 
   void set_internal_channel(TriggerOutput channel, TriggerGenerator source, TriggerOffset offset,
-                            TriggerDuration duration);
+                            TriggerDuration duration, bool invert);
 
   void set_external_channel(TriggerOutput channel, TriggerInput source, TriggerOffset offset, TriggerDuration duration,
                             bool bypass, bool invert);
