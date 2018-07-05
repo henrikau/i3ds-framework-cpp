@@ -1,8 +1,8 @@
-if(BUILD_TESTS)
+if (BUILD_TESTS OR BUILD_TOOLS)
   find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
 
   find_package (OpenCV QUIET)
-endif(BUILD_TESTS)
+endif (BUILD_TESTS OR BUILD_TOOLS)
 
 ################################################################################
 # ASN.1 generation
@@ -111,7 +111,7 @@ set (SRCS ${LIB_SRCS} )
 
 # Add emulators to sources if tests are built.
 # Do not add camera emulators on embedded
-if (BUILD_TESTS)
+if (BUILD_TESTS OR BUILD_TOOLS)
   if (OpenCV_FOUND)
     set (SRCS
       ${SRCS}
@@ -124,7 +124,7 @@ if (BUILD_TESTS)
       ${EMULATOR_SRCS}
       )
   endif (OpenCV_FOUND)
-endif(BUILD_TESTS)
+endif(BUILD_TESTS OR BUILD_TOOLS)
 
 add_library (i3ds SHARED ${SRCS})
 

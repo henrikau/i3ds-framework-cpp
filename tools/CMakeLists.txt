@@ -18,6 +18,7 @@ set (APPS
   i3ds_configure_lidar
   i3ds_configure_radar
   i3ds_configure_tof
+  i3ds_configure_trigger
   i3ds_delay_recorder
   i3ds_record
   i3ds_replay
@@ -29,7 +30,9 @@ if (OpenCV_FOUND)
 endif()
 
 foreach(a ${APPS})
+
   add_executable (${a} ${a}.cpp ${SRCS})
   target_link_libraries (${a} ${LIBS})
+  target_compile_definitions(${a} PRIVATE CAMERA_EMULATORS=${OpenCV_FOUND})
   install (TARGETS ${a} DESTINATION bin)
 endforeach(a)
