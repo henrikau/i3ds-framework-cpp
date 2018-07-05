@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 
   configurator.add_common_options(desc);
   desc.add_options()
-  ("print", "Print the ToF camera configuration")
+  ("print,p", "Print the ToF camera configuration")
 
   ("region", po::value(&enable_region), "Enable region of interest (ROI). Region sizes must be greater than 0.")
   ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
