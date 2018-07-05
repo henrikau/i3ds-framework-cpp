@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
   ("print,p", "Print the ToF camera configuration")
 
   ("region", po::value(&enable_region), "Enable region of interest (ROI). Region sizes must be greater than 0.")
-  ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
-  ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
+  ("region-size-x,w", po::value(&region.size_x)->implicit_value(640), "ROI horisontal size")
+  ("region-size-y,h", po::value(&region.size_y)->implicit_value(480), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 
