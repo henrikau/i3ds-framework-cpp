@@ -13,9 +13,9 @@
 
 #include <thread>
 #include <functional>
-#include <chrono>
 
 #include <i3ds/sensor.hpp>
+#include <i3ds/time.hpp>
 
 namespace i3ds
 {
@@ -29,7 +29,7 @@ class Sampler
 public:
 
   // Does sampling operation, returns true if more samples are requested.
-  typedef std::function<bool(unsigned long timestamp_us)> Operation;
+  typedef std::function<bool(Timepoint)> Operation;
 
   Sampler(Operation operation);
   virtual ~Sampler();
@@ -41,8 +41,6 @@ public:
   void Stop();
 
 private:
-
-  typedef std::chrono::high_resolution_clock clock;
 
   // Run the receiver until stop is called.
   void Run();

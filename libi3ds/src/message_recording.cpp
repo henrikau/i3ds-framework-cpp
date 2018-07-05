@@ -11,15 +11,8 @@
 #include <chrono>
 #include <fstream>
 
+#include <i3ds/time.hpp>
 #include <i3ds/message_recording.hpp>
-
-uint64_t
-i3ds::get_current_time_in_us()
-{
-  using namespace std::chrono;
-  return duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
-}
-
 
 void
 i3ds::MessageRecord::write_to_file(std::ofstream &output_file)

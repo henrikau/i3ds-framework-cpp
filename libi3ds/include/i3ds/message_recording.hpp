@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef __I3DS_MESSAGE_RECORDING_HPP
-#define __I3DS_MESSAGE_RECORDING_HPP 
+#define __I3DS_MESSAGE_RECORDING_HPP
 
 #include <stdio.h>
 #include <fstream>
@@ -19,8 +19,6 @@
 
 namespace i3ds
 {
-
-uint64_t get_current_time_in_us();
 
 struct MessageRecord
 {
