@@ -35,21 +35,22 @@ int main(int argc, char *argv[])
   uint32_t delay;
   bool inverted;
   bool enable;
+  bool external;
+  bool bypass;
 
   po::options_description desc("Allowed trigger control options");
 
-  //configurator.add_common_options(desc);
   desc.add_options()
-  ("print", "Print the trigger configuration")
-
   ("node", po::value(&configurator.node_id), "NodeID")
   ("generator", po::value(&generator), "Generator ID")
-  ("trigger", po::value(&trigger), "Trigger ID")
   ("period", po::value(&period), "Time between triggers")
+  ("trigger", po::value(&trigger), "Trigger ID")
+  ("enable", po::value(&enable)->default_value(true), "Enable the trigger")
   ("width", po::value(&width), "Width of the pulse")
   ("delay", po::value(&delay)->default_value(0), "Phase of the trigger")
   ("inverted", po::value(&inverted)->default_value(false), "Invert the trigger")
-  ("enable", po::value(&enable)->default_value(true), "Enable the trigger")
+  ("external", po::value(&external)->default_value(false), "Use external generator")
+  ("bypass", po::value(&bypass)->default_value(false), "Bypass internal logic")
   ;
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
@@ -63,18 +64,27 @@ int main(int argc, char *argv[])
   // Configure region.
   if (vm.count("period") && vm.count("generator"))
   {
-    BOOST_LOG_TRIVIAL(info) << "Sending generator message: " << generator << " @ " << period << "[µs]";
+    if (external) {
+      BOOST_LOG_TRIVIAL(warning) << "Warning: can not set period with external trigger.";
+    } else {
+      BOOST_LOG_TRIVIAL(info) << "Sending generator message: " << generator << " @ " << period << "[µs]";
 
-    TriggerGenerator gen = generator;
-    TriggerPeriod per = period;
-    trigger_client.set_generator(gen, per);
+      TriggerGenerator gen = generator;
+      TriggerPeriod per = period;
+      trigger_client.set_generator(gen, per);
       
-    BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+    }
   }
   if (vm.count("trigger") && vm.count("generator") && vm.count("width"))
   {
-    BOOST_LOG_TRIVIAL(info) << "Sending channel message: " << trigger << " @ " << generator << " - " << width << " + " << delay;
-    trigger_client.set_interal_channel(trigger, generator, delay, width, inverted);
+    if (external) {
+      BOOST_LOG_TRIVIAL(info) << "Sending external channel message: " << trigger << " @ " << generator << " - " << width << " + " << delay;
+      trigger_client.set_external_channel(trigger, generator, delay, width, bypass, inverted);
+    } else {
+      BOOST_LOG_TRIVIAL(info) << "Sending channel message: " << trigger << " @ " << generator << " - " << width << " + " << delay;
+      trigger_client.set_interal_channel(trigger, generator, delay, width, inverted);
+    }
     BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
   }
   if (vm.count("trigger") && vm.count("enable")) {
