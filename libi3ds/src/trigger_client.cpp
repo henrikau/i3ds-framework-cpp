@@ -27,10 +27,12 @@ i3ds::TriggerClient::set_generator(TriggerGenerator generator, TriggerPeriod per
 }
 
 void
-i3ds::TriggerClient::set_interal_channel(TriggerOutput channel, TriggerGenerator source, TriggerOffset offset,
+i3ds::TriggerClient::set_internal_channel(TriggerOutput channel, TriggerGenerator source, TriggerOffset offset,
     TriggerDuration duration)
 {
   Trigger::InternalChannelService::Data command;
+
+  Trigger::InternalChannelService::Initialize(command);
 
   command.request.channel = channel;
   command.request.source = source;
@@ -41,11 +43,13 @@ i3ds::TriggerClient::set_interal_channel(TriggerOutput channel, TriggerGenerator
 }
 
 void
-i3ds::TriggerClient::set_exteral_channel(TriggerOutput channel, TriggerInput source, TriggerOffset offset,
+i3ds::TriggerClient::set_external_channel(TriggerOutput channel, TriggerInput source, TriggerOffset offset,
     TriggerDuration duration,
     bool bypass, bool invert)
 {
   Trigger::ExternalChannelService::Data command;
+
+  Trigger::ExternalChannelService::Initialize(command);
 
   command.request.channel = channel;
   command.request.source = source;
@@ -58,21 +62,49 @@ i3ds::TriggerClient::set_exteral_channel(TriggerOutput channel, TriggerInput sou
 }
 
 void
-i3ds::TriggerClient::enable_channels(TriggerMask channels)
+i3ds::TriggerClient::enable_channels(const TriggerOutputSet& channels)
 {
   Trigger::ChannelEnableService::Data command;
 
-  command.request = channels;
+  Trigger::ChannelEnableService::Initialize(command);
+
+  int code = 0;
+
+  for (TriggerOutput c : channels)
+    {
+      if (TriggerOutput_IsConstraintValid(&c, &code))
+        {
+          command.request.arr[c - 1] = true;
+        }
+      else
+        {
+          throw i3ds::CommandError(error_value, "Invalid output channel " + std::to_string(c));
+        }
+    }
 
   Call<Trigger::ChannelEnableService>(command);
 }
 
 void
-i3ds::TriggerClient::disable_channels(TriggerMask channels)
+i3ds::TriggerClient::disable_channels(const TriggerOutputSet& channels)
 {
   Trigger::ChannelDisableService::Data command;
 
-  command.request = channels;
+  Trigger::ChannelDisableService::Initialize(command);
+
+  int code = 0;
+
+  for (TriggerOutput c : channels)
+    {
+      if (TriggerOutput_IsConstraintValid(&c, &code))
+        {
+          command.request.arr[c - 1] = true;
+        }
+      else
+        {
+          throw i3ds::CommandError(error_value, "Invalid output channel " + std::to_string(c));
+        }
+    }
 
   Call<Trigger::ChannelDisableService>(command);
 }

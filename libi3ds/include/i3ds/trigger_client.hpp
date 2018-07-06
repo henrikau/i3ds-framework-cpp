@@ -14,8 +14,12 @@
 #include <i3ds/client.hpp>
 #include <i3ds/trigger.hpp>
 
+#include <set>
+
 namespace i3ds
 {
+
+typedef std::set<TriggerOutput> TriggerOutputSet;
 
 class TriggerClient : public Client
 {
@@ -26,13 +30,15 @@ public:
   TriggerClient(Context::Ptr context, NodeID node);
 
   void set_generator(TriggerGenerator generator, TriggerPeriod period);
-  void set_interal_channel(TriggerOutput channel, TriggerGenerator source, TriggerOffset offset,
-                           TriggerDuration duration);
-  void set_exteral_channel(TriggerOutput channel, TriggerInput source, TriggerOffset offset, TriggerDuration duration,
-                           bool bypass, bool invert);
 
-  void enable_channels(TriggerMask channels);
-  void disable_channels(TriggerMask channels);
+  void set_internal_channel(TriggerOutput channel, TriggerGenerator source, TriggerOffset offset,
+                            TriggerDuration duration);
+
+  void set_external_channel(TriggerOutput channel, TriggerInput source, TriggerOffset offset, TriggerDuration duration,
+                            bool bypass, bool invert);
+
+  void enable_channels(const TriggerOutputSet& channels);
+  void disable_channels(const TriggerOutputSet& channels);
 };
 
 } // namespace i3ds
