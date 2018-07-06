@@ -83,22 +83,18 @@ int main(int argc, char *argv[])
       trigger_client.set_external_channel(trigger, generator, delay, width, bypass, inverted);
     } else {
       BOOST_LOG_TRIVIAL(info) << "Sending channel message: " << trigger << " @ " << generator << " - " << width << " + " << delay;
-      trigger_client.set_interal_channel(trigger, generator, delay, width, inverted);
+      trigger_client.set_internal_channel(trigger, generator, delay, width, inverted);
     }
     BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
   }
   if (vm.count("trigger") && vm.count("enable")) {
-    TriggerMask channels = {false};
-    for(int i=0; i<8; i++) {
-      channels.arr[i]  = false;
-    }
-    channels.arr[trigger] = true;
+    i3ds::TriggerOutputSet triggers({static_cast<TriggerOutput>(trigger)});
     if (enable) {
       BOOST_LOG_TRIVIAL(info) << "Enabling: " << trigger;
-      trigger_client.enable_channels(channels);
+      trigger_client.enable_channels(triggers);
     } else {
       BOOST_LOG_TRIVIAL(info) << "Disabling: " << trigger;
-      trigger_client.disable_channels(channels);
+      trigger_client.disable_channels(triggers);
     }
   }
 
