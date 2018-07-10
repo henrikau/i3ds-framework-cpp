@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   po::options_description desc("Allowed trigger control options");
 
   desc.add_options()
-  ("help", po::bool_switch(), "Show help")
+  ("help", "Show help")
   ("node", po::value(&configurator.node_id), "NodeID")
   ("generator", po::value(&generator), "Generator ID")
   ("period", po::value(&period), "Time between triggers")
