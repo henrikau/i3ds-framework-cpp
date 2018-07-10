@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
   po::options_description desc("Allowed trigger control options");
 
   desc.add_options()
+  ("help", po::bool_switch(), "Show help")
   ("node", po::value(&configurator.node_id), "NodeID")
   ("generator", po::value(&generator), "Generator ID")
   ("period", po::value(&period), "Time between triggers")
@@ -54,6 +55,11 @@ int main(int argc, char *argv[])
   ;
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
+
+  if (vm.count("help")) {
+    BOOST_LOG_TRIVIAL(info) << desc;
+    return -1;
+  }
 
   i3ds::Context::Ptr context(i3ds::Context::Create());
 
