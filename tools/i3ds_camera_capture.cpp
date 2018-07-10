@@ -21,10 +21,16 @@
 #include <boost/program_options.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <chrono>
+#include <iomanip>
 
 namespace po = boost::program_options;
 
 volatile bool running;
+
+std::chrono::time_point<std::chrono::high_resolution_clock>previous_time;
+
+
 
 void
 signal_handler(int signum)
@@ -33,9 +39,10 @@ signal_handler(int signum)
 }
 
 void
-render_image(std::string window_name, const i3ds::Frame& frame, int image_number)
+render_image(std::string window_name, const i3ds::Frame& frame, int image_number, std::string fps_text)
 {
   cv::Mat mat = frame_to_cv_mat(frame, image_number);
+  cv::setWindowTitle (window_name, window_name + " " + fps_text);
   cv::imshow(window_name, mat);
   cv::waitKey(5); // Apparently needed to render image properly
 }
@@ -43,15 +50,25 @@ render_image(std::string window_name, const i3ds::Frame& frame, int image_number
 void
 handle_frame(i3ds::Camera::FrameTopic::Data& data)
 {
+  auto time_now = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diff = time_now - previous_time;
+
+  std::stringstream buffer;
+  buffer <<  "(fps: "  << std::setprecision(1) << std::fixed << 1000. / (std::chrono::duration <double, std::milli> (diff).count()) << ")" << std::endl;;
+  std::cout << "fps: "<< buffer.str();
+
+  previous_time = time_now;
+
+
   switch (data.descriptor.image_count)
     {
     case 1:
-      render_image("Camera feed", data, 0);
+      render_image("Camera feed", data, 0, buffer.str());
       break;
 
     case 2:
-      render_image("Left camera feed", data, 0);
-      render_image("Right camera feed", data, 1);
+      render_image("Left camera feed", data, 0, buffer.str());
+      render_image("Right camera feed", data, 1, buffer.str());
       break;
 
     default:
