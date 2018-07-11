@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 
   ("flash", po::value(&enable_flash), "Enable camera flash")
-  ("flash-strength", po::value(&flash_strength)->default_value(255), "Flash strength from 0 (off) to 255 (full)")
+  ("flash-strength", po::value(&flash_strength)->default_value(100), "Flash strength from 0 (off) to 100 (full)")
 
   ("pattern", po::value(&enable_pattern), "Enable camera pattern illumination")
   ("pattern-sequence", po::value(&pattern_sequence)->default_value(1), "Pattern sequence to use")
