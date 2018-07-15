@@ -14,6 +14,7 @@
 #include <i3ds/emulated_lidar.hpp>
 #include <i3ds/emulated_star_tracker.hpp>
 #include <i3ds/emulated_imu.hpp>
+#include <i3ds/emulated_analog.hpp>
 
 #if CAMERA_EMULATORS
 #include <i3ds/emulated_camera.hpp>
@@ -55,6 +56,19 @@ i3ds::EmulatorFactory::CreateIMU()
   return std::make_shared<EmulatedIMU>(context_, next_id_++);
 }
 
+i3ds::Analog::Ptr
+i3ds::EmulatorFactory::CreateTactile()
+{
+  EmulatedAnalog::Parameters param;
+
+  param.series_count = 3;
+  param.bit_resolution = 12;
+  param.scale = 20.0 / 4095;
+  param.offset = 0.0;
+  param.smooth = 0.5;
+
+  return EmulatedAnalog::Create(context_, next_id_++, param);
+}
 
 #if CAMERA_EMULATORS
 i3ds::ToFCamera::Ptr

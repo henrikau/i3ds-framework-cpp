@@ -28,7 +28,7 @@ class Analog : public Sensor
 public:
 
   // Topic definitions.
-  typedef Topic<128, AnalogMeasurement1KCodec> Measurement1KTopic;
+  typedef Topic<128, AnalogMeasurement1KCodec> MeasurementTopic;
 
   // Shared pointer for Analog interfaces.
   typedef std::shared_ptr<Analog> Ptr;
@@ -37,10 +37,12 @@ public:
   Analog(NodeID node, SeriesCount series_count) : Sensor(node), series_count_(series_count) {};
   virtual ~Analog() {};
 
-protected:
+  // Get the number of series per measurement (number of channels)
+  SeriesCount series_count() const {return series_count_;}
 
-  // The number of series per measurement (number of channels)
-  SeriesCount series_count_;
+private:
+
+  const SeriesCount series_count_;
 
 };
 

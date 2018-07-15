@@ -8,7 +8,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#define BOOST_TEST_MODULE tactile_test
+#define BOOST_TEST_MODULE analog_test
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/test/unit_test.hpp>
@@ -16,7 +16,7 @@
 #include <chrono>
 
 #include <i3ds/subscriber.hpp>
-#include <i3ds/emulated_tactile.hpp>
+#include <i3ds/emulated_analog.hpp>
 #include <i3ds/analog_client.hpp>
 #include <i3ds/common_tests.hpp>
 
@@ -30,11 +30,21 @@ struct F
     : node(1),
       context(Context::Create()),
       server(context),
-      tactile(EmulatedTactile::Create(context, node)),
       client(AnalogClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
-    tactile->Attach(server);
+
+    EmulatedAnalog::Parameters param;
+
+    param.series_count = 3;
+    param.bit_resolution = 12;
+    param.scale = 20.0 / 4095;
+    param.offset = 0.0;
+    param.smooth = 0.5;
+
+    analog = EmulatedAnalog::Create(context, node, param);
+
+    analog->Attach(server);
     server.Start();
     client->set_timeout(1000);
   }
@@ -49,7 +59,7 @@ struct F
 
   Context::Ptr context;
   Server server;
-  EmulatedTactile::Ptr tactile;
+  EmulatedAnalog::Ptr analog;
   AnalogClient::Ptr client;
 };
 
@@ -57,14 +67,14 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(tactile_creation)
+BOOST_AUTO_TEST_CASE(analog_creation)
 {
-  test_sensor_creation(tactile, node);
+  test_sensor_creation(analog, node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(tactile_sample_settings)
+BOOST_AUTO_TEST_CASE(analog_sample_settings)
 {
   test_sample_settings(client);
 }
@@ -74,32 +84,35 @@ BOOST_AUTO_TEST_CASE(tactile_sample_settings)
 int received;
 
 void
-handle_measurement(Analog::Measurement1KTopic::Data& data)
+handle_measurement(Analog::MeasurementTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recived measurement with batch size: " << data.batch_size);
 
   BOOST_CHECK_EQUAL(data.series, 3);
-  BOOST_CHECK(data.batch_size < 103 && data.batch_size > 98);
+  BOOST_CHECK_EQUAL(data.batch_size, 10);
 
   BOOST_CHECK_EQUAL(data.samples.nCount, data.batch_size * data.series);
-  BOOST_CHECK_EQUAL(data.samples.arr[0], 0.0);
-  BOOST_CHECK_CLOSE(data.samples.arr[1], 6.666, 0.1);
-  BOOST_CHECK_CLOSE(data.samples.arr[2], 13.333, 0.1);
+
+  for (int i = 0; i < data.samples.nCount; i++)
+    {
+      const float value = data.samples.arr[i];
+      BOOST_CHECK(0.0 <= value && value <= 20.0);
+    }
 
   received++;
 }
 
-BOOST_AUTO_TEST_CASE(tactile_sampling)
+BOOST_AUTO_TEST_CASE(analog_sampling)
 {
   received = 0;
   Subscriber subscriber(context);
 
-  subscriber.Attach<Analog::Measurement1KTopic>(client->node(), &handle_measurement);
+  subscriber.Attach<Analog::MeasurementTopic>(client->node(), &handle_measurement);
 
   SamplePeriod period = 100000;
 
   client->set_state(activate);
-  client->set_sampling(period);
+  client->set_sampling(period, 10);
   client->set_state(start);
 
   subscriber.Start();

@@ -16,6 +16,7 @@
 #include <i3ds/radar_sensor.hpp>
 #include <i3ds/lidar_sensor.hpp>
 #include <i3ds/imu_sensor.hpp>
+#include <i3ds/analog_sensor.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
 
 #if CAMERA_EMULATORS
@@ -38,6 +39,7 @@ public:
   LIDAR::Ptr CreateLIDAR();
   IMU::Ptr CreateIMU();
   StarTracker::Ptr CreateStarTracker();
+  Analog::Ptr CreateTactile();
 
 #if CAMERA_EMULATORS
   Camera::Ptr CreateTIRCamera();

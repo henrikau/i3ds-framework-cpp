@@ -106,6 +106,9 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create IMU";
   sensors.push_back(factory.CreateIMU());
 
+  BOOST_LOG_TRIVIAL(trace) << "Create tactile sensor";
+  sensors.push_back(factory.CreateTactile());
+
   for (auto s : sensors)
     {
       s->Attach(server);

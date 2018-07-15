@@ -91,7 +91,7 @@ set (EMULATOR_SRCS
   src/emulated_star_tracker.cpp
   src/emulated_imu.cpp
   src/emulated_radar.cpp
-  src/emulated_tactile.cpp
+  src/emulated_analog.cpp
   )
 
 set (CAMERA_EMULATOR_SRCS
@@ -154,7 +154,7 @@ if (BUILD_TESTS)
     radar-test
     lidar-test
     star-tracker-test
-    tactile-test
+    analog-test
     measurement-proxy-test
     )
 
