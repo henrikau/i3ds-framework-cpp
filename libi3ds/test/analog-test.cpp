@@ -30,19 +30,10 @@ struct F
     : node(1),
       context(Context::Create()),
       server(context),
+      analog(EmulatedAnalog::CreateTactile(context, node)),
       client(AnalogClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
-
-    EmulatedAnalog::Parameters param;
-
-    param.series_count = 3;
-    param.bit_resolution = 12;
-    param.scale = 20.0 / 4095;
-    param.offset = 0.0;
-    param.smooth = 0.5;
-
-    analog = EmulatedAnalog::Create(context, node, param);
 
     analog->Attach(server);
     server.Start();

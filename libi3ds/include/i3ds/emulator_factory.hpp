@@ -40,6 +40,7 @@ public:
   IMU::Ptr CreateIMU();
   StarTracker::Ptr CreateStarTracker();
   Analog::Ptr CreateTactile();
+  Analog::Ptr CreateForceTorque();
 
 #if CAMERA_EMULATORS
   Camera::Ptr CreateTIRCamera();

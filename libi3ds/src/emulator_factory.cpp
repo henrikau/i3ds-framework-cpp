@@ -59,15 +59,13 @@ i3ds::EmulatorFactory::CreateIMU()
 i3ds::Analog::Ptr
 i3ds::EmulatorFactory::CreateTactile()
 {
-  EmulatedAnalog::Parameters param;
+  return EmulatedAnalog::CreateTactile(context_, next_id_++);
+}
 
-  param.series_count = 3;
-  param.bit_resolution = 12;
-  param.scale = 20.0 / 4095;
-  param.offset = 0.0;
-  param.smooth = 0.5;
-
-  return EmulatedAnalog::Create(context_, next_id_++, param);
+i3ds::Analog::Ptr
+i3ds::EmulatorFactory::CreateForceTorque()
+{
+  return EmulatedAnalog::CreateForceTorque(context_, next_id_++);
 }
 
 #if CAMERA_EMULATORS

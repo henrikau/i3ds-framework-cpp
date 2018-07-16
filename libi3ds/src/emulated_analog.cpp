@@ -13,13 +13,57 @@
 
 #include <i3ds/emulated_analog.hpp>
 
-i3ds::EmulatedAnalog::EmulatedAnalog(Context::Ptr context, NodeID node, Parameters param)
-  : Analog(node, param.series_count),
+i3ds::EmulatedAnalog::Ptr
+i3ds::EmulatedAnalog::CreateTactile(Context::Ptr context, NodeID id)
+{
+  Parameters param;
+
+  param.series = 3;
+  param.bit_resolution = 12;
+  param.smooth = 0.5;
+
+  for (int i = 0; i < param.series; i++)
+    {
+      param.scale.push_back(20.0 / 4095);
+      param.offset.push_back(0.0);
+    }
+
+  return std::make_shared<EmulatedAnalog>(context, id, param);
+}
+
+i3ds::EmulatedAnalog::Ptr
+i3ds::EmulatedAnalog::CreateForceTorque(Context::Ptr context, NodeID id)
+{
+  Parameters param;
+
+  param.series = 6;
+  param.bit_resolution = 12;
+  param.smooth = 0.5;
+
+  // Force is the three first
+  for (int i = 0; i < param.series / 2; i++)
+    {
+      param.offset.push_back(-150.0);
+      param.scale.push_back(300.0 / 4095);
+    }
+
+  // Torque is the three last
+  for (int i = 0; i < param.series / 2; i++)
+    {
+      param.offset.push_back(-10.0);
+      param.scale.push_back(20.0 / 4095);
+    }
+
+  return std::make_shared<EmulatedAnalog>(context, id, param);
+}
+
+i3ds::EmulatedAnalog::EmulatedAnalog(Context::Ptr context, NodeID node, const Parameters& param)
+  : Analog(node, param.series),
     param_(param),
     sampler_(std::bind(&i3ds::EmulatedAnalog::send_sample, this, std::placeholders::_1)),
     publisher_(context, node),
     batches_(0),
-    last_(param.series_count),
+    last_(param.series),
     generator_(),
     distribution_(0, (1 << param.bit_resolution) - 1)
 {
@@ -29,7 +73,7 @@ i3ds::EmulatedAnalog::EmulatedAnalog(Context::Ptr context, NodeID node, Paramete
 
   set_device_name("Emulated tactile sensor");
 
-  for (int i = 0; i < param_.series_count; i++)
+  for (int i = 0; i < param_.series; i++)
     {
       last_[i] = 0;
     }
@@ -84,9 +128,9 @@ i3ds::EmulatedAnalog::send_sample(unsigned long timestamp_us)
 
   batches_++;
 
-  const int samples = batches_ * param_.series_count;
+  const int samples = batches_ * param_.series;
 
-  for (int i = 0; i < param_.series_count; i++)
+  for (int i = 0; i < param_.series; i++)
     {
       frame_.samples.arr[samples + i] = value[i];
     }
@@ -99,7 +143,7 @@ i3ds::EmulatedAnalog::send_sample(unsigned long timestamp_us)
       frame_.attributes.validity = sample_valid;
 
       frame_.samples.nCount = samples;
-      frame_.series = param_.series_count;
+      frame_.series = param_.series;
       frame_.batch_size = batches_;
 
       publisher_.Send<MeasurementTopic>(frame_);
@@ -113,15 +157,15 @@ i3ds::EmulatedAnalog::send_sample(unsigned long timestamp_us)
 std::vector<float>
 i3ds::EmulatedAnalog::read_adc()
 {
-  std::vector<float> value(param_.series_count);
+  std::vector<float> value(param_.series);
 
-  for (int i = 0; i < param_.series_count; i++)
+  for (int i = 0; i < param_.series; i++)
     {
       // Generate new discrete value with mix of random and last.
       last_[i] = param_.smooth * last_[i] + (1.0 - param_.smooth) * distribution_(generator_);
 
       // Generate value from scaling of discrete.
-      value[i] = param_.scale * last_[i] + param_.offset;
+      value[i] = param_.scale[i] * last_[i] + param_.offset[i];
     }
 
   return value;

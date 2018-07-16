@@ -28,21 +28,24 @@ public:
 
   struct Parameters
   {
-    int series_count;
+    int series;
     int bit_resolution;
-    float scale;
-    float offset;
     float smooth;
+    std::vector<float> scale;
+    std::vector<float> offset;
   };
 
   typedef std::shared_ptr<EmulatedAnalog> Ptr;
 
-  static Ptr Create(Context::Ptr context, NodeID id, Parameters param)
+  static Ptr CreateTactile(Context::Ptr context, NodeID id);
+  static Ptr CreateForceTorque(Context::Ptr context, NodeID id);
+
+  static Ptr Create(Context::Ptr context, NodeID id, const Parameters& param)
   {
     return std::make_shared<EmulatedAnalog>(context, id, param);
   }
 
-  EmulatedAnalog(Context::Ptr context, NodeID id, Parameters param);
+  EmulatedAnalog(Context::Ptr context, NodeID id, const Parameters& param);
   virtual ~EmulatedAnalog();
 
   // Supported period.
