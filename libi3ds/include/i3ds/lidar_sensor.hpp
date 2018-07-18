@@ -23,7 +23,7 @@ namespace i3ds
 
 CODEC(LIDARRegion);
 CODEC(LIDARConfiguration);
-CODEC(LIDARMeasurement200K);
+CODEC(LIDARMeasurement750K);
 
 class LIDAR : public Sensor
 {
@@ -37,7 +37,7 @@ public:
   typedef Query  <17, LIDARConfigurationCodec> ConfigurationService;
 
   // LIDAR topics
-  typedef Topic<128, LIDARMeasurement200KCodec> MeasurementTopic;
+  typedef Topic<128, LIDARMeasurement750KCodec> MeasurementTopic;
 
   // Constructor and destructor.
   LIDAR(NodeID node) : Sensor(node) {};

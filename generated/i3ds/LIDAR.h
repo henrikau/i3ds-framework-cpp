@@ -19,36 +19,36 @@ typedef struct
 {
   int nCount;
 
-  Point arr[200000];
-} LIDARMeasurement200K_points;
+  Point arr[750000];
+} LIDARMeasurement750K_points;
 
-#define LIDARMeasurement200K_points_REQUIRED_BYTES_FOR_ENCODING       7850006
-#define LIDARMeasurement200K_points_REQUIRED_BITS_FOR_ENCODING        62800048
-#define LIDARMeasurement200K_points_REQUIRED_BYTES_FOR_ACN_ENCODING   7850003
-#define LIDARMeasurement200K_points_REQUIRED_BITS_FOR_ACN_ENCODING    62800018
-#define LIDARMeasurement200K_points_REQUIRED_BYTES_FOR_XER_ENCODING   45600059
+#define LIDARMeasurement750K_points_REQUIRED_BYTES_FOR_ENCODING       29437514
+#define LIDARMeasurement750K_points_REQUIRED_BITS_FOR_ENCODING        235500112
+#define LIDARMeasurement750K_points_REQUIRED_BYTES_FOR_ACN_ENCODING   29437503
+#define LIDARMeasurement750K_points_REQUIRED_BITS_FOR_ACN_ENCODING    235500020
+#define LIDARMeasurement750K_points_REQUIRED_BYTES_FOR_XER_ENCODING   171000059
 
-void LIDARMeasurement200K_points_Initialize(LIDARMeasurement200K_points* pVal);
-flag LIDARMeasurement200K_points_IsConstraintValid(const LIDARMeasurement200K_points* val, int* pErrCode);
-#ifndef ERR_LIDARMeasurement200K_points
-#define ERR_LIDARMeasurement200K_points		1001  /*(SIZE(1 .. 200000))*/
+void LIDARMeasurement750K_points_Initialize(LIDARMeasurement750K_points* pVal);
+flag LIDARMeasurement750K_points_IsConstraintValid(const LIDARMeasurement750K_points* val, int* pErrCode);
+#ifndef ERR_LIDARMeasurement750K_points
+#define ERR_LIDARMeasurement750K_points		1001  /*(SIZE(1 .. 750000))*/
 #endif
 
 typedef struct
 {
   SampleAttributes attributes;
-  LIDARMeasurement200K_points points;
+  LIDARMeasurement750K_points points;
   PolarRegion region;
-} LIDARMeasurement200K;
+} LIDARMeasurement750K;
 
-#define LIDARMeasurement200K_REQUIRED_BYTES_FOR_ENCODING       7850125
-#define LIDARMeasurement200K_REQUIRED_BITS_FOR_ENCODING        62800993
-#define LIDARMeasurement200K_REQUIRED_BYTES_FOR_ACN_ENCODING   7850121
-#define LIDARMeasurement200K_REQUIRED_BITS_FOR_ACN_ENCODING    62800963
-#define LIDARMeasurement200K_REQUIRED_BYTES_FOR_XER_ENCODING   45601304
+#define LIDARMeasurement750K_REQUIRED_BYTES_FOR_ENCODING       29437633
+#define LIDARMeasurement750K_REQUIRED_BITS_FOR_ENCODING        235501057
+#define LIDARMeasurement750K_REQUIRED_BYTES_FOR_ACN_ENCODING   29437621
+#define LIDARMeasurement750K_REQUIRED_BITS_FOR_ACN_ENCODING    235500965
+#define LIDARMeasurement750K_REQUIRED_BYTES_FOR_XER_ENCODING   171001304
 
-void LIDARMeasurement200K_Initialize(LIDARMeasurement200K* pVal);
-flag LIDARMeasurement200K_IsConstraintValid(const LIDARMeasurement200K* val, int* pErrCode);
+void LIDARMeasurement750K_Initialize(LIDARMeasurement750K* pVal);
+flag LIDARMeasurement750K_IsConstraintValid(const LIDARMeasurement750K* val, int* pErrCode);
 
 
 typedef struct
@@ -90,12 +90,12 @@ flag LIDARConfiguration_IsConstraintValid(const LIDARConfiguration* val, int* pE
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag LIDARMeasurement200K_points_Encode(const LIDARMeasurement200K_points* val, BitStream* pBitStrm, int* pErrCode,
+flag LIDARMeasurement750K_points_Encode(const LIDARMeasurement750K_points* val, BitStream* pBitStrm, int* pErrCode,
                                         flag bCheckConstraints);
-flag LIDARMeasurement200K_points_Decode(LIDARMeasurement200K_points* pVal, BitStream* pBitStrm, int* pErrCode);
-flag LIDARMeasurement200K_Encode(const LIDARMeasurement200K* val, BitStream* pBitStrm, int* pErrCode,
+flag LIDARMeasurement750K_points_Decode(LIDARMeasurement750K_points* pVal, BitStream* pBitStrm, int* pErrCode);
+flag LIDARMeasurement750K_Encode(const LIDARMeasurement750K* val, BitStream* pBitStrm, int* pErrCode,
                                  flag bCheckConstraints);
-flag LIDARMeasurement200K_Decode(LIDARMeasurement200K* pVal, BitStream* pBitStrm, int* pErrCode);
+flag LIDARMeasurement750K_Decode(LIDARMeasurement750K* pVal, BitStream* pBitStrm, int* pErrCode);
 flag LIDARRegion_Encode(const LIDARRegion* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 flag LIDARRegion_Decode(LIDARRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 flag LIDARConfiguration_Encode(const LIDARConfiguration* val, BitStream* pBitStrm, int* pErrCode,

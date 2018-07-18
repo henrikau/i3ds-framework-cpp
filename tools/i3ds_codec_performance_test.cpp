@@ -226,7 +226,7 @@ main(int argc, char *argv[])
   std::cout << "2048 x 2048 px stereo frame:" << std::endl;
   camera_test(n_replications, 2048, 2048, 2, 12, true);
 
-  lidar_test<i3ds::LIDARMeasurement200KCodec>(n_replications, 200000);
+  lidar_test<i3ds::LIDARMeasurement750KCodec>(n_replications, 200000);
   radar_test<i3ds::RadarMeasurement400KCodec>(n_replications, 400000);
   analog_test<i3ds::AnalogMeasurement1KCodec>(n_replications, 10000);
 
