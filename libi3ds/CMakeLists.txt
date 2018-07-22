@@ -37,6 +37,7 @@ if (GENERATE_ASN)
     ${I3DS_BASE_DIR}/StarTracker.asn
     ${I3DS_BASE_DIR}/ToFCamera.asn
     ${I3DS_EXTRA_DIR}/Trigger.asn
+    ${I3DS_EXTRA_DIR}/Flash.asn
     )
 
   set (ASN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/i3ds")
@@ -80,6 +81,8 @@ set (LIB_SRCS
   src/analog_client.cpp
   src/trigger.cpp
   src/trigger_client.cpp
+  src/flash.cpp
+  src/flash_client.cpp
   src/measurement_proxy.cpp
   src/sensor_configurator.cpp
   src/message_recording.cpp
