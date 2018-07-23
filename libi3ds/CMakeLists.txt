@@ -10,6 +10,11 @@ endif (BUILD_TESTS OR BUILD_TOOLS)
 if (GENERATE_ASN)
   find_package (ASN1CC REQUIRED)
 
+  if ("${ASN1CC_EXECUTABLE}" STREQUAL "" OR "${ASN1CC_EXECUTABLE}" STREQUAL "ASN1CC_EXECUTABLE-NOTFOUND")
+    MESSAGE(FATAL_ERROR "ASN.1 compiler not found.\n"
+      "Please specify the ASN1CC_SRC_ROOT_FOLDER or set GENERATE_ASN=OFF")
+  endif()
+
   set (ESROCOS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/esrocos/types-base/asn)
   set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
   set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
