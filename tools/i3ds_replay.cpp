@@ -28,6 +28,15 @@
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
+volatile bool running;
+
+void
+signal_handler(int signum)
+{
+  running = false;
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -70,22 +79,55 @@ main(int argc, char *argv[])
       return -1;
     }
 
-  i3ds::SessionRecording recording;
-  recording.load_from_file(file_name);
+  i3ds::SessionReader recording(file_name);
+  NodeID node_id;
+  i3ds::MessageRecord r = recording.get_message();
 
-  BOOST_LOG_TRIVIAL(info) << "Replaying messages from node ID " <<  recording.node_id
-                          << " with endpoint ID " << recording.endpoint_id;
+  if (recording.header_found()) {
+    BOOST_LOG_TRIVIAL(trace) << "Header file found.";
+    node_id = recording.node_id;
+  } else {
+    BOOST_LOG_TRIVIAL(trace) << "Header file not found.";
+    node_id = r.node();
+  }
+
+  BOOST_LOG_TRIVIAL(info) << "Replaying messages from node ID " <<  node_id;
+  if (recording.has_endpoint_id) {
+    BOOST_LOG_TRIVIAL(info) << " with endpoint ID " << recording.endpoint_id;
+  }
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Socket::Ptr publisher = i3ds::Socket::Publisher(context);
-  publisher->Attach(recording.node_id);
+  publisher->Attach(node_id);
 
-  for (i3ds::MessageRecord r : recording.records)
+  running = true;
+  signal(SIGINT, signal_handler);
+
+  uint32_t n_messages = 0;
+  uint64_t prev_time = r.timestamp;
+
+  BOOST_LOG_TRIVIAL(trace) << "Loading system...";
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  BOOST_LOG_TRIVIAL(trace) << "Done.";
+
+  try {
+
+    while (running)
     {
-      std::this_thread::sleep_for(std::chrono::microseconds(r.delay));
+      n_messages++;
+      if (prev_time < r.timestamp) {
+	uint64_t delay = r.timestamp - prev_time;
+	std::this_thread::sleep_for(std::chrono::microseconds(delay));
+      }
       publisher->Send(*(r.msg));
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
+      prev_time = r.timestamp;
+
+      r = recording.get_message();
     }
+  } catch (i3ds::exceptions::end_of_file &e) {
+  }
+  BOOST_LOG_TRIVIAL(info) << "Played back " << n_messages << " messages.";
 
   return 0;
 }

@@ -50,7 +50,7 @@ main(int argc, char *argv[])
   desc.add_options()
   ("help,h", "Produce this message")
   ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
-  ("endpoint,e", po::value(&endpoint_id)->required(), "Endpoint ID of measurement")
+  ("endpoint,e", po::value(&endpoint_id), "Endpoint ID of measurement. Subscribes to all messages if not specified")
   ("messages,m", po::value(&n_messages)->default_value(0), "Number of messages to record. 0 means no limit.")
   ("output,o", po::value<std::string>(&file_name)->default_value("out.log"), "File name to write output.")
   ("verbose,v", "Print verbose output")
@@ -85,46 +85,59 @@ main(int argc, char *argv[])
       return -1;
     }
 
-  BOOST_LOG_TRIVIAL(info) << "Recording messages from node ID " <<  node_id
-                          << " with endpoint ID " << endpoint_id;
+  BOOST_LOG_TRIVIAL(info) << "Recording messages from node ID " <<  node_id;
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Socket::Ptr subscriber = i3ds::Socket::Subscriber(context);
   subscriber->Attach(node_id);
-  subscriber->Filter(i3ds::Address(node_id, endpoint_id));
 
-  i3ds::SessionRecording recording;
+  i3ds::SessionRecording recording(file_name);
   recording.node_id = node_id;
-  recording.endpoint_id = endpoint_id;
+
+  if (vm.count("endpoint")) {
+    BOOST_LOG_TRIVIAL(info) <<  "Subscribing to endpoint ID " << endpoint_id << ".";
+    subscriber->Filter(i3ds::Address(node_id, endpoint_id));
+    recording.endpoint_id = endpoint_id;
+    recording.endpoint_id_set = true;
+  } else {
+    BOOST_LOG_TRIVIAL(info) <<  "Subscribing to all endpoints.";
+    subscriber->FilterAll();
+    recording.endpoint_id_set = false;
+  }
+
 
   running = true;
   signal(SIGINT, signal_handler);
 
-  uint64_t current_msg_time = 0;
-  uint64_t prev_msg_time = 0;
-  while(running)
+  i3ds::MessageRecord record;
+  BOOST_LOG_TRIVIAL(trace) << "Waiting for messages.";
+  try {
+    subscriber->Receive(*(record.msg));
+    record.timestamp = i3ds::get_timestamp();
+    recording.start_time = record.timestamp;
+    while(running)
     {
-      i3ds::MessageRecord record;
-      subscriber->Receive(*(record.msg));
-      current_msg_time = i3ds::get_timestamp();
-      if (!recording.records.empty()) // Keep first message delay 0
-        {
-          record.delay = current_msg_time - prev_msg_time;;
-        }
-      BOOST_LOG_TRIVIAL(trace) << "Receviced message after: " << record.delay << " microseconds";
+
+      BOOST_LOG_TRIVIAL(trace) << "Receviced message at: " << record.timestamp << " microseconds";
       BOOST_LOG_TRIVIAL(trace) << "message has: " << record.msg->payloads() << " paylods";
-      recording.records.push_back(record);
-      if (n_messages > 0 && recording.records.size() >= n_messages)
-        {
-          break;
-        }
-      prev_msg_time = current_msg_time;
+      recording.store(record);
+      if (n_messages > 0 && recording.message_count() >= n_messages)
+      {
+	break;
+      }
+      subscriber->Receive(*(record.msg));
+      record.timestamp = i3ds::get_timestamp();
     }
+  } catch(zmq::error_t &ex) {
+    BOOST_LOG_TRIVIAL(info) << "Received a zmq error: " << ex.what();
+  }
+  recording.end_time = record.timestamp;
 
-  BOOST_LOG_TRIVIAL(info) << "Stopping. Received " << recording.records.size() << " messages.";
+  BOOST_LOG_TRIVIAL(info) << "Stopping. Received " << recording.message_count() << " messages.";
 
-  recording.write_to_file(file_name);
+  recording.store_header();
   BOOST_LOG_TRIVIAL(info) << "Output written to " << file_name;
+  BOOST_LOG_TRIVIAL(info) << "  with header " << file_name << ".hdr";
 
   return 0;
 }
