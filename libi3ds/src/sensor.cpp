@@ -22,6 +22,8 @@ i3ds::Sensor::Sensor(NodeID node)
   period_ = 1000000;
   batch_size_ = 1;
   batch_count_ = 0;
+
+  T_String_Initialize(&device_name_);
 }
 
 i3ds::Sensor::~Sensor()
