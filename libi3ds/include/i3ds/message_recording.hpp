@@ -31,12 +31,13 @@
  * -----------------------------------
  *
  * Header package:
- * -----------------------------------
- * | START       | MESSAGE_TYPE_HEAD |
- * | START_TIME  | END_TIME          |
- * | NODE_ID     | HAS_ENDPOINT_ID   |
- * | ENDPOINT_ID | MESSAGE_COUNT     |
- * -----------------------------------
+ * ---------------------------------------
+ * | START           | MESSAGE_TYPE_HEAD |
+ * | START_TIME      | END_TIME          |
+ * | N_NODE_IDs      | NODE_IDs: 1 - N   |
+ * | HAS_ENDPOINT_ID | ENDPOINT_ID       |
+ * | MESSAGE_COUNT   |                   |
+ * ---------------------------------------
  ***/
 
 namespace i3ds
@@ -83,7 +84,7 @@ public:
   uint32_t message_count() {
     return _message_count;
   }
-  NodeID node_id;
+  std::vector<NodeID> node_ids;
   EndpointID endpoint_id;
   bool endpoint_id_set = false;
   uint64_t start_time;
@@ -107,7 +108,7 @@ public:
   MessageRecord get_message();
   bool has_endpoint_id;
   bool endpoint_id_set;
-  NodeID node_id;
+  std::vector<NodeID> node_ids;
   bool _header_found;
   uint64_t start_time;
   uint64_t end_time;

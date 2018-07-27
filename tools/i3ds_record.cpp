@@ -40,7 +40,7 @@ signal_handler(int signum)
 int
 main(int argc, char *argv[])
 {
-  NodeID node_id;
+  std::vector<NodeID> node_ids;
   EndpointID endpoint_id;
   uint32_t n_messages;
   std::string file_name;
@@ -49,7 +49,7 @@ main(int argc, char *argv[])
 
   desc.add_options()
   ("help,h", "Produce this message")
-  ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
+  ("node,n", po::value(&node_ids)->required(), "Node ID of sensor")
   ("endpoint,e", po::value(&endpoint_id), "Endpoint ID of measurement. Subscribes to all messages if not specified")
   ("messages,m", po::value(&n_messages)->default_value(0), "Number of messages to record. 0 means no limit.")
   ("output,o", po::value<std::string>(&file_name)->default_value("out.log"), "File name to write output.")
@@ -85,18 +85,25 @@ main(int argc, char *argv[])
       return -1;
     }
 
-  BOOST_LOG_TRIVIAL(info) << "Recording messages from node ID " <<  node_id;
+  BOOST_LOG_TRIVIAL(trace) << "Recording messages from node IDs: ";
+  for ( auto node_id : node_ids) {
+    BOOST_LOG_TRIVIAL(trace) << "  " <<  node_id;
+  }
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Socket::Ptr subscriber = i3ds::Socket::Subscriber(context);
-  subscriber->Attach(node_id);
+
+  for ( auto node_id : node_ids) {
+    BOOST_LOG_TRIVIAL(info) << "Subscribing to node " << node_id;
+    subscriber->Attach(node_id);
+  }
 
   i3ds::SessionRecording recording(file_name);
-  recording.node_id = node_id;
+  recording.node_ids = node_ids;
 
-  if (vm.count("endpoint")) {
+  if (vm.count("endpoint") && vm.count("node") == 1) {
     BOOST_LOG_TRIVIAL(info) <<  "Subscribing to endpoint ID " << endpoint_id << ".";
-    subscriber->Filter(i3ds::Address(node_id, endpoint_id));
+    subscriber->Filter(i3ds::Address(node_ids[0], endpoint_id));
     recording.endpoint_id = endpoint_id;
     recording.endpoint_id_set = true;
   } else {

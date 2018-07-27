@@ -44,10 +44,16 @@ main(int argc, char *argv[])
 
   po::options_description desc("Replays a log file recorded with i3ds_record\n  Available options");
 
+  int node_offset;
+  bool is_forced_node = false;
+  NodeID forced_node;
+
   desc.add_options()
   ("help,h", "Produce this message")
   ("input,i", po::value<std::string>(&file_name)->required(), "Name of log file")
   ("verbose,v", "Print verbose output")
+  ("node,n", po::value<NodeID>(&forced_node), "Force the messages to be output on this node")
+  ("node-offset,no", po::value<int>(&node_offset)->default_value(0), "Offset to the recorded nodes")
   ("quiet,q", "Quiet ouput")
   ;
 
@@ -80,12 +86,12 @@ main(int argc, char *argv[])
     }
 
   i3ds::SessionReader recording(file_name);
-  NodeID node_id;
   i3ds::MessageRecord r = recording.get_message();
 
+  NodeID node_id;
   if (recording.header_found()) {
     BOOST_LOG_TRIVIAL(trace) << "Header file found.";
-    node_id = recording.node_id;
+    node_id = recording.node_ids[0];
   } else {
     BOOST_LOG_TRIVIAL(trace) << "Header file not found.";
     node_id = r.node();
@@ -96,9 +102,20 @@ main(int argc, char *argv[])
     BOOST_LOG_TRIVIAL(info) << " with endpoint ID " << recording.endpoint_id;
   }
 
+  NodeID used_node = node_id + node_offset;
+
+  if (vm.count("node")) {
+    used_node = forced_node;
+    is_forced_node = true;
+  }
+
+  BOOST_LOG_TRIVIAL(info) << "Publishing to node ID " <<  used_node;
+
+
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Socket::Ptr publisher = i3ds::Socket::Publisher(context);
-  publisher->Attach(node_id);
+
+  publisher->Attach(used_node);
 
   running = true;
   signal(SIGINT, signal_handler);
@@ -118,6 +135,13 @@ main(int argc, char *argv[])
       if (prev_time < r.timestamp) {
 	uint64_t delay = r.timestamp - prev_time;
 	std::this_thread::sleep_for(std::chrono::microseconds(delay));
+      }
+      if (is_forced_node || node_offset != 0) {
+	i3ds::Address addr = r.msg->address();
+	BOOST_LOG_TRIVIAL(trace) << "Changing address from " << addr.node << ":" << addr.endpoint;
+	addr.node = used_node;
+	BOOST_LOG_TRIVIAL(trace) << "                 to   " << addr.node << ":" << addr.endpoint;
+	r.msg->set_address(addr);
       }
       publisher->Send(*(r.msg));
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
