@@ -37,6 +37,17 @@ signal_handler(int signum)
   running = false;
 }
 
+bool
+register_node(i3ds::Context::Ptr &context,
+	      std::unordered_map<NodeID, i3ds::Socket::Ptr> &publishers,
+	      NodeID new_node) {
+  auto search = publishers.find(new_node);
+  if (search != publishers.end())
+    return false;
+  publishers[new_node] = i3ds::Socket::Publisher(context);
+  publishers[new_node]->Attach(new_node);
+  return true;
+}
 
 int
 main(int argc, char *argv[])
@@ -54,7 +65,7 @@ main(int argc, char *argv[])
   ("input,i", po::value<std::string>(&file_name)->required(), "Name of log file")
   ("verbose,v", "Print verbose output")
   ("node,n", po::value<NodeID>(&forced_node), "Force the messages to be output on this node")
-  ("node-offset,no", po::value<int>(&node_offset)->default_value(0), "Offset to the recorded nodes")
+  ("node-offset,p", po::value<int>(&node_offset)->default_value(0), "Offset to the recorded nodes")
   ("quiet,q", "Quiet ouput")
   ;
 
@@ -88,7 +99,6 @@ main(int argc, char *argv[])
 
   i3ds::SessionReader recording(file_name);
   i3ds::MessageRecord r = recording.get_message();
-  std::unordered_map<NodeID, NodeID> node_id_translation;
 
   NodeID node_id;
   if (recording.header_found()) {
@@ -111,8 +121,7 @@ main(int argc, char *argv[])
     is_forced_node = true;
   }
 
-  i3ds::Context::Ptr context = i3ds::Context::Create();
-  i3ds::Socket::Ptr publisher = i3ds::Socket::Publisher(context);
+  std::unordered_map<NodeID, NodeID> node_id_translation;
 
   if (recording.header_found()) {
     if (is_forced_node) {
@@ -120,29 +129,31 @@ main(int argc, char *argv[])
       for (NodeID node_id : recording.node_ids) {
 	node_id_translation[node_id] = forced_node;
       }
-      publisher->Attach(forced_node);
     } else {
       BOOST_LOG_TRIVIAL(info) << "Publishing to node IDs: ";
       for (NodeID node_id : recording.node_ids) {
 	NodeID new_node = node_id + node_offset;
 	node_id_translation[node_id] = new_node;
 	BOOST_LOG_TRIVIAL(info) << "  " << new_node;
-	publisher->Attach(new_node);
       }
     }
   } else {
     if (is_forced_node) {
       BOOST_LOG_TRIVIAL(info) << "Publishing to node ID " <<  forced_node;
       node_id_translation[node_id] = forced_node;
-      publisher->Attach(forced_node);
     } else {
       NodeID new_node = node_id + node_offset;
       BOOST_LOG_TRIVIAL(info) << "Publishing to node ID " << new_node << "(and possibly others)";
       node_id_translation[node_id] = new_node;
-      publisher->Attach(new_node);
     }
   }
 
+  i3ds::Context::Ptr context = i3ds::Context::Create();
+  std::unordered_map<NodeID, i3ds::Socket::Ptr> publishers;
+
+  for (auto node_node : node_id_translation) {
+    register_node(context, publishers, node_node.second);
+  }
 
   running = true;
   signal(SIGINT, signal_handler);
@@ -151,7 +162,7 @@ main(int argc, char *argv[])
   uint64_t prev_time = r.timestamp;
 
   BOOST_LOG_TRIVIAL(trace) << "Loading system...";
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
   BOOST_LOG_TRIVIAL(trace) << "Done.";
 
   try {
@@ -163,32 +174,35 @@ main(int argc, char *argv[])
 	uint64_t delay = r.timestamp - prev_time;
 	std::this_thread::sleep_for(std::chrono::microseconds(delay));
       }
-      // TODO: Check if node in translation, attach if not.
-      if (is_forced_node || node_offset != 0) {
-	i3ds::Address addr = r.msg->address();
-	NodeID new_node;
-	auto search = node_id_translation.find(addr.node);
-	if (search == node_id_translation.end()) {
-	  // If translation does not exist, we need to attach to it.
-	  if (is_forced_node) {
-	    new_node = forced_node;
-	  } else {
-	    new_node = addr.node + node_offset;
-	  }
-	  publisher->Attach(new_node);
-	  node_id_translation[node_id] = new_node;
-	  BOOST_LOG_TRIVIAL(trace) << "Attaching to new node: " << new_node;
+
+      i3ds::Address addr = r.msg->address();
+      NodeID old_node = addr.node;
+      NodeID new_node;
+      auto search = node_id_translation.find(old_node);
+      if (search == node_id_translation.end()) {
+	// This is the first time we see this ID.
+	if (is_forced_node) {
+	  new_node = forced_node;
 	} else {
-	  new_node = search->second;
+	  new_node = addr.node + node_offset;
 	}
+        node_id_translation[addr.node] = new_node;
+	if (register_node(context, publishers, new_node)) {
+	  // This should only be executed if header is missing
+	  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+	}
+      } else {
+        new_node = search->second;
+      }
+
+      if (new_node != old_node) {
 	BOOST_LOG_TRIVIAL(trace) << "Changing address from " << addr.node << ":" << addr.endpoint;
 	addr.node = new_node;
 	BOOST_LOG_TRIVIAL(trace) << "                 to   " << addr.node << ":" << addr.endpoint;
 	r.msg->set_address(addr);
       }
 
-
-      publisher->Send(*(r.msg));
+      publishers[new_node]->Send(*(r.msg));
       BOOST_LOG_TRIVIAL(trace) << "Sent message";
       prev_time = r.timestamp;
 
