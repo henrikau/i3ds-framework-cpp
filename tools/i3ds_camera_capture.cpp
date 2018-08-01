@@ -20,6 +20,7 @@
 
 #include <boost/program_options.hpp>
 #include <opencv2/core/core.hpp>
+#include <opencv2/core/version.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <chrono>
 #include <iomanip>
@@ -42,7 +43,9 @@ void
 render_image(std::string window_name, const i3ds::Frame& frame, int image_number, std::string fps_text)
 {
   cv::Mat mat = frame_to_cv_mat(frame, image_number);
+#if CV_MAJOR_VERSION == 3
   cv::setWindowTitle (window_name, window_name + " " + fps_text);
+#endif
   cv::imshow(window_name, mat);
   cv::waitKey(5); // Apparently needed to render image properly
 }
