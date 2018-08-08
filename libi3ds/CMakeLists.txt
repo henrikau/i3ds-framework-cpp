@@ -42,6 +42,7 @@ if (GENERATE_ASN)
     ${I3DS_BASE_DIR}/StarTracker.asn
     ${I3DS_BASE_DIR}/ToFCamera.asn
     ${I3DS_EXTRA_DIR}/Trigger.asn
+    ${I3DS_EXTRA_DIR}/Power.asn
     ${I3DS_EXTRA_DIR}/Flash.asn
     )
 
@@ -86,6 +87,8 @@ set (LIB_SRCS
   src/analog_client.cpp
   src/trigger.cpp
   src/trigger_client.cpp
+  src/power.cpp
+  src/power_client.cpp
   src/flash.cpp
   src/flash_client.cpp
   src/measurement_proxy.cpp
