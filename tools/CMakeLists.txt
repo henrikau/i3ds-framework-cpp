@@ -19,6 +19,7 @@ set (APPS
   i3ds_configure_radar
   i3ds_configure_tof
   i3ds_configure_trigger
+  i3ds_configure_power
   i3ds_delay_recorder
   i3ds_record
   i3ds_replay
