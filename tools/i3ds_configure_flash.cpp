@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
   ("help", "Show help")
   ("node,n", po::value(&node_id)->default_value(25), "NodeID")
   ("strength,s", po::value(&strength), "Flash strength (0-100%)")
-  ("duration,d", po::value(&duration), "Duration of flash (1-3000 ms)\n(Be aware, there are some limitations between strength and duration.)")
+  ("duration,d", po::value(&duration), "Duration of flash (10-3000000  us)\n(Be aware, there are some limitations between strength and duration.)")
   ("verbose,v", "Print verbose output") ("quite,q", "Quiet output");
   ;
 
