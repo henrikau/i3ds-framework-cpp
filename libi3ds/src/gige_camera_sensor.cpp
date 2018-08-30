@@ -9,7 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <i3ds/gige_camera_sensor.hpp>
-#include <i3ds/gige_wrapper.hpp>
 #include <i3ds/time.hpp>
 
 #define BOOST_LOG_DYN_LINK
@@ -22,10 +21,9 @@
 
 namespace logging = boost::log;
 
-i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param, GigEWrapper& wrapper)
+i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param)
   : Camera(node),
     param_(param),
-    wrapper_(wrapper),
     publisher_(context, node)
 {
   flash_enabled_ = false;
@@ -55,50 +53,49 @@ i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param
 
 i3ds::GigECamera::~GigECamera()
 {
-  wrapper_.Close();
 }
 
 ShutterTime
 i3ds::GigECamera::shutter() const
 {
-  return (ShutterTime) wrapper_.getShutter();
+  return (ShutterTime) getShutter();
 }
 
 SensorGain
 i3ds::GigECamera::gain() const
 {
-  return (SensorGain) wrapper_.getGain();
+  return (SensorGain) getGain();
 }
 
 bool
 i3ds::GigECamera::auto_exposure_enabled() const
 {
-  return wrapper_.getAutoShutterEnabled() || wrapper_.getAutoGainEnabled();
+  return getAutoShutterEnabled() || getAutoGainEnabled();
 }
 
 ShutterTime
 i3ds::GigECamera::max_shutter() const
 {
-  return (ShutterTime) wrapper_.getMaxAutoShutterLimit();
+  return (ShutterTime) getMaxAutoShutterLimit();
 }
 
 SensorGain
 i3ds::GigECamera::max_gain() const
 {
-  return (SensorGain) wrapper_.getMaxAutoGainLimit();
+  return (SensorGain) getMaxAutoGainLimit();
 }
 
 bool
 i3ds::GigECamera::region_enabled() const
 {
-  if (!wrapper_.isRegionSupported())
+  if (!isRegionSupported())
     {
       return false;
     }
   else
     {
-      return (wrapper_.getRegionWidth() != wrapper_.getSensorWidth()) ||
-             (wrapper_.getRegionHeight() != wrapper_.getSensorHeight());
+      return (getRegionWidth() != getSensorWidth()) ||
+             (getRegionHeight() != getSensorHeight());
     }
 }
 
@@ -107,10 +104,10 @@ i3ds::GigECamera::region() const
 {
   PlanarRegion region;
 
-  region.size_x   = (T_UInt16) wrapper_.getRegionWidth();
-  region.size_y   = (T_UInt16) wrapper_.getRegionHeight();
-  region.offset_x = (T_UInt16) wrapper_.getRegionOffsetX();
-  region.offset_y = (T_UInt16) wrapper_.getRegionOffsetY();
+  region.size_x   = (T_UInt16) getRegionWidth();
+  region.size_y   = (T_UInt16) getRegionHeight();
+  region.offset_x = (T_UInt16) getRegionOffsetX();
+  region.offset_y = (T_UInt16) getRegionOffsetY();
 
   return region;
 }
@@ -120,16 +117,7 @@ i3ds::GigECamera::do_activate()
 {
   BOOST_LOG_TRIVIAL(info) << "do_activate()";
 
-  try
-    {
-      wrapper_.Open(param_);
-    }
-  catch (std::exception& e)
-    {
-      BOOST_LOG_TRIVIAL(warning) << e.what();
-
-      throw i3ds::CommandError(error_other, "Error connecting to camera");;
-    }
+  Open();
 }
 
 void
@@ -137,7 +125,7 @@ i3ds::GigECamera::do_start()
 {
   BOOST_LOG_TRIVIAL(info) << "do_start()";
 
-  wrapper_.Start();
+  Start();
 
   if (param_.external_trigger)
     {
@@ -155,13 +143,13 @@ i3ds::GigECamera::do_stop()
       trigger_->disable_channels(trigger_outputs_);
     }
 
-  wrapper_.Stop();
+  Stop();
 }
 
 void
 i3ds::GigECamera::do_deactivate()
 {
-  wrapper_.Close();
+  Close();
 
   flash_enabled_ = false;
   flash_strength_ = 0.0;
@@ -184,7 +172,7 @@ i3ds::GigECamera::is_sampling_supported(SampleCommand sample)
     }
   else
     {
-      return wrapper_.setInternalTrigger(sample.period);
+      return setInternalTrigger(sample.period);
     }
 }
 
@@ -203,8 +191,8 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
 
   // Check that shutter is within limits.
   const int shutter = command.request.shutter;
-  const int shutter_max = wrapper_.getMaxShutter();
-  const int64_t shutter_min = wrapper_.getMinShutter();
+  const int shutter_max = getMaxShutter();
+  const int64_t shutter_min = getMinShutter();
 
   if (shutter > (int64_t) period())
     {
@@ -223,8 +211,8 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
 
   // Check that gain is within limits.
   const double gain = command.request.gain;
-  const double gain_max = wrapper_.getMaxGain();
-  const double gain_min = wrapper_.getMinGain();
+  const double gain_max = getMaxGain();
+  const double gain_min = getMinGain();
 
   if (gain > gain_max)
     {
@@ -239,8 +227,8 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
   // Update gain and shutter.
   try
     {
-      wrapper_.setShutter(shutter);
-      wrapper_.setGain(gain);
+      setShutter(shutter);
+      setGain(gain);
     }
   catch (std::exception& e)
     {
@@ -264,15 +252,15 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
 
   if (!command.request.enable)
     {
-      wrapper_.setAutoShutterEnabled(false);
-      wrapper_.setAutoGainEnabled(false);
+      setAutoShutterEnabled(false);
+      setAutoGainEnabled(false);
 
       return;
     }
 
   // Check that auto shutter or auto gain is supported.
-  const bool support_shutter = wrapper_.isAutoShutterSupported();
-  const bool support_gain = wrapper_.isAutoGainSupported();
+  const bool support_shutter = isAutoShutterSupported();
+  const bool support_gain = isAutoGainSupported();
 
   if (!(support_shutter || support_gain))
     {
@@ -282,8 +270,8 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
   if (support_shutter)
     {
       const int limit = command.request.max_shutter;
-      const int limit_max = wrapper_.getMaxAutoShutterLimit();
-      const int limit_min = wrapper_.getMinAutoShutterLimit();
+      const int limit_max = getMaxAutoShutterLimit();
+      const int limit_min = getMinAutoShutterLimit();
 
       if (limit > limit_max)
         {
@@ -295,15 +283,15 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
           throw i3ds::CommandError(error_value, "Shutter limit shorter than min " + std::to_string(limit_min));
         }
 
-      wrapper_.setAutoShutterLimit(limit);
-      wrapper_.setAutoShutterEnabled(true);
+      setAutoShutterLimit(limit);
+      setAutoShutterEnabled(true);
     }
 
   if (support_gain)
     {
       const int limit = command.request.max_gain;
-      const int limit_max = wrapper_.getMaxAutoGainLimit();
-      const int limit_min = wrapper_.getMinAutoGainLimit();
+      const int limit_max = getMaxAutoGainLimit();
+      const int limit_min = getMinAutoGainLimit();
 
       if (limit > limit_max)
         {
@@ -315,8 +303,8 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
           throw i3ds::CommandError(error_value, "Gain limit smaller than min " + std::to_string(limit_min));
         }
 
-      wrapper_.setAutoGainLimit(limit);
-      wrapper_.setAutoGainEnabled(true);
+      setAutoGainLimit(limit);
+      setAutoGainEnabled(true);
     }
 }
 
@@ -336,45 +324,45 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
       const int ox = command.request.region.offset_x;
       const int oy = command.request.region.offset_y;
 
-      if ((sx + ox) > wrapper_.getSensorWidth())
+      if ((sx + ox) > getSensorWidth())
         {
           throw i3ds::CommandError(error_value, std::string("Region width and offset outside sensor width for camera"));
         }
 
-      if ((sy + oy) > wrapper_.getSensorHeight())
+      if ((sy + oy) > getSensorHeight())
         {
           throw i3ds::CommandError(error_value, std::string("Region height and offset outside sensor height for camera"));
         }
 
       // Have to do resizing in correct order.(Reduse parameter first, increase later)
-      if (sx > wrapper_.getRegionWidth())
+      if (sx > getRegionWidth())
         {
-          wrapper_.setRegionOffsetX(ox);
-          wrapper_.setRegionWidth(sx);
+          setRegionOffsetX(ox);
+          setRegionWidth(sx);
         }
       else
         {
-          wrapper_.setRegionWidth(sx);
-          wrapper_.setRegionOffsetX(ox);
+          setRegionWidth(sx);
+          setRegionOffsetX(ox);
         }
 
-      if (sy > wrapper_.getRegionHeight())
+      if (sy > getRegionHeight())
         {
-          wrapper_.setRegionOffsetY(oy);
-          wrapper_.setRegionHeight(sy);
+          setRegionOffsetY(oy);
+          setRegionHeight(sy);
         }
       else
         {
-          wrapper_.setRegionHeight(sy);
-          wrapper_.setRegionOffsetY(oy);
+          setRegionHeight(sy);
+          setRegionOffsetY(oy);
         }
     }
   else
     {
-      wrapper_.setRegionOffsetX(0);
-      wrapper_.setRegionOffsetY(0);
-      wrapper_.setRegionWidth(wrapper_.getSensorWidth());
-      wrapper_.setRegionHeight(wrapper_.getSensorHeight());
+      setRegionOffsetX(0);
+      setRegionOffsetY(0);
+      setRegionWidth(getSensorWidth());
+      setRegionHeight(getSensorHeight());
     }
 }
 
@@ -398,13 +386,13 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
 
       ShutterTime flash_duration;
 
-      if (wrapper_.getAutoShutterEnabled())
+      if (getAutoShutterEnabled())
         {
-          flash_duration = wrapper_.getAutoShutterLimit();
+          flash_duration = getAutoShutterLimit();
         }
       else
         {
-          flash_duration = wrapper_.getShutter();
+          flash_duration = getShutter();
         }
 
       // Send flash command.

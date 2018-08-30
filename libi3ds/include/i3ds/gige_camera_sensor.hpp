@@ -19,9 +19,6 @@
 namespace i3ds
 {
 
-// Forward declaration of GigE Vision wrapper.
-class GigEWrapper;
-
 class GigECamera : public Camera
 {
 public:
@@ -74,7 +71,7 @@ public:
   typedef std::shared_ptr<GigECamera> Ptr;
 
   // Constructor for GigE camera.
-  GigECamera(Context::Ptr context, NodeID node, Parameters param, GigEWrapper& wrapper);
+  GigECamera(Context::Ptr context, NodeID node, Parameters param);
 
   // Destructor for GigE camera.
   virtual ~GigECamera();
@@ -129,7 +126,68 @@ public:
 
 protected:
 
-  // Send image sample, intented to be called by GigE wrapper.
+  // Constant parameters for GigE camera.
+  const Parameters param_;
+
+  // Camera control
+  virtual void Open() = 0;
+  virtual void Close() = 0;
+  virtual void Start() = 0;
+  virtual void Stop() = 0;
+
+  // Set internal trigger to the given period.
+  virtual bool setInternalTrigger(int period_us) = 0;
+
+  // Sensor width and height
+  virtual int getSensorWidth() const = 0;
+  virtual int getSensorHeight() const = 0;
+
+  // Region of interest
+  virtual bool isRegionSupported() const = 0;
+
+  virtual int getRegionWidth() const = 0;
+  virtual int getRegionHeight() const = 0;
+  virtual int getRegionOffsetX() const = 0;
+  virtual int getRegionOffsetY() const = 0;
+
+  virtual void setRegionWidth(int width) = 0;
+  virtual void setRegionHeight(int height) = 0;
+  virtual void setRegionOffsetX(int offset_x) = 0;
+  virtual void setRegionOffsetY(int offset_y) = 0;
+
+  // Shutter time in microseconds
+  virtual int getShutter() const = 0;
+  virtual int getMaxShutter() const = 0;
+  virtual int getMinShutter() const = 0;
+  virtual void setShutter(int shutter_us) = 0;
+
+  virtual bool isAutoShutterSupported() const = 0;
+
+  virtual bool getAutoShutterEnabled() const = 0;
+  virtual void setAutoShutterEnabled(bool enable) = 0;
+
+  virtual int getAutoShutterLimit() const = 0;
+  virtual int getMaxAutoShutterLimit() const = 0;
+  virtual int getMinAutoShutterLimit() const = 0;
+  virtual void setAutoShutterLimit(int shutter_limit) = 0;
+
+  // Gain in decibel
+  virtual double getGain() const = 0;
+  virtual double getMaxGain() const = 0;
+  virtual double getMinGain() const = 0;
+  virtual void setGain(double gain) = 0;
+
+  virtual bool isAutoGainSupported() const = 0;
+
+  virtual bool getAutoGainEnabled() const = 0;
+  virtual void setAutoGainEnabled(bool enable) = 0;
+
+  virtual double getAutoGainLimit() const = 0;
+  virtual double getMaxAutoGainLimit() const = 0;
+  virtual double getMinAutoGainLimit() const = 0;
+  virtual void setAutoGainLimit(double gain_limit) = 0;
+
+  // Send image sample where multiple images are stacked in height.
   virtual bool send_sample(const byte* image, int width, int height);
 
   // Handler for camera exposure command, must be overloaded.
@@ -148,12 +206,6 @@ protected:
   virtual void handle_pattern(PatternService::Data& command);
 
 private:
-
-  // Constant parameters for GigE camera.
-  const Parameters param_;
-
-  // Wrapper for communicating with specific GigE camera bus/device.
-  GigEWrapper& wrapper_;
 
   // Client for external trigger configuration, if supported.
   TriggerClient::Ptr trigger_;
