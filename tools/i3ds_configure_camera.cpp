@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
   configurator.add_common_options(desc);
   desc.add_options()
-  ("print", "Print the camera configuration")
+  ("print,p", "Print the camera configuration")
 
   ("shutter", po::value(&shutter), "Shutter time in microseconds, gain is optional")
   ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set shutter time")
