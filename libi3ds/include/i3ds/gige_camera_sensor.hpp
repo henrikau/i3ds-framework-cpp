@@ -136,40 +136,40 @@ protected:
   virtual void Stop() = 0;
 
   // Set internal trigger to the given period.
-  virtual bool setInternalTrigger(int period_us) = 0;
+  virtual bool setInternalTrigger(int64_t period_us) = 0;
 
   // Sensor width and height
-  virtual int getSensorWidth() const = 0;
-  virtual int getSensorHeight() const = 0;
+  virtual int64_t getSensorWidth() const = 0;
+  virtual int64_t getSensorHeight() const = 0;
 
   // Region of interest
   virtual bool isRegionSupported() const = 0;
 
-  virtual int getRegionWidth() const = 0;
-  virtual int getRegionHeight() const = 0;
-  virtual int getRegionOffsetX() const = 0;
-  virtual int getRegionOffsetY() const = 0;
+  virtual int64_t getRegionWidth() const = 0;
+  virtual int64_t getRegionHeight() const = 0;
+  virtual int64_t getRegionOffsetX() const = 0;
+  virtual int64_t getRegionOffsetY() const = 0;
 
-  virtual void setRegionWidth(int width) = 0;
-  virtual void setRegionHeight(int height) = 0;
-  virtual void setRegionOffsetX(int offset_x) = 0;
-  virtual void setRegionOffsetY(int offset_y) = 0;
+  virtual void setRegionWidth(int64_t width) = 0;
+  virtual void setRegionHeight(int64_t height) = 0;
+  virtual void setRegionOffsetX(int64_t offset_x) = 0;
+  virtual void setRegionOffsetY(int64_t offset_y) = 0;
 
   // Shutter time in microseconds
-  virtual int getShutter() const = 0;
-  virtual int getMaxShutter() const = 0;
-  virtual int getMinShutter() const = 0;
-  virtual void setShutter(int shutter_us) = 0;
+  virtual int64_t getShutter() const = 0;
+  virtual int64_t getMaxShutter() const = 0;
+  virtual int64_t getMinShutter() const = 0;
+  virtual void setShutter(int64_t shutter_us) = 0;
 
   virtual bool isAutoShutterSupported() const = 0;
 
   virtual bool getAutoShutterEnabled() const = 0;
   virtual void setAutoShutterEnabled(bool enable) = 0;
 
-  virtual int getAutoShutterLimit() const = 0;
-  virtual int getMaxAutoShutterLimit() const = 0;
-  virtual int getMinAutoShutterLimit() const = 0;
-  virtual void setAutoShutterLimit(int shutter_limit) = 0;
+  virtual int64_t getAutoShutterLimit() const = 0;
+  virtual int64_t getMaxAutoShutterLimit() const = 0;
+  virtual int64_t getMinAutoShutterLimit() const = 0;
+  virtual void setAutoShutterLimit(int64_t shutter_limit) = 0;
 
   // Gain in decibel
   virtual double getGain() const = 0;
