@@ -467,48 +467,46 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
 {
   BOOST_LOG_TRIVIAL(trace) << "GigECamera::send_sample() (" << width << "x" << height << ")" ;
 
+  const PlanarRegion r = region();
+
   Camera::FrameTopic::Data frame;
 
   Camera::FrameTopic::Codec::Initialize(frame);
 
+  // Set metadata of the frame.
   frame.descriptor.attributes.timestamp = get_timestamp();
   frame.descriptor.attributes.validity = sample_valid;
 
-  // TODO: Add correct region!
-  PlanarRegion r = region();
+  frame.descriptor.region.size_x = r.size_x;
+  frame.descriptor.region.size_y = r.size_y;
   frame.descriptor.region.offset_x = r.offset_x;
   frame.descriptor.region.offset_y = r.offset_y;
-  frame.descriptor.region.size_x = r.size_x;
-  frame.descriptor.region.size_y = r.size_y / param_.image_count;
 
   frame.descriptor.frame_mode = param_.frame_mode;
   frame.descriptor.data_depth = param_.data_depth;
   frame.descriptor.pixel_size = param_.pixel_size;
   frame.descriptor.image_count = param_.image_count;
 
-  // BOOST_LOG_TRIVIAL(info) << "size check x: " << width << " " << frame.descriptor.region.size_x;
-  // BOOST_LOG_TRIVIAL(info) << "size check y: " << height <<" " << frame.descriptor.region.size_y;
-  if(
-      ( (unsigned int)width  != frame.descriptor.region.size_x ) ||
-      ( (unsigned int)height != frame.descriptor.region.size_y )
-      )
+  // Check if region matches the image width and height.
+  if (((int) r.size_x == width) && ((int) r.size_y == (height / param_.image_count)))
     {
+      const size_t size = image_size(frame.descriptor);
+
+      for (int i = 0; i < param_.image_count; i++)
+        {
+          frame.append_image(image + size * i, size);
+        }
+
+      publisher_.Send<Camera::FrameTopic>(frame);
+    }
+  else
+    {
+      // TODO: Send an empty frame with negative validity flag?
       BOOST_LOG_TRIVIAL(error) << "Error in image format going to be sent";
-      BOOST_LOG_TRIVIAL(error) << "size check x: " << width << " " << frame.descriptor.region.size_x;
-      BOOST_LOG_TRIVIAL(error) << "size check y: " << height <<" " << frame.descriptor.region.size_y;
-
-      // TODO: Throw exception ? (Decided not doing it.)
+      BOOST_LOG_TRIVIAL(error) << "size check x: " << width << " " << r.size_x;
+      BOOST_LOG_TRIVIAL(error) << "size check y: " << height << " " << r.size_y;
+      BOOST_LOG_TRIVIAL(error) << "image count:  " << param_.image_count;
     }
-
-
-  const size_t size = image_size(frame.descriptor);
-
-  for (int i = 0; i < param_.image_count; i++)
-    {
-      frame.append_image(image + size * i, size);
-    }
-
-  publisher_.Send<Camera::FrameTopic>(frame);
 
   return true;
 }
