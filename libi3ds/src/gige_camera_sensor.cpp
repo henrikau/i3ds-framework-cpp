@@ -475,10 +475,12 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
   frame.descriptor.attributes.validity = sample_valid;
 
   // TODO: Add correct region!
-  frame.descriptor.region.offset_x = 0;
-  frame.descriptor.region.offset_y = 0;
-  frame.descriptor.region.size_x = (T_UInt16) width;
-  frame.descriptor.region.size_y = (T_UInt16) height / param_.image_count;
+  PlanarRegion r = region();
+  frame.descriptor.region.offset_x = r.offset_x;
+  frame.descriptor.region.offset_y = r.offset_y;
+  frame.descriptor.region.size_x = r.size_x;
+  frame.descriptor.region.size_y = r.size_y / param_.image_count;
+
 
   frame.descriptor.frame_mode = param_.frame_mode;
   frame.descriptor.data_depth = param_.data_depth;
