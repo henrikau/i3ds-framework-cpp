@@ -75,6 +75,7 @@ set (LIB_SRCS
   src/sensor_client.cpp
   src/client_factory.cpp
   src/camera_sensor.cpp
+  src/gige_camera_sensor.cpp
   src/camera_client.cpp
   src/tof_camera_sensor.cpp
   src/tof_camera_client.cpp
