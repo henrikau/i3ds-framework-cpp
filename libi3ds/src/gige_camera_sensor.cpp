@@ -487,7 +487,22 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
   frame.descriptor.pixel_size = param_.pixel_size;
   frame.descriptor.image_count = param_.image_count;
 
-  // TODO: Check if the image size is as expected!
+
+  // BOOST_LOG_TRIVIAL(info) << "size check x: " << width << " " << frame.descriptor.region.size_x;
+  // BOOST_LOG_TRIVIAL(info) << "size check y: " << height <<" " << frame.descriptor.region.size_y;
+  if(
+      ( width  != frame.descriptor.region.size_x ) ||
+      ( height != frame.descriptor.region.size_y )
+      )
+    {
+      BOOST_LOG_TRIVIAL(error) << "Error in image format going to be sent";
+      BOOST_LOG_TRIVIAL(error) << "size check x: " << width << " " << frame.descriptor.region.size_x;
+      BOOST_LOG_TRIVIAL(error) << "size check y: " << height <<" " << frame.descriptor.region.size_y;
+
+      // TODO: Throw exception ? (Decided not doing it.)
+    }
+
+
   const size_t size = image_size(frame.descriptor);
 
   for (int i = 0; i < param_.image_count; i++)
