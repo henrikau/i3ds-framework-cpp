@@ -148,6 +148,8 @@ int main(int argc, char *argv[])
     std::cout << "Storing data to: " << output << "_XXXXX." << format << std::endl;
   }
 
+  std::cout << "Connecting to Node with ID: " << node << std::endl;
+
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Subscriber subscriber(context);
 
