@@ -26,6 +26,7 @@ set (APPS
   i3ds_replay
   i3ds_codec_performance_test
   i3ds_lidar_capture
+  i3ds_analog_capture
   )
 
 if (OpenCV_FOUND)

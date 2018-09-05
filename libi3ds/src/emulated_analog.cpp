@@ -126,23 +126,24 @@ i3ds::EmulatedAnalog::send_sample(unsigned long timestamp_us)
 
   std::vector<float> value = read_adc();
 
-  batches_++;
-
-  const int samples = batches_ * param_.series;
+  const int offset = batches_ * param_.series;
 
   for (int i = 0; i < param_.series; i++)
     {
-      frame_.samples.arr[samples + i] = value[i];
+      frame_.samples.arr[offset + i] = value[i];
     }
+
+  batches_++;
 
   if (batches_ >= batch_size())
     {
       BOOST_LOG_TRIVIAL(trace) << "Emulated tactile sensor with NodeID: " << node() << " sends sample at " << timestamp_us;
+      BOOST_LOG_TRIVIAL(trace) << batches_ << " batches and " << param_.series << " series";
 
       frame_.attributes.timestamp = timestamp_us;
       frame_.attributes.validity = sample_valid;
 
-      frame_.samples.nCount = samples;
+      frame_.samples.nCount = batches_ * param_.series;
       frame_.series = param_.series;
       frame_.batch_size = batches_;
 
@@ -161,11 +162,16 @@ i3ds::EmulatedAnalog::read_adc()
 
   for (int i = 0; i < param_.series; i++)
     {
+      // Generate random value from distribution;
+      const int x = distribution_(generator_);
+
       // Generate new discrete value with mix of random and last.
-      last_[i] = param_.smooth * last_[i] + (1.0 - param_.smooth) * distribution_(generator_);
+      last_[i] = param_.smooth * last_[i] + (1.0 - param_.smooth) * x;
 
       // Generate value from scaling of discrete.
       value[i] = param_.scale[i] * last_[i] + param_.offset[i];
+
+      BOOST_LOG_TRIVIAL(trace) << x << ' ' << last_[i] << ' ' << value[i];
     }
 
   return value;
