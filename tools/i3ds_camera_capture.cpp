@@ -50,12 +50,15 @@ handle_image(std::string window_name, const i3ds::Frame& frame, int image_number
 {
   cv::Mat mat = frame_to_cv_mat(frame, image_number);
 
-  std::ostringstream path;
-  path <<  output << "_";
-  path << std::setw(5) << std::setfill('0') << img_index;
-  path << "_" << image_number << "." << format;
-
-  cv::imwrite(path.str(), mat);
+  if (do_output) {
+    std::ostringstream path;
+    path <<  output << "_";
+    path << std::setw(5) << std::setfill('0') << img_index;
+    path << "_" << image_number << "." << format;
+    
+    cv::imwrite(path.str(), mat);
+  }
+  
   if (headless_mode) {
     return;
   }
