@@ -136,6 +136,10 @@ int main(int argc, char *argv[])
   running = true;
   signal(SIGINT, signal_handler);
 
+#ifdef __TOF_VERSION__
+  cv::namedWindow("ToF feed", cv::WINDOW_AUTOSIZE);
+  subscriber.Attach<i3ds::ToFCamera::MeasurementTopic>(node, &handle_frame_tof);
+#else
   if (stereo)
     {
       cv::namedWindow("Left camera feed", cv::WINDOW_AUTOSIZE);
@@ -145,8 +149,8 @@ int main(int argc, char *argv[])
     {
       cv::namedWindow("Camera feed", cv::WINDOW_AUTOSIZE);
     }
-
-  subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame);
+  subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame_camera);
+#endif
   subscriber.Start();
 
   while(running)
