@@ -8,13 +8,20 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
+
+
 #include <iostream>
 #include <csignal>
 #include <cmath>
 #include <cstring>
 
 #include <i3ds/subscriber.hpp>
+
+#include <i3ds/tof_camera_sensor.hpp>
+
 #include <i3ds/camera_sensor.hpp>
+
+
 #include <i3ds/frame.hpp>
 #include <i3ds/opencv_convertion.hpp>
 
@@ -39,10 +46,13 @@ signal_handler(int signum)
   running = false;
 }
 
+
+
+template <typename T>
 void
-render_image(std::string window_name, const i3ds::Frame& frame, int image_number, std::string fps_text)
+render_image(std::string window_name, const T& frame, int image_number, std::string fps_text)
 {
-  cv::Mat mat = frame_to_cv_mat(frame, image_number);
+  cv::Mat mat = i3ds::frame_to_cv_mat(frame, image_number);
 #if CV_MAJOR_VERSION == 3
   cv::setWindowTitle (window_name, window_name + " " + fps_text);
 #endif
@@ -50,8 +60,10 @@ render_image(std::string window_name, const i3ds::Frame& frame, int image_number
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
+
+template <typename T>
 void
-handle_frame(i3ds::Camera::FrameTopic::Data& data)
+handle_frame2(T& data)
 {
   auto time_now = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> diff = time_now - previous_time;
@@ -62,22 +74,39 @@ handle_frame(i3ds::Camera::FrameTopic::Data& data)
 
   previous_time = time_now;
 
+  render_image("Camera feed", data, 0, buffer.str());
 
-  switch (data.descriptor.image_count)
-    {
-    case 1:
-      render_image("Camera feed", data, 0, buffer.str());
-      break;
-
-    case 2:
-      render_image("Left camera feed", data, 0, buffer.str());
-      render_image("Right camera feed", data, 1, buffer.str());
-      break;
-
-    default:
-      break;
-    }
 }
+
+
+
+/*
+ *Template meant to replace the two function below but has problem with parameter overloading
+template <typename T>
+void
+handle_frame(typename T::Data& data)
+{
+  handle_frame2(data);
+}
+*/
+
+
+/// Just a wrapper to since I did not get the overloading to work, and could replace it with a template.
+void
+handle_frame_tof(i3ds::ToFCamera::MeasurementTopic::Data& data)
+{
+  handle_frame2(data);
+}
+
+/// Just a wrapper to since I did not get the overloading to work, and could replace it with a template.
+void
+handle_frame_camera(i3ds::Camera::FrameTopic::Data& data)
+{
+  handle_frame2(data);
+}
+
+
+
 
 int main(int argc, char *argv[])
 {
