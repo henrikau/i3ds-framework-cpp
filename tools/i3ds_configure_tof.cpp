@@ -101,15 +101,17 @@ int main(int argc, char *argv[])
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }
 
-  if (vm.count("min-depth") && vm.count("max-depth"))
-    {
-      BOOST_LOG_TRIVIAL(info) << "Set range: "
-                              << min_depth << " [m],"
-                              << max_depth << " [m]";
+  if (vm.count("min-depth") || vm.count("max-depth")){
+    if (! (vm["min-depth"].defaulted() && vm["max-depth"].defaulted()))
+      {
+	BOOST_LOG_TRIVIAL(info) << "Set range: "
+				<< min_depth << " [m],"
+				<< max_depth << " [m]";
 
-      tof.set_range(min_depth, max_depth);
+	tof.set_range(min_depth, max_depth);
 
-      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+	BOOST_LOG_TRIVIAL(info) << "---> [OK]";
+      }
     }
 
   // Print config.
