@@ -40,13 +40,13 @@ i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int 
   //std::cout << " frame.region.size_x : " << frame.region.size_x << std::endl;
   //std::cout << " frame.region.size_y : " << frame.region.size_y << std::endl;
 
-  int rows = frame.region.size_y;
-  int cols = frame.region.size_x;
+  const int rows = region.size_y;
+  const int cols = region.size_x;
 
  // int pixel_size = frame.pixel_size;
 
-  int pixel_size = 1;
-  int data_depth = 1;
+  //int pixel_size = 1;
+  //int data_depth = 1;
 
 
   const ToFMeasurement400K_distances &distances = frame.distances;
@@ -54,15 +54,15 @@ i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int 
   //std::cout << " frame.validity.nCount : "  << frame.validity.nCount  << std::endl;
 
 
-   int cv_type = CV_64FC1;
+  const int cv_type = CV_64FC1;
   // int cv_type = CV_16C1;
-   double scaling_factor = 1;
+  const double scaling_factor = 1;
 
 
 
  //  scaling_factor = pow(2,(8 * pixel_size - data_depth));
 
-   cv::Mat mat(rows, cols, cv_type, (T_Float*)&frame.distances.arr);
+   cv::Mat mat(rows, cols, cv_type, (T_Float*)&distances.arr);
    //std::cout << " pixel value [0,0]: "  << (T_Float)frame.distances.arr[0]  << std::endl;
    //std::cout << " pixel value [0,0]: "  << (int)frame.validity.arr[0]  << std::endl;
 
