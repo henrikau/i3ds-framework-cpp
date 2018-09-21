@@ -53,15 +53,13 @@ int main(int argc, char *argv[])
   ("print,p", "Print the ToF camera configuration")
 
   ("region", po::value(&enable_region), "Enable region of interest (ROI). Region sizes must be greater than 0.")
-  ("region-size-x,w", po::value(&region.size_x)->implicit_value(640), "ROI horisontal size")
-  ("region-size-y,r", po::value(&region.size_y)->implicit_value(480), "ROI vertical size")
+  ("region-size-x,w", po::value(&region.size_x)->default_value(640), "ROI horisontal size")
+  ("region-size-y,r", po::value(&region.size_y)->default_value(480), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 
-  //("min-depth,d", po::value(&min_depth), "Min depth range for ToF")
-  //("max-depth,D", po::value(&max_depth), "Max depth range for ToF")
-  ("min-depth,d", po::value(&min_depth)->implicit_value(0.0), "Min depth range for ToF")
-  ("max-depth,D", po::value(&max_depth)->implicit_value(5.0), "Max depth range for ToF")
+  ("min-depth,d", po::value(&min_depth)->default_value(0.0), "Min depth range for ToF")
+  ("max-depth,D", po::value(&max_depth)->default_value(13.0), "Max depth range for ToF")
   ;
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
