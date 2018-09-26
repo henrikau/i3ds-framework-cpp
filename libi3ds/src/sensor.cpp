@@ -109,6 +109,10 @@ i3ds::Sensor::handle_state(StateService::Data& command)
           state_ = standby;
           result = success;
         }
+      else if (command.request == activate)
+	{
+	  set_string(command.response.message,"Already in inactivate state. Ignoring activate command");
+	}
       break;
 
     case standby:
@@ -124,6 +128,10 @@ i3ds::Sensor::handle_state(StateService::Data& command)
           state_ = operational;
           result = success;
         }
+      else if (command.request == activate)
+	{
+	  set_string(command.response.message,"Already in standby state. Ignoring deactivate command");
+	}
       break;
 
     case operational:
@@ -133,6 +141,10 @@ i3ds::Sensor::handle_state(StateService::Data& command)
           state_ = standby;
           result = success;
         }
+      else if (command.request == start)
+	{
+	  set_string(command.response.message,"Already in operational state. Ignoring start command.");
+	}
       break;
 
     default:
