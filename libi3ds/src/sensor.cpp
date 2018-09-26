@@ -113,6 +113,11 @@ i3ds::Sensor::handle_state(StateService::Data& command)
 	{
 	  set_string(command.response.message,"Already in inactivate state. Ignoring activate command");
 	}
+      else if (command.request == start)
+      	{
+      	  set_string(command.response.message,"Can not go directly from inactive to operational state. Ignoring command");
+      	}
+
       break;
 
     case standby:
@@ -145,6 +150,10 @@ i3ds::Sensor::handle_state(StateService::Data& command)
 	{
 	  set_string(command.response.message,"Already in operational state. Ignoring start command.");
 	}
+      else if (command.request == deactivate)
+      	{
+	  set_string(command.response.message,"Can not go directly from operational to inactive state. Ignoring command");;
+      	}
       break;
 
     default:
