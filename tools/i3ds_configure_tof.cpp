@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 
   ("min-depth,d", po::value(&min_depth)->default_value(0.0), "Min depth range for ToF")
-  ("max-depth,D", po::value(&max_depth)->default_value(13.0), "Max depth range for ToF")
+  ("max-depth,D", po::value(&max_depth)->default_value(13.32), "Max depth range for ToF")
   ;
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
