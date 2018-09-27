@@ -111,13 +111,19 @@ int main(int argc, char *argv[])
   if (vm.count("min-depth") || vm.count("max-depth")){
     if (! (vm["min-depth"].defaulted() && vm["max-depth"].defaulted()))
       {
-	BOOST_LOG_TRIVIAL(info) << "Set range: "
-				<< min_depth << " [m],"
-				<< max_depth << " [m]";
+	 if ( (vm["min-depth"].defaulted() ^ vm["max-depth"].defaulted()))
+	   {
+	     BOOST_LOG_TRIVIAL(info) << "REMARK: Only one depth parameter set. Then the other parameter will use the default value!";
+	   }
 
-	tof.set_range(min_depth, max_depth);
+	  BOOST_LOG_TRIVIAL(info) << "Set range: "
+				  << min_depth << " [m],"
+				  << max_depth << " [m]";
 
-	BOOST_LOG_TRIVIAL(info) << "---> [OK]";
+	  tof.set_range(min_depth, max_depth);
+
+	  BOOST_LOG_TRIVIAL(info) << "---> [OK]";
+
       }
     }
 
