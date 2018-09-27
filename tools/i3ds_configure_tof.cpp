@@ -82,6 +82,15 @@ int main(int argc, char *argv[])
               BOOST_LOG_TRIVIAL(error) << "Must set region sizes larger than 0!";
               return -1;
             }
+          if( (vm["region-size-x"].defaulted()) ||
+              (vm["region-size-y"].defaulted()) ||
+	      (vm["region-offset-x"].defaulted()) ||
+	      (vm["region-offset-y"].defaulted())
+	      )
+	      {
+		BOOST_LOG_TRIVIAL(error) << "All 4 parameters for region must be set! (region-size-x, region-size-y, region-offset-x, region-offset-y)";
+		return -1;
+	      }
 
           BOOST_LOG_TRIVIAL(info) << "Enable region: ("
                                   << region.offset_x << ","
