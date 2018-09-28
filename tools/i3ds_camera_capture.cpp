@@ -98,9 +98,28 @@ handle_frame2(T& data)
   std::cout << "fps: "<< buffer.str();
 
   previous_time = time_now;
+  if ( is_tof_camera(data) )
+    {
+      render_image("ToF Camera feed", data, 0, buffer.str());
+    }
+  else // Normal camera
+    {
+      // check for stereo camera
+      switch (image_count(data))
+	{
+	  case 1:
+	    render_image("Camera feed", data, 0, buffer.str());
+	    break;
 
-  render_image("Camera feed", data, 0, buffer.str());
+	  case 2:
+	    render_image("Left camera feed", data, 0, buffer.str());
+	    render_image("Right camera feed", data, 1, buffer.str());
+	    break;
 
+	  default:
+	    break;
+	}
+    }
 }
 
 
