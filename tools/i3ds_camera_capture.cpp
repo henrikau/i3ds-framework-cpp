@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
   signal(SIGINT, signal_handler);
 
 #ifdef __TOF_VERSION__
-  cv::namedWindow("ToF feed", cv::WINDOW_AUTOSIZE);
+  cv::namedWindow("ToF Camera feed", cv::WINDOW_AUTOSIZE);
   subscriber.Attach<i3ds::ToFCamera::MeasurementTopic>(node, &handle_frame_tof);
 #else
   if (stereo)
