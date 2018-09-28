@@ -60,6 +60,17 @@ render_image(std::string window_name, const T& frame, int image_number, std::str
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
+template <typename T >
+int image_count(T& data)
+{
+  return 1;
+}
+
+template <typename T>
+int image_count(i3ds::Camera::FrameTopic::Data& data)
+{
+  return data.descriptor.image_count;
+}
 
 
 template <typename T>
