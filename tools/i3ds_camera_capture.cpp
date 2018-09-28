@@ -61,6 +61,20 @@ render_image(std::string window_name, const T& frame, int image_number, std::str
 }
 
 
+
+template <typename T>
+bool is_tof_camera(T& data)
+{
+  return true;
+}
+
+template <typename T>
+bool is_tof_camera(i3ds::Camera::FrameTopic::Data& data)
+{
+  return false;
+}
+
+
 template <typename T>
 void
 handle_frame2(T& data)
