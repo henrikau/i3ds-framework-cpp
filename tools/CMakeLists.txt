@@ -1,5 +1,5 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
-find_package (OpenCV QUIET)
+find_package (OpenCV 3.0.0 QUIET)
 
 set (SRCS
   )
