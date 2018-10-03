@@ -161,11 +161,11 @@ i3ds::Sensor::handle_state(StateService::Data& command)
 	}
       else if (command.request == deactivate)
       	{
-	  set_string(command.response.message,"Can not go directly from operational to inactive state. Ignoring command");;
+	  set_string(command.response.message,"Can not go directly from operational to inactive state. Ignoring command");
       	}
       else if (command.request == activate)
          {
-	    set_string(command.response.message,"Can not use activate from operational state. Ignoring command");;
+	    set_string(command.response.message,"Can not use activate from operational state. Ignoring command");
          }
       break;
 
