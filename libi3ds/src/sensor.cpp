@@ -139,7 +139,7 @@ i3ds::Sensor::handle_state(StateService::Data& command)
         }
       else if (command.request == activate)
 	{
-	  set_string(command.response.message,"Already in standby state. Ignoring deactivate command");
+	  set_string(command.response.message,"Already in standby state. Ignoring activate command");
 	}
       else if (command.request == stop)
 	{
