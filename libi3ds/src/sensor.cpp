@@ -169,6 +169,29 @@ i3ds::Sensor::handle_state(StateService::Data& command)
          }
       break;
 
+    case failure:
+      if (command.request == deactivate)
+	 {
+	    do_deactivate();
+	    state_ = inactive;
+	    result = success;
+	 }
+      else if (command.request == start)
+	{
+	  set_string(command.response.message, "In failure state. Send deactivate command and then activate command.");
+	}
+      else if (command.request == stop)
+	{
+	  set_string(command.response.message, "In failure state. Send deactivate command and then activate command.");
+	}
+       else if (command.request == activate)
+	{
+	  set_string(command.response.message, "In failure state. Send deactivate command and then activate command.");
+	}
+
+      break;
+
+
     default:
       break;
     }
