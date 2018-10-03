@@ -147,7 +147,7 @@ private:
 
   const NodeID node_;
 
-  SensorState state_;
+  mutable SensorState state_;
   SamplePeriod period_;
   BatchSize batch_size_;
   BatchCount batch_count_;
