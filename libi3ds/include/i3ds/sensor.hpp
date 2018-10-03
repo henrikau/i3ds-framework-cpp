@@ -79,6 +79,11 @@ public:
   // Returns true if sensor is in failure state.
   inline bool is_failure() const {return state() == failure;}
 
+
+  // Set sensor in failure state.
+  inline void set_failure() const { state_ = failure;}
+
+
   // Get the node ID.
   inline NodeID node() const {return node_;}
 
