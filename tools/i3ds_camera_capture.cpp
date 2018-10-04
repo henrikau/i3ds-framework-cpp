@@ -14,7 +14,12 @@
 #include <cstring>
 
 #include <i3ds/subscriber.hpp>
+
+#include <i3ds/tof_camera_sensor.hpp>
+
 #include <i3ds/camera_sensor.hpp>
+
+
 #include <i3ds/frame.hpp>
 #include <i3ds/opencv_convertion.hpp>
 
@@ -45,10 +50,13 @@ signal_handler(int signum)
   running = false;
 }
 
+
+
+template <typename T>
 void
-handle_image(std::string window_name, const i3ds::Frame& frame, int image_number, std::string fps_text)
+handle_image(std::string window_name, const T& frame, int image_number, std::string fps_text)
 {
-  cv::Mat mat = frame_to_cv_mat(frame, image_number);
+  cv::Mat mat = i3ds::frame_to_cv_mat(frame, image_number);
 
   if (do_output) {
     std::ostringstream path;
@@ -74,7 +82,6 @@ handle_image(std::string window_name, const i3ds::Frame& frame, int image_number
   } else {
     outmat = mat;
   }
-
 #if CV_MAJOR_VERSION == 3
   cv::setWindowTitle (window_name, window_name + " " + fps_text);
 #endif
@@ -83,8 +90,28 @@ handle_image(std::string window_name, const i3ds::Frame& frame, int image_number
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
+template <typename T >
+int image_count(T& data)
+{
+  return 1;
+}
+
+template <typename T>
+int image_count(i3ds::Camera::FrameTopic::Data& data)
+{
+  return data.descriptor.image_count;
+}
+
+
+template <typename T>
+bool is_tof_camera(T& data)
+{
+  return !std::is_base_of<T, i3ds::Camera::FrameTopic::Data>::value;
+}
+
+template <typename T>
 void
-handle_frame(i3ds::Camera::FrameTopic::Data& data)
+handle_frame(T& data)
 {
   auto time_now = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> diff = time_now - previous_time;
@@ -97,25 +124,60 @@ handle_frame(i3ds::Camera::FrameTopic::Data& data)
   img_index++;
 
 
-  switch (data.descriptor.image_count)
+  if ( is_tof_camera(data) )
     {
-    case 1:
-      handle_image("Camera feed", data, 0, buffer.str());
-      break;
+      handle_image("ToF Camera feed", data, 0, buffer.str());
+    }
+  else // Normal camera
+    {
+      switch (image_count(data))
+      {
+      case 1:
+	handle_image("Camera feed", data, 0, buffer.str());
+	break;
 
-    case 2:
-      handle_image("Left camera feed", data, 0, buffer.str());
-      handle_image("Right camera feed", data, 1, buffer.str());
-      break;
-
-    default:
-      break;
+      case 2:
+	handle_image("Left camera feed", data, 0, buffer.str());
+	handle_image("Right camera feed", data, 1, buffer.str());
+	break;
+      }
     }
 }
+
+
+
+/*
+ *Template meant to replace the two function below but has problem with parameter overloading
+template <typename T>
+void
+handle_frame(typename T::Data& data)
+{
+  handle_frame2(data);
+}
+*/
+
+
+/// Just a wrapper to since I did not get the overloading to work, and could replace it with a template.
+void
+handle_frame_tof(i3ds::ToFCamera::MeasurementTopic::Data& data)
+{
+  handle_frame(data);
+}
+
+/// Just a wrapper to since I did not get the overloading to work, and could replace it with a template.
+void
+handle_frame_camera(i3ds::Camera::FrameTopic::Data& data)
+{
+  handle_frame(data);
+}
+
+
+
 
 int main(int argc, char *argv[])
 {
   int node;
+  bool tof_version = false;
   po::options_description desc("Displays mono or stereo video stream\n  Available options");
 
   desc.add_options()
@@ -124,7 +186,8 @@ int main(int argc, char *argv[])
   ("scale,x", po::value(&scale), "Camera scale [%]")
   ("width,w", po::value(&width), "Maximal image width [px]") 
   ("output,o", po::value(&output), "Output path template") 
-  ("format,f", po::value(&format)->default_value("tiff"), "Output format") 
+  ("format,f", po::value(&format)->default_value("tiff"), "Output format")
+  ("tof", po::value(&tof_version)->default_value(false), "TOF version")
   ("nogui,g", po::bool_switch(&headless_mode), "Headless mode") 
   ;
 
@@ -159,7 +222,12 @@ int main(int argc, char *argv[])
   running = true;
   signal(SIGINT, signal_handler);
 
-  subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame);
+  if (tof_version) {
+    cv::namedWindow("ToF Camera feed", cv::WINDOW_AUTOSIZE);
+    subscriber.Attach<i3ds::ToFCamera::MeasurementTopic>(node, &handle_frame_tof);
+  } else {
+    subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame_camera);
+  }
   subscriber.Start();
 
   while(running)

@@ -53,15 +53,13 @@ int main(int argc, char *argv[])
   ("print,p", "Print the ToF camera configuration")
 
   ("region", po::value(&enable_region), "Enable region of interest (ROI). Region sizes must be greater than 0.")
-  ("region-size-x,w", po::value(&region.size_x)->implicit_value(640), "ROI horisontal size")
-  ("region-size-y,h", po::value(&region.size_y)->implicit_value(480), "ROI vertical size")
+  ("region-size-x,w", po::value(&region.size_x)->default_value(640), "ROI horisontal size")
+  ("region-size-y,r", po::value(&region.size_y)->default_value(480), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 
-  //("min-depth,d", po::value(&min_depth), "Min depth range for ToF")
-  //("max-depth,D", po::value(&max_depth), "Max depth range for ToF")
-  ("min-depth,d", po::value(&min_depth)->implicit_value(0.0), "Min depth range for ToF")
-  ("max-depth,D", po::value(&max_depth)->implicit_value(5.0), "Max depth range for ToF")
+  ("min-depth,d", po::value(&min_depth)->default_value(0.0), "Min depth range for ToF")
+  ("max-depth,D", po::value(&max_depth)->default_value(13.32), "Max depth range for ToF")
   ;
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
@@ -84,6 +82,15 @@ int main(int argc, char *argv[])
               BOOST_LOG_TRIVIAL(error) << "Must set region sizes larger than 0!";
               return -1;
             }
+          if( (vm["region-size-x"].defaulted()) ||
+              (vm["region-size-y"].defaulted()) ||
+	      (vm["region-offset-x"].defaulted()) ||
+	      (vm["region-offset-y"].defaulted())
+	      )
+	      {
+		BOOST_LOG_TRIVIAL(error) << "All 4 parameters for region must be set! (region-size-x, region-size-y, region-offset-x, region-offset-y)";
+		return -1;
+	      }
 
           BOOST_LOG_TRIVIAL(info) << "Enable region: ("
                                   << region.offset_x << ","
@@ -101,15 +108,23 @@ int main(int argc, char *argv[])
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }
 
-  if (vm.count("min-depth") && vm.count("max-depth"))
-    {
-      BOOST_LOG_TRIVIAL(info) << "Set range: "
-                              << min_depth << " [m],"
-                              << max_depth << " [m]";
+  if (vm.count("min-depth") || vm.count("max-depth")){
+    if (! (vm["min-depth"].defaulted() && vm["max-depth"].defaulted()))
+      {
+	 if ( (vm["min-depth"].defaulted() ^ vm["max-depth"].defaulted()))
+	   {
+	     BOOST_LOG_TRIVIAL(info) << "REMARK: Only one depth parameter set. Then the other parameter will use the default value!";
+	   }
 
-      tof.set_range(min_depth, max_depth);
+	  BOOST_LOG_TRIVIAL(info) << "Set range: "
+				  << min_depth << " [m],"
+				  << max_depth << " [m]";
 
-      BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
+	  tof.set_range(min_depth, max_depth);
+
+	  BOOST_LOG_TRIVIAL(info) << "---> [OK]";
+
+      }
     }
 
   // Print config.

@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
   configurator.add_common_options(desc);
   desc.add_options()
-  ("print", "Print the camera configuration")
+  ("print,p", "Print the camera configuration")
 
   ("shutter", po::value(&shutter), "Shutter time in microseconds, gain is optional")
   ("gain", po::value(&gain)->default_value(0.0), "Sensor gain in decibel, must also set shutter time")
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   ("region", po::value(&enable_region), "Enable camera region of interest (ROI). Region sizes must be greater than 0.")
   ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
-  ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
+  ("region-size-y,r", po::value(&region.size_y)->default_value(0), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
 

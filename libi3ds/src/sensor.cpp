@@ -109,6 +109,19 @@ i3ds::Sensor::handle_state(StateService::Data& command)
           state_ = standby;
           result = success;
         }
+      else if (command.request == activate)
+	{
+	  set_string(command.response.message,"Already in inactivate state. Ignoring activate command");
+	}
+      else if (command.request == start)
+      	{
+      	  set_string(command.response.message,"Can not go directly from inactive to operational state. Ignoring command");
+      	}
+      else if (command.request == stop)
+	{
+	  set_string(command.response.message,"In inactive state. Stop command is for operational state.");
+	}
+
       break;
 
     case standby:
@@ -124,6 +137,15 @@ i3ds::Sensor::handle_state(StateService::Data& command)
           state_ = operational;
           result = success;
         }
+      else if (command.request == activate)
+	{
+	  set_string(command.response.message,"Already in standby state. Ignoring deactivate command");
+	}
+      else if (command.request == stop)
+	{
+	  set_string(command.response.message,"In standby state. Stop command is for operational state.");
+	}
+
       break;
 
     case operational:
@@ -133,6 +155,18 @@ i3ds::Sensor::handle_state(StateService::Data& command)
           state_ = standby;
           result = success;
         }
+      else if (command.request == start)
+	{
+	  set_string(command.response.message,"Already in operational state. Ignoring start command.");
+	}
+      else if (command.request == deactivate)
+      	{
+	  set_string(command.response.message,"Can not go directly from operational to inactive state. Ignoring command");;
+      	}
+      else if (command.request == activate)
+         {
+	    set_string(command.response.message,"Can not use activate from operational state. Ignoring command");;
+         }
       break;
 
     default:

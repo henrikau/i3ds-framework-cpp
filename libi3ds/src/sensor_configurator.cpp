@@ -29,8 +29,8 @@ void
 i3ds::SensorConfigurator::add_common_options(po::options_description& desc)
 {
   desc.add_options()
-   ("help", "Produce this message")
-   ("node", po::value<NodeID>(&node_id)->required(), "Node ID")
+   ("help,h", "Produce this message")
+   ("node,n", po::value<NodeID>(&node_id)->required(), "Node ID")
 
    ("activate", "Activate the sensor")
    ("start", "Start the sensor")
@@ -62,7 +62,7 @@ i3ds::SensorConfigurator::parse_common_options(po::options_description desc, int
     {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
     }
-  try 
+  try
     {
       po::notify(vm);
     }
