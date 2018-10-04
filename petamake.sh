@@ -13,7 +13,9 @@ cmake .. -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" \
       -DBUILD_EMBEDDED=ON \
       -DBUILD_TOOLS=ON \
       -DBUILD_TESTS=OFF \
+      -DBUILD_BINDINGS=OFF \
       -DGENERATE_ASN=OFF \
+      -DNO_OPENCV=ON \
       -DASN1CC_SRC_ROOT_FOLDER=$ASN1CC_ROOT
 
 make -j4

@@ -1,5 +1,9 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
-find_package (OpenCV 3.0.0 QUIET)
+if (NO_OPENCV)
+  set(OpenCV_FOUND 0)
+else()
+  find_package (OpenCV 3.0.0 QUIET)
+endif()
 
 set (SRCS
   )
@@ -40,18 +44,6 @@ foreach(a ${APPS})
   target_compile_definitions(${a} PRIVATE CAMERA_EMULATORS=${OpenCV_FOUND})
   install (TARGETS ${a} DESTINATION bin)
 endforeach(a)
-
-
-# Builds i3ds_tof_capture which actually is i3ds_camera_capture with  __TOF_VERSION__ define set
-set(TOF_TARGET
-  i3ds_tof_capture
-  )
-
-add_executable (${TOF_TARGET} i3ds_camera_capture.cpp ${SRCS})
-target_link_libraries (${TOF_TARGET} ${LIBS})
-target_compile_definitions(${TOF_TARGET} PRIVATE CAMERA_EMULATORS=${OpenCV_FOUND} __TOF_VERSION__="TRUE")
-install (TARGETS ${TOF_TARGET} DESTINATION bin)
-
 
 if (BUILD_TESTS)
   find_program (BASH_PROGRAM bash)
