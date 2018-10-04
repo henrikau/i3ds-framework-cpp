@@ -81,7 +81,7 @@ public:
 
 
   // Set sensor in failure state.
-  inline void set_failure() const { state_ = failure;}
+  inline void set_failure() { state_ = failure;}
 
 
   // Get the node ID.
@@ -147,7 +147,7 @@ private:
 
   const NodeID node_;
 
-  mutable SensorState state_;
+  SensorState state_;
   SamplePeriod period_;
   BatchSize batch_size_;
   BatchCount batch_count_;
