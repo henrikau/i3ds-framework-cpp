@@ -40,6 +40,14 @@ i3ds::ToFCamera::handle_configuration(ConfigurationService::Data& config) const
 {
   config.response.region_enabled = region_enabled();
   config.response.region = region();
-  config.response.min_depth = range_min_depth();
-  config.response.max_depth = range_max_depth();
+  if ( is_inactive() )
+    {
+      config.response.min_depth = 0;
+      config.response.max_depth = 0;
+    }
+  else
+    {
+      config.response.min_depth = range_min_depth();
+      config.response.max_depth = range_max_depth();
+    }
 }
