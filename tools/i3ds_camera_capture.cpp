@@ -90,23 +90,20 @@ handle_image(std::string window_name, const T& frame, int image_number, std::str
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
-template <typename T >
-int image_count(T& data)
-{
+bool is_tof_camera(ToFMeasurement400K &data) {
+  return true;
+}
+
+bool is_tof_camera(i3ds::Camera::FrameTopic::Data &data) {
+  return false;
+}
+
+int image_count(ToFMeasurement400K &data) {
   return 1;
 }
 
-template <typename T>
-int image_count(i3ds::Camera::FrameTopic::Data& data)
-{
+int image_count(i3ds::Camera::FrameTopic::Data &data) {
   return data.descriptor.image_count;
-}
-
-
-template <typename T>
-bool is_tof_camera(T& data)
-{
-  return !std::is_base_of<T, i3ds::Camera::FrameTopic::Data>::value;
 }
 
 template <typename T>
@@ -122,7 +119,6 @@ handle_frame(T& data)
 
   previous_time = time_now;
   img_index++;
-
 
   if ( is_tof_camera(data) )
     {
@@ -143,36 +139,6 @@ handle_frame(T& data)
       }
     }
 }
-
-
-
-/*
- *Template meant to replace the two function below but has problem with parameter overloading
-template <typename T>
-void
-handle_frame(typename T::Data& data)
-{
-  handle_frame2(data);
-}
-*/
-
-
-/// Just a wrapper to since I did not get the overloading to work, and could replace it with a template.
-void
-handle_frame_tof(i3ds::ToFCamera::MeasurementTopic::Data& data)
-{
-  handle_frame(data);
-}
-
-/// Just a wrapper to since I did not get the overloading to work, and could replace it with a template.
-void
-handle_frame_camera(i3ds::Camera::FrameTopic::Data& data)
-{
-  handle_frame(data);
-}
-
-
-
 
 int main(int argc, char *argv[])
 {
@@ -224,9 +190,9 @@ int main(int argc, char *argv[])
 
   if (tof_version) {
     cv::namedWindow("ToF Camera feed", cv::WINDOW_AUTOSIZE);
-    subscriber.Attach<i3ds::ToFCamera::MeasurementTopic>(node, &handle_frame_tof);
+    subscriber.Attach<i3ds::ToFCamera::MeasurementTopic>(node, &handle_frame<i3ds::ToFCamera::MeasurementTopic::Data>);
   } else {
-    subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame_camera);
+    subscriber.Attach<i3ds::Camera::FrameTopic>(node, &handle_frame<i3ds::Camera::FrameTopic::Data>);
   }
   subscriber.Start();
 
