@@ -117,6 +117,12 @@ i3ds::GigECamera::do_activate()
 {
   BOOST_LOG_TRIVIAL(info) << "do_activate()";
 
+  
+  if (param_.external_trigger)
+  {
+    set_trigger(param_.camera_output, param_.camera_offset);
+  }
+
   Open();
 }
 
@@ -129,6 +135,7 @@ i3ds::GigECamera::do_start()
 
   if (param_.external_trigger)
     {
+      trigger_->set_generator(param_.trigger_source, period());
       trigger_->enable_channels(trigger_outputs_);
     }
 }
