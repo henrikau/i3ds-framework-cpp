@@ -101,7 +101,7 @@ public:
   virtual bool flash_enabled() const {return flash_enabled_;}
 
   // Get the flash strength for the camera.
-  virtual FlashStrength flash_strength() {return flash_strength_;}
+  virtual FlashStrength flash_strength() const {return flash_strength_;}
 
   // Get the pattern illumination for the camera.
   virtual bool pattern_enabled() const {return pattern_enabled_;}
@@ -111,6 +111,11 @@ public:
 
   // Returns true if sample configuration is supported.
   virtual bool is_sampling_supported(SampleCommand sample);
+
+protected:
+
+  // Constant parameters for GigE camera.
+  const Parameters param_;
 
   // Sensor action when activated.
   virtual void do_activate();
@@ -123,11 +128,6 @@ public:
 
   // Sensor action when activated.
   virtual void do_deactivate();
-
-protected:
-
-  // Constant parameters for GigE camera.
-  const Parameters param_;
 
   // Camera control
   virtual void Open() = 0;

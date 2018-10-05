@@ -29,8 +29,18 @@ i3ds::Radar::handle_region(RegionService::Data& command)
 }
 
 void
-i3ds::Radar::handle_configuration(ConfigurationService::Data& config) const
+i3ds::Radar::handle_configuration(ConfigurationService::Data& config)
 {
-  config.response.region_enabled = region_enabled();
-  config.response.region = region();
+  check_active();
+
+  try
+    {
+      config.response.region_enabled = region_enabled();
+      config.response.region = region();
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
 }

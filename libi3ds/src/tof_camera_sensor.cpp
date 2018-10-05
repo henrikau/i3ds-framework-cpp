@@ -36,18 +36,20 @@ i3ds::ToFCamera::handle_range(RangeService::Data& command)
 }
 
 void
-i3ds::ToFCamera::handle_configuration(ConfigurationService::Data& config) const
+i3ds::ToFCamera::handle_configuration(ConfigurationService::Data& config)
 {
-  config.response.region_enabled = region_enabled();
-  config.response.region = region();
-  if ( is_inactive() )
+  check_active();
+
+  try
     {
-      config.response.min_depth = 0;
-      config.response.max_depth = 0;
-    }
-  else
-    {
+      config.response.region_enabled = region_enabled();
+      config.response.region = region();
       config.response.min_depth = range_min_depth();
       config.response.max_depth = range_max_depth();
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
     }
 }

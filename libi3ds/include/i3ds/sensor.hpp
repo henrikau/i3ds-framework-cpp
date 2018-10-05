@@ -79,11 +79,6 @@ public:
   // Returns true if sensor is in failure state.
   inline bool is_failure() const {return state() == failure;}
 
-
-  // Set sensor in failure state.
-  inline void set_failure() { state_ = failure;}
-
-
   // Get the node ID.
   inline NodeID node() const {return node_;}
 
@@ -105,6 +100,17 @@ public:
   // Get temperature in Kelvin (defaults to 0.0).
   virtual double temperature() const {return 0.0;}
 
+  // Throws exception if sample configuration is not supported.
+  void check_sampling_supported(SampleCommand sample);
+
+  // Returns true if sample configuration is supported.
+  virtual bool is_sampling_supported(SampleCommand sample) = 0;
+
+  // Attach handlers to the server.
+  virtual void Attach(Server& server);
+
+protected:
+
   // Sensor action when activated.
   virtual void do_activate() = 0;
 
@@ -117,16 +123,11 @@ public:
   // Sensor action when activated.
   virtual void do_deactivate() = 0;
 
-  // Throws exception if sample configuration is not supported.
-  void check_sampling_supported(SampleCommand sample);
+  // Sensor action on failure.
+  virtual void do_failure() {};
 
-  // Returns true if sample configuration is supported.
-  virtual bool is_sampling_supported(SampleCommand sample) = 0;
-
-  // Attach handlers to the server.
-  virtual void Attach(Server& server);
-
-protected:
+  // Set sensor in failure state.
+  void set_failure();
 
   // Set the name of the sensor implementation
   void set_device_name(std::string device_name);
@@ -140,10 +141,10 @@ private:
   void handle_sample(SampleService::Data& sample);
 
   // Handler for sensor status query.
-  void handle_status(StatusService::Data& status) const;
+  void handle_status(StatusService::Data& status);
 
   // Handler for sensor configuration query.
-  void handle_configuration(ConfigurationService::Data& config) const;
+  void handle_configuration(ConfigurationService::Data& config);
 
   const NodeID node_;
 
