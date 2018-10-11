@@ -96,111 +96,161 @@ i3ds::Sensor::Attach(Server& server)
 }
 
 void
+i3ds::Sensor::set_failure()
+{
+  if (state_ != failure)
+    {
+      do_failure();
+      state_ = failure;
+    }
+}
+
+void
 i3ds::Sensor::handle_state(StateService::Data& command)
 {
   ResultCode result = error_state;
 
-  switch(state_)
+  try
     {
-    case inactive:
-      if (command.request == activate)
+      switch(state_)
         {
-          do_activate();
-          state_ = standby;
-          result = success;
+        case inactive:
+          if (command.request == activate)
+            {
+              do_activate();
+              state_ = standby;
+              result = success;
+            }
+          else if (command.request == deactivate)
+            {
+              set_string(command.response.message, "Already in inactivate state, ignoring command.");
+            }
+          else
+            {
+              set_string(command.response.message, "Command not allowed for inactive state.");
+            }
+
+          break;
+
+        case standby:
+          if (command.request == deactivate)
+            {
+              do_deactivate();
+              state_ = inactive;
+              result = success;
+            }
+          else if (command.request == start)
+            {
+              do_start();
+              state_ = operational;
+              result = success;
+            }
+          else if (command.request == activate)
+            {
+              set_string(command.response.message, "Already in standby state, ignoring command");
+            }
+          else if (command.request == stop)
+            {
+              set_string(command.response.message, "Command not allowed for standby state.");
+            }
+
+          break;
+
+        case operational:
+          if (command.request == stop)
+            {
+              do_stop();
+              state_ = standby;
+              result = success;
+            }
+          else if (command.request == start)
+            {
+              set_string(command.response.message,"Already in operational state, ignoring command.");
+            }
+          else
+            {
+              set_string(command.response.message,"Command not allowed for operational state");
+            }
+          break;
+
+        case failure:
+          if (command.request == deactivate)
+            {
+              do_deactivate();
+              state_ = inactive;
+              result = success;
+            }
+          else
+            {
+              set_string(command.response.message, "In failure state, only deactivate command is allowed.");
+            }
+          break;
+
+        default:
+          break;
         }
-      else if (command.request == activate)
-	{
-	  set_string(command.response.message,"Already in inactivate state. Ignoring activate command");
-	}
-      else if (command.request == start)
-      	{
-      	  set_string(command.response.message,"Can not go directly from inactive to operational state. Ignoring command");
-      	}
-      else if (command.request == stop)
-	{
-	  set_string(command.response.message,"In inactive state. Stop command is for operational state.");
-	}
 
-      break;
-
-    case standby:
-      if (command.request == deactivate)
-        {
-          do_deactivate();
-          state_ = inactive;
-          result = success;
-        }
-      else if (command.request == start)
-        {
-          do_start();
-          state_ = operational;
-          result = success;
-        }
-      else if (command.request == activate)
-	{
-	  set_string(command.response.message,"Already in standby state. Ignoring deactivate command");
-	}
-      else if (command.request == stop)
-	{
-	  set_string(command.response.message,"In standby state. Stop command is for operational state.");
-	}
-
-      break;
-
-    case operational:
-      if (command.request == stop)
-        {
-          do_stop();
-          state_ = standby;
-          result = success;
-        }
-      else if (command.request == start)
-	{
-	  set_string(command.response.message,"Already in operational state. Ignoring start command.");
-	}
-      else if (command.request == deactivate)
-      	{
-	  set_string(command.response.message,"Can not go directly from operational to inactive state. Ignoring command");;
-      	}
-      else if (command.request == activate)
-         {
-	    set_string(command.response.message,"Can not use activate from operational state. Ignoring command");;
-         }
-      break;
-
-    default:
-      break;
+      command.response.result = result;
     }
-
-  command.response.result = result;
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
 }
 
 void
 i3ds::Sensor::handle_sample(SampleService::Data& sample)
 {
   check_standby();
-  check_sampling_supported(sample.request);
 
-  period_ = sample.request.period;
-  batch_size_ = sample.request.batch_size;
-  batch_count_ = sample.request.batch_count;
+  try
+    {
+      check_sampling_supported(sample.request);
+
+      period_ = sample.request.period;
+      batch_size_ = sample.request.batch_size;
+      batch_count_ = sample.request.batch_count;
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
 }
 
 void
-i3ds::Sensor::handle_status(StatusService::Data& status) const
+i3ds::Sensor::handle_status(StatusService::Data& status)
 {
-  status.response.state = state();
-  status.response.temperature.kelvin = temperature();
+  try
+    {
+      status.response.state = state();
+      status.response.temperature.kelvin = temperature();
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
 }
 
 void
-i3ds::Sensor::handle_configuration(ConfigurationService::Data& config) const
+i3ds::Sensor::handle_configuration(ConfigurationService::Data& config)
 {
-  config.response.device = device_name();
-  config.response.period = period();
-  config.response.batch_size = batch_size();
-  config.response.batch_count = batch_count();
+  check_active();
+
+  try
+    {
+      config.response.device = device_name();
+      config.response.period = period();
+      config.response.batch_size = batch_size();
+      config.response.batch_count = batch_count();
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
 }
 
 void

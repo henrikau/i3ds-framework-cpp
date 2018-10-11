@@ -58,7 +58,7 @@ protected:
   virtual void handle_region(RegionService::Data& command);
 
   // Handler for LIDAR configuration query.
-  virtual void handle_configuration(ConfigurationService::Data& config) const;
+  virtual void handle_configuration(ConfigurationService::Data& config);
 };
 
 } // namespace i3ds

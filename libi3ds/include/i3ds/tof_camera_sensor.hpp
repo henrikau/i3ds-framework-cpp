@@ -69,7 +69,7 @@ protected:
   virtual void handle_range(RangeService::Data& command);
 
   // Handler for camera configuration query.
-  virtual void handle_configuration(ConfigurationService::Data& config) const;
+  virtual void handle_configuration(ConfigurationService::Data& config);
 };
 
 } // namespace i3ds

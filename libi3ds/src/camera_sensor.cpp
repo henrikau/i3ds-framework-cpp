@@ -51,17 +51,27 @@ i3ds::Camera::handle_pattern(PatternService::Data& command)
 }
 
 void
-i3ds::Camera::handle_configuration(ConfigurationService::Data& config) const
+i3ds::Camera::handle_configuration(ConfigurationService::Data& config)
 {
-  config.response.shutter = shutter();
-  config.response.gain = gain();
-  config.response.auto_exposure_enabled = auto_exposure_enabled();
-  config.response.max_shutter = max_shutter();
-  config.response.max_gain = max_gain();
-  config.response.region_enabled = region_enabled();
-  config.response.region = region();
-  config.response.flash_enabled = flash_enabled();
-  config.response.flash_strength = flash_strength();
-  config.response.pattern_enabled = pattern_enabled();
-  config.response.pattern_sequence = pattern_sequence();
+  check_active();
+
+  try
+    {
+      config.response.shutter = shutter();
+      config.response.gain = gain();
+      config.response.auto_exposure_enabled = auto_exposure_enabled();
+      config.response.max_shutter = max_shutter();
+      config.response.max_gain = max_gain();
+      config.response.region_enabled = region_enabled();
+      config.response.region = region();
+      config.response.flash_enabled = flash_enabled();
+      config.response.flash_strength = flash_strength();
+      config.response.pattern_enabled = pattern_enabled();
+      config.response.pattern_sequence = pattern_sequence();
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
 }

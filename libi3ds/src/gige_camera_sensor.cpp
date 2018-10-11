@@ -119,9 +119,9 @@ i3ds::GigECamera::do_activate()
 
 
   if (param_.external_trigger)
-  {
-    set_trigger(param_.camera_output, param_.camera_offset);
-  }
+    {
+      set_trigger(param_.camera_output, param_.camera_offset);
+    }
 
   Open();
 }
@@ -257,61 +257,69 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
 
   check_active();
 
-  if (!command.request.enable)
+  try
     {
-      setAutoShutterEnabled(false);
-      setAutoGainEnabled(false);
+      if (!command.request.enable)
+        {
+          setAutoShutterEnabled(false);
+          setAutoGainEnabled(false);
 
-      return;
+          return;
+        }
+
+      // Check that auto shutter or auto gain is supported.
+      const bool support_shutter = isAutoShutterSupported();
+      const bool support_gain = isAutoGainSupported();
+
+      if (!(support_shutter || support_gain))
+        {
+          throw i3ds::CommandError(error_unsupported, "Auto exposure is not supported");
+        }
+
+      if (support_shutter)
+        {
+          const int limit = command.request.max_shutter;
+          const int limit_max = getMaxAutoShutterLimit();
+          const int limit_min = getMinAutoShutterLimit();
+
+          if (limit > limit_max)
+            {
+              throw i3ds::CommandError(error_value, "Shutter limit longer than max " + std::to_string(limit_max));
+            }
+
+          if (limit < limit_min)
+            {
+              throw i3ds::CommandError(error_value, "Shutter limit shorter than min " + std::to_string(limit_min));
+            }
+
+          setAutoShutterLimit(limit);
+          setAutoShutterEnabled(true);
+        }
+
+      if (support_gain)
+        {
+          const int limit = command.request.max_gain;
+          const int limit_max = getMaxAutoGainLimit();
+          const int limit_min = getMinAutoGainLimit();
+
+          if (limit > limit_max)
+            {
+              throw i3ds::CommandError(error_value, "Gain limit larger than max " + std::to_string(limit_max));
+            }
+
+          if (limit < limit_min)
+            {
+              throw i3ds::CommandError(error_value, "Gain limit smaller than min " + std::to_string(limit_min));
+            }
+
+          setAutoGainLimit(limit);
+          setAutoGainEnabled(true);
+        }
     }
-
-  // Check that auto shutter or auto gain is supported.
-  const bool support_shutter = isAutoShutterSupported();
-  const bool support_gain = isAutoGainSupported();
-
-  if (!(support_shutter || support_gain))
+  catch (DeviceError& e)
     {
-      throw i3ds::CommandError(error_unsupported, "Auto exposure is not supported");
-    }
-
-  if (support_shutter)
-    {
-      const int limit = command.request.max_shutter;
-      const int limit_max = getMaxAutoShutterLimit();
-      const int limit_min = getMinAutoShutterLimit();
-
-      if (limit > limit_max)
-        {
-          throw i3ds::CommandError(error_value, "Shutter limit longer than max " + std::to_string(limit_max));
-        }
-
-      if (limit < limit_min)
-        {
-          throw i3ds::CommandError(error_value, "Shutter limit shorter than min " + std::to_string(limit_min));
-        }
-
-      setAutoShutterLimit(limit);
-      setAutoShutterEnabled(true);
-    }
-
-  if (support_gain)
-    {
-      const int limit = command.request.max_gain;
-      const int limit_max = getMaxAutoGainLimit();
-      const int limit_min = getMinAutoGainLimit();
-
-      if (limit > limit_max)
-        {
-          throw i3ds::CommandError(error_value, "Gain limit larger than max " + std::to_string(limit_max));
-        }
-
-      if (limit < limit_min)
-        {
-          throw i3ds::CommandError(error_value, "Gain limit smaller than min " + std::to_string(limit_min));
-        }
-
-      setAutoGainLimit(limit);
-      setAutoGainEnabled(true);
+      set_failure();
+      throw CommandError(error_other, e.what());
     }
 }
 
@@ -322,54 +330,62 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
 
   check_standby();
 
-  if (command.request.enable)
+  try
     {
-      BOOST_LOG_TRIVIAL(info) << "handle_region()";
-
-      const int sx = command.request.region.size_x;
-      const int sy = command.request.region.size_y;
-      const int ox = command.request.region.offset_x;
-      const int oy = command.request.region.offset_y;
-
-      if ((sx + ox) > getSensorWidth())
+      if (command.request.enable)
         {
-          throw i3ds::CommandError(error_value, std::string("Region width and offset outside sensor width for camera"));
-        }
+          BOOST_LOG_TRIVIAL(info) << "handle_region()";
 
-      if ((sy + oy) > getSensorHeight())
-        {
-          throw i3ds::CommandError(error_value, std::string("Region height and offset outside sensor height for camera"));
-        }
+          const int sx = command.request.region.size_x;
+          const int sy = command.request.region.size_y;
+          const int ox = command.request.region.offset_x;
+          const int oy = command.request.region.offset_y;
 
-      // Have to do resizing in correct order.(Reduse parameter first, increase later)
-      if (sx > getRegionWidth())
-        {
-          setRegionOffsetX(ox);
-          setRegionWidth(sx);
+          if ((sx + ox) > getSensorWidth())
+            {
+              throw i3ds::CommandError(error_value, std::string("Region width and offset outside sensor width for camera"));
+            }
+
+          if ((sy + oy) > getSensorHeight())
+            {
+              throw i3ds::CommandError(error_value, std::string("Region height and offset outside sensor height for camera"));
+            }
+
+          // Have to do resizing in correct order.(Reduse parameter first, increase later)
+          if (sx > getRegionWidth())
+            {
+              setRegionOffsetX(ox);
+              setRegionWidth(sx);
+            }
+          else
+            {
+              setRegionWidth(sx);
+              setRegionOffsetX(ox);
+            }
+
+          if (sy > getRegionHeight())
+            {
+              setRegionOffsetY(oy);
+              setRegionHeight(sy);
+            }
+          else
+            {
+              setRegionHeight(sy);
+              setRegionOffsetY(oy);
+            }
         }
       else
         {
-          setRegionWidth(sx);
-          setRegionOffsetX(ox);
-        }
-
-      if (sy > getRegionHeight())
-        {
-          setRegionOffsetY(oy);
-          setRegionHeight(sy);
-        }
-      else
-        {
-          setRegionHeight(sy);
-          setRegionOffsetY(oy);
+          setRegionOffsetX(0);
+          setRegionOffsetY(0);
+          setRegionWidth(getSensorWidth());
+          setRegionHeight(getSensorHeight());
         }
     }
-  else
+  catch (DeviceError& e)
     {
-      setRegionOffsetX(0);
-      setRegionOffsetY(0);
-      setRegionWidth(getSensorWidth());
-      setRegionHeight(getSensorHeight());
+      set_failure();
+      throw CommandError(error_other, e.what());
     }
 }
 
@@ -380,65 +396,75 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
 
   check_standby();
 
-  if (!param_.support_flash)
+  try
     {
-      throw i3ds::CommandError(error_unsupported, "Flash not supported");
-    }
-
-  flash_enabled_ = command.request.enable;
-
-  if (flash_enabled_)
-    {
-      flash_strength_ = command.request.strength;
-
-      ShutterTime shutter_duration;
-
-      if (getAutoShutterEnabled())
+      if (!param_.support_flash)
         {
-          shutter_duration = getAutoShutterLimit();
-        }
-      else
-        {
-          shutter_duration = getShutter();
+          throw i3ds::CommandError(error_unsupported, "Flash not supported");
         }
 
-      ShutterTime flash_duration = shutter_duration;
-      if (flash_duration > 3000) {
-	flash_duration = 3000;
-      }
+      flash_enabled_ = command.request.enable;
 
-      unsigned int max_strength = 0;
+      if (flash_enabled_)
+        {
+          flash_strength_ = command.request.strength;
 
-      if (flash_duration > 2000) {
-	max_strength = 20;
-      } else if (flash_duration > 1000) {
-	max_strength = 50;
-      } else {
-	max_strength = 100;
-      }
+          ShutterTime shutter_duration;
 
-      FlashStrength flash_actual = flash_strength_;
-      if (flash_actual > max_strength) {
-	flash_actual = max_strength;
-      }
+          if (getAutoShutterEnabled())
+            {
+              shutter_duration = getAutoShutterLimit();
+            }
+          else
+            {
+              shutter_duration = getShutter();
+            }
 
-      // This is a possible other interpretation of the parameter:
-      //   FlashStrength flash_actual = max_strength * flash_strength / 100;
+          ShutterTime flash_duration = shutter_duration;
+          if (flash_duration > 3000)
+            {
+              flash_duration = 3000;
+            }
 
-      BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_actual << " (" << flash_strength_ << " requested)";
-      BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << flash_duration << " us (shutter is " << shutter_duration << ")";
+          unsigned int max_strength = 0;
+
+          if (flash_duration > 2000)
+            {
+              max_strength = 20;
+            }
+          else if (flash_duration > 1000)
+            {
+              max_strength = 50;
+            }
+          else
+            {
+              max_strength = 100;
+            }
+
+          FlashStrength flash_actual = flash_strength_;
+          if (flash_actual > max_strength)
+            {
+              flash_actual = max_strength;
+            }
+
+          // This is a possible other interpretation of the parameter:
+          //   FlashStrength flash_actual = max_strength * flash_strength / 100;
+
+          BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_actual << " (" << flash_strength_ << " requested)";
+          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << flash_duration << " us (shutter is " << shutter_duration << ")";
 
 
-      // Send flash command.
-      flash_->set_flash(flash_duration, flash_actual);
+          // Send flash command.
+          flash_->set_flash(flash_duration, flash_actual);
 
-      // Enable trigger for flash.
-      set_trigger(param_.flash_output, param_.flash_offset);
+          // Enable trigger for flash.
+          set_trigger(param_.flash_output, param_.flash_offset);
+        }
     }
-  else
+  catch (DeviceError& e)
     {
-      // Clear trigger, not enabled when operational.
-      clear_trigger(param_.flash_output);
+      set_failure();
+      throw CommandError(error_other, e.what());
     }
 }
 
@@ -449,33 +475,41 @@ i3ds::GigECamera::handle_pattern(PatternService::Data& command)
 
   check_standby();
 
-  if (!trigger_)
+  try
     {
-      throw i3ds::CommandError(error_other, "Pattern not supported in free-running mode");
-    }
-
-  pattern_enabled_ = command.request.enable;
-
-  if (command.request.enable)
-    {
-      // Only support one pattern sequence, not controllable as of now.
-      if (command.request.sequence != 1)
+      if (!trigger_)
         {
-          throw i3ds::CommandError(error_value, "Unsupported pattern sequence");
+          throw i3ds::CommandError(error_other, "Pattern not supported in free-running mode");
         }
 
-      pattern_sequence_ = command.request.sequence;
+      pattern_enabled_ = command.request.enable;
 
-      // Enable trigger for flash.
-      set_trigger(param_.pattern_output, param_.pattern_offset);
+      if (command.request.enable)
+        {
+          // Only support one pattern sequence, not controllable as of now.
+          if (command.request.sequence != 1)
+            {
+              throw i3ds::CommandError(error_value, "Unsupported pattern sequence");
+            }
+
+          pattern_sequence_ = command.request.sequence;
+
+          // Enable trigger for flash.
+          set_trigger(param_.pattern_output, param_.pattern_offset);
+        }
+      else
+        {
+          // Reset pattern sequence to disabled.
+          pattern_sequence_ = 0;
+
+          // Clear trigger, not enabled when operational.
+          clear_trigger(param_.pattern_output);
+        }
     }
-  else
+  catch (DeviceError& e)
     {
-      // Reset pattern sequence to disabled.
-      pattern_sequence_ = 0;
-
-      // Clear trigger, not enabled when operational.
-      clear_trigger(param_.pattern_output);
+      set_failure();
+      throw CommandError(error_other, e.what());
     }
 }
 
@@ -501,48 +535,46 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
 {
   BOOST_LOG_TRIVIAL(trace) << "GigECamera::send_sample() (" << width << "x" << height << ")" ;
 
+  const PlanarRegion r = region();
+
   Camera::FrameTopic::Data frame;
 
   Camera::FrameTopic::Codec::Initialize(frame);
 
+  // Set metadata of the frame.
   frame.descriptor.attributes.timestamp = get_timestamp();
   frame.descriptor.attributes.validity = sample_valid;
 
-  // TODO: Add correct region!
-  PlanarRegion r = region();
+  frame.descriptor.region.size_x = r.size_x;
+  frame.descriptor.region.size_y = r.size_y;
   frame.descriptor.region.offset_x = r.offset_x;
   frame.descriptor.region.offset_y = r.offset_y;
-  frame.descriptor.region.size_x = r.size_x;
-  frame.descriptor.region.size_y = r.size_y / param_.image_count;
 
   frame.descriptor.frame_mode = param_.frame_mode;
   frame.descriptor.data_depth = param_.data_depth;
   frame.descriptor.pixel_size = param_.pixel_size;
   frame.descriptor.image_count = param_.image_count;
 
-  // BOOST_LOG_TRIVIAL(info) << "size check x: " << width << " " << frame.descriptor.region.size_x;
-  // BOOST_LOG_TRIVIAL(info) << "size check y: " << height <<" " << frame.descriptor.region.size_y;
-  if(
-      ( (unsigned int)width  != frame.descriptor.region.size_x ) ||
-      ( (unsigned int)height != frame.descriptor.region.size_y )
-      )
+  // Check if region matches the image width and height.
+  if (((int) r.size_x == width) && ((int) r.size_y == (height / param_.image_count)))
     {
+      const size_t size = image_size(frame.descriptor);
+
+      for (int i = 0; i < param_.image_count; i++)
+        {
+          frame.append_image(image + size * i, size);
+        }
+
+      publisher_.Send<Camera::FrameTopic>(frame);
+    }
+  else
+    {
+      // TODO: Send an empty frame with negative validity flag?
       BOOST_LOG_TRIVIAL(error) << "Error in image format going to be sent";
-      BOOST_LOG_TRIVIAL(error) << "size check x: " << width << " " << frame.descriptor.region.size_x;
-      BOOST_LOG_TRIVIAL(error) << "size check y: " << height <<" " << frame.descriptor.region.size_y;
-
-      // TODO: Throw exception ? (Decided not doing it.)
+      BOOST_LOG_TRIVIAL(error) << "size check x: " << width << " " << r.size_x;
+      BOOST_LOG_TRIVIAL(error) << "size check y: " << height << " " << r.size_y;
+      BOOST_LOG_TRIVIAL(error) << "image count:  " << param_.image_count;
     }
-
-
-  const size_t size = image_size(frame.descriptor);
-
-  for (int i = 0; i < param_.image_count; i++)
-    {
-      frame.append_image(image + size * i, size);
-    }
-
-  publisher_.Send<Camera::FrameTopic>(frame);
 
   return true;
 }
