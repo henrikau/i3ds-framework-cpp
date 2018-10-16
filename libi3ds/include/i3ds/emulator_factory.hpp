@@ -43,9 +43,9 @@ public:
   Analog::Ptr CreateForceTorque();
 
 #if CAMERA_EMULATORS
-  Camera::Ptr CreateTIRCamera();
-  Camera::Ptr CreateHRCamera(std::string sample_image_dir = "");
-  Camera::Ptr CreateStereoCamera(std::string sample_image_dir = "");
+  Camera::Ptr CreateTIRCamera(std::string sample_dir = "");
+  Camera::Ptr CreateHRCamera(std::string sample_dir = "");
+  Camera::Ptr CreateStereoCamera(std::string sample_dir = "");
   ToFCamera::Ptr CreateToFCamera();
 #endif
 

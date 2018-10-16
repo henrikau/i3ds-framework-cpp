@@ -76,50 +76,50 @@ i3ds::EmulatorFactory::CreateToFCamera()
 }
 
 i3ds::Camera::Ptr
-i3ds::EmulatorFactory::CreateTIRCamera()
+i3ds::EmulatorFactory::CreateTIRCamera(std::string sample_dir)
 {
-  CameraProperties prop;
+  EmulatedCamera::Parameters param;
 
-  prop.mode = mode_mono;
-  prop.data_depth = 16;
-  prop.pixel_size = 2;
-  prop.width = 640;
-  prop.height = 480;
-  prop.image_count = 1;
-  prop.sample_dir = "";
+  param.frame_mode = mode_mono;
+  param.data_depth = 16;
+  param.pixel_size = 2;
+  param.width = 640;
+  param.height = 480;
+  param.image_count = 1;
+  param.sample_dir = sample_dir;
 
-  return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
+  return std::make_shared<EmulatedCamera>(context_, next_id_++, param);
 }
 
 i3ds::Camera::Ptr
-i3ds::EmulatorFactory::CreateHRCamera(std::string sample_image_dir)
+i3ds::EmulatorFactory::CreateHRCamera(std::string sample_dir)
 {
-  CameraProperties prop;
+  EmulatedCamera::Parameters param;
 
-  prop.mode = mode_mono;
-  prop.data_depth = 12;
-  prop.pixel_size = 2;
-  prop.width = 2048;
-  prop.height = 2048;
-  prop.image_count = 1;
-  prop.sample_dir = sample_image_dir;
+  param.frame_mode = mode_mono;
+  param.data_depth = 12;
+  param.pixel_size = 2;
+  param.width = 2048;
+  param.height = 2048;
+  param.image_count = 1;
+  param.sample_dir = sample_dir;
 
-  return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
+  return std::make_shared<EmulatedCamera>(context_, next_id_++, param);
 }
 
 i3ds::Camera::Ptr
-i3ds::EmulatorFactory::CreateStereoCamera(std::string sample_image_dir)
+i3ds::EmulatorFactory::CreateStereoCamera(std::string sample_dir)
 {
-  CameraProperties prop;
+  EmulatedCamera::Parameters param;
 
-  prop.mode = mode_mono;
-  prop.data_depth = 12;
-  prop.pixel_size = 2;
-  prop.width = 2048;
-  prop.height = 2048;
-  prop.image_count = 2;
-  prop.sample_dir = sample_image_dir;
+  param.frame_mode = mode_mono;
+  param.data_depth = 12;
+  param.pixel_size = 2;
+  param.width = 2048;
+  param.height = 2048;
+  param.image_count = 2;
+  param.sample_dir = sample_dir;
 
-  return std::make_shared<EmulatedCamera>(context_, next_id_++, prop);
+  return std::make_shared<EmulatedCamera>(context_, next_id_++, param);
 }
 #endif

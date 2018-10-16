@@ -76,13 +76,13 @@ i3ds::GigECamera::auto_exposure_enabled() const
 ShutterTime
 i3ds::GigECamera::max_shutter() const
 {
-  return (ShutterTime) getMaxAutoShutterLimit();
+  return (ShutterTime) getAutoShutterLimit();
 }
 
 SensorGain
 i3ds::GigECamera::max_gain() const
 {
-  return (SensorGain) getMaxAutoGainLimit();
+  return (SensorGain) getAutoGainLimit();
 }
 
 bool
@@ -116,7 +116,6 @@ void
 i3ds::GigECamera::do_activate()
 {
   BOOST_LOG_TRIVIAL(info) << "do_activate()";
-
 
   if (param_.external_trigger)
     {
@@ -334,24 +333,26 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
     {
       if (command.request.enable)
         {
-          BOOST_LOG_TRIVIAL(info) << "handle_region()";
-
           const int sx = command.request.region.size_x;
           const int sy = command.request.region.size_y;
           const int ox = command.request.region.offset_x;
           const int oy = command.request.region.offset_y;
 
+          BOOST_LOG_TRIVIAL(trace) << "Enable region: " << sx << " " << sy << " " << ox << " " << oy;
+
           if ((sx + ox) > getSensorWidth())
             {
+              BOOST_LOG_TRIVIAL(error) << "Width " << (sx + ox) << " > " << getSensorWidth();
               throw i3ds::CommandError(error_value, std::string("Region width and offset outside sensor width for camera"));
             }
 
           if ((sy + oy) > getSensorHeight())
             {
+              BOOST_LOG_TRIVIAL(error) << "Height " << (sy + oy) << " > " << getSensorHeight();
               throw i3ds::CommandError(error_value, std::string("Region height and offset outside sensor height for camera"));
             }
 
-          // Have to do resizing in correct order.(Reduse parameter first, increase later)
+          // Do resize in correct order
           if (sx > getRegionWidth())
             {
               setRegionOffsetX(ox);
@@ -376,6 +377,8 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
         }
       else
         {
+          BOOST_LOG_TRIVIAL(trace) << "Disable region";
+
           setRegionOffsetX(0);
           setRegionOffsetY(0);
           setRegionWidth(getSensorWidth());
@@ -451,7 +454,8 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
           //   FlashStrength flash_actual = max_strength * flash_strength / 100;
 
           BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_actual << " (" << flash_strength_ << " requested)";
-          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << flash_duration << " us (shutter is " << shutter_duration << ")";
+          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << flash_duration << " us (shutter is " << shutter_duration <<
+                                  ")";
 
 
           // Send flash command.
@@ -566,6 +570,8 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
         }
 
       publisher_.Send<Camera::FrameTopic>(frame);
+
+      BOOST_LOG_TRIVIAL(trace) << "Send frame OK";
     }
   else
     {
