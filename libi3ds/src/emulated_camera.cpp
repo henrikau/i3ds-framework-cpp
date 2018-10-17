@@ -36,7 +36,10 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, Paramete
   sensor_.x = 0;
   sensor_.y = 0;
 
-  region_ = sensor_;
+  region_.width = sensor_.width;
+  region_.height = sensor_.height / param.image_count;
+  region_.x = 0;
+  region_.y = 0;
 
   set_device_name("Emulated camera");
 
@@ -96,7 +99,7 @@ i3ds::EmulatedCamera::getSensorHeight() const
 bool
 i3ds::EmulatedCamera::isRegionSupported() const
 {
-  return true;
+  return param_.image_count == 1;
 }
 
 int64_t
@@ -430,7 +433,7 @@ i3ds::EmulatedCamera::generate_sample(unsigned long timestamp_us)
                            << image.channels() << " chan, "
                            << image.depth() << " depth";
 
-  send_sample(image.data, region_.width, region_.height);
+  send_sample(image.data, region_.width, region_.height * param_.image_count);
 
   return true;
 }

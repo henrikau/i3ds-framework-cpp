@@ -329,6 +329,11 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
 
   check_standby();
 
+  if (!isRegionSupported())
+    {
+      throw CommandError(error_unsupported, "ROI not supported for camera");
+    }
+
   try
     {
       if (command.request.enable)
