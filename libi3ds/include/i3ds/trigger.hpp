@@ -13,6 +13,7 @@
 
 #include <i3ds/Trigger.h>
 
+#include <i3ds/node.hpp>
 #include <i3ds/server.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
@@ -25,7 +26,7 @@ CODEC(ChannelInternal);
 CODEC(ChannelExternal);
 CODEC(TriggerMask);
 
-class Trigger
+class Trigger : public Node
 {
 public:
 
@@ -40,13 +41,10 @@ public:
   typedef Command<5, TriggerMaskCodec>         ChannelDisableService;
 
   // Constructor for trigger.
-  Trigger(NodeID node) : node_(node) {};
+  Trigger(NodeID node) : Node(node) {};
 
   // Destructor for trigger.
   virtual ~Trigger() {};
-
-  // Get the node ID.
-  inline NodeID node() const {return node_;}
 
   // Attach handlers to the server.
   virtual void Attach(Server& server);
@@ -67,10 +65,6 @@ protected:
 
   // Handler for channel disable command, must be overloaded.
   virtual void handle_disable_channel(ChannelDisableService::Data& command) = 0;
-
-private:
-
-  NodeID node_;
 };
 
 } // namespace i3ds

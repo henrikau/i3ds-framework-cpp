@@ -13,7 +13,7 @@
 #include <i3ds/sensor.hpp>
 
 i3ds::Sensor::Sensor(NodeID node)
-  : node_(node)
+  : Node(node)
 {
   // Sensors are initially inactive.
   state_ = inactive;

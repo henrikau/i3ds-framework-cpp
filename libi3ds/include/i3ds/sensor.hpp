@@ -16,6 +16,7 @@
 #include <i3ds/Common.h>
 #include <i3ds/Sensor.h>
 
+#include <i3ds/node.hpp>
 #include <i3ds/communication.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/server.hpp>
@@ -30,7 +31,7 @@ CODEC(SampleCommand);
 CODEC(SensorStatus);
 CODEC(SensorConfiguration);
 
-class Sensor
+class Sensor : public Node
 {
 public:
 
@@ -78,9 +79,6 @@ public:
 
   // Returns true if sensor is in failure state.
   inline bool is_failure() const {return state() == failure;}
-
-  // Get the node ID.
-  inline NodeID node() const {return node_;}
 
   // Get sensor state.
   inline SensorState state() const {return state_;}
@@ -145,8 +143,6 @@ private:
 
   // Handler for sensor configuration query.
   void handle_configuration(ConfigurationService::Data& config);
-
-  const NodeID node_;
 
   SensorState state_;
   SamplePeriod period_;
