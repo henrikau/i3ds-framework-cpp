@@ -16,8 +16,11 @@
 #include <chrono>
 
 #include <i3ds/subscriber.hpp>
+
 #include <i3ds/emulated_camera.hpp>
 #include <i3ds/emulated_trigger.hpp>
+#include <i3ds/emulated_flash.hpp>
+
 #include <i3ds/camera_client.hpp>
 #include <i3ds/common_tests.hpp>
 
@@ -31,18 +34,19 @@ struct F
     : node(1),
       context(Context::Create()),
       camera_server(context),
-      trigger_server(context),
+      node_server(context),
       client(CameraClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
 
     // Create the trigger
     trigger = EmulatedTrigger::Create(node + 1);
+    flash = EmulatedFlash::Create(node + 2);
 
     // Camera feature configuration
     param.camera_name      = "test";
     param.external_trigger = true;
-    param.support_flash    = false;
+    param.support_flash    = true;
     param.support_pattern  = true;
 
     // Camera frame configuration
@@ -78,10 +82,11 @@ struct F
 
     // Needs different servers to avoid deadlock with nested calls.
     camera->Attach(camera_server);
-    trigger->Attach(trigger_server);
+    trigger->Attach(node_server);
+    flash->Attach(node_server);
 
     camera_server.Start();
-    trigger_server.Start();
+    node_server.Start();
 
     client->set_timeout(1000);
 
@@ -92,7 +97,7 @@ struct F
   {
     BOOST_TEST_MESSAGE("teardown fixture");
     camera_server.Stop();
-    trigger_server.Stop();
+    node_server.Stop();
   }
 
   void handle_measurement(Camera::FrameTopic::Data& data);
@@ -105,13 +110,14 @@ struct F
 
   Context::Ptr context;
   Server camera_server;
-  Server trigger_server;
+  Server node_server;
 
   CameraClient::Ptr client;
 
   EmulatedCamera::Parameters param;
   EmulatedCamera::Ptr camera;
   EmulatedTrigger::Ptr trigger;
+  EmulatedFlash::Ptr flash;
 
   int received;
 };
@@ -213,8 +219,8 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   bool auto_exposure_enabled = true;
   ShutterTime max_shutter = 100000;
   SensorGain max_gain = 3.0;
-  // bool flash_enabled = true;
-  // FlashStrength flash_strength = 128;
+  bool flash_enabled = true;
+  FlashStrength flash_strength = 50;
   bool pattern_enabled = true;
   PatternSequence pattern_sequence = 1;
 
@@ -223,7 +229,7 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   client->set_exposure(shutter, gain);
   client->set_auto_exposure(auto_exposure_enabled, max_shutter, max_gain);
 
-  // client->set_flash(flash_enabled, flash_strength);
+  client->set_flash(flash_enabled, flash_strength);
   client->set_pattern(pattern_enabled, pattern_sequence);
 
   client->load_config();
@@ -237,8 +243,8 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
   BOOST_CHECK_EQUAL(max_shutter, client->max_shutter());
   BOOST_CHECK_CLOSE(max_gain, client->max_gain(), 1e-6);
 
-  // BOOST_CHECK_EQUAL(flash_enabled, client->flash_enabled());
-  // BOOST_CHECK_EQUAL(flash_strength, client->flash_strength());
+  BOOST_CHECK_EQUAL(flash_enabled, client->flash_enabled());
+  BOOST_CHECK_EQUAL(flash_strength, client->flash_strength());
 
   BOOST_CHECK_EQUAL(pattern_enabled, client->pattern_enabled());
   BOOST_CHECK_EQUAL(pattern_sequence, client->pattern_sequence());
@@ -372,6 +378,75 @@ BOOST_AUTO_TEST_CASE(camera_pattern_settings)
 
   BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), false);
   BOOST_CHECK_EQUAL(trigger->enabled(param.pattern_output), false);
+
+  client->set_pattern(false, 0);
+
+  BOOST_CHECK_EQUAL(camera->pattern_sequence(), 0);
+
+  client->set_state(start);
+
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), true);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.pattern_output), false);
+
+  client->set_state(stop);
+
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), false);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.pattern_output), false);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(camera_flash_settings)
+{
+  SamplePeriod period = 100000;
+  BatchSize batch_size = 1;
+  BatchCount batch_count = 1;
+  FlashStrength strength = 50;
+  ShutterTime shutter = 10000;
+
+  client->set_state(activate);
+  client->set_sampling(period, batch_size, batch_count);
+  client->set_exposure(shutter, 0.0);
+  client->set_flash(true, strength);
+
+  BOOST_CHECK_EQUAL(camera->period(), period);
+  BOOST_CHECK_EQUAL(camera->flash_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->flash_strength(), strength);
+
+  BOOST_CHECK_EQUAL(trigger->source(param.camera_output), param.trigger_source);
+  BOOST_CHECK_EQUAL(trigger->offset(param.camera_output), param.camera_offset);
+  BOOST_CHECK_GT(trigger->duration(param.camera_output), 0);
+  BOOST_CHECK_EQUAL(trigger->inverted(param.camera_output), false);
+
+  BOOST_CHECK_EQUAL(trigger->source(param.flash_output), param.trigger_source);
+  BOOST_CHECK_EQUAL(trigger->offset(param.flash_output), param.flash_offset);
+  BOOST_CHECK_GT(trigger->duration(param.flash_output), 0);
+  BOOST_CHECK_EQUAL(trigger->inverted(param.flash_output), false);
+
+  client->set_state(start);
+
+  BOOST_CHECK_EQUAL(trigger->period(param.trigger_source), period);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), true);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.flash_output), true);
+
+  client->set_state(stop);
+
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), false);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.flash_output), false);
+
+  client->set_flash(false, 0);
+
+  BOOST_CHECK_EQUAL(camera->flash_strength(), 0);
+
+  client->set_state(start);
+
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), true);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.flash_output), false);
+
+  client->set_state(stop);
+
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), false);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.flash_output), false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

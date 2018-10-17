@@ -16,6 +16,7 @@
 #include <i3ds/emulated_imu.hpp>
 #include <i3ds/emulated_analog.hpp>
 #include <i3ds/emulated_trigger.hpp>
+#include <i3ds/emulated_flash.hpp>
 
 #if CAMERA_EMULATORS
 #include <i3ds/emulated_camera.hpp>
@@ -73,6 +74,12 @@ i3ds::Trigger::Ptr
 i3ds::EmulatorFactory::CreateTrigger()
 {
   return EmulatedTrigger::Create(next_id_++);
+}
+
+i3ds::Flash::Ptr
+i3ds::EmulatorFactory::CreateFlash()
+{
+  return EmulatedFlash::Create(next_id_++);
 }
 
 #if CAMERA_EMULATORS

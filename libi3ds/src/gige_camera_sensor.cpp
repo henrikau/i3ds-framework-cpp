@@ -464,6 +464,14 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
           // Enable trigger for flash.
           set_trigger(param_.flash_output, param_.flash_offset);
         }
+      else
+        {
+          // Disable flash.
+          flash_strength_ = 0;
+
+          // Clear trigger for flash.
+          clear_trigger(param_.flash_output);
+        }
     }
   catch (DeviceError& e)
     {
