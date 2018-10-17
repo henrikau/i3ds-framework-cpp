@@ -15,6 +15,7 @@
 #include <i3ds/emulated_star_tracker.hpp>
 #include <i3ds/emulated_imu.hpp>
 #include <i3ds/emulated_analog.hpp>
+#include <i3ds/emulated_trigger.hpp>
 
 #if CAMERA_EMULATORS
 #include <i3ds/emulated_camera.hpp>
@@ -66,6 +67,12 @@ i3ds::Analog::Ptr
 i3ds::EmulatorFactory::CreateForceTorque()
 {
   return EmulatedAnalog::CreateForceTorque(context_, next_id_++);
+}
+
+i3ds::Trigger::Ptr
+i3ds::EmulatorFactory::CreateTrigger()
+{
+  return EmulatedTrigger::Create(next_id_++);
 }
 
 #if CAMERA_EMULATORS

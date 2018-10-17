@@ -17,6 +17,7 @@
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/emulated_camera.hpp>
+#include <i3ds/emulated_trigger.hpp>
 #include <i3ds/camera_client.hpp>
 #include <i3ds/common_tests.hpp>
 
@@ -29,20 +30,26 @@ struct F
   F()
     : node(1),
       context(Context::Create()),
-      server(context),
+      camera_server(context),
+      trigger_server(context),
       client(CameraClient::Create(context, node))
   {
     BOOST_TEST_MESSAGE("setup fixture");
 
-    // Standard parameters.
-    param.camera_name = "test";
-    param.external_trigger = false;
-    param.support_flash = false;
-    param.support_pattern = false;
+    // Create the trigger
+    trigger = EmulatedTrigger::Create(node + 1);
+
+    // Camera feature configuration
+    param.camera_name      = "test";
+    param.external_trigger = true;
+    param.support_flash    = false;
+    param.support_pattern  = true;
+
+    // Camera frame configuration
     param.image_count = 1;
-    param.frame_mode = mode_mono;
-    param.data_depth = 16;
-    param.pixel_size = 2;
+    param.frame_mode  = mode_mono;
+    param.data_depth  = 16;
+    param.pixel_size  = 2;
 
     // Width and height for easy testing.
     param.width = 1000;
@@ -53,24 +60,29 @@ struct F
     param.packet_delay = 100;
 
     // Configuration for external trigger.
-    param.trigger_source = 0;
-    param.camera_output = 0;
-    param.camera_offset = 0;
-    param.flash_output = 0;
-    param.flash_offset = 0;
-    param.pattern_output = 0;
-    param.pattern_offset = 0;
+    param.trigger_source = 1;
+    param.camera_output  = 1;
+    param.camera_offset  = 1000;
+    param.flash_output   = 2;
+    param.flash_offset   = 2000;
+    param.pattern_output = 3;
+    param.pattern_offset = 3000;
 
     // Node ID for trigger and flash services if supported.
-    param.trigger_node = 2;
+    param.trigger_node = trigger->node();
     param.flash_node = 3;
 
     param.sample_dir = "";
 
-    camera = EmulatedCamera::Create(context, node, param);
+    camera = EmulatedCamera::Create(context, 1, param);
 
-    camera->Attach(server);
-    server.Start();
+    // Needs different servers to avoid deadlock with nested calls.
+    camera->Attach(camera_server);
+    trigger->Attach(trigger_server);
+
+    camera_server.Start();
+    trigger_server.Start();
+
     client->set_timeout(1000);
 
     received = 0;
@@ -79,7 +91,8 @@ struct F
   ~F()
   {
     BOOST_TEST_MESSAGE("teardown fixture");
-    server.Stop();
+    camera_server.Stop();
+    trigger_server.Stop();
   }
 
   void handle_measurement(Camera::FrameTopic::Data& data);
@@ -91,12 +104,14 @@ struct F
   const NodeID node;
 
   Context::Ptr context;
-  Server server;
+  Server camera_server;
+  Server trigger_server;
 
   CameraClient::Ptr client;
 
   EmulatedCamera::Parameters param;
   EmulatedCamera::Ptr camera;
+  EmulatedTrigger::Ptr trigger;
 
   int received;
 };
@@ -165,7 +180,68 @@ BOOST_AUTO_TEST_CASE(camera_creation)
 
 BOOST_AUTO_TEST_CASE(camera_sample_settings)
 {
-  test_sample_settings(client);
+  SamplePeriod period = 100000;
+  BatchSize batch_size = 1;
+  BatchCount batch_count = 1;
+
+  client->set_state(activate);
+  client->set_sampling(period, batch_size, batch_count);
+
+  BOOST_CHECK_EQUAL(camera->period(), period);
+
+  BOOST_CHECK_EQUAL(trigger->source(param.camera_output), param.trigger_source);
+  BOOST_CHECK_EQUAL(trigger->offset(param.camera_output), param.camera_offset);
+  BOOST_CHECK_GT(trigger->duration(param.camera_output), 0);
+  BOOST_CHECK_EQUAL(trigger->inverted(param.camera_output), false);
+
+  client->set_state(start);
+
+  BOOST_CHECK_EQUAL(trigger->period(param.trigger_source), period);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), true);
+
+  client->set_state(stop);
+
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), false);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(camera_configuration_query)
+{
+  ShutterTime shutter = 10000;
+  SensorGain gain = 2.0;
+  bool auto_exposure_enabled = true;
+  ShutterTime max_shutter = 100000;
+  SensorGain max_gain = 3.0;
+  // bool flash_enabled = true;
+  // FlashStrength flash_strength = 128;
+  bool pattern_enabled = true;
+  PatternSequence pattern_sequence = 1;
+
+  client->set_state(activate);
+
+  client->set_exposure(shutter, gain);
+  client->set_auto_exposure(auto_exposure_enabled, max_shutter, max_gain);
+
+  // client->set_flash(flash_enabled, flash_strength);
+  client->set_pattern(pattern_enabled, pattern_sequence);
+
+  client->load_config();
+
+  BOOST_CHECK_EQUAL("Emulated camera", client->device_name());
+
+  BOOST_CHECK_EQUAL(shutter, client->shutter());
+  BOOST_CHECK_CLOSE(gain, client->gain(), 1e-6);
+
+  BOOST_CHECK_EQUAL(auto_exposure_enabled, client->auto_exposure_enabled());
+  BOOST_CHECK_EQUAL(max_shutter, client->max_shutter());
+  BOOST_CHECK_CLOSE(max_gain, client->max_gain(), 1e-6);
+
+  // BOOST_CHECK_EQUAL(flash_enabled, client->flash_enabled());
+  // BOOST_CHECK_EQUAL(flash_strength, client->flash_strength());
+
+  BOOST_CHECK_EQUAL(pattern_enabled, client->pattern_enabled());
+  BOOST_CHECK_EQUAL(pattern_sequence, client->pattern_sequence());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -261,42 +337,41 @@ BOOST_AUTO_TEST_CASE(camera_exposure)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_configuration_query)
+BOOST_AUTO_TEST_CASE(camera_pattern_settings)
 {
-  ShutterTime shutter = 10000;
-  SensorGain gain = 2.0;
-  bool auto_exposure_enabled = true;
-  ShutterTime max_shutter = 100000;
-  SensorGain max_gain = 3.0;
-  // bool flash_enabled = true;
-  // FlashStrength flash_strength = 128;
-  // bool pattern_enabled = true;
-  // PatternSequence pattern_sequence = 10;
+  SamplePeriod period = 100000;
+  BatchSize batch_size = 1;
+  BatchCount batch_count = 1;
+  PatternSequence pattern = 1;
 
   client->set_state(activate);
+  client->set_sampling(period, batch_size, batch_count);
+  client->set_pattern(true, pattern);
 
-  client->set_exposure(shutter, gain);
-  client->set_auto_exposure(auto_exposure_enabled, max_shutter, max_gain);
+  BOOST_CHECK_EQUAL(camera->period(), period);
+  BOOST_CHECK_EQUAL(camera->pattern_enabled(), true);
+  BOOST_CHECK_EQUAL(camera->pattern_sequence(), pattern);
 
-  // client->set_flash(flash_enabled, flash_strength);
-  // client->set_pattern(pattern_enabled, pattern_sequence);
+  BOOST_CHECK_EQUAL(trigger->source(param.camera_output), param.trigger_source);
+  BOOST_CHECK_EQUAL(trigger->offset(param.camera_output), param.camera_offset);
+  BOOST_CHECK_GT(trigger->duration(param.camera_output), 0);
+  BOOST_CHECK_EQUAL(trigger->inverted(param.camera_output), false);
 
-  client->load_config();
+  BOOST_CHECK_EQUAL(trigger->source(param.pattern_output), param.trigger_source);
+  BOOST_CHECK_EQUAL(trigger->offset(param.pattern_output), param.pattern_offset);
+  BOOST_CHECK_GT(trigger->duration(param.pattern_output), 0);
+  BOOST_CHECK_EQUAL(trigger->inverted(param.pattern_output), false);
 
-  BOOST_CHECK_EQUAL("Emulated camera", client->device_name());
+  client->set_state(start);
 
-  BOOST_CHECK_EQUAL(shutter, client->shutter());
-  BOOST_CHECK_CLOSE(gain, client->gain(), 1e-6);
+  BOOST_CHECK_EQUAL(trigger->period(param.trigger_source), period);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), true);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.pattern_output), true);
 
-  BOOST_CHECK_EQUAL(auto_exposure_enabled, client->auto_exposure_enabled());
-  BOOST_CHECK_EQUAL(max_shutter, client->max_shutter());
-  BOOST_CHECK_CLOSE(max_gain, client->max_gain(), 1e-6);
+  client->set_state(stop);
 
-  // BOOST_CHECK_EQUAL(flash_enabled, client->flash_enabled());
-  // BOOST_CHECK_EQUAL(flash_strength, client->flash_strength());
-
-  // BOOST_CHECK_EQUAL(pattern_enabled, client->pattern_enabled());
-  // BOOST_CHECK_EQUAL(pattern_sequence, client->pattern_sequence());
+  BOOST_CHECK_EQUAL(trigger->enabled(param.camera_output), false);
+  BOOST_CHECK_EQUAL(trigger->enabled(param.pattern_output), false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

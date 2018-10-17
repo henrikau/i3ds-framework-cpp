@@ -520,8 +520,17 @@ i3ds::GigECamera::handle_pattern(PatternService::Data& command)
 void
 i3ds::GigECamera::set_trigger(TriggerOutput channel, TriggerOffset offset)
 {
+  BOOST_LOG_TRIVIAL(trace) << "Set trigger " << channel << " offset " << offset;
+
   // Set the channel to fire at offset with 100 us pulse.
-  trigger_->set_internal_channel(channel, param_.trigger_source, offset, 100, false);
+  try
+    {
+      trigger_->set_internal_channel(channel, param_.trigger_source, offset, 100, false);
+    }
+  catch(Timeout& e)
+    {
+      BOOST_LOG_TRIVIAL(error) << "TIMEOUT for trigger";
+    }
 
   // Enable the trigger on do_start.
   trigger_outputs_.insert(channel);

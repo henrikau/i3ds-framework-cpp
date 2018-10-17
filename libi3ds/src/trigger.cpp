@@ -21,4 +21,3 @@ i3ds::Trigger::Attach(Server& server)
   server.Attach<ChannelEnableService>(node(), std::bind(&i3ds::Trigger::handle_enable_channel, this, _1));
   server.Attach<ChannelDisableService>(node(), std::bind(&i3ds::Trigger::handle_disable_channel, this, _1));
 }
-

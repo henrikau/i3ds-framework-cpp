@@ -45,7 +45,7 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, Paramete
 
 i3ds::EmulatedCamera::~EmulatedCamera()
 {
-  BOOST_LOG_TRIVIAL(trace) << "Destroy emulated camera with NodeID: " << node();
+  BOOST_LOG_TRIVIAL(info) << "Destroy emulated camera with NodeID: " << node();
 }
 
 void

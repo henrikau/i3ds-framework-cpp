@@ -18,6 +18,7 @@
 #include <i3ds/imu_sensor.hpp>
 #include <i3ds/analog_sensor.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
+#include <i3ds/trigger.hpp>
 
 #if CAMERA_EMULATORS
 #include <i3ds/camera_sensor.hpp>
@@ -41,6 +42,7 @@ public:
   StarTracker::Ptr CreateStarTracker();
   Analog::Ptr CreateTactile();
   Analog::Ptr CreateForceTorque();
+  Trigger::Ptr CreateTrigger();
 
 #if CAMERA_EMULATORS
   Camera::Ptr CreateTIRCamera(std::string sample_dir = "");
