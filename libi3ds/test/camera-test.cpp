@@ -39,55 +39,6 @@ struct F
   {
     BOOST_TEST_MESSAGE("setup fixture");
 
-    // Create the trigger
-    trigger = EmulatedTrigger::Create(node + 1);
-    flash = EmulatedFlash::Create(node + 2);
-
-    // Camera feature configuration
-    param.camera_name      = "test";
-    param.external_trigger = true;
-    param.support_flash    = true;
-    param.support_pattern  = true;
-
-    // Camera frame configuration
-    param.image_count = 1;
-    param.frame_mode  = mode_mono;
-    param.data_depth  = 16;
-    param.pixel_size  = 2;
-
-    // Width and height for easy testing.
-    param.width = 1000;
-    param.height = 1000;
-
-    // TODO: These does not matter for test.
-    param.packet_size = 8000;
-    param.packet_delay = 100;
-
-    // Configuration for external trigger.
-    param.trigger_source = 1;
-    param.camera_output  = 1;
-    param.camera_offset  = 1000;
-    param.flash_output   = 2;
-    param.flash_offset   = 2000;
-    param.pattern_output = 3;
-    param.pattern_offset = 3000;
-
-    // Node ID for trigger and flash services if supported.
-    param.trigger_node = trigger->node();
-    param.flash_node = 3;
-
-    param.sample_dir = "";
-
-    camera = EmulatedCamera::Create(context, 1, param);
-
-    // Needs different servers to avoid deadlock with nested calls.
-    camera->Attach(camera_server);
-    trigger->Attach(node_server);
-    flash->Attach(node_server);
-
-    camera_server.Start();
-    node_server.Start();
-
     client->set_timeout(1000);
 
     received = 0;
@@ -99,6 +50,14 @@ struct F
     camera_server.Stop();
     node_server.Stop();
   }
+
+  void Setup(bool support_trigger, bool support_flash, bool support_pattern, bool stereo);
+
+  void SetupDefault() {Setup(false, false, false, false);}
+  void SetupTrigger() {Setup( true,  true,  true, false);}
+  void SetupFlash()   {Setup( true,  true, false, false);}
+  void SetupPattern() {Setup( true, false,  true, false);}
+  void SetupStereo()  {Setup(false, false, false,  true);}
 
   void handle_measurement(Camera::FrameTopic::Data& data);
 
@@ -121,6 +80,66 @@ struct F
 
   int received;
 };
+
+void F::Setup(bool support_trigger, bool support_flash, bool support_pattern, bool stereo)
+{
+  // Create and attach the trigger service
+  if (support_trigger)
+    {
+      trigger = EmulatedTrigger::Create(node + 1);
+      trigger->Attach(node_server);
+    }
+
+  // Create and attach the flash service
+  if (support_flash)
+    {
+      flash = EmulatedFlash::Create(node + 2);
+      flash->Attach(node_server);
+    }
+
+  // Camera feature configuration
+  param.camera_name      = "test";
+  param.external_trigger = support_trigger;
+  param.support_flash    = support_flash;
+  param.support_pattern  = support_pattern;
+
+  // Camera frame configuration
+  param.image_count = stereo ? 2 : 1;
+  param.frame_mode  = mode_mono;
+  param.data_depth  = 16;
+  param.pixel_size  = 2;
+
+  // Width and height for easy testing.
+  param.width = 1000;
+  param.height = stereo ? 2000 : 1000;
+
+  // TODO: These does not matter for test.
+  param.packet_size = 8000;
+  param.packet_delay = 100;
+
+  // Configuration for external trigger.
+  param.trigger_source = 1;
+  param.camera_output  = 1;
+  param.camera_offset  = 1000;
+  param.flash_output   = 2;
+  param.flash_offset   = 2000;
+  param.pattern_output = 3;
+  param.pattern_offset = 3000;
+
+  // Node ID for trigger and flash services if supported.
+  param.trigger_node = support_trigger ? trigger->node() : 0;
+  param.flash_node = support_flash ? flash->node() : 0;
+
+  param.sample_dir = "";
+
+  // Create and attach the camera.
+  camera = EmulatedCamera::Create(context, 1, param);
+  camera->Attach(camera_server);
+
+  // Needs different servers to avoid deadlock with nested calls...
+  camera_server.Start();
+  node_server.Start();
+}
 
 void F::check_region(PlanarRegion ra, PlanarRegion rb)
 {
@@ -179,13 +198,36 @@ BOOST_FIXTURE_TEST_SUITE(s, F)
 
 BOOST_AUTO_TEST_CASE(camera_creation)
 {
+  SetupDefault();
+
   test_sensor_creation(camera, node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_sample_settings)
+BOOST_AUTO_TEST_CASE(camera_internal_sampling)
 {
+  SetupDefault();
+
+  SamplePeriod period = 100000;
+  BatchSize batch_size = 1;
+  BatchCount batch_count = 1;
+
+  client->set_state(activate);
+  client->set_sampling(period, batch_size, batch_count);
+
+  BOOST_CHECK_EQUAL(camera->period(), period);
+
+  BOOST_CHECK_THROW(client->set_flash(true, 50), CommandError);
+  BOOST_CHECK_THROW(client->set_pattern(true, 1), CommandError);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(camera_external_sampling)
+{
+  SetupTrigger();
+
   SamplePeriod period = 100000;
   BatchSize batch_size = 1;
   BatchCount batch_count = 1;
@@ -214,6 +256,8 @@ BOOST_AUTO_TEST_CASE(camera_sample_settings)
 
 BOOST_AUTO_TEST_CASE(camera_configuration_query)
 {
+  SetupTrigger();
+
   ShutterTime shutter = 10000;
   SensorGain gain = 2.0;
   bool auto_exposure_enabled = true;
@@ -252,8 +296,10 @@ BOOST_AUTO_TEST_CASE(camera_configuration_query)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_region)
+BOOST_AUTO_TEST_CASE(camera_mono_region)
 {
+  SetupDefault();
+
   client->set_state(activate);
 
   BOOST_CHECK_EQUAL(camera->region_enabled(), false);
@@ -312,8 +358,30 @@ BOOST_AUTO_TEST_CASE(camera_region)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+BOOST_AUTO_TEST_CASE(camera_stereo_region)
+{
+  SetupStereo();
+
+  client->set_state(activate);
+
+  BOOST_CHECK_EQUAL(camera->region_enabled(), false);
+
+  PlanarRegion r;
+
+  r.size_x = param.width / 2;
+  r.size_y = param.height / 2;
+  r.offset_x = 0;
+  r.offset_y = 0;
+
+  set_illegal_region(r);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 BOOST_AUTO_TEST_CASE(camera_exposure)
 {
+  SetupDefault();
+
   client->set_state(activate);
 
   // Check manual exposure settings.
@@ -345,6 +413,8 @@ BOOST_AUTO_TEST_CASE(camera_exposure)
 
 BOOST_AUTO_TEST_CASE(camera_pattern_settings)
 {
+  SetupPattern();
+
   SamplePeriod period = 100000;
   BatchSize batch_size = 1;
   BatchCount batch_count = 1;
@@ -398,6 +468,8 @@ BOOST_AUTO_TEST_CASE(camera_pattern_settings)
 
 BOOST_AUTO_TEST_CASE(camera_flash_settings)
 {
+  SetupFlash();
+
   SamplePeriod period = 100000;
   BatchSize batch_size = 1;
   BatchCount batch_count = 1;
@@ -451,9 +523,39 @@ BOOST_AUTO_TEST_CASE(camera_flash_settings)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE(camera_sampling)
+BOOST_AUTO_TEST_CASE(camera_mono_sampling)
 {
   using namespace std::placeholders;
+
+  SetupDefault();
+
+  Subscriber subscriber(context);
+
+  subscriber.Attach<Camera::FrameTopic>(node, std::bind(&F::handle_measurement, this, _1));
+  subscriber.Start();
+
+  SamplePeriod period = 100000;
+
+  client->set_state(activate);
+  client->set_sampling(period);
+  client->set_state(start);
+
+  std::this_thread::sleep_for(std::chrono::microseconds(period * 5));
+
+  client->set_state(stop);
+
+  subscriber.Stop();
+
+  BOOST_CHECK_GT(received, 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(camera_stereo_sampling)
+{
+  using namespace std::placeholders;
+
+  SetupStereo();
 
   Subscriber subscriber(context);
 
