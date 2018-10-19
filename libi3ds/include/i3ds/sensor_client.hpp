@@ -22,8 +22,29 @@ class SensorClient : public Client
 public:
 
   typedef std::shared_ptr<SensorClient> Ptr;
-  
+
   SensorClient(Context::Ptr context, NodeID sensor);
+
+  // Returns true if sensor is in inactive state.
+  inline bool is_inactive() const {return state() == inactive;}
+
+  // Returns true if sensor is in active state.
+  inline bool is_active() const {return state() == standby || state() == operational;}
+
+  // Returns true if sensor is in standby state.
+  inline bool is_standby() const {return state() == standby;}
+
+  // Returns true if sensor is in operational state.
+  inline bool is_operational() const {return state() == operational;}
+
+  // Returns true if sensor is in failure state.
+  inline bool is_failure() const {return state() == failure;}
+
+  // State helper functions.
+  inline void Activate()   {set_state(activate);}
+  inline void Deactivate() {set_state(deactivate);}
+  inline void Start()      {set_state(start);}
+  inline void Stop()       {set_state(stop);}
 
   void set_state(StateCommand state);
   void set_sampling(SamplePeriod period, BatchSize batch_size = 1, BatchCount batch_count = 0);
