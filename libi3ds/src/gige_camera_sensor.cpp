@@ -393,8 +393,13 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
           setRegionWidth(getSensorWidth());
           setRegionHeight(getSensorHeight());
         }
-    }
-  catch (DeviceError& e)
+    } catch (i3ds::CommandError& e)
+      {
+	// This is for rethrowing out of range values found by software etc.
+        BOOST_LOG_TRIVIAL(error) <<  "Value exception in setregion: "+ std::string(e.what());
+        throw;
+      }
+
     {
       set_failure();
       throw CommandError(error_other, e.what());
