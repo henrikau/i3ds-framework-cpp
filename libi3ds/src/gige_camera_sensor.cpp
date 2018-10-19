@@ -18,6 +18,7 @@
 #include <boost/log/expressions.hpp>
 
 #include <cmath>
+#include <sstream>
 
 namespace logging = boost::log;
 
@@ -352,8 +353,12 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
 
           if ((sy + oy) > getSensorHeight())
             {
-              BOOST_LOG_TRIVIAL(error) << "Height " << (sy + oy) << " > " << getSensorHeight();
-              throw i3ds::CommandError(error_value, std::string("Region height and offset outside sensor height for camera"));
+              std::stringstream ss;
+              ss << "Region height + offset larger than sensor height: (" <<  sy << "+" << oy << ") > " << getSensorHeight();
+              std::string s = ss.str();
+
+              BOOST_LOG_TRIVIAL(error) << s;
+              throw i3ds::CommandError(error_value, s);
             }
 
           // Do resize in correct order
