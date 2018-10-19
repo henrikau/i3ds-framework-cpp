@@ -400,7 +400,10 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
         throw;
       }
 
+ // catch (DeviceError& e)
+  catch (std::exception& e)
     {
+      BOOST_LOG_TRIVIAL(error) <<  "std::exception in setregion: "+ std::string(e.what());
       set_failure();
       throw CommandError(error_other, e.what());
     }
