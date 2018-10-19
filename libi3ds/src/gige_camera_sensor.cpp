@@ -342,8 +342,12 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
 
           if ((sx + ox) > getSensorWidth())
             {
-              BOOST_LOG_TRIVIAL(error) << "Width " << (sx + ox) << " > " << getSensorWidth();
-              throw i3ds::CommandError(error_value, std::string("Region width and offset outside sensor width for camera"));
+              std::stringstream ss;
+              ss << "Region width + offset larger than sensor width: (" <<  sx << "+" << ox << ") > " << getSensorWidth();
+              std::string s = ss.str();
+
+              BOOST_LOG_TRIVIAL(error) << s;
+              throw i3ds::CommandError(error_value, s);
             }
 
           if ((sy + oy) > getSensorHeight())
