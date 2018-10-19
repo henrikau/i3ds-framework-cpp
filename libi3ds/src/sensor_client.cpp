@@ -23,7 +23,7 @@ i3ds::SensorClient::load_status()
   Call<Sensor::StatusService>(status_);
 }
 
-void 
+void
 i3ds::SensorClient::load_config()
 {
   Call<Sensor::ConfigurationService>(config_);
@@ -31,8 +31,12 @@ i3ds::SensorClient::load_config()
 void
 i3ds::SensorClient::load_all()
 {
-  load_config();
   load_status();
+
+  if (is_active())
+    {
+      load_config();
+    }
 }
 
 void
