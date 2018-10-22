@@ -234,6 +234,8 @@ private:
   // Helper methods for setting and clearing triggers.
   void set_trigger(TriggerOutput channel, TriggerOffset offset);
   void clear_trigger(TriggerOutput channel);
+
+  void signal_lost_camera();
 };
 
 } // namespace i3ds

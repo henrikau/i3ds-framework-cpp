@@ -114,6 +114,16 @@ i3ds::GigECamera::region() const
 }
 
 void
+i3ds::GigECamera::signal_lost_camera()
+{
+// This is meant for errors thrown by pylon (basler). Think it is only when camera is down. Exception caused by error while writing/reading a parameter.
+    const std::string error_string = "Probably lost connection with camera. Going to failure mode.";
+    BOOST_LOG_TRIVIAL(error) <<  error_string;
+    set_failure();
+    throw CommandError(error_other, error_string);
+}
+
+void
 i3ds::GigECamera::do_activate()
 {
   BOOST_LOG_TRIVIAL(info) << "do_activate()";
