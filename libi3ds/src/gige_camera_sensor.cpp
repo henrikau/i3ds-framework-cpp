@@ -277,6 +277,12 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
     {
       flash_->set_flash(shutter, flash_strength_);
     }
+   catch (...)
+     {
+       signal_lost_camera();
+     }
+
+
 }
 
 void
