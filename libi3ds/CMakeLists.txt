@@ -173,6 +173,7 @@ if (BUILD_TESTS)
     star-tracker-test
     analog-test
     measurement-proxy-test
+    pointcloud-test
     )
 
   if (OpenCV_FOUND)
