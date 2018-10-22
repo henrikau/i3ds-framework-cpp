@@ -207,53 +207,65 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
   BOOST_LOG_TRIVIAL(info) << "handle_exposure()";
 
   check_active();
-
-  // Cannot set manual exposure when auto exposure is enabled.
-  if (auto_exposure_enabled())
-    {
-      throw i3ds::CommandError(error_value, "In auto-exposure mode");
-    }
-
-  // Check that shutter is within limits.
-  const int shutter = command.request.shutter;
-  const int shutter_max = getMaxShutter();
-  const int64_t shutter_min = getMinShutter();
-
-  if (shutter > (int64_t) period())
-    {
-      throw i3ds::CommandError(error_value, "Shutter time longer than period!");
-    }
-
-  if (shutter > shutter_max)
-    {
-      throw i3ds::CommandError(error_value, "Shutter time longer than max " + std::to_string(shutter_max));
-    }
-
-  if (shutter < shutter_min)
-    {
-      throw i3ds::CommandError(error_value, "Shutter time shorter than min " + std::to_string(shutter_min));
-    }
-
-  // Check that gain is within limits.
-  const double gain = command.request.gain;
-  const double gain_max = getMaxGain();
-  const double gain_min = getMinGain();
-
-  if (gain > gain_max)
-    {
-      throw i3ds::CommandError(error_value, "Gain higher than " + std::to_string(gain_max));
-    }
-
-  if (gain < gain_min)
-    {
-      throw i3ds::CommandError(error_value, "Gain lower than " + std::to_string(gain_min));
-    }
-
-  // Update gain and shutter.
   try
     {
-      setShutter(shutter);
-      setGain(gain);
+      // Cannot set manual exposure when auto exposure is enabled.
+      if (auto_exposure_enabled())
+	{
+	  throw i3ds::CommandError(error_value, "In auto-exposure mode");
+	}
+
+      // Check that shutter is within limits.
+      const int shutter = command.request.shutter;
+      const int shutter_max = getMaxShutter();
+      const int64_t shutter_min = getMinShutter();
+
+      if (shutter > (int64_t) period())
+	{
+	  throw i3ds::CommandError(error_value, "Shutter time longer than period: " + std::to_string(period()) );
+	}
+
+      if (shutter > shutter_max)
+	{
+	  throw i3ds::CommandError(error_value, "Shutter time longer than max " + std::to_string(shutter_max));
+	}
+
+      if (shutter < shutter_min)
+	{
+	  throw i3ds::CommandError(error_value, "Shutter time shorter than min " + std::to_string(shutter_min));
+	}
+
+      // Check that gain is within limits.
+      const double gain = command.request.gain;
+      const double gain_max = getMaxGain();
+      const double gain_min = getMinGain();
+
+      if (gain > gain_max)
+	{
+	  throw i3ds::CommandError(error_value, "Gain higher than " + std::to_string(gain_max));
+	}
+
+      if (gain < gain_min)
+	{
+	  throw i3ds::CommandError(error_value, "Gain lower than " + std::to_string(gain_min));
+	}
+
+      // Update gain and shutter.
+      try
+	{
+	  setShutter(shutter);
+	  setGain(gain);
+	}
+      catch (std::exception& e)
+	{
+	  BOOST_LOG_TRIVIAL(warning) << e.what();
+	}
+
+      // Update flash duration corresponding to shutter if enabled.
+      if (flash_enabled_)
+	{
+	  flash_->set_flash(shutter, flash_strength_);
+	}
     }
   catch (std::exception& e)
     {
