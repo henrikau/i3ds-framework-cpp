@@ -351,6 +351,12 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
           setAutoGainEnabled(true);
         }
     }
+  catch (i3ds::CommandError& e)
+    {
+      // This is for rethrowing wrong values such that catch(...) does not get it. .
+      BOOST_LOG_TRIVIAL(error) <<  "Value exception in handle_auto_exposure: "+ std::string(e.what());
+      throw;
+    }
   catch (DeviceError& e)
     {
       set_failure();
