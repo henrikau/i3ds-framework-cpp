@@ -193,6 +193,12 @@ i3ds::GigECamera::is_sampling_supported(SampleCommand sample)
 	  return setInternalTrigger(sample.period);
 	}
       }
+  catch (i3ds::CommandError& e)
+      {
+        // This is for rethrowing out of range values etc. found by software.
+        BOOST_LOG_TRIVIAL(warning) <<  "Value exception in is_sampling_supported(): " + std::string(e.what());
+        throw;
+      }
   catch (...)
     {
       // This is meant for error thrown  by pylon. Think is is only when camera is gone, because problem comunicatin with camera.
