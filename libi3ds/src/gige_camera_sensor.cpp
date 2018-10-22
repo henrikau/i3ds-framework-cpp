@@ -542,6 +542,12 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
           clear_trigger(param_.flash_output);
         }
     }
+
+  catch (i3ds::CommandError& e)
+    {
+      BOOST_LOG_TRIVIAL(warning) << "CommandError catch";
+      throw;// CommandError(error_other, e.what());
+    }
   catch (DeviceError& e)
     {
       set_failure();
