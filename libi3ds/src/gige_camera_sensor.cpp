@@ -181,16 +181,24 @@ bool
 i3ds::GigECamera::is_sampling_supported(SampleCommand sample)
 {
   BOOST_LOG_TRIVIAL(info) << "is_rate_supported() " << sample.period;
-
-  if (param_.external_trigger)
+  try
     {
-      // Minimal period 50 ms (= 20 Hz) and maximal 16.7 seconds for external trigger.
-      return 50000 <= sample.period && sample.period <= 16777215;
-    }
-  else
+      if (param_.external_trigger)
+	{
+	  // Minimal period 50 ms (= 20 Hz) and maximal 16.7 seconds for external trigger.
+	  return 50000 <= sample.period && sample.period <= 16777215;
+	}
+      else
+	{
+	  return setInternalTrigger(sample.period);
+	}
+      }
+  catch (...)
     {
-      return setInternalTrigger(sample.period);
+      // This is meant for error thrown  by pylon. Think is is only when camera is gone, because problem comunicatin with camera.
+      signal_lost_camera();
     }
+  return false; //to remove compiler warning. Never executed.
 }
 
 void
