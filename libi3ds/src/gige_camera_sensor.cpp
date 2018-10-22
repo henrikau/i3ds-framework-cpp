@@ -339,6 +339,10 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
       set_failure();
       throw CommandError(error_other, e.what());
     }
+   catch (...)
+     {
+       signal_lost_camera();
+     }
 }
 
 void
