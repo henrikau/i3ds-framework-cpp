@@ -436,11 +436,7 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
     }
   catch (...)
     {
-      // This is meant for error thrown  by pylon. Think is is only when camera is gone, because out of range values er checked for.
-      const std::string error_string = "Probably lost connection with camera. Going to failure mode.";
-      BOOST_LOG_TRIVIAL(error) <<  error_string;
-      set_failure();
-      throw CommandError(error_other, error_string);
+      signal_lost_camera();
     }
 }
 
