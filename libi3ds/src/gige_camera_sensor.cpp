@@ -544,6 +544,11 @@ i3ds::GigECamera::handle_pattern(PatternService::Data& command)
 {
   BOOST_LOG_TRIVIAL(info) << "handle_pattern()";
 
+  if( !param_.support_pattern )
+    {
+      throw i3ds::CommandError(error_unsupported, "Pattern not activated when started camera server");
+    }
+
   check_standby();
 
   try
