@@ -577,7 +577,8 @@ i3ds::GigECamera::set_trigger(TriggerOutput channel, TriggerOffset offset)
     }
   catch(Timeout& e)
     {
-      BOOST_LOG_TRIVIAL(error) << "TIMEOUT for trigger";
+      BOOST_LOG_TRIVIAL(error) << "TIMEOUT for setting trigger";
+      throw CommandError(error_other, "Timeout for setting trigger: " + std::string(e.what()));
     }
 
   // Enable the trigger on do_start.
