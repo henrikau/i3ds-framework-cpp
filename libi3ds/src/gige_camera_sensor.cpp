@@ -272,11 +272,10 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
       BOOST_LOG_TRIVIAL(error) <<  "Value exception in handle_exposure: "+ std::string(e.what());
       throw;
     }
-
-  // Update flash duration corresponding to shutter if enabled.
-  if (flash_enabled_)
+  catch (DeviceError& e)
     {
-      flash_->set_flash(shutter, flash_strength_);
+      set_failure();
+      throw CommandError(error_other, e.what());
     }
    catch (...)
      {
