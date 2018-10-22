@@ -462,7 +462,7 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
     {
       if (!param_.support_flash)
         {
-          throw i3ds::CommandError(error_unsupported, "Flash not supported");
+          throw i3ds::CommandError(error_unsupported, "Flash not supported without starting camera in triggered mode");
         }
 
       flash_enabled_ = command.request.enable;
