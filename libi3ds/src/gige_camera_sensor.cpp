@@ -550,6 +550,7 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
     }
   catch (DeviceError& e)
     {
+      BOOST_LOG_TRIVIAL(warning) << "DeviceError catch";
       set_failure();
       throw CommandError(error_other, e.what());
     }
