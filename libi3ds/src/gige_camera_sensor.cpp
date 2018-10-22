@@ -251,15 +251,8 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
 	}
 
       // Update gain and shutter.
-      try
-	{
-	  setShutter(shutter);
-	  setGain(gain);
-	}
-      catch (std::exception& e)
-	{
-	  BOOST_LOG_TRIVIAL(warning) << e.what();
-	}
+      setShutter(shutter);
+      setGain(gain);
 
       // Update flash duration corresponding to shutter if enabled.
       if (flash_enabled_)
