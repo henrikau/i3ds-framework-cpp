@@ -292,8 +292,8 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
               throw i3ds::CommandError(error_value, "Shutter limit shorter than min " + std::to_string(limit_min));
             }
 
-          setAutoShutterLimit(limit);
           setAutoShutterEnabled(true);
+          setAutoShutterLimit(limit);
         }
 
       if (support_gain)
@@ -312,8 +312,8 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
               throw i3ds::CommandError(error_value, "Gain limit smaller than min " + std::to_string(limit_min));
             }
 
-          setAutoGainLimit(limit);
           setAutoGainEnabled(true);
+          setAutoGainLimit(limit);
         }
     }
   catch (DeviceError& e)
