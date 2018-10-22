@@ -567,8 +567,8 @@ i3ds::GigECamera::handle_pattern(PatternService::Data& command)
     {
       if (!trigger_)
         {
-          throw i3ds::CommandError(error_other, "Pattern not supported in free-running mode");
         }
+      throw i3ds::CommandError(error_unsupported, "Pattern only supported in triggered mode");
 
       pattern_enabled_ = command.request.enable;
 
