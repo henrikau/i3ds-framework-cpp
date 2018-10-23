@@ -14,6 +14,7 @@
 #include <i3ds/PointCloud.h>
 #include <i3ds/taste-types.h>
 #include <i3ds/codec.hpp>
+#include <i3ds/topic.hpp>
 #include <vector>
 
 namespace i3ds
@@ -81,6 +82,8 @@ struct PointCloudCodec
     return T_UInt32Codec::Decode(&pVal->numPoints, pBitStrm, pErrCode);
   }
 };
+
+typedef Topic<130, PointCloudCodec> PointCloudTopic;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Template specialization for frame codec, sets multipart message
