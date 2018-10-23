@@ -248,12 +248,12 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
 
       if (gain > gain_max)
 	{
-	  throw i3ds::CommandError(error_value, "Gain higher than " + std::to_string(gain_max));
+	  throw i3ds::CommandError(error_value, "Gain higher than max value: " + std::to_string(gain_max));
 	}
 
       if (gain < gain_min)
 	{
-	  throw i3ds::CommandError(error_value, "Gain lower than " + std::to_string(gain_min));
+	  throw i3ds::CommandError(error_value, "Gain lower than min value: " + std::to_string(gain_min));
 	}
 
       // Update gain and shutter.
