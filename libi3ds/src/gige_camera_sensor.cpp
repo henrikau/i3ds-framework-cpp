@@ -479,7 +479,7 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
 
       if (flash_enabled_)
         {
-          flash_strength_ = command.request.strength;
+	  flash_strength_ = command.request.strength;
 
           ShutterTime shutter_duration;
 
@@ -492,43 +492,11 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
               shutter_duration = getShutter();
             }
 
-          ShutterTime flash_duration = shutter_duration;
-          if (flash_duration > 3000)
-            {
-              flash_duration = 3000;
-            }
-
-          unsigned int max_strength = 0;
-
-          if (flash_duration > 2000)
-            {
-              max_strength = 20;
-            }
-          else if (flash_duration > 1000)
-            {
-              max_strength = 50;
-            }
-          else
-            {
-              max_strength = 100;
-            }
-
-          FlashStrength flash_actual = flash_strength_;
-          if (flash_actual > max_strength)
-            {
-              flash_actual = max_strength;
-            }
-
-          // This is a possible other interpretation of the parameter:
-          //   FlashStrength flash_actual = max_strength * flash_strength / 100;
-
-          BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_actual << " (" << flash_strength_ << " requested)";
-          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << flash_duration << " us (shutter is " << shutter_duration <<
-                                  ")";
-
+          BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_strength_ << " requested.";
+          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << shutter_duration << "requested.";
 
           // Send flash command.
-          flash_->set_flash(flash_duration, flash_actual);
+          flash_->set_flash(shutter_duration, flash_strength_);
 
           // Enable trigger for flash.
           set_trigger(param_.flash_output, param_.flash_offset);
