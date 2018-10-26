@@ -318,18 +318,33 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
           const int limit_max = getMaxAutoShutterLimit();
           const int limit_min = getMinAutoShutterLimit();
 
-          if (limit > limit_max)
+          if ( limit > limit_max )
             {
               throw i3ds::CommandError(error_value, "Shutter limit longer than max " + std::to_string(limit_max));
             }
 
-          if (limit < limit_min)
+          if ( limit < limit_min )
             {
               throw i3ds::CommandError(error_value, "Shutter limit shorter than min " + std::to_string(limit_min));
             }
 
+          if ( limit > (period() / 2.) )
+	    {
+	      throw i3ds::CommandError(error_value, "Shutter limit longer than (period/2) " + std::to_string(period() / 2.) );
+	    }
+
           setAutoShutterLimit(limit);
           setAutoShutterEnabled(true);
+          if (flash_enabled_)
+	    {
+              /// \todo Is this a smart way of doing it?
+	      const int shutter_duration = (limit_max + limit_min) / 2.0;
+	      BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_strength_ << " requested.";
+	      BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << shutter_duration << "requested.";
+
+	      // Send flash command.
+	      flash_->set_flash(shutter_duration, flash_strength_);
+	    }
         }
 
       if (support_gain)
