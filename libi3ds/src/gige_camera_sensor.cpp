@@ -544,10 +544,11 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
       signal_lost_camera();
     }
 
-  catch(...)
+  catch (...)
   {
-      signal_lost_camera();
+    signal_lost_camera();
   }
+
 }
 
 void
