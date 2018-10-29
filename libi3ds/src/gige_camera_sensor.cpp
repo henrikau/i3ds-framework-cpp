@@ -295,14 +295,6 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
 
   try
     {
-      if (!command.request.enable)
-        {
-          setAutoShutterEnabled(false);
-          setAutoGainEnabled(false);
-
-          return;
-        }
-
       // Check that auto shutter or auto gain is supported.
       const bool support_shutter = isAutoShutterSupported();
       const bool support_gain = isAutoGainSupported();
@@ -311,6 +303,20 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
         {
           throw i3ds::CommandError(error_unsupported, "Auto exposure is not supported");
         }
+
+      if (!command.request.enable)
+	{
+	  if (support_gain)
+	    {
+	      setAutoGainEnabled(false);
+	    }
+	  if (support_shutter)
+	    {
+	      setAutoShutterEnabled(false);
+	    }
+          return;
+         }
+
 
       if (support_shutter)
         {
