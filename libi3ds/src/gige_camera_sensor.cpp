@@ -534,7 +534,8 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
 
   catch (i3ds::CommandError& e)
     {
-      BOOST_LOG_TRIVIAL(warning) << "CommandError catch";
+      // This is for rethrowing soft value errors etc such that it is not regarded as camera error.
+      BOOST_LOG_TRIVIAL(warning) <<  "Value exception in handle_flash: "+ std::string(e.what());
       throw;
     }
   catch (DeviceError& e)
