@@ -279,12 +279,10 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
       set_failure();
       throw CommandError(error_other, e.what());
     }
-   catch (...)
-     {
-       signal_lost_camera();
-     }
-
-
+  catch (...)
+    {
+      signal_lost_camera();
+    }
 }
 
 void
@@ -469,9 +467,9 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
       throw;
     }
   catch (DeviceError& e)
-     {
-       signal_lost_camera();
-     }
+    {
+      signal_lost_camera();
+    }
   catch (...)
     {
       signal_lost_camera();
@@ -599,7 +597,7 @@ i3ds::GigECamera::set_trigger(TriggerOutput channel, TriggerOffset offset)
     {
       trigger_->set_internal_channel(channel, param_.trigger_source, offset, 100, false);
     }
-  catch(Timeout& e)
+  catch (Timeout& e)
     {
       BOOST_LOG_TRIVIAL(warning) << "TIMEOUT for setting trigger";
       throw CommandError(error_other, "Timeout for setting trigger: " + std::string(e.what()));
