@@ -291,7 +291,7 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
 
   BOOST_LOG_TRIVIAL(info) << "handle_auto_exposure";
 
-  check_active();
+  check_standby();
 
   try
     {
