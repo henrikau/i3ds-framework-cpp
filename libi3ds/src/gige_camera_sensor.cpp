@@ -469,7 +469,7 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
   catch (i3ds::CommandError& e)
     {
       // This is for rethrowing soft value errors etc such that it is not regarded as camera error.
-      BOOST_LOG_TRIVIAL(error) <<  "Value exception in handle_auto_exposure: "+ std::string(e.what());
+      BOOST_LOG_TRIVIAL(warning) <<  "Value exception in handle_auto_exposure: "+ std::string(e.what());
       throw;
     }
   catch (DeviceError& e)
