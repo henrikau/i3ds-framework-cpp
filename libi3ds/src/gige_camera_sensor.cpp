@@ -106,7 +106,7 @@ i3ds::GigECamera::region() const
   PlanarRegion region;
 
   region.size_x   = (T_UInt16) getRegionWidth();
-  region.size_y   = (T_UInt16) getRegionHeight();
+  region.size_y   = (T_UInt16) getRegionHeight() / param_.image_count;
   region.offset_x = (T_UInt16) getRegionOffsetX();
   region.offset_y = (T_UInt16) getRegionOffsetY();
 
@@ -338,9 +338,9 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
 	    {
 	      throw i3ds::CommandError(error_value, "Shutter limit longer than (period/2) " + std::to_string(period() / 2.) );
 	    }
-
+	  setAutoShutterEnabled(true);
           setAutoShutterLimit(limit);
-          setAutoShutterEnabled(true);
+
           if (flash_enabled_)
 	    {
               /// \todo Is this a smart way of doing it?
@@ -369,8 +369,8 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
               throw i3ds::CommandError(error_value, "Gain limit smaller than min " + std::to_string(limit_min));
             }
 
-          setAutoGainLimit(limit);
           setAutoGainEnabled(true);
+          setAutoGainLimit(limit);
         }
     }
   catch (i3ds::CommandError& e)
@@ -632,6 +632,8 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
 
   Camera::FrameTopic::Codec::Initialize(frame);
 
+  int split_height = height / param_.image_count;
+
   // Set metadata of the frame.
   frame.descriptor.attributes.timestamp = get_timestamp();
   frame.descriptor.attributes.validity = sample_valid;
@@ -647,7 +649,7 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
   frame.descriptor.image_count = param_.image_count;
 
   // Check if region matches the image width and height.
-  if (((int) r.size_x == width) && ((int) r.size_y == (height / param_.image_count)))
+  if (((int) r.size_x == width) && ((int) r.size_y == split_height))
     {
       const size_t size = image_size(frame.descriptor);
 
@@ -665,7 +667,7 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
       // TODO: Send an empty frame with negative validity flag?
       BOOST_LOG_TRIVIAL(error) << "Error in image format going to be sent";
       BOOST_LOG_TRIVIAL(error) << "size check x: " << width << " " << r.size_x;
-      BOOST_LOG_TRIVIAL(error) << "size check y: " << height << " " << r.size_y;
+      BOOST_LOG_TRIVIAL(error) << "size check y: " << split_height << " " << r.size_y;
       BOOST_LOG_TRIVIAL(error) << "image count:  " << param_.image_count;
     }
 
