@@ -141,6 +141,8 @@ i3ds::GigECamera::do_start()
 {
   BOOST_LOG_TRIVIAL(info) << "do_start()";
 
+  check_standby();
+
   Start();
 
   if (param_.external_trigger)
