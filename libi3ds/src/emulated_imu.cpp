@@ -69,6 +69,7 @@ i3ds::EmulatedIMU::send_sample(unsigned long timestamp_us)
   frame_.attributes.timestamp = timestamp_us;
   frame_.attributes.validity = sample_valid;
 
+  frame_.batch_size = 1;
   frame_.samples.nCount = 1;
 
   frame_.samples.arr[0].axis_x_rate = 1.0;
