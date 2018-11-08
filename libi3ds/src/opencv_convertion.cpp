@@ -43,7 +43,7 @@ i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int 
   const int rows = region.size_y;
   const int cols = region.size_x;
 
- // int pixel_size = frame.pixel_size;
+// int pixel_size = frame.pixel_size;
 
   //int pixel_size = 1;
   //int data_depth = 1;
@@ -60,22 +60,22 @@ i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int 
 
 
 
- //  scaling_factor = pow(2,(8 * pixel_size - data_depth));
+//  scaling_factor = pow(2,(8 * pixel_size - data_depth));
 
-   cv::Mat mat(rows, cols, cv_type, (T_Float*)&distances.arr);
-   //std::cout << " pixel value [0,0]: "  << (T_Float)frame.distances.arr[0]  << std::endl;
-   //std::cout << " pixel value [0,0]: "  << (int)frame.validity.arr[0]  << std::endl;
+  cv::Mat mat(rows, cols, cv_type, (T_Float*)&distances.arr);
+  //std::cout << " pixel value [0,0]: "  << (T_Float)frame.distances.arr[0]  << std::endl;
+  //std::cout << " pixel value [0,0]: "  << (int)frame.validity.arr[0]  << std::endl;
 
-   mat *= 1./5.; //0.3
+  mat *= 1./5.; //0.3
 
 
   // cv::Mat mat(rows, cols, cv_type, (char*)frame.distances);
 
-   if (scaling_factor != 1)
-     {
-       mat *= scaling_factor;
-     }
-   return mat;
+  if (scaling_factor != 1)
+    {
+      mat *= scaling_factor;
+    }
+  return mat;
 }
 
 

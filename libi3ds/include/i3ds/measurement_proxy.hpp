@@ -25,8 +25,8 @@ public:
   static const int DEFAULT_PUBLISH_PORT;
   static const int DEFAULT_CONTROL_PORT;
 
-  MeasurementProxy(int subscribe_port = DEFAULT_SUBSCRIBE_PORT, 
-                   int publish_port = DEFAULT_PUBLISH_PORT, 
+  MeasurementProxy(int subscribe_port = DEFAULT_SUBSCRIBE_PORT,
+                   int publish_port = DEFAULT_PUBLISH_PORT,
                    int control_port = DEFAULT_CONTROL_PORT);
   virtual ~MeasurementProxy();
 

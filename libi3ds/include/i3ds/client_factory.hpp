@@ -29,7 +29,7 @@ public:
 
   ClientFactory(Context::Ptr context);
   virtual ~ClientFactory();
-  
+
   template<typename T>
   typename T::Ptr Create(NodeID node)
   {

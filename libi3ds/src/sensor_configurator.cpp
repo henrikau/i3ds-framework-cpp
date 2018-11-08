@@ -29,19 +29,19 @@ void
 i3ds::SensorConfigurator::add_common_options(po::options_description& desc)
 {
   desc.add_options()
-   ("help,h", "Produce this message")
-   ("node,n", po::value<NodeID>(&node_id)->required(), "Node ID")
+  ("help,h", "Produce this message")
+  ("node,n", po::value<NodeID>(&node_id)->required(), "Node ID")
 
-   ("activate", "Activate the sensor")
-   ("start", "Start the sensor")
-   ("stop", "Stop the sensor")
-   ("deactivate", "Deactivate the sensor")
+  ("activate", "Activate the sensor")
+  ("start", "Start the sensor")
+  ("stop", "Stop the sensor")
+  ("deactivate", "Deactivate the sensor")
 
-   ("period", po::value<SamplePeriod>(&period), "Sensor period in microseconds")
+  ("period", po::value<SamplePeriod>(&period), "Sensor period in microseconds")
 
-   ("verbose,v", "Print verbose output")
-   ("quiet,q", "Quiet output")
-   ;
+  ("verbose,v", "Print verbose output")
+  ("quiet,q", "Quiet output")
+  ;
 }
 
 po::variables_map

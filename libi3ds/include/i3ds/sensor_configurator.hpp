@@ -23,13 +23,13 @@ namespace i3ds
 class SensorConfigurator
 {
 private:
-  
+
 public:
   NodeID node_id;
   SamplePeriod period;
 
-  SensorConfigurator(){}
-  virtual ~SensorConfigurator(){}
+  SensorConfigurator() {}
+  virtual ~SensorConfigurator() {}
 
   void add_common_options(po::options_description& desc);
 

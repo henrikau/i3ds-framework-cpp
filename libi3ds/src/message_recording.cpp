@@ -47,9 +47,10 @@ i3ds::MessageRecord::load(std::ifstream &input_file)
   char type;
   uint32_t payloads;
   was_loaded = true;
-  if (input_file.eof()) {
-    throw i3ds::exceptions::end_of_file();
-  }
+  if (input_file.eof())
+    {
+      throw i3ds::exceptions::end_of_file();
+    }
   input_file.read((char *)&sync, sizeof(sync));
   BOOST_LOG_TRIVIAL(trace) << "Data start: " << sync;
   input_file.read(&type, 1);
@@ -67,23 +68,25 @@ i3ds::MessageRecord::load(std::ifstream &input_file)
   input_file.read((char*)&payloads, sizeof(uint32_t));
   BOOST_LOG_TRIVIAL(trace) << "Payloads: " << payloads;
 
-  if (input_file.eof()) {
-    throw i3ds::exceptions::end_of_file();
-  }
-
-  for (uint32_t i = 0; i < payloads; ++i)
-  {
-    if (input_file.eof()) {
+  if (input_file.eof())
+    {
       throw i3ds::exceptions::end_of_file();
     }
 
-    size_t msg_size;
-    input_file.read((char*)(&msg_size), sizeof(size_t));
-    // This should be free'd by the zmq message
-    byte* buffer = (byte*)malloc(msg_size);
-    input_file.read((char*)buffer, msg_size);
-    msg->append_payload(buffer, msg_size, false);
-  }
+  for (uint32_t i = 0; i < payloads; ++i)
+    {
+      if (input_file.eof())
+        {
+          throw i3ds::exceptions::end_of_file();
+        }
+
+      size_t msg_size;
+      input_file.read((char*)(&msg_size), sizeof(size_t));
+      // This should be free'd by the zmq message
+      byte* buffer = (byte*)malloc(msg_size);
+      input_file.read((char*)buffer, msg_size);
+      msg->append_payload(buffer, msg_size, false);
+    }
 }
 
 i3ds::SessionRecording::SessionRecording(std::string filename) :
@@ -109,9 +112,10 @@ i3ds::SessionRecording::store_header()
   hdr_file.write((char*)&end_time, sizeof(uint64_t));
   size_t node_id_size = node_ids.size();
   hdr_file.write((char*)&node_id_size, sizeof(size_t));
-  for (NodeID nid : node_ids) {
+  for (NodeID nid : node_ids)
+    {
       hdr_file.write((char*)&nid, sizeof(NodeID));
-  }
+    }
   hdr_file.write((char*)&endpoint_id_set, sizeof(bool));
   hdr_file.write((char*)&endpoint_id, sizeof(EndpointID));
   hdr_file.write((char*)&_message_count, sizeof(uint32_t));
@@ -122,10 +126,11 @@ i3ds::SessionReader::SessionReader(std::string filename) : input_file(filename, 
 {
   std::ifstream hdr_file(filename + ".hdr");
   endpoint_id_set = false;
-  if (!hdr_file.good()) {
-    _header_found = false;
-    return;
-  }
+  if (!hdr_file.good())
+    {
+      _header_found = false;
+      return;
+    }
   _header_found = true;
 
   //TODO: synchronize
@@ -140,9 +145,10 @@ i3ds::SessionReader::SessionReader(std::string filename) : input_file(filename, 
   hdr_file.read((char*)&end_time, sizeof(uint64_t));
   hdr_file.read((char*)&node_id_count, sizeof(node_id_count));
   node_ids.resize(node_id_count);
-  for (size_t i=0; i< node_id_count; i++) {
-    hdr_file.read((char*)&node_ids[i], sizeof(NodeID));
-  }
+  for (size_t i=0; i< node_id_count; i++)
+    {
+      hdr_file.read((char*)&node_ids[i], sizeof(NodeID));
+    }
   hdr_file.read((char*)&endpoint_id_set, sizeof(bool));
   hdr_file.read((char*)&endpoint_id, sizeof(EndpointID));
   hdr_file.read((char*)&_message_count, sizeof(uint32_t));
@@ -150,7 +156,8 @@ i3ds::SessionReader::SessionReader(std::string filename) : input_file(filename, 
   hdr_file.close();
 };
 
-i3ds::MessageRecord i3ds::SessionReader::get_message() {
+i3ds::MessageRecord i3ds::SessionReader::get_message()
+{
   i3ds::MessageRecord record;
   record.load(input_file);
   return record;
