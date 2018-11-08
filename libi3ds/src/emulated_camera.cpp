@@ -37,7 +37,7 @@ i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, Paramete
   sensor_.y = 0;
 
   region_.width = sensor_.width;
-  region_.height = sensor_.height / param.image_count;
+  region_.height = sensor_.height;
   region_.x = 0;
   region_.y = 0;
 
@@ -433,7 +433,7 @@ i3ds::EmulatedCamera::generate_sample(unsigned long timestamp_us)
                            << image.channels() << " chan, "
                            << image.depth() << " depth";
 
-  send_sample(image.data, region_.width, region_.height * param_.image_count);
+  send_sample(image.data, region_.width, region_.height);
 
   return true;
 }
