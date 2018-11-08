@@ -118,16 +118,16 @@ protected:
   const Parameters param_;
 
   // Sensor action when activated.
-  virtual void do_activate();
+  virtual void do_activate() override;
 
   // Sensor action when started.
-  virtual void do_start();
+  virtual void do_start() override;
 
   // Sensor action when activated.
-  virtual void do_stop();
+  virtual void do_stop() override ;
 
   // Sensor action when activated.
-  virtual void do_deactivate();
+  virtual void do_deactivate() override;
 
   // Camera control
   virtual void Open() = 0;
@@ -191,19 +191,19 @@ protected:
   virtual bool send_sample(const byte* image, int width, int height);
 
   // Handler for camera exposure command, must be overloaded.
-  virtual void handle_exposure(ExposureService::Data& command);
+  virtual void handle_exposure(ExposureService::Data& command) override;
 
   // Handler for camera auto exposure command.
-  virtual void handle_auto_exposure(AutoExposureService::Data& command);
+  virtual void handle_auto_exposure(AutoExposureService::Data& command) override;
 
   // Handler for camera region command.
-  virtual void handle_region(RegionService::Data& command);
+  virtual void handle_region(RegionService::Data& command) override;
 
   // Handler for camera flash command.
-  virtual void handle_flash(FlashService::Data& command);
+  virtual void handle_flash(FlashService::Data& command) override;
 
   // Handler for camera pattern command.
-  virtual void handle_pattern(PatternService::Data& command);
+  virtual void handle_pattern(PatternService::Data& command) override;
 
 private:
 
@@ -234,6 +234,8 @@ private:
   // Helper methods for setting and clearing triggers.
   void set_trigger(TriggerOutput channel, TriggerOffset offset);
   void clear_trigger(TriggerOutput channel);
+
+  void signal_lost_camera();
 };
 
 } // namespace i3ds

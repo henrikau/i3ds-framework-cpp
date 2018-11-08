@@ -30,7 +30,7 @@ public:
 
   // Shared pointer for star tracker interfaces.
   typedef std::shared_ptr<StarTracker> Ptr;
-  
+
   // Constructor and destructor.
   StarTracker(NodeID node) : Sensor(node) {};
   virtual ~StarTracker() {};

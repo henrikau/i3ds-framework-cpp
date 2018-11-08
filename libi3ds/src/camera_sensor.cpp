@@ -74,4 +74,10 @@ i3ds::Camera::handle_configuration(ConfigurationService::Data& config)
       set_failure();
       throw CommandError(error_other, e.what());
     }
+  catch (...)
+    {
+      /// \todo This forces it into failure state, but the first error message give wrong message on client side.
+      set_failure();
+      throw CommandError(error_other, "Probably lost connection with camera. Going to failure mode.");
+    }
 }

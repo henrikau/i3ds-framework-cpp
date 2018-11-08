@@ -40,6 +40,7 @@ int main(int argc, char** argv)
   unsigned int base_id;
   std::string sample_image_dir;
   std::vector<i3ds::Sensor::Ptr> sensors;
+  std::vector<i3ds::Node::Ptr> nodes;
 
   po::options_description desc("Allowed suite emulator options");
 
@@ -74,8 +75,10 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create context";
   i3ds::Context::Ptr context = i3ds::Context::Create();;
 
-  BOOST_LOG_TRIVIAL(trace) << "Create server";
-  i3ds::Server server(context);
+  // Need two servers due to nested service calls, one for sensors and one for trigger etc.
+  BOOST_LOG_TRIVIAL(trace) << "Create servers";
+  i3ds::Server server_1(context);
+  i3ds::Server server_2(context);
 
   BOOST_LOG_TRIVIAL(trace) << "Create factory";
   i3ds::EmulatorFactory factory(context, base_id);
@@ -112,22 +115,35 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create force/torque sensor";
   sensors.push_back(factory.CreateForceTorque());
 
+  BOOST_LOG_TRIVIAL(trace) << "Create trigger";
+  nodes.push_back(factory.CreateTrigger());
+
+  BOOST_LOG_TRIVIAL(trace) << "Create flash";
+  nodes.push_back(factory.CreateFlash());
+
   for (auto s : sensors)
     {
-      s->Attach(server);
+      s->Attach(server_1);
+    }
+
+  for (auto n : nodes)
+    {
+      n->Attach(server_2);
     }
 
   running = true;
   signal(SIGINT, signal_handler);
 
-  server.Start();
+  server_1.Start();
+  server_2.Start();
 
   while(running)
     {
       sleep(1);
     }
 
-  server.Stop();
+  server_1.Stop();
+  server_2.Stop();
 
   return 0;
 }

@@ -42,14 +42,15 @@
 
 namespace i3ds
 {
-namespace exceptions {
-  struct end_of_file : public std::exception
+namespace exceptions
+{
+struct end_of_file : public std::exception
+{
+  const char * what () const throw ()
   {
-    const char * what () const throw ()
-    {
-      return "End of file reached.";
-    }
-  };
+    return "End of file reached.";
+  }
+};
 } // namespace i3ds::exceptions
 
 const uint32_t I3DS_MESSAGE_START = 0x53443349; // hex('I3DS')
@@ -67,7 +68,8 @@ struct MessageRecord
   void store(std::ofstream &output_file);
   void load(std::ifstream &input_file);
 
-  NodeID node() {
+  NodeID node()
+  {
     return msg->node();
   }
 };
@@ -76,12 +78,14 @@ class SessionRecording
 {
 public:
   SessionRecording(std::string filename);
-  ~SessionRecording() {
+  ~SessionRecording()
+  {
     output_file.close();
   }
   void store(MessageRecord &record);
   void store_header();
-  uint32_t message_count() {
+  uint32_t message_count()
+  {
     return _message_count;
   }
   std::vector<NodeID> node_ids;
@@ -102,7 +106,8 @@ class SessionReader
 {
 public:
   SessionReader(std::string filename);
-  ~SessionReader() {
+  ~SessionReader()
+  {
     input_file.close();
   }
   MessageRecord get_message();
@@ -112,7 +117,8 @@ public:
   bool _header_found;
   uint64_t start_time;
   uint64_t end_time;
-  bool header_found() {
+  bool header_found()
+  {
     return _header_found;
   }
   EndpointID endpoint_id;

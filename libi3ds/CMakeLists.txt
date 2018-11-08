@@ -109,6 +109,8 @@ set (EMULATOR_SRCS
   src/emulated_imu.cpp
   src/emulated_radar.cpp
   src/emulated_analog.cpp
+  src/emulated_trigger.cpp
+  src/emulated_flash.cpp
   )
 
 set (CAMERA_EMULATOR_SRCS

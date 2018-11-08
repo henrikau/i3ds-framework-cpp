@@ -16,35 +16,34 @@
 
 namespace fs = boost::filesystem;
 
-i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, CameraProperties prop)
-  : Camera(node),
-    prop_(prop),
-    sampler_(std::bind(&i3ds::EmulatedCamera::send_sample, this, std::placeholders::_1)),
-    publisher_(context, node)
+i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, Parameters param)
+  : GigECamera(context, node, param),
+    sampler_(std::bind(&i3ds::EmulatedCamera::generate_sample, this, std::placeholders::_1))
 {
   BOOST_LOG_TRIVIAL(info) << "Create emulated camera with NodeID: " << node;
 
-  shutter_ = 0;
+  shutter_ = 1000;
   gain_ = 0.0;
 
-  auto_exposure_enabled_ = false;
-  max_shutter_ = 0;
-  max_gain_ = 0.0;
+  auto_shutter_enabled_ = false;
+  auto_shutter_limit_ = getMaxShutter();
 
-  region_.size_x = prop.width;
-  region_.size_y = prop.height;
-  region_.offset_x = 0;
-  region_.offset_y = 0;
+  auto_gain_enabled_ = false;
+  auto_gain_limit_ = getMaxGain();
 
-  flash_enabled_ = false;
-  flash_strength_ = 0.0;
+  sensor_.width = param.width;
+  sensor_.height = param.height;
+  sensor_.x = 0;
+  sensor_.y = 0;
 
-  pattern_enabled_ = false;
-  pattern_sequence_ = 0;
+  region_.width = sensor_.width;
+  region_.height = sensor_.height;
+  region_.x = 0;
+  region_.y = 0;
 
   set_device_name("Emulated camera");
 
-  load_images();
+  load_images(param.sample_dir);
 }
 
 i3ds::EmulatedCamera::~EmulatedCamera()
@@ -53,106 +52,324 @@ i3ds::EmulatedCamera::~EmulatedCamera()
 }
 
 void
-i3ds::EmulatedCamera::do_activate()
+i3ds::EmulatedCamera::Open()
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_activate()";
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID: " << node() << " Open()";
 }
 
 void
-i3ds::EmulatedCamera::do_start()
+i3ds::EmulatedCamera::Close()
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_start()";
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID: " << node() << " Close()";
+}
+
+void
+i3ds::EmulatedCamera::Start()
+{
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID: " << node() << " Start()";
   sampler_.Start(period());
 }
 
 void
-i3ds::EmulatedCamera::do_stop()
+i3ds::EmulatedCamera::Stop()
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_stop()";
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID: " << node() << " Stop()";
   sampler_.Stop();
 }
 
-void
-i3ds::EmulatedCamera::do_deactivate()
+bool
+i3ds::EmulatedCamera::setInternalTrigger(int64_t period_us)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_deactivate()";
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID: " << node() << " set internal trigger " << period_us;
+  return 20000 <= period_us && period_us <= 10000000;
+}
+
+int64_t
+i3ds::EmulatedCamera::getSensorWidth() const
+{
+  return sensor_.width;
+}
+
+int64_t
+i3ds::EmulatedCamera::getSensorHeight() const
+{
+  return sensor_.height;
 }
 
 bool
-i3ds::EmulatedCamera::is_sampling_supported(SampleCommand sample)
+i3ds::EmulatedCamera::isRegionSupported() const
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " is_period_supported()";
-  return sample.batch_size == 1 && (0 < sample.period && sample.period <= 10000000);
+  return param_.image_count == 1;
+}
+
+int64_t
+i3ds::EmulatedCamera::getRegionWidth() const
+{
+  return region_.width;
+}
+
+int64_t
+i3ds::EmulatedCamera::getRegionHeight() const
+{
+  return region_.height;
+}
+
+int64_t
+i3ds::EmulatedCamera::getRegionOffsetX() const
+{
+  return region_.x;
+}
+
+int64_t
+i3ds::EmulatedCamera::getRegionOffsetY() const
+{
+  return region_.y;
+}
+
+bool
+i3ds::EmulatedCamera::check_region() const
+{
+  return region_.x >= 0
+         && region_.y >= 0
+         && region_.x + region_.width <= sensor_.width
+         && region_.y + region_.height <= sensor_.height;
 }
 
 void
-i3ds::EmulatedCamera::handle_exposure(ExposureService::Data& command)
+i3ds::EmulatedCamera::setRegionWidth(int64_t width)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_exposure()";
-  auto_exposure_enabled_ = false;
-  shutter_ = command.request.shutter;
-  gain_ = command.request.gain;
-}
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID " << node() << ": set region width " << width;
 
-void
-i3ds::EmulatedCamera::handle_auto_exposure(AutoExposureService::Data& command)
-{
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_auto_exposure()";
-  auto_exposure_enabled_ = command.request.enable;
+  region_.width = width;
 
-  if (command.request.enable)
+  if (!check_region())
     {
-      max_shutter_ = command.request.max_shutter;
-      max_gain_ = command.request.max_gain;
+      BOOST_LOG_TRIVIAL(error) << "Invalid ROI after width " << sensor_ << " " << region_;
+      throw DeviceError("Invalid ROI after width");
     }
 }
 
 void
-i3ds::EmulatedCamera::handle_region(RegionService::Data& command)
+i3ds::EmulatedCamera::setRegionHeight(int64_t height)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_region()";
-  region_enabled_ = command.request.enable;
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID " << node() << ": set region height " << height;
 
-  if (command.request.enable)
+  region_.height = height;
+
+  if (!check_region())
     {
-      region_ = command.request.region;
+      throw DeviceError("Invalid ROI after height");
     }
 }
 
 void
-i3ds::EmulatedCamera::handle_flash(FlashService::Data& command)
+i3ds::EmulatedCamera::setRegionOffsetX(int64_t offset_x)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " handle_flash()";
-  flash_enabled_ = command.request.enable;
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID " << node() << ": set region offset x " << offset_x;
 
-  if (command.request.enable)
+  region_.x = offset_x;
+
+  if (!check_region())
     {
-      flash_strength_ = command.request.strength;
+      throw DeviceError("Invalid ROI");
     }
 }
 
 void
-i3ds::EmulatedCamera::handle_pattern(PatternService::Data& command)
+i3ds::EmulatedCamera::setRegionOffsetY(int64_t offset_y)
 {
-  BOOST_LOG_TRIVIAL(info) << "Emulated camera with NodeID: " << node() << " do_pattern()";
-  pattern_enabled_ = command.request.enable;
+  BOOST_LOG_TRIVIAL(trace) << "Emulated camera with NodeID " << node() << ": set region offset y " << offset_y;
 
-  if (command.request.enable)
+  region_.y = offset_y;
+
+  if (!check_region())
     {
-      pattern_sequence_ = command.request.sequence;
+      throw DeviceError("Invalid ROI");
     }
 }
 
-void
-i3ds::EmulatedCamera::load_images()
+int64_t
+i3ds::EmulatedCamera::getShutter() const
 {
-  if (prop_.sample_dir.size() > 0)
+  return shutter_;
+}
+
+int64_t
+i3ds::EmulatedCamera::getMaxShutter() const
+{
+  return 10000000;
+}
+
+int64_t
+i3ds::EmulatedCamera::getMinShutter() const
+{
+  return 10;
+}
+
+void
+i3ds::EmulatedCamera::setShutter(int64_t shutter_us)
+{
+  if (shutter_us < getMinShutter())
+    {
+      throw DeviceError("Too short shutter");
+    }
+
+  if (shutter_us > getMaxShutter())
+    {
+      throw DeviceError("Too long shutter");
+    }
+
+  shutter_ = shutter_us;
+}
+
+bool
+i3ds::EmulatedCamera::isAutoShutterSupported() const
+{
+  return true;
+}
+
+bool
+i3ds::EmulatedCamera::getAutoShutterEnabled() const
+{
+  return auto_shutter_enabled_;
+}
+
+void
+i3ds::EmulatedCamera::setAutoShutterEnabled(bool enable)
+{
+  auto_shutter_enabled_ = enable;
+}
+
+int64_t
+i3ds::EmulatedCamera::getAutoShutterLimit() const
+{
+  return auto_shutter_limit_;
+}
+
+int64_t
+i3ds::EmulatedCamera::getMaxAutoShutterLimit() const
+{
+  return getMaxShutter();
+}
+
+int64_t
+i3ds::EmulatedCamera::getMinAutoShutterLimit() const
+{
+  return getMinShutter();
+}
+
+void
+i3ds::EmulatedCamera::setAutoShutterLimit(int64_t shutter_limit)
+{
+  if (shutter_limit < getMinAutoShutterLimit())
+    {
+      throw DeviceError("Too short shutter limit");
+    }
+
+  if (shutter_limit > getMaxAutoShutterLimit())
+    {
+      throw DeviceError("Too long shutter limit");
+    }
+
+  auto_shutter_limit_ = shutter_limit;
+}
+
+double
+i3ds::EmulatedCamera::getGain() const
+{
+  return gain_;
+}
+
+double
+i3ds::EmulatedCamera::getMaxGain() const
+{
+  return 30.0;
+}
+
+double
+i3ds::EmulatedCamera::getMinGain() const
+{
+  return 0.0;
+}
+
+void
+i3ds::EmulatedCamera::setGain(double gain)
+{
+  if (gain < getMinGain())
+    {
+      throw DeviceError("Too low gain");
+    }
+
+  if (gain > getMaxGain())
+    {
+      throw DeviceError("Too high gain");
+    }
+
+  gain_ = gain;
+}
+
+bool
+i3ds::EmulatedCamera::isAutoGainSupported() const
+{
+  return true;
+}
+
+bool
+i3ds::EmulatedCamera::getAutoGainEnabled() const
+{
+  return auto_gain_enabled_;
+}
+
+void
+i3ds::EmulatedCamera::setAutoGainEnabled(bool enable)
+{
+  auto_gain_enabled_ = enable;
+}
+
+double
+i3ds::EmulatedCamera::getAutoGainLimit() const
+{
+  return auto_gain_limit_;
+}
+
+double
+i3ds::EmulatedCamera::getMaxAutoGainLimit() const
+{
+  return getMaxGain();
+}
+
+double
+i3ds::EmulatedCamera::getMinAutoGainLimit() const
+{
+  return getMinGain();
+}
+
+void
+i3ds::EmulatedCamera::setAutoGainLimit(double gain_limit)
+{
+  if (gain_limit < getMinAutoGainLimit())
+    {
+      throw DeviceError("Too low gain limit");
+    }
+
+  if (gain_limit > getMaxAutoGainLimit())
+    {
+      throw DeviceError("Too high gain limit");
+    }
+
+  auto_gain_limit_ = gain_limit;
+}
+
+void
+i3ds::EmulatedCamera::load_images(std::string sample_dir)
+{
+  if (sample_dir.size() > 0)
     {
       try
         {
           std::vector<std::string> file_names;
           fs::path full_path( fs::initial_path<fs::path>() );
-          full_path = fs::system_complete(fs::path(prop_.sample_dir));
+          full_path = fs::system_complete(fs::path(sample_dir));
 
           if (fs::exists(full_path) && fs::is_directory(full_path))
             {
@@ -187,52 +404,36 @@ i3ds::EmulatedCamera::load_images()
 
       for (int i = 0; i < 10; i++)
         {
-          cv::Mat img(prop_.height, prop_.width, CV_16UC1, cv::Scalar(0));
+          cv::Mat img(getSensorHeight(), getSensorWidth(), CV_16UC1, cv::Scalar(0));
 
-          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << 16) - 1));
+          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << param_.data_depth) - 1));
 
           sample_images_.push_back(img);
         }
     }
 }
 
-cv::Mat
-i3ds::EmulatedCamera::next_image()
+bool
+i3ds::EmulatedCamera::generate_sample(unsigned long timestamp_us)
 {
+  // Get sample image from index.
   if (++current_image_index_ >= sample_images_.size())
     {
       current_image_index_ = 0;
     }
 
-  return sample_images_[current_image_index_];
-}
+  cv::Mat& full_image = sample_images_[current_image_index_];
 
-bool
-i3ds::EmulatedCamera::send_sample(unsigned long timestamp_us)
-{
-  FrameTopic::Data frame;
-  FrameTopic::Initialize(frame);
-  cv::Mat current_image = next_image();
-
-  set_descriptor_from_mat(frame, current_image, timestamp_us, mode_mono, prop_.image_count);
+  // Take ROI of image.
+  cv::Mat image = full_image(region_);
 
   BOOST_LOG_TRIVIAL(trace) << "Image: "
-                           << current_image.cols << " cols, "
-                           << current_image.rows << " rows, "
-                           << current_image.channels() << " chan, "
-                           << current_image.depth() << " depth";
+                           << image.cols << " cols, "
+                           << image.rows << " rows, "
+                           << image.channels() << " chan, "
+                           << image.depth() << " depth";
 
-  for (int i = 0; i < prop_.image_count; i++)
-    {
-      add_image_data(frame, current_image);
-    }
-
-  BOOST_LOG_TRIVIAL(trace) << timestamp_us
-                           << ": Send frame with "
-                           << frame.images() << " images of "
-                           << image_size(frame.descriptor) / 1024.0 << " KiB";
-
-  publisher_.Send<FrameTopic>(frame);
+  send_sample(image.data, region_.width, region_.height);
 
   return true;
 }

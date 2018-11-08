@@ -13,6 +13,7 @@
 
 #include <i3ds/Flash.h>
 
+#include <i3ds/node.hpp>
 #include <i3ds/server.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
@@ -22,7 +23,7 @@ namespace i3ds
 
 CODEC(FlashSetup);
 
-class Flash
+class Flash : public Node
 {
 public:
 
@@ -33,13 +34,10 @@ public:
   typedef Command<1, FlashSetupCodec> FlashService;
 
   // Constructor for flash.
-  Flash(NodeID node) : node_(node) {};
+  Flash(NodeID node) : Node(node) {};
 
   // Destructor for flash.
   virtual ~Flash() {};
-
-  // Get the node ID.
-  inline NodeID node() const {return node_;}
 
   // Attach handlers to the server.
   virtual void Attach(Server& server);
@@ -48,10 +46,6 @@ protected:
 
   // Handler for flash setup command, must be overloaded.
   virtual void handle_flash(FlashService::Data& command) = 0;
-
-private:
-
-  NodeID node_;
 };
 
 } // namespace i3ds

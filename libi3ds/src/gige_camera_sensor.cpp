@@ -18,6 +18,7 @@
 #include <boost/log/expressions.hpp>
 
 #include <cmath>
+#include <sstream>
 
 namespace logging = boost::log;
 
@@ -76,13 +77,13 @@ i3ds::GigECamera::auto_exposure_enabled() const
 ShutterTime
 i3ds::GigECamera::max_shutter() const
 {
-  return (ShutterTime) getMaxAutoShutterLimit();
+  return (ShutterTime) getAutoShutterLimit();
 }
 
 SensorGain
 i3ds::GigECamera::max_gain() const
 {
-  return (SensorGain) getMaxAutoGainLimit();
+  return (SensorGain) getAutoGainLimit();
 }
 
 bool
@@ -113,10 +114,21 @@ i3ds::GigECamera::region() const
 }
 
 void
+i3ds::GigECamera::signal_lost_camera()
+{
+  // Called when connection to camera is supected lost.
+  const std::string error_string = "Probably lost connection with camera. Going to failure mode.";
+
+  BOOST_LOG_TRIVIAL(error) <<  error_string;
+  set_failure();
+
+  throw CommandError(error_other, error_string);
+}
+
+void
 i3ds::GigECamera::do_activate()
 {
   BOOST_LOG_TRIVIAL(info) << "do_activate()";
-
 
   if (param_.external_trigger)
     {
@@ -171,16 +183,31 @@ bool
 i3ds::GigECamera::is_sampling_supported(SampleCommand sample)
 {
   BOOST_LOG_TRIVIAL(info) << "is_rate_supported() " << sample.period;
+  try
+    {
+      if (param_.external_trigger)
+        {
+          // Minimal period 50 ms (= 20 Hz) and maximal 16.7 seconds for external trigger.
+          return 50000 <= sample.period && sample.period <= 16777215;
+        }
+      else
+        {
+          return setInternalTrigger(sample.period);
+        }
+    }
+  catch (i3ds::CommandError& e)
+    {
+      // This is for rethrowing out of range values etc. found by software.
+      BOOST_LOG_TRIVIAL(warning) <<  "Value exception in is_sampling_supported(): " + std::string(e.what());
+      throw;
+    }
+  catch (...)
+    {
+      // Catch unknown exceptions thrown by device interface.
+      signal_lost_camera();
+    }
 
-  if (param_.external_trigger)
-    {
-      // Minimal period 50 ms (= 20 Hz) and maximal 16.7 seconds for external trigger.
-      return 50000 <= sample.period && sample.period <= 16777215;
-    }
-  else
-    {
-      return setInternalTrigger(sample.period);
-    }
+  return false; // To remove compiler warning. Never executed.
 }
 
 void
@@ -190,62 +217,73 @@ i3ds::GigECamera::handle_exposure(ExposureService::Data& command)
 
   check_active();
 
-  // Cannot set manual exposure when auto exposure is enabled.
-  if (auto_exposure_enabled())
-    {
-      throw i3ds::CommandError(error_value, "In auto-exposure mode");
-    }
-
-  // Check that shutter is within limits.
-  const int shutter = command.request.shutter;
-  const int shutter_max = getMaxShutter();
-  const int64_t shutter_min = getMinShutter();
-
-  if (shutter > (int64_t) period())
-    {
-      throw i3ds::CommandError(error_value, "Shutter time longer than period!");
-    }
-
-  if (shutter > shutter_max)
-    {
-      throw i3ds::CommandError(error_value, "Shutter time longer than max " + std::to_string(shutter_max));
-    }
-
-  if (shutter < shutter_min)
-    {
-      throw i3ds::CommandError(error_value, "Shutter time shorter than min " + std::to_string(shutter_min));
-    }
-
-  // Check that gain is within limits.
-  const double gain = command.request.gain;
-  const double gain_max = getMaxGain();
-  const double gain_min = getMinGain();
-
-  if (gain > gain_max)
-    {
-      throw i3ds::CommandError(error_value, "Gain higher than " + std::to_string(gain_max));
-    }
-
-  if (gain < gain_min)
-    {
-      throw i3ds::CommandError(error_value, "Gain lower than " + std::to_string(gain_min));
-    }
-
-  // Update gain and shutter.
   try
     {
+      // Cannot set manual exposure when auto exposure is enabled.
+      if (auto_exposure_enabled())
+        {
+          throw i3ds::CommandError(error_value, "In auto-exposure mode");
+        }
+
+      // Check that shutter is within limits.
+      const int shutter = command.request.shutter;
+      const int shutter_max = getMaxShutter();
+      const int64_t shutter_min = getMinShutter();
+
+      if (shutter > (int64_t) period())
+        {
+          throw i3ds::CommandError(error_value, "Shutter time longer than period: " + std::to_string(period()) );
+        }
+
+      if (shutter > shutter_max)
+        {
+          throw i3ds::CommandError(error_value, "Shutter time longer than max " + std::to_string(shutter_max));
+        }
+
+      if (shutter < shutter_min)
+        {
+          throw i3ds::CommandError(error_value, "Shutter time shorter than min " + std::to_string(shutter_min));
+        }
+
+      // Check that gain is within limits.
+      const double gain = command.request.gain;
+      const double gain_max = getMaxGain();
+      const double gain_min = getMinGain();
+
+      if (gain > gain_max)
+        {
+          throw i3ds::CommandError(error_value, "Gain higher than max value: " + std::to_string(gain_max));
+        }
+
+      if (gain < gain_min)
+        {
+          throw i3ds::CommandError(error_value, "Gain lower than min value: " + std::to_string(gain_min));
+        }
+
+      // Update gain and shutter.
       setShutter(shutter);
       setGain(gain);
-    }
-  catch (std::exception& e)
-    {
-      BOOST_LOG_TRIVIAL(warning) << e.what();
-    }
 
-  // Update flash duration corresponding to shutter if enabled.
-  if (flash_enabled_)
+      // Update flash duration corresponding to shutter if enabled.
+      if (flash_enabled_)
+        {
+          flash_->set_flash(shutter, flash_strength_);
+        }
+    }
+  catch (CommandError& e)
     {
-      flash_->set_flash(shutter, flash_strength_);
+      // This is for rethrowing out of range values found by software etc.
+      BOOST_LOG_TRIVIAL(error) <<  "Value exception in handle_exposure: "+ std::string(e.what());
+      throw;
+    }
+  catch (DeviceError& e)
+    {
+      set_failure();
+      throw CommandError(error_other, e.what());
+    }
+  catch (...)
+    {
+      signal_lost_camera();
     }
 }
 
@@ -255,18 +293,10 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
 
   BOOST_LOG_TRIVIAL(info) << "handle_auto_exposure";
 
-  check_active();
+  check_standby();
 
   try
     {
-      if (!command.request.enable)
-        {
-          setAutoShutterEnabled(false);
-          setAutoGainEnabled(false);
-
-          return;
-        }
-
       // Check that auto shutter or auto gain is supported.
       const bool support_shutter = isAutoShutterSupported();
       const bool support_gain = isAutoGainSupported();
@@ -274,6 +304,21 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
       if (!(support_shutter || support_gain))
         {
           throw i3ds::CommandError(error_unsupported, "Auto exposure is not supported");
+        }
+
+      if (!command.request.enable)
+        {
+          if (support_gain)
+            {
+              setAutoGainEnabled(false);
+            }
+
+          if (support_shutter)
+            {
+              setAutoShutterEnabled(false);
+            }
+
+          return;
         }
 
       if (support_shutter)
@@ -292,8 +337,24 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
               throw i3ds::CommandError(error_value, "Shutter limit shorter than min " + std::to_string(limit_min));
             }
 
+          if (limit > (period() / 2.0))
+            {
+              throw i3ds::CommandError(error_value, "Shutter limit longer than (period/2) " + std::to_string(period() / 2.) );
+            }
+
           setAutoShutterEnabled(true);
           setAutoShutterLimit(limit);
+
+          if (flash_enabled_)
+            {
+              // TODO: Is this a smart way of doing it?
+              const int shutter_duration = (limit_max + limit_min) / 2.0;
+              BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_strength_ << " requested.";
+              BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << shutter_duration << "requested.";
+
+              // Send flash command.
+              flash_->set_flash(shutter_duration, flash_strength_);
+            }
         }
 
       if (support_gain)
@@ -316,10 +377,20 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
           setAutoGainLimit(limit);
         }
     }
+  catch (i3ds::CommandError& e)
+    {
+      // This is for rethrowing wrong values such that catch(...) does not get it. .
+      BOOST_LOG_TRIVIAL(error) <<  "Value exception in handle_auto_exposure: " << e.what();
+      throw;
+    }
   catch (DeviceError& e)
     {
       set_failure();
       throw CommandError(error_other, e.what());
+    }
+  catch (...)
+    {
+      signal_lost_camera();
     }
 }
 
@@ -330,28 +401,41 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
 
   check_standby();
 
+  if (!isRegionSupported())
+    {
+      throw CommandError(error_unsupported, "ROI not supported for camera");
+    }
+
   try
     {
       if (command.request.enable)
         {
-          BOOST_LOG_TRIVIAL(info) << "handle_region()";
-
           const int sx = command.request.region.size_x;
           const int sy = command.request.region.size_y;
           const int ox = command.request.region.offset_x;
           const int oy = command.request.region.offset_y;
 
+          BOOST_LOG_TRIVIAL(trace) << "Enable region: " << sx << " " << sy << " " << ox << " " << oy;
+
           if ((sx + ox) > getSensorWidth())
             {
-              throw i3ds::CommandError(error_value, std::string("Region width and offset outside sensor width for camera"));
+              std::stringstream ss;
+
+              ss << "Region width + offset larger than sensor width: (" <<  sx << "+" << ox << ") > " << getSensorWidth();
+
+              throw i3ds::CommandError(error_value, ss.str());
             }
 
           if ((sy + oy) > getSensorHeight())
             {
-              throw i3ds::CommandError(error_value, std::string("Region height and offset outside sensor height for camera"));
+              std::stringstream ss;
+
+              ss << "Region height + offset larger than sensor height: (" <<  sy << "+" << oy << ") > " << getSensorHeight();
+
+              throw i3ds::CommandError(error_value, ss.str());
             }
 
-          // Have to do resizing in correct order.(Reduse parameter first, increase later)
+          // Do resize in correct order
           if (sx > getRegionWidth())
             {
               setRegionOffsetX(ox);
@@ -376,16 +460,27 @@ i3ds::GigECamera::handle_region(RegionService::Data& command)
         }
       else
         {
+          BOOST_LOG_TRIVIAL(trace) << "Disable region";
+
           setRegionOffsetX(0);
           setRegionOffsetY(0);
           setRegionWidth(getSensorWidth());
           setRegionHeight(getSensorHeight());
         }
     }
+  catch (i3ds::CommandError& e)
+    {
+      // This is for rethrowing soft value errors etc such that it is not regarded as camera error.
+      BOOST_LOG_TRIVIAL(warning) <<  "Value exception in handle_region: " << e.what();
+      throw;
+    }
   catch (DeviceError& e)
     {
-      set_failure();
-      throw CommandError(error_other, e.what());
+      signal_lost_camera();
+    }
+  catch (...)
+    {
+      signal_lost_camera();
     }
 }
 
@@ -400,7 +495,7 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
     {
       if (!param_.support_flash)
         {
-          throw i3ds::CommandError(error_unsupported, "Flash not supported");
+          throw i3ds::CommandError(error_unsupported, "Flash not supported without starting camera in triggered mode");
         }
 
       flash_enabled_ = command.request.enable;
@@ -420,52 +515,40 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
               shutter_duration = getShutter();
             }
 
-          ShutterTime flash_duration = shutter_duration;
-          if (flash_duration > 3000)
-            {
-              flash_duration = 3000;
-            }
-
-          unsigned int max_strength = 0;
-
-          if (flash_duration > 2000)
-            {
-              max_strength = 20;
-            }
-          else if (flash_duration > 1000)
-            {
-              max_strength = 50;
-            }
-          else
-            {
-              max_strength = 100;
-            }
-
-          FlashStrength flash_actual = flash_strength_;
-          if (flash_actual > max_strength)
-            {
-              flash_actual = max_strength;
-            }
-
-          // This is a possible other interpretation of the parameter:
-          //   FlashStrength flash_actual = max_strength * flash_strength / 100;
-
-          BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_actual << " (" << flash_strength_ << " requested)";
-          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << flash_duration << " us (shutter is " << shutter_duration << ")";
-
+          BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_strength_ << " requested.";
+          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << shutter_duration << "requested.";
 
           // Send flash command.
-          flash_->set_flash(flash_duration, flash_actual);
+          flash_->set_flash(shutter_duration, flash_strength_);
 
           // Enable trigger for flash.
           set_trigger(param_.flash_output, param_.flash_offset);
         }
+      else
+        {
+          // Disable flash.
+          flash_strength_ = 0;
+
+          // Clear trigger for flash.
+          clear_trigger(param_.flash_output);
+        }
+    }
+  catch (i3ds::CommandError& e)
+    {
+      // This is for rethrowing soft value errors etc such that it is not regarded as camera error.
+      BOOST_LOG_TRIVIAL(warning) <<  "Value exception in handle_flash: " << e.what();
+      throw;
     }
   catch (DeviceError& e)
     {
-      set_failure();
-      throw CommandError(error_other, e.what());
+      BOOST_LOG_TRIVIAL(warning) << "DeviceError catch";
+      signal_lost_camera();
     }
+  catch (...)
+    {
+      signal_lost_camera();
+    }
+
 }
 
 void
@@ -473,51 +556,61 @@ i3ds::GigECamera::handle_pattern(PatternService::Data& command)
 {
   BOOST_LOG_TRIVIAL(info) << "handle_pattern()";
 
+  if(!param_.support_pattern)
+    {
+      throw i3ds::CommandError(error_unsupported, "Pattern not activated when started camera server");
+    }
+
   check_standby();
 
-  try
+  if (!trigger_)
     {
-      if (!trigger_)
-        {
-          throw i3ds::CommandError(error_other, "Pattern not supported in free-running mode");
-        }
-
-      pattern_enabled_ = command.request.enable;
-
-      if (command.request.enable)
-        {
-          // Only support one pattern sequence, not controllable as of now.
-          if (command.request.sequence != 1)
-            {
-              throw i3ds::CommandError(error_value, "Unsupported pattern sequence");
-            }
-
-          pattern_sequence_ = command.request.sequence;
-
-          // Enable trigger for flash.
-          set_trigger(param_.pattern_output, param_.pattern_offset);
-        }
-      else
-        {
-          // Reset pattern sequence to disabled.
-          pattern_sequence_ = 0;
-
-          // Clear trigger, not enabled when operational.
-          clear_trigger(param_.pattern_output);
-        }
+      throw i3ds::CommandError(error_unsupported, "Pattern only supported in triggered mode");
     }
-  catch (DeviceError& e)
+
+  pattern_enabled_ = command.request.enable;
+
+  if (command.request.enable)
     {
-      set_failure();
-      throw CommandError(error_other, e.what());
+      // Only support one pattern sequence, not controllable as of now.
+      if (command.request.sequence != 1)
+        {
+          throw i3ds::CommandError(error_value, "Unsupported pattern sequence");
+        }
+
+      pattern_sequence_ = command.request.sequence;
+
+      // Enable trigger for pattern projector.
+      set_trigger(param_.pattern_output, param_.pattern_offset);
+    }
+  else
+    {
+      // Reset pattern sequence to disabled.
+      pattern_sequence_ = 0;
+
+      // Clear trigger, not enabled when operational.
+      clear_trigger(param_.pattern_output);
     }
 }
 
 void
 i3ds::GigECamera::set_trigger(TriggerOutput channel, TriggerOffset offset)
 {
+  BOOST_LOG_TRIVIAL(trace) << "Set trigger " << channel << " offset " << offset;
+
   // Set the channel to fire at offset with 100 us pulse.
-  trigger_->set_internal_channel(channel, param_.trigger_source, offset, 100, false);
+  try
+    {
+      trigger_->set_internal_channel(channel, param_.trigger_source, offset, 100, false);
+    }
+  catch (Timeout& e)
+    {
+      const std::string error = "TIMEOUT for setting trigger";
+
+      BOOST_LOG_TRIVIAL(error) << error;
+
+      throw CommandError(error_other, error);
+    }
 
   // Enable the trigger on do_start.
   trigger_outputs_.insert(channel);
@@ -568,6 +661,8 @@ i3ds::GigECamera::send_sample(const byte* image, int width, int height)
         }
 
       publisher_.Send<Camera::FrameTopic>(frame);
+
+      BOOST_LOG_TRIVIAL(trace) << "Send frame OK";
     }
   else
     {
