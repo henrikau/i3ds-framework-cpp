@@ -188,9 +188,13 @@ public:
   ToFCameraClient(Context::Ptr context, NodeID sensor);
 
   void set_region(bool enable, PlanarRegion region);
+  void set_range(double min_depth, double max_depth);
 
   bool region_enabled() const;
   PlanarRegion region() const;
+
+  double min_depth() const;
+  double max_depth() const;
 
   virtual void load_config();
 };
