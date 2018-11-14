@@ -18,12 +18,15 @@ set (LIBS
 
 set (APPS
   i3ds_suite_emulator
-  i3ds_camera_emulator
   i3ds_trigger_emulator
   i3ds_flash_emulator
   i3ds_address_server
   i3ds_measurement_proxy
   )
+
+if (OpenCV_FOUND)
+    set (APPS ${APPS} i3ds_camera_emulator)
+endif()
 
 foreach(a ${APPS})
   add_executable (${a} ${a}.cpp ${SRCS})
