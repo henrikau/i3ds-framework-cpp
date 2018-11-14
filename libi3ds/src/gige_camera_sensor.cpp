@@ -35,6 +35,8 @@ i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param
 
   if (param_.external_trigger)
     {
+      BOOST_LOG_TRIVIAL(info) << "Using external trigger service with node ID: " << param_.trigger_node;
+
       // Create trigger client.
       trigger_ = std::make_shared<i3ds::TriggerClient>(context, param_.trigger_node);
 
@@ -44,6 +46,8 @@ i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param
 
   if (param_.support_flash)
     {
+      BOOST_LOG_TRIVIAL(info) << "Using flash service with node ID: " << param_.flash_node;
+
       // Create flash client.
       flash_ = std::make_shared<i3ds::FlashClient>(context, param_.flash_node);
 
@@ -349,11 +353,14 @@ i3ds::GigECamera::handle_auto_exposure(AutoExposureService::Data& command)
             {
               // TODO: Is this a smart way of doing it?
               const int shutter_duration = (limit_max + limit_min) / 2.0;
-              BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_strength_ << " requested.";
-              BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << shutter_duration << "requested.";
+
+              BOOST_LOG_TRIVIAL(trace) << "Setting flash strength to " << flash_strength_;
+              BOOST_LOG_TRIVIAL(trace) << "Setting flash duration to " << shutter_duration;
 
               // Send flash command.
               flash_->set_flash(shutter_duration, flash_strength_);
+
+	      BOOST_LOG_TRIVIAL(trace) << "Setting flash OK";
             }
         }
 
@@ -515,11 +522,13 @@ i3ds::GigECamera::handle_flash(FlashService::Data& command)
               shutter_duration = getShutter();
             }
 
-          BOOST_LOG_TRIVIAL(info) << "Setting flash strength to " << flash_strength_ << " requested.";
-          BOOST_LOG_TRIVIAL(info) << "Setting flash duration to " << shutter_duration << "requested.";
+          BOOST_LOG_TRIVIAL(trace) << "Setting flash strength to " << flash_strength_;
+          BOOST_LOG_TRIVIAL(trace) << "Setting flash duration to " << shutter_duration;
 
           // Send flash command.
           flash_->set_flash(shutter_duration, flash_strength_);
+
+	  BOOST_LOG_TRIVIAL(trace) << "Setting flash OK";
 
           // Enable trigger for flash.
           set_trigger(param_.flash_output, param_.flash_offset);

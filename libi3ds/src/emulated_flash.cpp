@@ -29,4 +29,6 @@ i3ds::EmulatedFlash::handle_flash(FlashService::Data& command)
 {
   strength_ = command.request.strength;
   duration_ = command.request.duration;
+
+  BOOST_LOG_TRIVIAL(info) << "Flash strength = " << strength_ << " duration = " << duration_;
 }
