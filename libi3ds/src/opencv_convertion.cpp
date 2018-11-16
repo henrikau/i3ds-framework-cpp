@@ -47,7 +47,7 @@ i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int 
 
   cv::Mat res;
 
-  raw.convertTo(res, CV_16U, 65536 / max);
+  raw.convertTo(res, CV_16U, 65535 / max);
 
   return res;
 }
