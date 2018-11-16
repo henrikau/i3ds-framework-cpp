@@ -39,12 +39,17 @@ i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int 
   const int rows = frame.region.size_y;
   const int cols = frame.region.size_x;
 
-  cv::Mat mat(rows, cols, CV_64FC1, (double*) &frame.distances);
+  cv::Mat raw(rows, cols, CV_64FC1, (double*) &frame.distances);
 
   double max, min;
-  cv::minMaxLoc(mat, &min, &max);
 
-  return mat / max;
+  cv::minMaxLoc(raw, &min, &max);
+
+  cv::Mat res;
+
+  raw.convertTo(res, CV_16U, 65536 / max);
+
+  return res;
 }
 
 
