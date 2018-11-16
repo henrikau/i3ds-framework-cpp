@@ -40,8 +40,8 @@ i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param
       // Create trigger client.
       trigger_ = std::make_shared<i3ds::TriggerClient>(context, param_.trigger_node);
 
-      // Only wait 100 ms for trigger service.
-      trigger_->set_timeout(100);
+      // Wait up to 500 ms for trigger service.
+      trigger_->set_timeout(500);
     }
 
   if (param_.support_flash)
@@ -51,8 +51,8 @@ i3ds::GigECamera::GigECamera(Context::Ptr context, NodeID node, Parameters param
       // Create flash client.
       flash_ = std::make_shared<i3ds::FlashClient>(context, param_.flash_node);
 
-      // Only wait 100 ms for flash service.
-      flash_->set_timeout(100);
+      // Wait up to 500 ms for flash service.
+      flash_->set_timeout(500);
     }
 }
 
