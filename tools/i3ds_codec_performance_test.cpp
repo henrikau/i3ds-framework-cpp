@@ -228,7 +228,7 @@ main(int argc, char *argv[])
 
   lidar_test<i3ds::LIDARMeasurement750KCodec>(n_replications, 200000);
   radar_test<i3ds::RadarMeasurement400KCodec>(n_replications, 400000);
-  analog_test<i3ds::AnalogMeasurement1KCodec>(n_replications, 10000);
+  analog_test<i3ds::AnalogMeasurement1KCodec>(n_replications, 1000);
 
   return 0;
 }
