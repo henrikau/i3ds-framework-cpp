@@ -50,7 +50,6 @@ private:
   struct MessageRecord
   {
     unsigned int node_id;
-    unsigned int message_size;
     long long sent_time;
     long long received_time;
     long long delay;
@@ -62,7 +61,7 @@ private:
   {
     long long current_time_as_int = i3ds::get_timestamp();
     long long delay = current_time_as_int - message.attributes.timestamp;
-    records.push_back({node_id_,T::Codec::max_size, message.attributes.timestamp,
+    records.push_back({node_id_, message.attributes.timestamp,
                        current_time_as_int, delay
                       });
     BOOST_LOG_TRIVIAL(trace) << "Received message at " << current_time_as_int;
@@ -73,7 +72,7 @@ private:
   {
     long long current_time_as_int = i3ds::get_timestamp();
     long long delay = current_time_as_int - message.descriptor.attributes.timestamp;
-    records.push_back({node_id_,i3ds::FrameCodec::max_size, message.descriptor.attributes.timestamp,
+    records.push_back({node_id_, message.descriptor.attributes.timestamp,
                        current_time_as_int, delay
                       });
     BOOST_LOG_TRIVIAL(trace) << "Received message at " << current_time_as_int;
@@ -117,7 +116,7 @@ public:
       }
 
     output_file_ <<
-                 "#Node ID,data size[byte],sent timestamp[microsecond],received timestamp[microsecond],delay[microsecond]" << std::endl;
+                 "#Node ID,sent timestamp[microsecond],received timestamp[microsecond],delay[microsecond]" << std::endl;
 
     subscriber_.Start();
   }
@@ -133,7 +132,6 @@ public:
     for (MessageRecord m : records)
       {
         output_file_ << m.node_id << ","
-                     << m.message_size << ","
                      << m.sent_time << ","
                      << m.received_time << ","
                      << m.delay << std::endl;
@@ -164,7 +162,7 @@ main(int argc, char *argv[])
   ("help,h", "Produce this message")
   ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
   ("type,t", po::value<std::string>(&sensor_type)->required(),
-   "Type of sensor. Can be one of: tir, hr, stereo, tof, lidar, radar, st or imu")
+   "Type of sensor. Can be one of: cam, tof, lidar, radar, st or imu")
   ("output,o", po::value<std::string>(&output_file)->default_value("out.csv"), "File name to write output. CSV format.")
   ("verbose,v", "Print verbose output")
   ("quiet,q", "Quiet ouput")
