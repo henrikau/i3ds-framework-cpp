@@ -138,6 +138,11 @@ public:
       }
     BOOST_LOG_TRIVIAL(info) << "Output written to " << file_name_;
   }
+
+  unsigned int n_measurements()
+  {
+    return records.size();
+  }
 };
 
 template <>
@@ -152,6 +157,7 @@ int
 main(int argc, char *argv[])
 {
   unsigned int node_id;
+  unsigned int max_measurements;
   std::string sensor_type;
   std::string output_file;
 
@@ -163,6 +169,7 @@ main(int argc, char *argv[])
   ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
   ("type,t", po::value<std::string>(&sensor_type)->required(),
    "Type of sensor. Can be one of: cam, tof, lidar, radar, st or imu")
+  ("max_measurements,m", po::value(&max_measurements)->default_value(0), "Number of measurements to record (not precise). 0 means no limit.")
   ("output,o", po::value<std::string>(&output_file)->default_value("out.csv"), "File name to write output. CSV format.")
   ("verbose,v", "Print verbose output")
   ("quiet,q", "Quiet ouput")
@@ -244,7 +251,8 @@ main(int argc, char *argv[])
       return -1;
     }
 
-  while(running)
+  // Wait for max_measurements if it is not 0, and always for exit-signal
+  while(running && (max_measurements == 0 || delay_recorder.n_measurements() < max_measurements))
     {
       sleep(1);
     }
