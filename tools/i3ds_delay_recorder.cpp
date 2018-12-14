@@ -115,8 +115,7 @@ public:
         throw std::runtime_error("Unable to open file: " + file_name_);
       }
 
-    output_file_ <<
-                 "#Node ID,sent timestamp[microsecond],received timestamp[microsecond],delay[microsecond]" << std::endl;
+    output_file_ << "node,sent,received" << std::endl;
 
     subscriber_.Start();
   }
@@ -133,8 +132,7 @@ public:
       {
         output_file_ << m.node_id << ","
                      << m.sent_time << ","
-                     << m.received_time << ","
-                     << m.delay << std::endl;
+                     << m.received_time << std::endl;
       }
     BOOST_LOG_TRIVIAL(info) << "Output written to " << file_name_;
   }
@@ -162,7 +160,7 @@ main(int argc, char *argv[])
   std::string output_file;
 
   po::options_description
-  desc("Measures delay between the message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
+  desc("Measures message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
 
   desc.add_options()
   ("help,h", "Produce this message")
