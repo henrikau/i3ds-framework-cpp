@@ -9,6 +9,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <i3ds/periodic.hpp>
+#include <pthread.h>
+
+#define BOOST_LOG_DYN_LINK
+
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 
 i3ds::Sampler::Sampler(Operation operation)
   : operation_(operation), period_(0), running_(false)
@@ -27,6 +35,14 @@ i3ds::Sampler::Start(SamplePeriod period)
   running_ = true;
 
   worker_ = std::thread(&i3ds::Sampler::Run, this);
+  sched_param sch;
+  int policy;
+  pthread_getschedparam(worker_.native_handle(), &policy, &sch);
+  sch.sched_priority = 20;
+  if (pthread_setschedparam(worker_.native_handle(), SCHED_FIFO, &sch))
+    {
+      BOOST_LOG_TRIVIAL(warning) << "Failed to set thread priority: " << std::strerror(errno);
+    }
 }
 
 void
