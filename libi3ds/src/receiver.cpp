@@ -60,20 +60,20 @@ i3ds::Receiver::Run()
           socket_->Receive(message, timeout_ms_);
           Handle(message, *socket_);
         }
-      catch(Timeout e)
+      catch(Timeout& e)
         {
           // Carry on...
         }
-      catch(CodecError e)
+      catch(CodecError& e)
         {
           std::cerr << "Codec error: " << e.what() << std::endl;
         }
-      catch(CommunicationError e)
+      catch(CommunicationError& e)
         {
           std::cerr << "Communication error: " << e.what() << std::endl;
           running_ = false;
         }
-      catch(std::exception e)
+      catch(std::exception& e)
         {
           std::cerr << "Exception: " << e.what() << std::endl;
           running_ = false;

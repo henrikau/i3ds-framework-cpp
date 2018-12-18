@@ -65,12 +65,12 @@ i3ds::Server::Handle(Message& message, Socket& socket)
         {
           handlers_[message.address()]->Handle(message, response);
         }
-      catch(CommandError e)
+      catch(CommandError& e)
         {
           set_response(error, e);
           Encode<CommandResponseCodec>(response, error);
         }
-      catch(std::exception e)
+      catch(std::exception& e)
         {
           set_response(error, error_other, e.what());
           Encode<CommandResponseCodec>(response, error);

@@ -243,7 +243,7 @@ main(int argc, char *argv[])
     {
       delay_recorder.Start();
     }
-  catch (std::exception e)
+  catch (std::exception& e)
     {
       std::cerr << e.what() << std::endl;
       return -1;

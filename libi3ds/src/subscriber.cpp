@@ -56,7 +56,7 @@ i3ds::Subscriber::Handle(Message& message, Socket& socket)
           handlers_[message.address()]->Handle(message);
         }
     }
-  catch (std::exception e)
+  catch (std::exception& e)
     {
       // TODO: Log error
     }

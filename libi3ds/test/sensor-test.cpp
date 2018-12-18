@@ -129,7 +129,7 @@ void TestClient::test_illegal_state_command(StateCommand sc)
       issue_state_command(sc);
       BOOST_CHECK(false);
     }
-  catch (CommandError e)
+  catch (CommandError& e)
     {
       BOOST_CHECK_EQUAL(e.result(), error_state);
     }
@@ -163,7 +163,7 @@ void TestClient::test_illegal_sample_command(SamplePeriod period, BatchSize batc
       issue_sample_command(period, batch_size);
       BOOST_CHECK(false);
     }
-  catch (CommandError e)
+  catch (CommandError& e)
     {
       BOOST_CHECK_EQUAL(e.result(), error);
     }
