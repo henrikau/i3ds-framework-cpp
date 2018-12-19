@@ -123,27 +123,37 @@ int main(int argc, char** argv)
 
   for (auto s : sensors)
     {
+      BOOST_LOG_TRIVIAL(trace) << "Attach sensor " << s->node() << " to server 1";
       s->Attach(server_1);
     }
 
   for (auto n : nodes)
     {
+      BOOST_LOG_TRIVIAL(trace) << "Attach node " << n->node() << " to server 2";
       n->Attach(server_2);
     }
 
   running = true;
   signal(SIGINT, signal_handler);
 
+  BOOST_LOG_TRIVIAL(trace) << "Starting servers...";
+
   server_1.Start();
   server_2.Start();
+
+  BOOST_LOG_TRIVIAL(trace) << "Servers running!";
 
   while(running)
     {
       sleep(1);
     }
 
+  BOOST_LOG_TRIVIAL(trace) << "Stopping servers...";
+
   server_1.Stop();
   server_2.Stop();
+
+  BOOST_LOG_TRIVIAL(trace) << "Servers running!";
 
   return 0;
 }
