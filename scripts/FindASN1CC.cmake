@@ -117,9 +117,10 @@ endfunction()
 
 # Find the ASN1CC Executable
 find_program(ASN1CC_EXECUTABLE
-    NAMES asn1cc.exe Asn1f2.exe
+    NAMES asn1cc.exe Asn1f2.exe Asn1f4.exe
     DOC "The ASN1CC Compiler"
     PATHS
+    ${ASN1CC_SRC_ROOT_FOLDER}/Asn1f4/bin/Debug/
     ${ASN1CC_SRC_ROOT_FOLDER}/Asn1f2/bin/Debug/
     ${ASN1CC_SRC_ROOT_FOLDER}/asn1cc/bin/Debug/
 )

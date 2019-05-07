@@ -1,6 +1,6 @@
 // -*- Mode: Python -*-
 
-%module i3ds
+%module i3ds_binding
 
 %include <typemaps.i>
 %include <std_string.i>
