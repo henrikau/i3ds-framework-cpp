@@ -83,6 +83,12 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create factory";
   i3ds::EmulatorFactory factory(context, base_id);
 
+  BOOST_LOG_TRIVIAL(trace) << "Create trigger";
+  nodes.push_back(factory.CreateTrigger());
+
+  BOOST_LOG_TRIVIAL(trace) << "Create flash";
+  nodes.push_back(factory.CreateFlash());
+
 #if CAMERA_EMULATORS
   BOOST_LOG_TRIVIAL(trace) << "Create TIR camera";
   sensors.push_back(factory.CreateTIRCamera());
@@ -114,12 +120,6 @@ int main(int argc, char** argv)
 
   BOOST_LOG_TRIVIAL(trace) << "Create force/torque sensor";
   sensors.push_back(factory.CreateForceTorque());
-
-  BOOST_LOG_TRIVIAL(trace) << "Create trigger";
-  nodes.push_back(factory.CreateTrigger());
-
-  BOOST_LOG_TRIVIAL(trace) << "Create flash";
-  nodes.push_back(factory.CreateFlash());
 
   for (auto s : sensors)
     {

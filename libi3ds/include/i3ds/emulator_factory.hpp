@@ -57,6 +57,8 @@ private:
 
   Context::Ptr context_;
   NodeID next_id_;
+  NodeID trigger_id_;
+  NodeID flash_id_;
 };
 
 } // namspace i3ds

@@ -26,7 +26,9 @@
 
 i3ds::EmulatorFactory::EmulatorFactory(Context::Ptr context, NodeID base_id)
   : context_(context),
-    next_id_(base_id)
+    next_id_(base_id),
+    trigger_id_(0),
+    flash_id_(0)
 {
 }
 
@@ -73,13 +75,15 @@ i3ds::EmulatorFactory::CreateForceTorque()
 i3ds::Trigger::Ptr
 i3ds::EmulatorFactory::CreateTrigger()
 {
-  return EmulatedTrigger::Create(next_id_++);
+  trigger_id_ = next_id_++;
+  return EmulatedTrigger::Create(trigger_id_);
 }
 
 i3ds::Flash::Ptr
 i3ds::EmulatorFactory::CreateFlash()
 {
-  return EmulatedFlash::Create(next_id_++);
+  flash_id_ = next_id_++;
+  return EmulatedFlash::Create(flash_id_);
 }
 
 #if CAMERA_EMULATORS
@@ -102,6 +106,15 @@ i3ds::EmulatorFactory::CreateTIRCamera(std::string sample_dir)
   param.image_count = 1;
   param.sample_dir = sample_dir;
 
+  param.external_trigger = trigger_id_ > 0;
+  param.trigger_node = trigger_id_;
+  param.trigger_source = 1;
+  param.camera_output = 1;
+  param.camera_offset = 0;
+
+  param.support_flash = false;
+  param.support_pattern = false;
+
   return std::make_shared<EmulatedCamera>(context_, next_id_++, param);
 }
 
@@ -118,6 +131,21 @@ i3ds::EmulatorFactory::CreateHRCamera(std::string sample_dir)
   param.image_count = 1;
   param.sample_dir = sample_dir;
 
+  param.external_trigger = trigger_id_ > 0;
+  param.trigger_node = trigger_id_;
+  param.trigger_source = 1;
+  param.camera_output = 2;
+  param.camera_offset = 1000;
+
+  param.support_flash = flash_id_ > 0;
+  param.flash_node = flash_id_;
+  param.flash_output = 5;
+  param.flash_offset = 500;
+
+  param.support_pattern = true;
+  param.pattern_output = 4;
+  param.pattern_offset = 0;
+
   return std::make_shared<EmulatedCamera>(context_, next_id_++, param);
 }
 
@@ -133,6 +161,19 @@ i3ds::EmulatorFactory::CreateStereoCamera(std::string sample_dir)
   param.height = 2048;
   param.image_count = 2;
   param.sample_dir = sample_dir;
+
+  param.external_trigger = trigger_id_ > 0;
+  param.trigger_node = trigger_id_;
+  param.trigger_source = 1;
+  param.camera_output = 3;
+  param.camera_offset = 2000;
+
+  param.support_flash = flash_id_ > 0;
+  param.flash_node = flash_id_;
+  param.flash_output = 5;
+  param.flash_offset = 0;
+
+  param.support_pattern = false;
 
   return std::make_shared<EmulatedCamera>(context_, next_id_++, param);
 }
