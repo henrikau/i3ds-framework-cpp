@@ -9,6 +9,7 @@
 #include "i3ds/tof_camera_client.hpp"
 #include "i3ds/radar_client.hpp"
 #include "i3ds/imu_client.hpp"
+#include "i3ds/analog_client.hpp"
 #include "i3ds/star_tracker_client.hpp"
 #include "i3ds/lidar_client.hpp"
 
@@ -30,6 +31,7 @@ using namespace i3ds;
 %shared_ptr(i3ds::RadarClient)
 %shared_ptr(i3ds::StarTrackerClient)
 %shared_ptr(i3ds::IMUClient)
+%shared_ptr(i3ds::AnalogClient)
 %shared_ptr(i3ds::LIDARClient)
 
 typedef long long asn1SccSint;
@@ -52,6 +54,10 @@ typedef struct {
   int nCount;   
   byte arr[256];
 } T_String;
+
+typedef struct {
+    T_Double kelvin;
+} Temperature;
 
 typedef asn1SccUint NodeId;
 typedef asn1SccUint EndpointId;
@@ -135,6 +141,17 @@ public:
   typedef std::shared_ptr<SensorClient> Ptr;
 
   SensorClient(Context::Ptr context, NodeID sensor);
+
+  bool is_inactive() const;
+  bool is_active() const;
+  bool is_standby() const;
+  bool is_operational() const;
+  bool is_failure() const;
+
+  void Activate();
+  void Deactivate();
+  void Start();
+  void Stop();
 
   void set_state(StateCommand state);
   void set_sampling(SamplePeriod period, BatchSize batch_size = 1, BatchCount batch_count = 0);
@@ -240,6 +257,15 @@ public:
   IMUClient(Context::Ptr context, NodeID sensor);
 };
 
+class AnalogClient : public SensorClient
+{
+public:
+
+  typedef std::shared_ptr<AnalogClient> Ptr;
+
+  AnalogClient(Context::Ptr context, NodeID sensor);
+};
+
 class StarTrackerClient : public SensorClient
 {
 public:
@@ -274,6 +300,7 @@ public:
 %template(LIDAR) ClientFactory::Create<LIDARClient>;
 %template(StarTracker) ClientFactory::Create<StarTrackerClient>;
 %template(IMU) ClientFactory::Create<IMUClient>;
+%template(Analog) ClientFactory::Create<AnalogClient>;
   
 %clearnodefaultctor;
 } // namespace i3ds
