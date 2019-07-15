@@ -13,76 +13,118 @@ extern "C" {
 #endif
 
 
-
 typedef T_UInt32 SamplePeriod;
 
-#define SamplePeriod_REQUIRED_BYTES_FOR_ENCODING       4 
-#define SamplePeriod_REQUIRED_BITS_FOR_ENCODING        32
-#define SamplePeriod_REQUIRED_BYTES_FOR_ACN_ENCODING   4 
-#define SamplePeriod_REQUIRED_BITS_FOR_ACN_ENCODING    32
-#define SamplePeriod_REQUIRED_BYTES_FOR_XER_ENCODING   49
 
 void SamplePeriod_Initialize(SamplePeriod* pVal);
-flag SamplePeriod_IsConstraintValid(const SamplePeriod* val, int* pErrCode);
 
+#define ERR_SAMPLEPERIOD		1096  /**/
+flag SamplePeriod_IsConstraintValid(const SamplePeriod* pVal, int* pErrCode);
 
+#define ERR_UPER_ENCODE_SAMPLEPERIOD_2		1103  /**/
+#define SamplePeriod_REQUIRED_BYTES_FOR_ENCODING       4 
+#define SamplePeriod_REQUIRED_BITS_FOR_ENCODING        32
+
+flag SamplePeriod_Encode(const SamplePeriod* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_SAMPLEPERIOD_2		1104  /**/
+flag SamplePeriod_Decode(SamplePeriod* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef T_UInt32 BatchSize;
 
-#define BatchSize_REQUIRED_BYTES_FOR_ENCODING       4 
-#define BatchSize_REQUIRED_BITS_FOR_ENCODING        32
-#define BatchSize_REQUIRED_BYTES_FOR_ACN_ENCODING   4 
-#define BatchSize_REQUIRED_BITS_FOR_ACN_ENCODING    32
-#define BatchSize_REQUIRED_BYTES_FOR_XER_ENCODING   43
 
 void BatchSize_Initialize(BatchSize* pVal);
-flag BatchSize_IsConstraintValid(const BatchSize* val, int* pErrCode);
 
+#define ERR_BATCHSIZE		1107  /**/
+flag BatchSize_IsConstraintValid(const BatchSize* pVal, int* pErrCode);
 
+#define ERR_UPER_ENCODE_BATCHSIZE_2		1114  /**/
+#define BatchSize_REQUIRED_BYTES_FOR_ENCODING       4 
+#define BatchSize_REQUIRED_BITS_FOR_ENCODING        32
+
+flag BatchSize_Encode(const BatchSize* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_BATCHSIZE_2		1115  /**/
+flag BatchSize_Decode(BatchSize* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef T_UInt32 BatchCount;
 
-#define BatchCount_REQUIRED_BYTES_FOR_ENCODING       4 
-#define BatchCount_REQUIRED_BITS_FOR_ENCODING        32
-#define BatchCount_REQUIRED_BYTES_FOR_ACN_ENCODING   4 
-#define BatchCount_REQUIRED_BITS_FOR_ACN_ENCODING    32
-#define BatchCount_REQUIRED_BYTES_FOR_XER_ENCODING   45
 
 void BatchCount_Initialize(BatchCount* pVal);
-flag BatchCount_IsConstraintValid(const BatchCount* val, int* pErrCode);
 
+#define ERR_BATCHCOUNT		1118  /**/
+flag BatchCount_IsConstraintValid(const BatchCount* pVal, int* pErrCode);
 
+#define ERR_UPER_ENCODE_BATCHCOUNT_2		1125  /**/
+#define BatchCount_REQUIRED_BYTES_FOR_ENCODING       4 
+#define BatchCount_REQUIRED_BITS_FOR_ENCODING        32
+
+flag BatchCount_Encode(const BatchCount* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_BATCHCOUNT_2		1126  /**/
+flag BatchCount_Decode(BatchCount* pVal, BitStream* pBitStrm, int* pErrCode);
+/*-- SampleCommand --------------------------------------------*/
 typedef struct {
-    SamplePeriod period;
-    BatchSize batch_size;
-    BatchCount batch_count;
+    T_UInt32 period;
+    T_UInt32 batch_size;
+    T_UInt32 batch_count;
+
 } SampleCommand;
 
+void SampleCommand_Initialize(SampleCommand* pVal);
+
+#define ERR_SAMPLECOMMAND		1174  /**/
+#define ERR_SAMPLECOMMAND_PERIOD		1129  /**/
+#define ERR_SAMPLECOMMAND_BATCH_SIZE		1144  /**/
+#define ERR_SAMPLECOMMAND_BATCH_COUNT		1159  /**/
+flag SampleCommand_IsConstraintValid(const SampleCommand* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_SAMPLECOMMAND		1175  /**/
+#define ERR_UPER_ENCODE_SAMPLECOMMAND_PERIOD_2_2		1140  /**/
+#define ERR_UPER_ENCODE_SAMPLECOMMAND_BATCH_SIZE_2_2		1155  /**/
+#define ERR_UPER_ENCODE_SAMPLECOMMAND_BATCH_COUNT_2_2		1170  /**/
 #define SampleCommand_REQUIRED_BYTES_FOR_ENCODING       12 
 #define SampleCommand_REQUIRED_BITS_FOR_ENCODING        96
-#define SampleCommand_REQUIRED_BYTES_FOR_ACN_ENCODING   12 
-#define SampleCommand_REQUIRED_BITS_FOR_ACN_ENCODING    96
-#define SampleCommand_REQUIRED_BYTES_FOR_XER_ENCODING   160
 
-void SampleCommand_Initialize(SampleCommand* pVal);
-flag SampleCommand_IsConstraintValid(const SampleCommand* val, int* pErrCode);
+flag SampleCommand_Encode(const SampleCommand* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-
+#define ERR_UPER_DECODE_SAMPLECOMMAND		1176  /**/
+#define ERR_UPER_DECODE_SAMPLECOMMAND_PERIOD_2_2		1141  /**/
+#define ERR_UPER_DECODE_SAMPLECOMMAND_BATCH_SIZE_2_2		1156  /**/
+#define ERR_UPER_DECODE_SAMPLECOMMAND_BATCH_COUNT_2_2		1171  /**/
+flag SampleCommand_Decode(SampleCommand* pVal, BitStream* pBitStrm, int* pErrCode);
+/*-- SensorConfiguration --------------------------------------------*/
 typedef struct {
     T_String device;
-    SamplePeriod period;
-    BatchSize batch_size;
-    BatchCount batch_count;
+    T_UInt32 period;
+    T_UInt32 batch_size;
+    T_UInt32 batch_count;
+
 } SensorConfiguration;
 
+void SensorConfiguration_Initialize(SensorConfiguration* pVal);
+
+#define ERR_SENSORCONFIGURATION		1237  /**/
+#define ERR_SENSORCONFIGURATION_DEVICE		1181  /**/
+#define ERR_SENSORCONFIGURATION_PERIOD		1192  /**/
+#define ERR_SENSORCONFIGURATION_BATCH_SIZE		1207  /**/
+#define ERR_SENSORCONFIGURATION_BATCH_COUNT		1222  /**/
+flag SensorConfiguration_IsConstraintValid(const SensorConfiguration* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_SENSORCONFIGURATION		1238  /**/
+#define ERR_UPER_ENCODE_SENSORCONFIGURATION_DEVICE_2		1188  /**/
+#define ERR_UPER_ENCODE_SENSORCONFIGURATION_PERIOD_2_2		1203  /**/
+#define ERR_UPER_ENCODE_SENSORCONFIGURATION_BATCH_SIZE_2_2		1218  /**/
+#define ERR_UPER_ENCODE_SENSORCONFIGURATION_BATCH_COUNT_2_2		1233  /**/
 #define SensorConfiguration_REQUIRED_BYTES_FOR_ENCODING       270 
 #define SensorConfiguration_REQUIRED_BITS_FOR_ENCODING        2153
-#define SensorConfiguration_REQUIRED_BYTES_FOR_ACN_ENCODING   270 
-#define SensorConfiguration_REQUIRED_BITS_FOR_ACN_ENCODING    2153
-#define SensorConfiguration_REQUIRED_BYTES_FOR_XER_ENCODING   701
 
-void SensorConfiguration_Initialize(SensorConfiguration* pVal);
-flag SensorConfiguration_IsConstraintValid(const SensorConfiguration* val, int* pErrCode);
+flag SensorConfiguration_Encode(const SensorConfiguration* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-
+#define ERR_UPER_DECODE_SENSORCONFIGURATION		1239  /**/
+#define ERR_UPER_DECODE_SENSORCONFIGURATION_DEVICE_2		1189  /**/
+#define ERR_UPER_DECODE_SENSORCONFIGURATION_PERIOD_2_2		1204  /**/
+#define ERR_UPER_DECODE_SENSORCONFIGURATION_BATCH_SIZE_2_2		1219  /**/
+#define ERR_UPER_DECODE_SENSORCONFIGURATION_BATCH_COUNT_2_2		1234  /**/
+flag SensorConfiguration_Decode(SensorConfiguration* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef enum {
     inactive = 0,
     standby = 1,
@@ -90,36 +132,52 @@ typedef enum {
     failure = 3
 } SensorState;
 
-#define SensorState_REQUIRED_BYTES_FOR_ENCODING       1 
-#define SensorState_REQUIRED_BITS_FOR_ENCODING        2
-#define SensorState_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
-#define SensorState_REQUIRED_BITS_FOR_ACN_ENCODING    2
-#define SensorState_REQUIRED_BYTES_FOR_XER_ENCODING   44
+// please use the following macros to avoid breaking code.
+#define SensorState_inactive inactive
+#define SensorState_standby standby
+#define SensorState_operational operational
+#define SensorState_failure failure
 
 void SensorState_Initialize(SensorState* pVal);
-flag SensorState_IsConstraintValid(const SensorState* val, int* pErrCode);
-#ifndef ERR_SensorState_unknown_enumeration_value 
-#define ERR_SensorState_unknown_enumeration_value		1002  /**/
-#endif
-#ifndef ERR_SensorState 
-#define ERR_SensorState		1001  /**/
-#endif
 
+#define ERR_SENSORSTATE		1042  /**/
+flag SensorState_IsConstraintValid(const SensorState* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_SENSORSTATE		1043  /**/
+#define SensorState_REQUIRED_BYTES_FOR_ENCODING       1 
+#define SensorState_REQUIRED_BITS_FOR_ENCODING        2
+
+flag SensorState_Encode(const SensorState* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_SENSORSTATE		1044  /**/
+flag SensorState_Decode(SensorState* pVal, BitStream* pBitStrm, int* pErrCode);
+/*-- SensorStatus --------------------------------------------*/
 typedef struct {
     SensorState state;
     Temperature temperature;
+
 } SensorStatus;
 
+void SensorStatus_Initialize(SensorStatus* pVal);
+
+#define ERR_SENSORSTATUS		1089  /**/
+#define ERR_SENSORSTATUS_STATE		1056  /**/
+#define ERR_SENSORSTATUS_TEMPERATURE		1078  /**/
+#define ERR_SENSORSTATUS_TEMPERATURE_KELVIN		1067  /**/
+flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_SENSORSTATUS		1090  /**/
+#define ERR_UPER_ENCODE_SENSORSTATUS_STATE_2		1063  /**/
+#define ERR_UPER_ENCODE_SENSORSTATUS_TEMPERATURE_2		1085  /**/
 #define SensorStatus_REQUIRED_BYTES_FOR_ENCODING       14 
 #define SensorStatus_REQUIRED_BITS_FOR_ENCODING        106
-#define SensorStatus_REQUIRED_BYTES_FOR_ACN_ENCODING   14 
-#define SensorStatus_REQUIRED_BITS_FOR_ACN_ENCODING    106
-#define SensorStatus_REQUIRED_BYTES_FOR_XER_ENCODING   155
 
-void SensorStatus_Initialize(SensorStatus* pVal);
-flag SensorStatus_IsConstraintValid(const SensorStatus* val, int* pErrCode);
+flag SensorStatus_Encode(const SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-
+#define ERR_UPER_DECODE_SENSORSTATUS		1091  /**/
+#define ERR_UPER_DECODE_SENSORSTATUS_STATE_2		1064  /**/
+#define ERR_UPER_DECODE_SENSORSTATUS_TEMPERATURE_2		1086  /**/
+flag SensorStatus_Decode(SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef enum {
     activate = 0,
     start = 1,
@@ -127,20 +185,25 @@ typedef enum {
     deactivate = 3
 } StateCommand;
 
-#define StateCommand_REQUIRED_BYTES_FOR_ENCODING       1 
-#define StateCommand_REQUIRED_BITS_FOR_ENCODING        2
-#define StateCommand_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
-#define StateCommand_REQUIRED_BITS_FOR_ACN_ENCODING    2
-#define StateCommand_REQUIRED_BYTES_FOR_XER_ENCODING   40
+// please use the following macros to avoid breaking code.
+#define StateCommand_activate activate
+#define StateCommand_start start
+#define StateCommand_stop stop
+#define StateCommand_deactivate deactivate
 
 void StateCommand_Initialize(StateCommand* pVal);
-flag StateCommand_IsConstraintValid(const StateCommand* val, int* pErrCode);
-#ifndef ERR_StateCommand_unknown_enumeration_value 
-#define ERR_StateCommand_unknown_enumeration_value		1004  /**/
-#endif
-#ifndef ERR_StateCommand 
-#define ERR_StateCommand		1003  /**/
-#endif
+
+#define ERR_STATECOMMAND		1049  /**/
+flag StateCommand_IsConstraintValid(const StateCommand* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_STATECOMMAND		1050  /**/
+#define StateCommand_REQUIRED_BYTES_FOR_ENCODING       1 
+#define StateCommand_REQUIRED_BITS_FOR_ENCODING        2
+
+flag StateCommand_Encode(const StateCommand* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_STATECOMMAND		1051  /**/
+flag StateCommand_Decode(StateCommand* pVal, BitStream* pBitStrm, int* pErrCode);
 
  
 
@@ -149,34 +212,11 @@ flag StateCommand_IsConstraintValid(const StateCommand* val, int* pErrCode);
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag SamplePeriod_Encode(const SamplePeriod* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag SamplePeriod_Decode(SamplePeriod* pVal, BitStream* pBitStrm, int* pErrCode);
-flag BatchSize_Encode(const BatchSize* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag BatchSize_Decode(BatchSize* pVal, BitStream* pBitStrm, int* pErrCode);
-flag BatchCount_Encode(const BatchCount* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag BatchCount_Decode(BatchCount* pVal, BitStream* pBitStrm, int* pErrCode);
-flag SampleCommand_Encode(const SampleCommand* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag SampleCommand_Decode(SampleCommand* pVal, BitStream* pBitStrm, int* pErrCode);
-flag SensorConfiguration_Encode(const SensorConfiguration* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag SensorConfiguration_Decode(SensorConfiguration* pVal, BitStream* pBitStrm, int* pErrCode);
-flag SensorState_Encode(const SensorState* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag SensorState_Decode(SensorState* pVal, BitStream* pBitStrm, int* pErrCode);
-flag SensorStatus_Encode(const SensorStatus* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag SensorStatus_Decode(SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode);
-flag StateCommand_Encode(const StateCommand* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag StateCommand_Decode(StateCommand* pVal, BitStream* pBitStrm, int* pErrCode); 
+ 
 
 
 #ifdef  __cplusplus
 }
-#define ENUM_inactive	inactive
-#define ENUM_standby	standby
-#define ENUM_operational	operational
-#define ENUM_failure	failure
-#define ENUM_activate	activate
-#define ENUM_start	start
-#define ENUM_stop	stop
-#define ENUM_deactivate	deactivate
 
 #endif
 

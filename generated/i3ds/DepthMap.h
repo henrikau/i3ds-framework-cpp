@@ -12,47 +12,45 @@ extern "C" {
 #endif
 
 
-
-typedef enum
-{
-  depth_valid = 0,
-  depth_range_error = 1,
-  depth_range_error_far = 2,
-  depth_range_error_near = 3
+typedef enum {
+    depth_valid = 0,
+    depth_range_error = 1,
+    depth_range_error_far = 2,
+    depth_range_error_near = 3
 } Depth_validity_t;
 
-#define Depth_validity_t_REQUIRED_BYTES_FOR_ENCODING       1
-#define Depth_validity_t_REQUIRED_BITS_FOR_ENCODING        2
-#define Depth_validity_t_REQUIRED_BYTES_FOR_ACN_ENCODING   1
-#define Depth_validity_t_REQUIRED_BITS_FOR_ACN_ENCODING    2
-#define Depth_validity_t_REQUIRED_BYTES_FOR_XER_ENCODING   62
+// please use the following macros to avoid breaking code.
+#define Depth_validity_t_depth_valid depth_valid
+#define Depth_validity_t_depth_range_error depth_range_error
+#define Depth_validity_t_depth_range_error_far depth_range_error_far
+#define Depth_validity_t_depth_range_error_near depth_range_error_near
 
 void Depth_validity_t_Initialize(Depth_validity_t* pVal);
-flag Depth_validity_t_IsConstraintValid(const Depth_validity_t* val, int* pErrCode);
-#ifndef ERR_Depth_validity_t_unknown_enumeration_value
-#define ERR_Depth_validity_t_unknown_enumeration_value		1002  /**/
-#endif
-#ifndef ERR_Depth_validity_t
-#define ERR_Depth_validity_t		1001  /**/
-#endif
 
+#define ERR_DEPTH_VALIDITY_T		735  /**/
+flag Depth_validity_t_IsConstraintValid(const Depth_validity_t* pVal, int* pErrCode);
 
+#define ERR_UPER_ENCODE_DEPTH_VALIDITY_T		736  /**/
+#define Depth_validity_t_REQUIRED_BYTES_FOR_ENCODING       1 
+#define Depth_validity_t_REQUIRED_BITS_FOR_ENCODING        2
+
+flag Depth_validity_t_Encode(const Depth_validity_t* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_DEPTH_VALIDITY_T		737  /**/
+flag Depth_validity_t_Decode(Depth_validity_t* pVal, BitStream* pBitStrm, int* pErrCode);
+
+ 
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag Depth_validity_t_Encode(const Depth_validity_t* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag Depth_validity_t_Decode(Depth_validity_t* pVal, BitStream* pBitStrm, int* pErrCode);
+ 
 
 
 #ifdef  __cplusplus
 }
-#define ENUM_depth_valid	depth_valid
-#define ENUM_depth_range_error	depth_range_error
-#define ENUM_depth_range_error_far	depth_range_error_far
-#define ENUM_depth_range_error_near	depth_range_error_near
 
 #endif
 

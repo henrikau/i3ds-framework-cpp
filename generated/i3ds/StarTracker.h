@@ -12,33 +12,52 @@ extern "C" {
 #endif
 
 
+/*-- StarTrackerMeasurement --------------------------------------------*/
+typedef struct {
+    SampleAttributes attributes;
+    Quaterniond position;
 
-typedef struct
-{
-  SampleAttributes attributes;
-  Quaterniond position;
 } StarTrackerMeasurement;
 
-#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ENCODING       119
-#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ENCODING        947
-#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ACN_ENCODING   119
-#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ACN_ENCODING    947
-#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_XER_ENCODING   1303
-
 void StarTrackerMeasurement_Initialize(StarTrackerMeasurement* pVal);
-flag StarTrackerMeasurement_IsConstraintValid(const StarTrackerMeasurement* val, int* pErrCode);
 
+#define ERR_STARTRACKERMEASUREMENT		3180  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES		3147  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_TIMESTAMP		3037  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_VALIDITY		3052  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES		3140  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM		3129  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY		3063  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE		3118  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_BOOLEAN_VALUE		3074  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE		3085  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE		3096  /**/
+#define ERR_STARTRACKERMEASUREMENT_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE		3107  /**/
+#define ERR_STARTRACKERMEASUREMENT_POSITION		3169  /**/
+#define ERR_STARTRACKERMEASUREMENT_POSITION_ELM		3158  /**/
+flag StarTrackerMeasurement_IsConstraintValid(const StarTrackerMeasurement* pVal, int* pErrCode);
 
+#define ERR_UPER_ENCODE_STARTRACKERMEASUREMENT		3181  /**/
+#define ERR_UPER_ENCODE_STARTRACKERMEASUREMENT_ATTRIBUTES_2		3154  /**/
+#define ERR_UPER_ENCODE_STARTRACKERMEASUREMENT_POSITION_2		3176  /**/
+#define StarTrackerMeasurement_REQUIRED_BYTES_FOR_ENCODING       118 
+#define StarTrackerMeasurement_REQUIRED_BITS_FOR_ENCODING        943
 
+flag StarTrackerMeasurement_Encode(const StarTrackerMeasurement* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_STARTRACKERMEASUREMENT		3182  /**/
+#define ERR_UPER_DECODE_STARTRACKERMEASUREMENT_ATTRIBUTES_2		3155  /**/
+#define ERR_UPER_DECODE_STARTRACKERMEASUREMENT_POSITION_2		3177  /**/
+flag StarTrackerMeasurement_Decode(StarTrackerMeasurement* pVal, BitStream* pBitStrm, int* pErrCode);
+
+ 
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag StarTrackerMeasurement_Encode(const StarTrackerMeasurement* val, BitStream* pBitStrm, int* pErrCode,
-                                   flag bCheckConstraints);
-flag StarTrackerMeasurement_Decode(StarTrackerMeasurement* pVal, BitStream* pBitStrm, int* pErrCode);
+ 
 
 
 #ifdef  __cplusplus

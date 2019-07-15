@@ -24,6 +24,20 @@ static asn1SccUint32 masks2[] = { 0x0,
 /*   Bit Stream Functions                                                                      */
 /***********************************************************************************************/
 
+flag OctetString_equal(int len1, int len2, const byte arr1[], const byte arr2[])
+{
+    return (len1 == len2) && (memcmp(arr1, arr2, len1)==0);
+}
+
+flag BitString_equal(int nBitsLength1, int nBitsLength2, const byte arr1[], const byte arr2[])
+{
+    return
+        (nBitsLength1 == nBitsLength2) &&
+        (nBitsLength1 / 8 == 0 || memcmp(arr1, arr2, nBitsLength1 / 8) == 0) &&
+        (nBitsLength1 % 8 > 0 ? (arr1[nBitsLength1 / 8] >> (8 - nBitsLength1 % 8) == arr2[nBitsLength1 / 8] >> (8 - nBitsLength1 % 8)) : TRUE);
+}
+
+
 void BitStream_Init(BitStream* pBitStrm, byte* buf, long count) 
 {
     pBitStrm->count = count;
@@ -717,7 +731,7 @@ flag BitStream_DecodeUnConstraintWholeNumber(BitStream* pBitStrm, asn1SccSint* v
 */
 
 
-void BitStream_EncodeReal(BitStream* pBitStrm, double v)
+void BitStream_EncodeReal(BitStream* pBitStrm, asn1Real v)
 {
     byte header=0x80;
     int nExpLen;
@@ -783,9 +797,9 @@ void BitStream_EncodeReal(BitStream* pBitStrm, double v)
 
 }
 
-flag DecodeRealAsBinaryEncoding(BitStream* pBitStrm, int length, byte header, double* v);
+flag DecodeRealAsBinaryEncoding(BitStream* pBitStrm, int length, byte header, asn1Real* v);
 
-flag BitStream_DecodeReal(BitStream* pBitStrm, double* v)
+flag BitStream_DecodeReal(BitStream* pBitStrm, asn1Real* v)
 {
     byte header;
     byte length;
@@ -817,7 +831,7 @@ flag BitStream_DecodeReal(BitStream* pBitStrm, double* v)
 }
 
 
-flag DecodeRealAsBinaryEncoding(BitStream* pBitStrm, int length, byte header, double* v)
+flag DecodeRealAsBinaryEncoding(BitStream* pBitStrm, int length, byte header, asn1Real* v)
 {
     int sign=1;
     /*int base=2;*/
@@ -953,4 +967,205 @@ asn1SccSint uint2int(asn1SccUint v, int uintSizeInBytes) {
     for (i = WORD_SIZE - 1; i >= uintSizeInBytes; i--)
         v |= ber_aux[i];
     return -(asn1SccSint)(~v) - 1;
+}
+
+
+
+/*
+
+#######                                      ###
+#     # #####       # ######  ####  #####     #  #####  ###### #    # ##### # ###### # ###### #####
+#     # #    #      # #      #    #   #       #  #    # #      ##   #   #   # #      # #      #    #
+#     # #####       # #####  #        #       #  #    # #####  # #  #   #   # #####  # #####  #    #
+#     # #    #      # #      #        #       #  #    # #      #  # #   #   # #      # #      #####
+#     # #    # #    # #      #    #   #       #  #    # #      #   ##   #   # #      # #      #   #
+####### #####   ####  ######  ####    #      ### #####  ###### #    #   #   # #      # ###### #    #
+
+Object Identifier
+
+*/
+
+void ObjectIdentifier_Init(Asn1ObjectIdentifier *pVal) {
+	int i;
+	for (i = 0; i < OBJECT_IDENTIFIER_MAX_LENGTH; i++) {
+		pVal->values[i] = 0;
+	}
+	pVal->nCount = 0;
+}
+
+flag ObjectIdentifier_isValid(const Asn1ObjectIdentifier *pVal) {
+	return (pVal->nCount >= 2) && (pVal->values[0] <= 2) && (pVal->values[1] <= 39);
+}
+
+flag RelativeOID_isValid(const Asn1ObjectIdentifier *pVal) {
+	return pVal->nCount > 0;
+}
+
+flag ObjectIdentifier_equal(const Asn1ObjectIdentifier *pVal1, const Asn1ObjectIdentifier *pVal2) {
+	int i;
+	if ((pVal1 != NULL) && (pVal2 != NULL) && pVal1->nCount == pVal2->nCount && pVal1->nCount <= OBJECT_IDENTIFIER_MAX_LENGTH) {
+		flag ret = true;
+		for (i = 0; i < pVal1->nCount && ret; i++)
+		{
+			ret = (pVal1->values[i] == pVal2->values[i]);
+		}
+		return ret;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+
+
+void ObjectIdentifier_subidentifiers_uper_encode(byte* encodingBuf, int* pSize , asn1SccUint siValue) {
+	flag lastOctet = FALSE;
+	byte tmp[16];
+	int nSize = 0;
+	int i;
+	while (!lastOctet)
+	{
+		byte curByte = siValue % 128;
+		siValue = siValue / 128;
+		lastOctet = (siValue == 0);
+		tmp[nSize] = curByte;
+		nSize++;
+	}
+	for (i = 0; i < nSize; i++) {
+		byte curByte = (i == nSize - 1) ? tmp[nSize - i - 1] : tmp[nSize - i - 1] | 0x80;
+		
+		encodingBuf[*pSize] = curByte;
+		(*pSize)++;
+	}
+}
+
+
+void ObjectIdentifier_uper_encode(BitStream* pBitStrm, const Asn1ObjectIdentifier *pVal) {
+	//a subifentifier (i.e. a component) should not take more than size(asn1SccUint) + 2 to be encoded
+	//(the above statement is true for 8 byte integers. If we ever user larger integer then it should be adjusted)
+	byte tmp[OBJECT_IDENTIFIER_MAX_LENGTH * (sizeof(asn1SccUint) + 2)];
+	int totalSize = 0;
+
+	int i = 0;
+	ObjectIdentifier_subidentifiers_uper_encode(tmp, &totalSize, pVal->values[0]*40 + pVal->values[1]);
+	for (i = 2; i < pVal->nCount; i++) {
+		ObjectIdentifier_subidentifiers_uper_encode(tmp, &totalSize, pVal->values[i]);
+	}
+
+	if (totalSize <= 0x7F)
+		BitStream_EncodeConstraintWholeNumber(pBitStrm, totalSize, 0, 0xFF);
+	else
+	{
+		BitStream_AppendBit(pBitStrm, 1);
+		BitStream_EncodeConstraintWholeNumber(pBitStrm, totalSize, 0, 0x7FFF);
+	}
+
+	for (i = 0; i < totalSize; i++) {
+		BitStream_AppendByte0(pBitStrm, tmp[i]);
+	}
+
+}
+
+void RelativeOID_uper_encode(BitStream* pBitStrm, const Asn1ObjectIdentifier *pVal) {
+	//a subifentifier (i.e. a component) should not take more than size(asn1SccUint) + 2 to be encoded
+	//(the above statement is true for 8 byte integers. If we ever user larger integer then it should be adjusted)
+	byte tmp[OBJECT_IDENTIFIER_MAX_LENGTH * (sizeof(asn1SccUint)+2) ];
+	int totalSize = 0;
+	int i = 0;
+
+	for (i = 0; i < pVal->nCount; i++) {
+		ObjectIdentifier_subidentifiers_uper_encode(tmp, &totalSize, pVal->values[i]);
+	}
+
+
+	if (totalSize <= 0x7F)
+		BitStream_EncodeConstraintWholeNumber(pBitStrm, totalSize, 0, 0xFF);
+	else
+	{
+		BitStream_AppendBit(pBitStrm, 1);
+		BitStream_EncodeConstraintWholeNumber(pBitStrm, totalSize, 0, 0x7FFF);
+	}
+
+
+	for (i = 0; i < totalSize; i++) {
+		BitStream_AppendByte0(pBitStrm, tmp[i]);
+	}
+}
+
+flag ObjectIdentifier_subidentifiers_uper_decode(BitStream* pBitStrm, asn1SccSint* pRemainingOctets, asn1SccUint* siValue) {
+	byte curByte;
+	flag bLastOctet = FALSE;
+	asn1SccUint curOctetValue = 0;
+	*siValue = 0;
+	while (*pRemainingOctets > 0 && !bLastOctet)
+	{
+		curByte = 0;
+		if (!BitStream_ReadByte(pBitStrm, &curByte))
+			return FALSE;
+		(*pRemainingOctets)--;
+
+		bLastOctet = ((curByte & 0x80) == 0);
+		curOctetValue = curByte & 0x7F;
+		(*siValue) <<= 7;
+		(*siValue) |= curOctetValue;
+	}
+	return TRUE;
+}
+
+flag ObjectIdentifier_uper_decode_lentg(BitStream* pBitStrm, asn1SccSint* totalSize) {
+	asn1SccSint len2;
+	if (!BitStream_DecodeConstraintWholeNumber(pBitStrm, totalSize, 0, 0xFF))
+		return FALSE;
+	if (*totalSize > 0x7F) {
+		if (!BitStream_DecodeConstraintWholeNumber(pBitStrm, &len2, 0, 0xFF))
+			return false;
+		(*totalSize) <<= 8;
+		(*totalSize) |= len2;
+		(*totalSize) &= 0x7FFF;
+	}
+	return true;
+}
+flag ObjectIdentifier_uper_decode(BitStream* pBitStrm, Asn1ObjectIdentifier *pVal) {
+	asn1SccUint si;
+	asn1SccSint totalSize;
+	ObjectIdentifier_Init(pVal);
+
+
+	if (!ObjectIdentifier_uper_decode_lentg(pBitStrm, &totalSize))
+		return FALSE;
+
+	if (!ObjectIdentifier_subidentifiers_uper_decode(pBitStrm, &totalSize, &si))
+		return FALSE;
+	pVal->nCount = 2;
+	pVal->values[0] = si/40;
+	pVal->values[1] = si%40;
+	while (totalSize > 0 && pVal->nCount < OBJECT_IDENTIFIER_MAX_LENGTH)
+	{
+		if (!ObjectIdentifier_subidentifiers_uper_decode(pBitStrm, &totalSize, &si))
+			return FALSE;
+
+		pVal->values[pVal->nCount] = si;
+		pVal->nCount++;
+	}
+	//return true, if totalSize reduced to zero. Otherwise we exit the loop because more components we present than OBJECT_IDENTIFIER_MAX_LENGTH
+	return totalSize == 0;
+}
+
+flag RelativeOID_uper_decode(BitStream* pBitStrm, Asn1ObjectIdentifier *pVal) {
+	asn1SccUint si;
+	asn1SccSint totalSize;
+	ObjectIdentifier_Init(pVal);
+
+	if (!ObjectIdentifier_uper_decode_lentg(pBitStrm, &totalSize))
+		return FALSE;
+
+	while (totalSize > 0 && pVal->nCount < OBJECT_IDENTIFIER_MAX_LENGTH)
+	{
+		if (!ObjectIdentifier_subidentifiers_uper_decode(pBitStrm, &totalSize, &si))
+			return FALSE;
+		pVal->values[pVal->nCount] = si;
+		pVal->nCount++;
+	}
+	//return true, if totalSize is zero. Otherwise we exit the loop because more components were present than OBJECT_IDENTIFIER_MAX_LENGTH
+	return totalSize == 0;
 }

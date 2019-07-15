@@ -11,107 +11,122 @@ extern "C" {
 #endif
 
 
+typedef asn1Real T_Double;
 
-typedef double T_Double;
-
-#define T_Double_REQUIRED_BYTES_FOR_ENCODING       13 
-#define T_Double_REQUIRED_BITS_FOR_ENCODING        104
-#define T_Double_REQUIRED_BYTES_FOR_ACN_ENCODING   13 
-#define T_Double_REQUIRED_BITS_FOR_ACN_ENCODING    104
-#define T_Double_REQUIRED_BYTES_FOR_XER_ENCODING   71
 
 void T_Double_Initialize(T_Double* pVal);
-flag T_Double_IsConstraintValid(const T_Double* val, int* pErrCode);
-#ifndef ERR_T_Double 
-#define ERR_T_Double		1001  /*(-1.79769313486231570000E+308 .. 1.79769313486231570000E+308)*/
-#endif
 
-typedef double T_Float;
+#define ERR_T_DOUBLE		349  /**/
+flag T_Double_IsConstraintValid(const T_Double* pVal, int* pErrCode);
 
-#define T_Float_REQUIRED_BYTES_FOR_ENCODING       13 
-#define T_Float_REQUIRED_BITS_FOR_ENCODING        104
-#define T_Float_REQUIRED_BYTES_FOR_ACN_ENCODING   13 
-#define T_Float_REQUIRED_BITS_FOR_ACN_ENCODING    104
-#define T_Float_REQUIRED_BYTES_FOR_XER_ENCODING   69
+#define ERR_UPER_ENCODE_T_DOUBLE		350  /**/
+#define T_Double_REQUIRED_BYTES_FOR_ENCODING       13 
+#define T_Double_REQUIRED_BITS_FOR_ENCODING        104
+
+flag T_Double_Encode(const T_Double* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_DOUBLE		351  /**/
+flag T_Double_Decode(T_Double* pVal, BitStream* pBitStrm, int* pErrCode);
+typedef asn1Real T_Float;
+
 
 void T_Float_Initialize(T_Float* pVal);
-flag T_Float_IsConstraintValid(const T_Float* val, int* pErrCode);
-#ifndef ERR_T_Float 
-#define ERR_T_Float		1002  /*(-3.40282346600000020000E+038 .. 3.40282346600000020000E+038)*/
-#endif
 
+#define ERR_T_FLOAT		356  /**/
+flag T_Float_IsConstraintValid(const T_Float* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_FLOAT		357  /**/
+#define T_Float_REQUIRED_BYTES_FOR_ENCODING       13 
+#define T_Float_REQUIRED_BITS_FOR_ENCODING        104
+
+flag T_Float_Encode(const T_Float* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_FLOAT		358  /**/
+flag T_Float_Decode(T_Float* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccSint T_Int16;
 
-#define T_Int16_REQUIRED_BYTES_FOR_ENCODING       2 
-#define T_Int16_REQUIRED_BITS_FOR_ENCODING        16
-#define T_Int16_REQUIRED_BYTES_FOR_ACN_ENCODING   2 
-#define T_Int16_REQUIRED_BITS_FOR_ACN_ENCODING    16
-#define T_Int16_REQUIRED_BYTES_FOR_XER_ENCODING   39
 
 void T_Int16_Initialize(T_Int16* pVal);
-flag T_Int16_IsConstraintValid(const T_Int16* val, int* pErrCode);
-#ifndef ERR_T_Int16 
-#define ERR_T_Int16		1003  /*(-32768 .. 32767)*/
-#endif
 
+#define ERR_T_INT16		363  /**/
+flag T_Int16_IsConstraintValid(const T_Int16* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_INT16		364  /**/
+#define T_Int16_REQUIRED_BYTES_FOR_ENCODING       2 
+#define T_Int16_REQUIRED_BITS_FOR_ENCODING        16
+
+flag T_Int16_Encode(const T_Int16* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_INT16		365  /**/
+flag T_Int16_Decode(T_Int16* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint T_UInt16;
 
-#define T_UInt16_REQUIRED_BYTES_FOR_ENCODING       2 
-#define T_UInt16_REQUIRED_BITS_FOR_ENCODING        16
-#define T_UInt16_REQUIRED_BYTES_FOR_ACN_ENCODING   2 
-#define T_UInt16_REQUIRED_BITS_FOR_ACN_ENCODING    16
-#define T_UInt16_REQUIRED_BYTES_FOR_XER_ENCODING   41
 
 void T_UInt16_Initialize(T_UInt16* pVal);
-flag T_UInt16_IsConstraintValid(const T_UInt16* val, int* pErrCode);
-#ifndef ERR_T_UInt16 
-#define ERR_T_UInt16		1004  /*(0 .. 65535)*/
-#endif
 
+#define ERR_T_UINT16		370  /**/
+flag T_UInt16_IsConstraintValid(const T_UInt16* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_UINT16		371  /**/
+#define T_UInt16_REQUIRED_BYTES_FOR_ENCODING       2 
+#define T_UInt16_REQUIRED_BITS_FOR_ENCODING        16
+
+flag T_UInt16_Encode(const T_UInt16* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_UINT16		372  /**/
+flag T_UInt16_Decode(T_UInt16* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint T_UInt64;
 
-#define T_UInt64_REQUIRED_BYTES_FOR_ENCODING       8 
-#define T_UInt64_REQUIRED_BITS_FOR_ENCODING        63
-#define T_UInt64_REQUIRED_BYTES_FOR_ACN_ENCODING   8 
-#define T_UInt64_REQUIRED_BITS_FOR_ACN_ENCODING    63
-#define T_UInt64_REQUIRED_BYTES_FOR_XER_ENCODING   41
 
 void T_UInt64_Initialize(T_UInt64* pVal);
-flag T_UInt64_IsConstraintValid(const T_UInt64* val, int* pErrCode);
-#ifndef ERR_T_UInt64 
-#define ERR_T_UInt64		1005  /*(0 .. 9223372036854775807)*/
-#endif
 
+#define ERR_T_UINT64		377  /**/
+flag T_UInt64_IsConstraintValid(const T_UInt64* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_UINT64		378  /**/
+#define T_UInt64_REQUIRED_BYTES_FOR_ENCODING       8 
+#define T_UInt64_REQUIRED_BITS_FOR_ENCODING        63
+
+flag T_UInt64_Encode(const T_UInt64* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_UINT64		379  /**/
+flag T_UInt64_Decode(T_UInt64* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccSint T_Int64;
 
-#define T_Int64_REQUIRED_BYTES_FOR_ENCODING       8 
-#define T_Int64_REQUIRED_BITS_FOR_ENCODING        64
-#define T_Int64_REQUIRED_BYTES_FOR_ACN_ENCODING   8 
-#define T_Int64_REQUIRED_BITS_FOR_ACN_ENCODING    64
-#define T_Int64_REQUIRED_BYTES_FOR_XER_ENCODING   39
 
 void T_Int64_Initialize(T_Int64* pVal);
-flag T_Int64_IsConstraintValid(const T_Int64* val, int* pErrCode);
-#ifndef ERR_T_Int64 
-#define ERR_T_Int64		1006  /*(-9223372036854775807 .. 9223372036854775807)*/
-#endif
 
-typedef struct {    int nCount; 
+#define ERR_T_INT64		384  /**/
+flag T_Int64_IsConstraintValid(const T_Int64* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_INT64		385  /**/
+#define T_Int64_REQUIRED_BYTES_FOR_ENCODING       8 
+#define T_Int64_REQUIRED_BITS_FOR_ENCODING        64
+
+flag T_Int64_Encode(const T_Int64* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_INT64		386  /**/
+flag T_Int64_Decode(T_Int64* pVal, BitStream* pBitStrm, int* pErrCode);
+typedef struct {
+    int nCount; 
     
     byte arr[256];
 } T_String;
 
-#define T_String_REQUIRED_BYTES_FOR_ENCODING       258 
-#define T_String_REQUIRED_BITS_FOR_ENCODING        2057
-#define T_String_REQUIRED_BYTES_FOR_ACN_ENCODING   258 
-#define T_String_REQUIRED_BITS_FOR_ACN_ENCODING    2057
-#define T_String_REQUIRED_BYTES_FOR_XER_ENCODING   533
 
 void T_String_Initialize(T_String* pVal);
-flag T_String_IsConstraintValid(const T_String* val, int* pErrCode);
-#ifndef ERR_T_String 
-#define ERR_T_String		1007  /*(SIZE(0 .. maxSize-T-String))*/
-#endif
+
+#define ERR_T_STRING		391  /**/
+flag T_String_IsConstraintValid(const T_String* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_STRING		392  /**/
+#define T_String_REQUIRED_BYTES_FOR_ENCODING       258 
+#define T_String_REQUIRED_BITS_FOR_ENCODING        2057
+
+flag T_String_Encode(const T_String* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_STRING		393  /**/
+flag T_String_Decode(T_String* pVal, BitStream* pBitStrm, int* pErrCode);
 
 extern const T_UInt32 maxSize_T_String; 
 
@@ -120,20 +135,7 @@ extern const T_UInt32 maxSize_T_String;
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag T_Double_Encode(const T_Double* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_Double_Decode(T_Double* pVal, BitStream* pBitStrm, int* pErrCode);
-flag T_Float_Encode(const T_Float* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_Float_Decode(T_Float* pVal, BitStream* pBitStrm, int* pErrCode);
-flag T_Int16_Encode(const T_Int16* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_Int16_Decode(T_Int16* pVal, BitStream* pBitStrm, int* pErrCode);
-flag T_UInt16_Encode(const T_UInt16* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_UInt16_Decode(T_UInt16* pVal, BitStream* pBitStrm, int* pErrCode);
-flag T_UInt64_Encode(const T_UInt64* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_UInt64_Decode(T_UInt64* pVal, BitStream* pBitStrm, int* pErrCode);
-flag T_Int64_Encode(const T_Int64* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_Int64_Decode(T_Int64* pVal, BitStream* pBitStrm, int* pErrCode);
-flag T_String_Encode(const T_String* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag T_String_Decode(T_String* pVal, BitStream* pBitStrm, int* pErrCode); 
+ 
 
 
 #ifdef  __cplusplus

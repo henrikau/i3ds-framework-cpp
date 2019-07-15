@@ -11,40 +11,74 @@ extern "C" {
 #endif
 
 
-
+/*-- PlanarRegion --------------------------------------------*/
 typedef struct {
     T_UInt16 offset_x;
     T_UInt16 offset_y;
     T_UInt16 size_x;
     T_UInt16 size_y;
+
 } PlanarRegion;
 
+void PlanarRegion_Initialize(PlanarRegion* pVal);
+
+#define ERR_PLANARREGION		2724  /**/
+#define ERR_PLANARREGION_OFFSET_X		2680  /**/
+#define ERR_PLANARREGION_OFFSET_Y		2691  /**/
+#define ERR_PLANARREGION_SIZE_X		2702  /**/
+#define ERR_PLANARREGION_SIZE_Y		2713  /**/
+flag PlanarRegion_IsConstraintValid(const PlanarRegion* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_PLANARREGION		2725  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_OFFSET_X_2		2687  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_OFFSET_Y_2		2698  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_SIZE_X_2		2709  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_SIZE_Y_2		2720  /**/
 #define PlanarRegion_REQUIRED_BYTES_FOR_ENCODING       8 
 #define PlanarRegion_REQUIRED_BITS_FOR_ENCODING        64
-#define PlanarRegion_REQUIRED_BYTES_FOR_ACN_ENCODING   8 
-#define PlanarRegion_REQUIRED_BITS_FOR_ACN_ENCODING    64
-#define PlanarRegion_REQUIRED_BYTES_FOR_XER_ENCODING   185
 
-void PlanarRegion_Initialize(PlanarRegion* pVal);
-flag PlanarRegion_IsConstraintValid(const PlanarRegion* val, int* pErrCode);
+flag PlanarRegion_Encode(const PlanarRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-
+#define ERR_UPER_DECODE_PLANARREGION		2726  /**/
+#define ERR_UPER_DECODE_PLANARREGION_OFFSET_X_2		2688  /**/
+#define ERR_UPER_DECODE_PLANARREGION_OFFSET_Y_2		2699  /**/
+#define ERR_UPER_DECODE_PLANARREGION_SIZE_X_2		2710  /**/
+#define ERR_UPER_DECODE_PLANARREGION_SIZE_Y_2		2721  /**/
+flag PlanarRegion_Decode(PlanarRegion* pVal, BitStream* pBitStrm, int* pErrCode);
+/*-- PolarRegion --------------------------------------------*/
 typedef struct {
     T_Float offset_x;
     T_Float offset_y;
     T_Float size_x;
     T_Float size_y;
+
 } PolarRegion;
 
+void PolarRegion_Initialize(PolarRegion* pVal);
+
+#define ERR_POLARREGION		2775  /**/
+#define ERR_POLARREGION_OFFSET_X		2731  /**/
+#define ERR_POLARREGION_OFFSET_Y		2742  /**/
+#define ERR_POLARREGION_SIZE_X		2753  /**/
+#define ERR_POLARREGION_SIZE_Y		2764  /**/
+flag PolarRegion_IsConstraintValid(const PolarRegion* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_POLARREGION		2776  /**/
+#define ERR_UPER_ENCODE_POLARREGION_OFFSET_X_2		2738  /**/
+#define ERR_UPER_ENCODE_POLARREGION_OFFSET_Y_2		2749  /**/
+#define ERR_UPER_ENCODE_POLARREGION_SIZE_X_2		2760  /**/
+#define ERR_UPER_ENCODE_POLARREGION_SIZE_Y_2		2771  /**/
 #define PolarRegion_REQUIRED_BYTES_FOR_ENCODING       52 
 #define PolarRegion_REQUIRED_BITS_FOR_ENCODING        416
-#define PolarRegion_REQUIRED_BYTES_FOR_ACN_ENCODING   52 
-#define PolarRegion_REQUIRED_BITS_FOR_ACN_ENCODING    416
-#define PolarRegion_REQUIRED_BYTES_FOR_XER_ENCODING   303
 
-void PolarRegion_Initialize(PolarRegion* pVal);
-flag PolarRegion_IsConstraintValid(const PolarRegion* val, int* pErrCode);
+flag PolarRegion_Encode(const PolarRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
+#define ERR_UPER_DECODE_POLARREGION		2777  /**/
+#define ERR_UPER_DECODE_POLARREGION_OFFSET_X_2		2739  /**/
+#define ERR_UPER_DECODE_POLARREGION_OFFSET_Y_2		2750  /**/
+#define ERR_UPER_DECODE_POLARREGION_SIZE_X_2		2761  /**/
+#define ERR_UPER_DECODE_POLARREGION_SIZE_Y_2		2772  /**/
+flag PolarRegion_Decode(PolarRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 
  
 
@@ -53,10 +87,7 @@ flag PolarRegion_IsConstraintValid(const PolarRegion* val, int* pErrCode);
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag PlanarRegion_Encode(const PlanarRegion* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag PlanarRegion_Decode(PlanarRegion* pVal, BitStream* pBitStrm, int* pErrCode);
-flag PolarRegion_Encode(const PolarRegion* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag PolarRegion_Decode(PolarRegion* pVal, BitStream* pBitStrm, int* pErrCode); 
+ 
 
 
 #ifdef  __cplusplus

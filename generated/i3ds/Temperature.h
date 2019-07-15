@@ -12,20 +12,28 @@ extern "C" {
 #endif
 
 
-
+/*-- Temperature --------------------------------------------*/
 typedef struct {
     T_Double kelvin;
+
 } Temperature;
 
+void Temperature_Initialize(Temperature* pVal);
+
+#define ERR_TEMPERATURE		444  /**/
+#define ERR_TEMPERATURE_KELVIN		433  /**/
+flag Temperature_IsConstraintValid(const Temperature* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_TEMPERATURE		445  /**/
+#define ERR_UPER_ENCODE_TEMPERATURE_KELVIN_2		440  /**/
 #define Temperature_REQUIRED_BYTES_FOR_ENCODING       13 
 #define Temperature_REQUIRED_BITS_FOR_ENCODING        104
-#define Temperature_REQUIRED_BYTES_FOR_ACN_ENCODING   13 
-#define Temperature_REQUIRED_BITS_FOR_ACN_ENCODING    104
-#define Temperature_REQUIRED_BYTES_FOR_XER_ENCODING   94
 
-void Temperature_Initialize(Temperature* pVal);
-flag Temperature_IsConstraintValid(const Temperature* val, int* pErrCode);
+flag Temperature_Encode(const Temperature* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
+#define ERR_UPER_DECODE_TEMPERATURE		446  /**/
+#define ERR_UPER_DECODE_TEMPERATURE_KELVIN_2		441  /**/
+flag Temperature_Decode(Temperature* pVal, BitStream* pBitStrm, int* pErrCode);
 
  
 
@@ -34,8 +42,7 @@ flag Temperature_IsConstraintValid(const Temperature* val, int* pErrCode);
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag Temperature_Encode(const Temperature* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag Temperature_Decode(Temperature* pVal, BitStream* pBitStrm, int* pErrCode); 
+ 
 
 
 #ifdef  __cplusplus
