@@ -113,15 +113,11 @@ endif (NOT CMAKE_C_FLAGS)
 # Add subdirectories with sources of the framework
 ################################################################################
 
-if (GENERATE_ASN)
-  include_directories (BEFORE "libi3ds/include/")
-  include_directories (BEFORE "${CMAKE_CURRENT_BINARY_DIR}/libi3ds")
-else (GENERATE_ASN)
-  include_directories (BEFORE "libi3ds/include/")
-  include_directories (BEFORE "generated")
-endif (GENERATE_ASN)
+include_directories (BEFORE "libi3ds/include/")
+include_directories (BEFORE "generated")
 
 add_subdirectory (libi3ds)
+
 if (BUILD_TOOLS)
   add_subdirectory (services)
   add_subdirectory (tools)

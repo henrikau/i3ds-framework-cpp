@@ -9,58 +9,8 @@ if (BUILD_TESTS OR BUILD_TOOLS)
 
 endif (BUILD_TESTS OR BUILD_TOOLS)
 
-################################################################################
-# ASN.1 generation
-################################################################################
-if (GENERATE_ASN)
-  find_package (ASN1CC REQUIRED)
-
-  if ("${ASN1CC_EXECUTABLE}" STREQUAL "" OR "${ASN1CC_EXECUTABLE}" STREQUAL "ASN1CC_EXECUTABLE-NOTFOUND")
-    MESSAGE(FATAL_ERROR "ASN.1 compiler not found.\n"
-      "Please specify the ASN1CC_SRC_ROOT_FOLDER or set GENERATE_ASN=OFF")
-  endif()
-
-  set (ESROCOS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/esrocos/types-base/asn)
-  set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
-  set (I3DS_BASE_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-base/asn)
-  set (I3DS_EXTRA_DIR ${PROJECT_SOURCE_DIR}/asn/i3ds/types-extra/asn)
-
-  set (ASN1_FILES
-    ${ESROCOS_BASE_DIR}/Eigen.asn
-    ${ESROCOS_BASE_DIR}/Point.asn
-    ${ESROCOS_BASE_DIR}/taste-extended.asn
-    ${ESROCOS_BASE_DIR}/taste-types.asn
-    ${ESROCOS_BASE_DIR}/Temperature.asn
-    ${ESROCOS_BASE_DIR}/Time.asn
-    ${I3DS_BASE_DIR}/Analog.asn
-    ${I3DS_BASE_DIR}/Common.asn
-    ${I3DS_BASE_DIR}/DepthMap.asn
-    ${I3DS_BASE_DIR}/IMU.asn
-    ${I3DS_BASE_DIR}/PointCloud.asn
-    ${I3DS_BASE_DIR}/Sensor.asn
-    ${I3DS_BASE_DIR}/Camera.asn
-    ${I3DS_BASE_DIR}/Frame.asn
-    ${I3DS_BASE_DIR}/LIDAR.asn
-    ${I3DS_BASE_DIR}/Radar.asn
-    ${I3DS_BASE_DIR}/Region.asn
-    ${I3DS_BASE_DIR}/SampleAttribute.asn
-    ${I3DS_BASE_DIR}/StarTracker.asn
-    ${I3DS_BASE_DIR}/ToFCamera.asn
-    ${I3DS_EXTRA_DIR}/Trigger.asn
-    ${I3DS_EXTRA_DIR}/Power.asn
-    ${I3DS_EXTRA_DIR}/Flash.asn
-    )
-
-  set (ASN_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/i3ds")
-
-  asn1cc_generate_c (ASN1_SRCS ASN1_HDRS "${ASN_OUTPUT_DIR}" ${ASN1_FILES})
-
-else (GENERATE_ASN)
-
-  file(GLOB ASN1_SRCS ../generated/i3ds/*.c)
-  file(GLOB ASN1_HDRS ../generated/i3ds/*.h)
-
-endif (GENERATE_ASN)
+file(GLOB ASN1_SRCS ../generated/i3ds/*.c)
+file(GLOB ASN1_HDRS ../generated/i3ds/*.h)
 
 ################################################################################
 # libi3ds
@@ -193,4 +143,5 @@ if (BUILD_TESTS)
     target_link_libraries (${t} i3ds)
     add_test(${t} ${CMAKE_CURRENT_BINARY_DIR}/${t})
   endforeach(t)
+
 endif (BUILD_TESTS)
