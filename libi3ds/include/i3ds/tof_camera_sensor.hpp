@@ -17,6 +17,7 @@
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
 #include <i3ds/topic.hpp>
+#include <i3ds/depthmap.hpp>
 
 namespace i3ds
 {
@@ -24,7 +25,6 @@ namespace i3ds
 CODEC(ToFRegion);
 CODEC(ToFRange);
 CODEC(ToFConfiguration);
-CODEC(ToFMeasurement400K);
 
 class ToFCamera : public Sensor
 {
@@ -39,7 +39,7 @@ public:
   typedef Query  <18, ToFConfigurationCodec> ConfigurationService;
 
   // ToFCamera topics.
-  typedef Topic<128, ToFMeasurement400KCodec> MeasurementTopic;
+  typedef Topic<128, DepthMapCodec> MeasurementTopic;
 
   // Constructor and destructor.
   ToFCamera(NodeID node) : Sensor(node) {};

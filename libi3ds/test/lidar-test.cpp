@@ -83,12 +83,8 @@ int received;
 void
 handle_measurement(LIDAR::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
+  BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp);
 
-  BOOST_CHECK_EQUAL(data.region.offset_x, -300.0);
-  BOOST_CHECK_EQUAL(data.region.offset_y, -200.0);
-  BOOST_CHECK_EQUAL(data.region.size_x, 600.0);
-  BOOST_CHECK_EQUAL(data.region.size_y, 400.0);
   received++;
 }
 

@@ -18,80 +18,80 @@ typedef T_Float SensorGain;
 
 void SensorGain_Initialize(SensorGain* pVal);
 
-#define ERR_SENSORGAIN		1255  /**/
+#define ERR_SENSORGAIN		1606  /**/
 flag SensorGain_IsConstraintValid(const SensorGain* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_SENSORGAIN_2		1262  /**/
+#define ERR_UPER_ENCODE_SENSORGAIN_2		1613  /**/
 #define SensorGain_REQUIRED_BYTES_FOR_ENCODING       13 
 #define SensorGain_REQUIRED_BITS_FOR_ENCODING        104
 
 flag SensorGain_Encode(const SensorGain* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_SENSORGAIN_2		1263  /**/
+#define ERR_UPER_DECODE_SENSORGAIN_2		1614  /**/
 flag SensorGain_Decode(SensorGain* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef T_UInt16 PatternSequence;
 
 
 void PatternSequence_Initialize(PatternSequence* pVal);
 
-#define ERR_PATTERNSEQUENCE		1468  /**/
+#define ERR_PATTERNSEQUENCE		1819  /**/
 flag PatternSequence_IsConstraintValid(const PatternSequence* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_PATTERNSEQUENCE_2		1475  /**/
+#define ERR_UPER_ENCODE_PATTERNSEQUENCE_2		1826  /**/
 #define PatternSequence_REQUIRED_BYTES_FOR_ENCODING       2 
 #define PatternSequence_REQUIRED_BITS_FOR_ENCODING        16
 
 flag PatternSequence_Encode(const PatternSequence* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_PATTERNSEQUENCE_2		1476  /**/
+#define ERR_UPER_DECODE_PATTERNSEQUENCE_2		1827  /**/
 flag PatternSequence_Decode(PatternSequence* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef T_UInt16 PatternID;
 
 
 void PatternID_Initialize(PatternID* pVal);
 
-#define ERR_PATTERNID		1479  /**/
+#define ERR_PATTERNID		1830  /**/
 flag PatternID_IsConstraintValid(const PatternID* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_PATTERNID_2		1486  /**/
+#define ERR_UPER_ENCODE_PATTERNID_2		1837  /**/
 #define PatternID_REQUIRED_BYTES_FOR_ENCODING       2 
 #define PatternID_REQUIRED_BITS_FOR_ENCODING        16
 
 flag PatternID_Encode(const PatternID* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_PATTERNID_2		1487  /**/
+#define ERR_UPER_DECODE_PATTERNID_2		1838  /**/
 flag PatternID_Decode(PatternID* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef T_UInt8 FlashStrength;
 
 
 void FlashStrength_Initialize(FlashStrength* pVal);
 
-#define ERR_FLASHSTRENGTH		1351  /**/
+#define ERR_FLASHSTRENGTH		1702  /**/
 flag FlashStrength_IsConstraintValid(const FlashStrength* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_FLASHSTRENGTH_2		1358  /**/
+#define ERR_UPER_ENCODE_FLASHSTRENGTH_2		1709  /**/
 #define FlashStrength_REQUIRED_BYTES_FOR_ENCODING       1 
 #define FlashStrength_REQUIRED_BITS_FOR_ENCODING        8
 
 flag FlashStrength_Encode(const FlashStrength* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_FLASHSTRENGTH_2		1359  /**/
+#define ERR_UPER_DECODE_FLASHSTRENGTH_2		1710  /**/
 flag FlashStrength_Decode(FlashStrength* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef T_UInt32 ShutterTime;
 
 
 void ShutterTime_Initialize(ShutterTime* pVal);
 
-#define ERR_SHUTTERTIME		1244  /**/
+#define ERR_SHUTTERTIME		1595  /**/
 flag ShutterTime_IsConstraintValid(const ShutterTime* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_SHUTTERTIME_2		1251  /**/
+#define ERR_UPER_ENCODE_SHUTTERTIME_2		1602  /**/
 #define ShutterTime_REQUIRED_BYTES_FOR_ENCODING       4 
 #define ShutterTime_REQUIRED_BITS_FOR_ENCODING        32
 
 flag ShutterTime_Encode(const ShutterTime* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_SHUTTERTIME_2		1252  /**/
+#define ERR_UPER_DECODE_SHUTTERTIME_2		1603  /**/
 flag ShutterTime_Decode(ShutterTime* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraExposure --------------------------------------------*/
 typedef struct {
@@ -102,22 +102,22 @@ typedef struct {
 
 void CameraExposure_Initialize(CameraExposure* pVal);
 
-#define ERR_CAMERAEXPOSURE		1296  /**/
-#define ERR_CAMERAEXPOSURE_SHUTTER		1266  /**/
-#define ERR_CAMERAEXPOSURE_GAIN		1281  /**/
+#define ERR_CAMERAEXPOSURE		1647  /**/
+#define ERR_CAMERAEXPOSURE_SHUTTER		1617  /**/
+#define ERR_CAMERAEXPOSURE_GAIN		1632  /**/
 flag CameraExposure_IsConstraintValid(const CameraExposure* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_CAMERAEXPOSURE		1297  /**/
-#define ERR_UPER_ENCODE_CAMERAEXPOSURE_SHUTTER_2_2		1277  /**/
-#define ERR_UPER_ENCODE_CAMERAEXPOSURE_GAIN_2_2		1292  /**/
+#define ERR_UPER_ENCODE_CAMERAEXPOSURE		1648  /**/
+#define ERR_UPER_ENCODE_CAMERAEXPOSURE_SHUTTER_2_2		1628  /**/
+#define ERR_UPER_ENCODE_CAMERAEXPOSURE_GAIN_2_2		1643  /**/
 #define CameraExposure_REQUIRED_BYTES_FOR_ENCODING       17 
 #define CameraExposure_REQUIRED_BITS_FOR_ENCODING        136
 
 flag CameraExposure_Encode(const CameraExposure* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_CAMERAEXPOSURE		1298  /**/
-#define ERR_UPER_DECODE_CAMERAEXPOSURE_SHUTTER_2_2		1278  /**/
-#define ERR_UPER_DECODE_CAMERAEXPOSURE_GAIN_2_2		1293  /**/
+#define ERR_UPER_DECODE_CAMERAEXPOSURE		1649  /**/
+#define ERR_UPER_DECODE_CAMERAEXPOSURE_SHUTTER_2_2		1629  /**/
+#define ERR_UPER_DECODE_CAMERAEXPOSURE_GAIN_2_2		1644  /**/
 flag CameraExposure_Decode(CameraExposure* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraAutoExposure --------------------------------------------*/
 typedef struct {
@@ -129,25 +129,25 @@ typedef struct {
 
 void CameraAutoExposure_Initialize(CameraAutoExposure* pVal);
 
-#define ERR_CAMERAAUTOEXPOSURE		1344  /**/
-#define ERR_CAMERAAUTOEXPOSURE_ENABLE		1303  /**/
-#define ERR_CAMERAAUTOEXPOSURE_MAX_SHUTTER		1314  /**/
-#define ERR_CAMERAAUTOEXPOSURE_MAX_GAIN		1329  /**/
+#define ERR_CAMERAAUTOEXPOSURE		1695  /**/
+#define ERR_CAMERAAUTOEXPOSURE_ENABLE		1654  /**/
+#define ERR_CAMERAAUTOEXPOSURE_MAX_SHUTTER		1665  /**/
+#define ERR_CAMERAAUTOEXPOSURE_MAX_GAIN		1680  /**/
 flag CameraAutoExposure_IsConstraintValid(const CameraAutoExposure* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE		1345  /**/
-#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE_ENABLE_2		1310  /**/
-#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE_MAX_SHUTTER_2_2		1325  /**/
-#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE_MAX_GAIN_2_2		1340  /**/
+#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE		1696  /**/
+#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE_ENABLE_2		1661  /**/
+#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE_MAX_SHUTTER_2_2		1676  /**/
+#define ERR_UPER_ENCODE_CAMERAAUTOEXPOSURE_MAX_GAIN_2_2		1691  /**/
 #define CameraAutoExposure_REQUIRED_BYTES_FOR_ENCODING       18 
 #define CameraAutoExposure_REQUIRED_BITS_FOR_ENCODING        137
 
 flag CameraAutoExposure_Encode(const CameraAutoExposure* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE		1346  /**/
-#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE_ENABLE_2		1311  /**/
-#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE_MAX_SHUTTER_2_2		1326  /**/
-#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE_MAX_GAIN_2_2		1341  /**/
+#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE		1697  /**/
+#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE_ENABLE_2		1662  /**/
+#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE_MAX_SHUTTER_2_2		1677  /**/
+#define ERR_UPER_DECODE_CAMERAAUTOEXPOSURE_MAX_GAIN_2_2		1692  /**/
 flag CameraAutoExposure_Decode(CameraAutoExposure* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraFlash --------------------------------------------*/
 typedef struct {
@@ -158,22 +158,22 @@ typedef struct {
 
 void CameraFlash_Initialize(CameraFlash* pVal);
 
-#define ERR_CAMERAFLASH		1388  /**/
-#define ERR_CAMERAFLASH_ENABLE		1362  /**/
-#define ERR_CAMERAFLASH_STRENGTH		1373  /**/
+#define ERR_CAMERAFLASH		1739  /**/
+#define ERR_CAMERAFLASH_ENABLE		1713  /**/
+#define ERR_CAMERAFLASH_STRENGTH		1724  /**/
 flag CameraFlash_IsConstraintValid(const CameraFlash* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_CAMERAFLASH		1389  /**/
-#define ERR_UPER_ENCODE_CAMERAFLASH_ENABLE_2		1369  /**/
-#define ERR_UPER_ENCODE_CAMERAFLASH_STRENGTH_2_2		1384  /**/
+#define ERR_UPER_ENCODE_CAMERAFLASH		1740  /**/
+#define ERR_UPER_ENCODE_CAMERAFLASH_ENABLE_2		1720  /**/
+#define ERR_UPER_ENCODE_CAMERAFLASH_STRENGTH_2_2		1735  /**/
 #define CameraFlash_REQUIRED_BYTES_FOR_ENCODING       2 
 #define CameraFlash_REQUIRED_BITS_FOR_ENCODING        9
 
 flag CameraFlash_Encode(const CameraFlash* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_CAMERAFLASH		1390  /**/
-#define ERR_UPER_DECODE_CAMERAFLASH_ENABLE_2		1370  /**/
-#define ERR_UPER_DECODE_CAMERAFLASH_STRENGTH_2_2		1385  /**/
+#define ERR_UPER_DECODE_CAMERAFLASH		1741  /**/
+#define ERR_UPER_DECODE_CAMERAFLASH_ENABLE_2		1721  /**/
+#define ERR_UPER_DECODE_CAMERAFLASH_STRENGTH_2_2		1736  /**/
 flag CameraFlash_Decode(CameraFlash* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraRegion --------------------------------------------*/
 typedef struct {
@@ -184,26 +184,26 @@ typedef struct {
 
 void CameraRegion_Initialize(CameraRegion* pVal);
 
-#define ERR_CAMERAREGION		1461  /**/
-#define ERR_CAMERAREGION_ENABLE		1395  /**/
-#define ERR_CAMERAREGION_REGION		1450  /**/
-#define ERR_CAMERAREGION_REGION_OFFSET_X		1406  /**/
-#define ERR_CAMERAREGION_REGION_OFFSET_Y		1417  /**/
-#define ERR_CAMERAREGION_REGION_SIZE_X		1428  /**/
-#define ERR_CAMERAREGION_REGION_SIZE_Y		1439  /**/
+#define ERR_CAMERAREGION		1812  /**/
+#define ERR_CAMERAREGION_ENABLE		1746  /**/
+#define ERR_CAMERAREGION_REGION		1801  /**/
+#define ERR_CAMERAREGION_REGION_OFFSET_X		1757  /**/
+#define ERR_CAMERAREGION_REGION_OFFSET_Y		1768  /**/
+#define ERR_CAMERAREGION_REGION_SIZE_X		1779  /**/
+#define ERR_CAMERAREGION_REGION_SIZE_Y		1790  /**/
 flag CameraRegion_IsConstraintValid(const CameraRegion* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_CAMERAREGION		1462  /**/
-#define ERR_UPER_ENCODE_CAMERAREGION_ENABLE_2		1402  /**/
-#define ERR_UPER_ENCODE_CAMERAREGION_REGION_2		1457  /**/
+#define ERR_UPER_ENCODE_CAMERAREGION		1813  /**/
+#define ERR_UPER_ENCODE_CAMERAREGION_ENABLE_2		1753  /**/
+#define ERR_UPER_ENCODE_CAMERAREGION_REGION_2		1808  /**/
 #define CameraRegion_REQUIRED_BYTES_FOR_ENCODING       9 
 #define CameraRegion_REQUIRED_BITS_FOR_ENCODING        65
 
 flag CameraRegion_Encode(const CameraRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_CAMERAREGION		1463  /**/
-#define ERR_UPER_DECODE_CAMERAREGION_ENABLE_2		1403  /**/
-#define ERR_UPER_DECODE_CAMERAREGION_REGION_2		1458  /**/
+#define ERR_UPER_DECODE_CAMERAREGION		1814  /**/
+#define ERR_UPER_DECODE_CAMERAREGION_ENABLE_2		1754  /**/
+#define ERR_UPER_DECODE_CAMERAREGION_REGION_2		1809  /**/
 flag CameraRegion_Decode(CameraRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraPattern --------------------------------------------*/
 typedef struct {
@@ -214,22 +214,22 @@ typedef struct {
 
 void CameraPattern_Initialize(CameraPattern* pVal);
 
-#define ERR_CAMERAPATTERN		1516  /**/
-#define ERR_CAMERAPATTERN_ENABLE		1490  /**/
-#define ERR_CAMERAPATTERN_SEQUENCE		1501  /**/
+#define ERR_CAMERAPATTERN		1867  /**/
+#define ERR_CAMERAPATTERN_ENABLE		1841  /**/
+#define ERR_CAMERAPATTERN_SEQUENCE		1852  /**/
 flag CameraPattern_IsConstraintValid(const CameraPattern* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_CAMERAPATTERN		1517  /**/
-#define ERR_UPER_ENCODE_CAMERAPATTERN_ENABLE_2		1497  /**/
-#define ERR_UPER_ENCODE_CAMERAPATTERN_SEQUENCE_2_2		1512  /**/
+#define ERR_UPER_ENCODE_CAMERAPATTERN		1868  /**/
+#define ERR_UPER_ENCODE_CAMERAPATTERN_ENABLE_2		1848  /**/
+#define ERR_UPER_ENCODE_CAMERAPATTERN_SEQUENCE_2_2		1863  /**/
 #define CameraPattern_REQUIRED_BYTES_FOR_ENCODING       3 
 #define CameraPattern_REQUIRED_BITS_FOR_ENCODING        17
 
 flag CameraPattern_Encode(const CameraPattern* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_CAMERAPATTERN		1518  /**/
-#define ERR_UPER_DECODE_CAMERAPATTERN_ENABLE_2		1498  /**/
-#define ERR_UPER_DECODE_CAMERAPATTERN_SEQUENCE_2_2		1513  /**/
+#define ERR_UPER_DECODE_CAMERAPATTERN		1869  /**/
+#define ERR_UPER_DECODE_CAMERAPATTERN_ENABLE_2		1849  /**/
+#define ERR_UPER_DECODE_CAMERAPATTERN_SEQUENCE_2_2		1864  /**/
 flag CameraPattern_Decode(CameraPattern* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraConfiguration --------------------------------------------*/
 typedef struct {
@@ -249,53 +249,53 @@ typedef struct {
 
 void CameraConfiguration_Initialize(CameraConfiguration* pVal);
 
-#define ERR_CAMERACONFIGURATION		1712  /**/
-#define ERR_CAMERACONFIGURATION_SHUTTER		1523  /**/
-#define ERR_CAMERACONFIGURATION_GAIN		1538  /**/
-#define ERR_CAMERACONFIGURATION_AUTO_EXPOSURE_ENABLED		1553  /**/
-#define ERR_CAMERACONFIGURATION_MAX_SHUTTER		1564  /**/
-#define ERR_CAMERACONFIGURATION_MAX_GAIN		1579  /**/
-#define ERR_CAMERACONFIGURATION_REGION_ENABLED		1594  /**/
-#define ERR_CAMERACONFIGURATION_REGION		1649  /**/
-#define ERR_CAMERACONFIGURATION_REGION_OFFSET_X		1605  /**/
-#define ERR_CAMERACONFIGURATION_REGION_OFFSET_Y		1616  /**/
-#define ERR_CAMERACONFIGURATION_REGION_SIZE_X		1627  /**/
-#define ERR_CAMERACONFIGURATION_REGION_SIZE_Y		1638  /**/
-#define ERR_CAMERACONFIGURATION_FLASH_ENABLED		1660  /**/
-#define ERR_CAMERACONFIGURATION_FLASH_STRENGTH		1671  /**/
-#define ERR_CAMERACONFIGURATION_PATTERN_ENABLED		1686  /**/
-#define ERR_CAMERACONFIGURATION_PATTERN_SEQUENCE		1697  /**/
+#define ERR_CAMERACONFIGURATION		2063  /**/
+#define ERR_CAMERACONFIGURATION_SHUTTER		1874  /**/
+#define ERR_CAMERACONFIGURATION_GAIN		1889  /**/
+#define ERR_CAMERACONFIGURATION_AUTO_EXPOSURE_ENABLED		1904  /**/
+#define ERR_CAMERACONFIGURATION_MAX_SHUTTER		1915  /**/
+#define ERR_CAMERACONFIGURATION_MAX_GAIN		1930  /**/
+#define ERR_CAMERACONFIGURATION_REGION_ENABLED		1945  /**/
+#define ERR_CAMERACONFIGURATION_REGION		2000  /**/
+#define ERR_CAMERACONFIGURATION_REGION_OFFSET_X		1956  /**/
+#define ERR_CAMERACONFIGURATION_REGION_OFFSET_Y		1967  /**/
+#define ERR_CAMERACONFIGURATION_REGION_SIZE_X		1978  /**/
+#define ERR_CAMERACONFIGURATION_REGION_SIZE_Y		1989  /**/
+#define ERR_CAMERACONFIGURATION_FLASH_ENABLED		2011  /**/
+#define ERR_CAMERACONFIGURATION_FLASH_STRENGTH		2022  /**/
+#define ERR_CAMERACONFIGURATION_PATTERN_ENABLED		2037  /**/
+#define ERR_CAMERACONFIGURATION_PATTERN_SEQUENCE		2048  /**/
 flag CameraConfiguration_IsConstraintValid(const CameraConfiguration* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION		1713  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_SHUTTER_2_2		1534  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_GAIN_2_2		1549  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_AUTO_EXPOSURE_ENABLED_2		1560  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_MAX_SHUTTER_2_2		1575  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_MAX_GAIN_2_2		1590  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_REGION_ENABLED_2		1601  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_REGION_2		1656  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_FLASH_ENABLED_2		1667  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_FLASH_STRENGTH_2_2		1682  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_PATTERN_ENABLED_2		1693  /**/
-#define ERR_UPER_ENCODE_CAMERACONFIGURATION_PATTERN_SEQUENCE_2_2		1708  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION		2064  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_SHUTTER_2_2		1885  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_GAIN_2_2		1900  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_AUTO_EXPOSURE_ENABLED_2		1911  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_MAX_SHUTTER_2_2		1926  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_MAX_GAIN_2_2		1941  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_REGION_ENABLED_2		1952  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_REGION_2		2007  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_FLASH_ENABLED_2		2018  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_FLASH_STRENGTH_2_2		2033  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_PATTERN_ENABLED_2		2044  /**/
+#define ERR_UPER_ENCODE_CAMERACONFIGURATION_PATTERN_SEQUENCE_2_2		2059  /**/
 #define CameraConfiguration_REQUIRED_BYTES_FOR_ENCODING       46 
 #define CameraConfiguration_REQUIRED_BITS_FOR_ENCODING        364
 
 flag CameraConfiguration_Encode(const CameraConfiguration* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_CAMERACONFIGURATION		1714  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_SHUTTER_2_2		1535  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_GAIN_2_2		1550  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_AUTO_EXPOSURE_ENABLED_2		1561  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_MAX_SHUTTER_2_2		1576  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_MAX_GAIN_2_2		1591  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_REGION_ENABLED_2		1602  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_REGION_2		1657  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_FLASH_ENABLED_2		1668  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_FLASH_STRENGTH_2_2		1683  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_PATTERN_ENABLED_2		1694  /**/
-#define ERR_UPER_DECODE_CAMERACONFIGURATION_PATTERN_SEQUENCE_2_2		1709  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION		2065  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_SHUTTER_2_2		1886  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_GAIN_2_2		1901  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_AUTO_EXPOSURE_ENABLED_2		1912  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_MAX_SHUTTER_2_2		1927  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_MAX_GAIN_2_2		1942  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_REGION_ENABLED_2		1953  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_REGION_2		2008  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_FLASH_ENABLED_2		2019  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_FLASH_STRENGTH_2_2		2034  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_PATTERN_ENABLED_2		2045  /**/
+#define ERR_UPER_DECODE_CAMERACONFIGURATION_PATTERN_SEQUENCE_2_2		2060  /**/
 flag CameraConfiguration_Decode(CameraConfiguration* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

@@ -33,8 +33,8 @@ i3ds::EmulatedLIDAR::EmulatedLIDAR(Context::Ptr context, NodeID node)
 
   MeasurementTopic::Codec::Initialize(frame_);
 
-  frame_.region.size_x = region_.size_x;
-  frame_.region.size_y = region_.size_y;
+  frame_.descriptor.width = 200000;
+  frame_.descriptor.height = 1;
 
   set_device_name("Emulated LIDAR");
 }
@@ -94,9 +94,8 @@ i3ds::EmulatedLIDAR::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated LIDAR with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp = timestamp_us;
-  frame_.attributes.validity = sample_valid;
-  frame_.region = region_;
+  frame_.descriptor.attributes.timestamp = timestamp_us;
+  frame_.descriptor.attributes.validity = sample_valid;
 
   publisher_.Send<MeasurementTopic>(frame_);
 

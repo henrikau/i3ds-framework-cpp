@@ -15,26 +15,27 @@ BOOST_AUTO_TEST_CASE(pointcloud_encdec)
   std::random_device r;
   std::default_random_engine gen(r());
   std::uniform_real_distribution<> dis_real(0.0, 1.0);
-  std::uniform_int_distribution<> dis_int(100, 1000);
 
-  size_t n_nums = dis_int(gen);
-  std::vector<Point> points;
-  points.reserve(n_nums);
-  for (size_t i=0; i < n_nums; i++)
-    {
-      Point p;
-      p.arr[0] = dis_real(gen);
-      p.arr[1] = dis_real(gen);
-      p.arr[2] = dis_real(gen);
-      points.push_back(p);
-    }
-
-  BOOST_CHECK_GT(points.size(), 99);
-  BOOST_CHECK_LT(points.size(), 1001);
+  size_t n_nums = 1000;
 
   PointCloud pc;
-  pc.append_points(points);
-  BOOST_CHECK_EQUAL(points.size(), pc.numPoints);
+
+  PointCloudCodec::Initialize(pc);
+  
+  pc.points.reserve(n_nums);
+
+  for (size_t i=0; i < n_nums; i++)
+    {
+      PointXYZ p;
+
+      p.x = dis_real(gen);
+      p.y = dis_real(gen);
+      p.z = dis_real(gen);
+
+      pc.points.push_back(p);
+    }
+
+  BOOST_CHECK_EQUAL(pc.points.size(), 1000);
 
   Message message;
   Encode<PointCloudCodec>(message, pc);
@@ -42,19 +43,16 @@ BOOST_AUTO_TEST_CASE(pointcloud_encdec)
 
   PointCloud pc2;
   Decode<PointCloudCodec>(message, pc2);
-  BOOST_CHECK_EQUAL(pc.numPoints, pc2.numPoints);
-  BOOST_CHECK_EQUAL(pc2.numPoints, n_nums);
 
-  auto const points2 = pc2.points();
-  for (size_t i=0; i < n_nums; i++)
+  BOOST_CHECK_EQUAL(pc.points.size(), pc2.points.size());
+
+  for (size_t i = 0; i < n_nums; i++)
     {
-      const auto p = points[i];
-      const auto p2 = points2[i];
-      for (size_t j=0; j < 3; j++)
-        {
-          BOOST_CHECK_EQUAL(p.arr[j], p2.arr[j]);
-        }
+      const auto p = pc.points[i];
+      const auto p2 = pc2.points[i];
+      
+      BOOST_CHECK_EQUAL(p.x, p2.x);
+      BOOST_CHECK_EQUAL(p.y, p2.y);
+      BOOST_CHECK_EQUAL(p.z, p2.z);
     }
-
-  BOOST_CHECK_EQUAL(points[0].arr[0], points2[0].arr[0]);
 }

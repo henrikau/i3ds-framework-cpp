@@ -12,34 +12,20 @@
 
 #include <i3ds/opencv_convertion.hpp>
 #include <i3ds/frame.hpp>
-
-#include <i3ds/tof_camera_sensor.hpp>
+#include <i3ds/depthmap.hpp>
 
 #include <iostream>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-/*
- * typedef struct
-{
-  SampleAttributes attributes;
-  ToFMeasurement400K_distances distances;
-  ToFMeasurement400K_validity validity;
-  PlanarRegion region;
-} ToFMeasurement400K;
- */
-
-
-/// For ToF camera
-/// TODO: Not yet sure what to implement of distances, bad measurements etc.
 cv::Mat
-i3ds::frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int image_number)
+i3ds::frame_to_cv_mat(const DepthMap& frame, int image_number)
 {
-  const int rows = frame.region.size_y;
-  const int cols = frame.region.size_x;
+  const int rows = frame.descriptor.height;
+  const int cols = frame.descriptor.width;
 
-  cv::Mat raw(rows, cols, CV_64FC1, (double*) &frame.distances);
+  cv::Mat raw(rows, cols, CV_32FC1, const_cast<float*>(frame.depths.data()));
 
   double max, min;
 

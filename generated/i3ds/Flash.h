@@ -11,21 +11,32 @@ extern "C" {
 #endif
 
 
-
+/*-- FlashSetup --------------------------------------------*/
 typedef struct {
-    ShutterTime duration;
-    FlashStrength strength;
+    T_UInt32 duration;
+    T_UInt8 strength;
+
 } FlashSetup;
 
+void FlashSetup_Initialize(FlashSetup* pVal);
+
+#define ERR_FLASHSETUP		3579  /**/
+#define ERR_FLASHSETUP_DURATION		3549  /**/
+#define ERR_FLASHSETUP_STRENGTH		3564  /**/
+flag FlashSetup_IsConstraintValid(const FlashSetup* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_FLASHSETUP		3580  /**/
+#define ERR_UPER_ENCODE_FLASHSETUP_DURATION_2_2		3560  /**/
+#define ERR_UPER_ENCODE_FLASHSETUP_STRENGTH_2_2		3575  /**/
 #define FlashSetup_REQUIRED_BYTES_FOR_ENCODING       5 
 #define FlashSetup_REQUIRED_BITS_FOR_ENCODING        40
-#define FlashSetup_REQUIRED_BYTES_FOR_ACN_ENCODING   5 
-#define FlashSetup_REQUIRED_BITS_FOR_ACN_ENCODING    40
-#define FlashSetup_REQUIRED_BYTES_FOR_XER_ENCODING   107
 
-void FlashSetup_Initialize(FlashSetup* pVal);
-flag FlashSetup_IsConstraintValid(const FlashSetup* val, int* pErrCode);
+flag FlashSetup_Encode(const FlashSetup* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
+#define ERR_UPER_DECODE_FLASHSETUP		3581  /**/
+#define ERR_UPER_DECODE_FLASHSETUP_DURATION_2_2		3561  /**/
+#define ERR_UPER_DECODE_FLASHSETUP_STRENGTH_2_2		3576  /**/
+flag FlashSetup_Decode(FlashSetup* pVal, BitStream* pBitStrm, int* pErrCode);
 
  
 
@@ -34,8 +45,7 @@ flag FlashSetup_IsConstraintValid(const FlashSetup* val, int* pErrCode);
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag FlashSetup_Encode(const FlashSetup* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag FlashSetup_Decode(FlashSetup* pVal, BitStream* pBitStrm, int* pErrCode); 
+ 
 
 
 #ifdef  __cplusplus

@@ -72,76 +72,75 @@ camera_test(std::string name,
             unsigned int size_x, unsigned int size_y, unsigned int pixel_size,
             unsigned int data_depth, bool stereo)
 {
-  auto camera_frame = std::make_shared<i3ds::FrameCodec::Data>();
+  auto frame = std::make_shared<i3ds::FrameCodec::Data>();
 
-  i3ds::FrameCodec::Initialize(*camera_frame);
+  i3ds::FrameCodec::Initialize(*frame);
 
-  camera_frame->descriptor.attributes.timestamp = 123456789;
-  camera_frame->descriptor.attributes.validity = sample_valid;
-  camera_frame->descriptor.region.size_x = size_x;
-  camera_frame->descriptor.region.size_y = size_y;
-  camera_frame->descriptor.pixel_size = pixel_size;
-  camera_frame->descriptor.data_depth = data_depth;
+  frame->descriptor.attributes.timestamp = 123456789;
+  frame->descriptor.attributes.validity = sample_valid;
+  frame->descriptor.region.size_x = size_x;
+  frame->descriptor.region.size_y = size_y;
+  frame->descriptor.pixel_size = pixel_size;
+  frame->descriptor.data_depth = data_depth;
 
-  unsigned int image_byte_count = i3ds::image_size(camera_frame->descriptor);
+  unsigned int image_byte_count = i3ds::image_size(frame->descriptor);
 
   byte* buffer = static_cast<byte*>(malloc(image_byte_count));
 
   memset(buffer, 127, image_byte_count);
 
-  camera_frame->append_image(buffer, image_byte_count);
+  frame->append_image(buffer, image_byte_count);
 
   if (stereo)
     {
-      camera_frame->append_image(buffer, image_byte_count);
+      frame->append_image(buffer, image_byte_count);
     }
 
-  run_test<i3ds::FrameCodec>(name, camera_frame, n_replications);
+  run_test<i3ds::FrameCodec>(name, frame, n_replications);
 
   free(buffer);
 }
 
-template <typename Codec>
 void
 lidar_test(unsigned int n_replications, unsigned int n_points)
 {
-  auto lidar_data = create_measurement<Codec>();
+  auto cloud = std::make_shared<i3ds::PointCloudCodec::Data>();
 
-  lidar_data->region.size_x = 2048;
-  lidar_data->region.size_y = 2048;
+  i3ds::PointCloudCodec::Initialize(*cloud);
+
+  cloud->descriptor.attributes.timestamp = 123456789;
+  cloud->descriptor.attributes.validity = sample_valid;
+  cloud->descriptor.width = n_points;
+  cloud->descriptor.height = 1;
 
   for (unsigned int i = 0; i < n_points; ++i)
     {
-      lidar_data->points.arr[i].arr[0] = M_PI;
-      lidar_data->points.arr[i].arr[1] = M_PI;
-      lidar_data->points.arr[i].arr[2] = M_PI;
-      lidar_data->points.arr[i].nCount = 3;
+      i3ds::PointXYZ p = {M_PI, M_PI, M_PI};
+      
+      cloud->points.push_back(p);
     }
 
-  lidar_data->points.nCount = n_points;
-
-  run_test<Codec>("lidar", lidar_data, n_replications);
+  run_test<i3ds::PointCloudCodec>("lidar", cloud, n_replications);
 }
 
-template <typename Codec>
 void
 radar_test(unsigned int n_replications, unsigned int n_points)
 {
-  auto radar_data = create_measurement<Codec>();
+  auto map = std::make_shared<i3ds::DepthMapCodec::Data>();
 
-  radar_data->region.size_x = 2048;
-  radar_data->region.size_y = 2048;
+  i3ds::DepthMapCodec::Initialize(*map);
+
+  map->descriptor.attributes.timestamp = 123456789;
+  map->descriptor.attributes.validity = sample_valid;
+  map->descriptor.width = 1000;
+  map->descriptor.height = n_points / 1000;
 
   for (unsigned int i = 0; i < n_points; ++i)
     {
-      radar_data->distances.arr[i] = M_PI;
-      radar_data->validity.arr[i] = depth_range_error; // Not 0
+      map->depths.push_back(M_PI);
     }
 
-  radar_data->distances.nCount = n_points;
-  radar_data->validity.nCount = n_points;
-
-  run_test<Codec>("radar", radar_data, n_replications);
+  run_test<i3ds::DepthMapCodec>("radar", map, n_replications);
 }
 
 template <typename Codec>
@@ -183,11 +182,11 @@ main(int argc, char *argv[])
   std::cerr << " [done]" << std::endl;
 
   std::cerr << "LIDAR 200K...";
-  lidar_test<i3ds::LIDARMeasurement750KCodec>(n_replications, 200000);
+  lidar_test(n_replications, 200000);
   std::cerr << " [done]" << std::endl;
 
   std::cerr << "Radar 400K...";
-  radar_test<i3ds::RadarMeasurement400KCodec>(n_replications, 400000);
+  radar_test(n_replications, 400000);
   std::cerr << " [done]" << std::endl;
 
   std::cerr << "Analog 1K...";
