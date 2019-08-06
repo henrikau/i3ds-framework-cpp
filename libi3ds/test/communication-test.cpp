@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <cstdlib>
 
 #include <i3ds/communication.hpp>
 #include <i3ds/exception.hpp>
@@ -103,6 +104,26 @@ struct F
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(addr_server_url_test)
+{
+    // Test url from env var
+    setenv("I3DS_ADDR_SRV_URL", "tcp://192.68.0.1:5000", 1);
+    Context::Ptr c1 = Context::Create();
+    BOOST_CHECK(c1->get_addr_srv_url() == "tcp://192.68.0.1:5000");
+
+    // Test url from string
+    Context::Ptr c2 = Context::Create("tcp://192.168.0.1:4000");
+    BOOST_CHECK(c2->get_addr_srv_url() == "tcp://192.168.0.1:4000");
+
+    // Test default url
+    unsetenv("I3DS_ADDR_SRV_URL");
+    Context::Ptr c3 = Context::Create();
+    BOOST_CHECK(c3->get_addr_srv_url() == Context::DEFAULT_ADDR_SRV_URL);
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -235,10 +256,23 @@ BOOST_AUTO_TEST_CASE(connect_to_address_from_config_file)
   client->Attach(node);
 
   // Attempt to attach to node id, not found in file
-  BOOST_CHECK_THROW(publisher->Attach(5432), CommunicationError);
+  BOOST_CHECK_THROW(publisher->Attach(5432), i3ds::CommunicationError);
 
   address_server.Stop();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(nonexisiting_address_server)
+{
+  i3ds::Context::Ptr c = i3ds::Context::Create("tcp://nonexisting_hostname:123456");
+
+  Socket::Ptr publisher = Socket::Publisher(c);
+
+  BOOST_CHECK_THROW(publisher->Attach(323), i3ds::CommunicationError);
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BOOST_AUTO_TEST_SUITE_END()

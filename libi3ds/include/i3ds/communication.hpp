@@ -83,12 +83,23 @@ public:
 
   typedef std::shared_ptr<Context> Ptr;
 
-  Context(std::string addr_srv_addr = "tcp://localhost:6000");
-  virtual ~Context() {};
+  // Constructor for Context
+  //
+  // The default constructor uses the environment variable I3DS_ADDR_SRV_URL as the address 
+  // of the address server. If it is not found, the default_addr_ string is used. 
+  // If the constructor taking a string is used, that overrides either.
+  Context();
+  Context(std::string addr_srv_url);
+  virtual ~Context() = default;
 
   static Ptr Create() {return std::make_shared<Context>();}
+  static Ptr Create(std::string addr_srv_url) {return std::make_shared<Context>(addr_srv_url);}
 
   std::string get_config(NodeID node, int type);
+
+  std::string get_addr_srv_url() const;
+
+  static const std::string DEFAULT_ADDR_SRV_URL;
 
 private:
 
@@ -96,8 +107,8 @@ private:
 
   zmq::context_t context_;
   zmq::socket_t address_socket_;
-  std::string addr_srv_addr_;
-  bool connected_to_addr_srv;
+  bool connected_to_addr_srv_;
+  std::string addr_srv_url_;
 
 };
 
