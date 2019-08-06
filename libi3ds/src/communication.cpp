@@ -110,6 +110,7 @@ i3ds::Context::Context(std::string addr_srv_url)
 std::string
 i3ds::Context::get_config(NodeID node, int type)
 {
+  std::lock_guard<std::mutex> lock(mutex_);
   if (!connected_to_addr_srv_)
     {
       int timeout_ms = 1000;

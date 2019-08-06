@@ -15,6 +15,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <mutex>
 #include <zmq.hpp>
 
 #include <i3ds/Common.h>
@@ -109,6 +110,7 @@ private:
   zmq::socket_t address_socket_;
   bool connected_to_addr_srv_;
   std::string addr_srv_url_;
+  std::mutex mutex_;
 
 };
 
