@@ -47,63 +47,132 @@ flag SeriesCount_Decode(SeriesCount* pVal, BitStream* pBitStrm, int* pErrCode)
 
 
 
-void AnalogMeasurement1K_samples_Initialize(AnalogMeasurement1K_samples* pVal)
+void Analog_data_format_t_Initialize(Analog_data_format_t* pVal)
 {
-    int i1;
 
-	i1 = 0;
-	while (i1< 1000) {
-	    T_Float_Initialize((&(pVal->arr[i1])));
-	    i1 = i1 + 1;
-	}
-	pVal->nCount = 0;
+	(*(pVal)) = analog_data_f;
 }
-void AnalogMeasurement1K_Initialize(AnalogMeasurement1K* pVal)
+
+flag Analog_data_format_t_IsConstraintValid(const Analog_data_format_t* pVal, int* pErrCode)
+{
+    flag ret = TRUE;
+	
+    ret = ((((((*(pVal)) == analog_data_f)) || (((*(pVal)) == analog_data_s)))) || (((*(pVal)) == analog_data_u)));
+    *pErrCode = ret ? 0 :  ERR_ANALOG_DATA_FORMAT_T; 
+
+	return ret;
+}
+
+flag Analog_data_format_t_Encode(const Analog_data_format_t* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+{
+    flag ret = TRUE;
+	ret = bCheckConstraints ? Analog_data_format_t_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	if (ret) {
+	    switch((*(pVal))) 
+	    {
+	        case analog_data_f:   
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 0, 0, 2);
+	        	break;
+	        case analog_data_s:   
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 1, 0, 2);
+	        	break;
+	        case analog_data_u:   
+	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 2, 0, 2);
+	        	break;
+	        default:                    /*COVERAGE_IGNORE*/
+	    	    *pErrCode = ERR_UPER_ENCODE_ANALOG_DATA_FORMAT_T; /*COVERAGE_IGNORE*/
+	    	    ret = FALSE;            /*COVERAGE_IGNORE*/
+	    }
+    } /*COVERAGE_IGNORE*/
+
+	
+    return ret;
+}
+
+flag Analog_data_format_t_Decode(Analog_data_format_t* pVal, BitStream* pBitStrm, int* pErrCode)
+{
+    flag ret = TRUE;
+
+	{
+	    asn1SccSint enumIndex;
+	    ret = BitStream_DecodeConstraintWholeNumber(pBitStrm, &enumIndex, 0, 2);
+	    *pErrCode = ret ? 0 : ERR_UPER_DECODE_ANALOG_DATA_FORMAT_T;
+	    if (ret) {
+	        switch(enumIndex) 
+	        {
+	            case 0: 
+	                (*(pVal)) = analog_data_f;
+	                break;
+	            case 1: 
+	                (*(pVal)) = analog_data_s;
+	                break;
+	            case 2: 
+	                (*(pVal)) = analog_data_u;
+	                break;
+	            default:                        /*COVERAGE_IGNORE*/
+		            *pErrCode = ERR_UPER_DECODE_ANALOG_DATA_FORMAT_T;     /*COVERAGE_IGNORE*/
+		            ret = FALSE;                /*COVERAGE_IGNORE*/
+	        }
+	    } else {
+	        (*(pVal)) = analog_data_f;             /*COVERAGE_IGNORE*/
+	    }
+	}
+
+	return ret  && Analog_data_format_t_IsConstraintValid(pVal, pErrCode);
+}
+
+
+
+void AnalogSeriesDescriptor_Initialize(AnalogSeriesDescriptor* pVal)
 {
 
 
 	/*set attributes */
 	SampleAttributes_Initialize((&(pVal->attributes)));
-	/*set samples */
-	AnalogMeasurement1K_samples_Initialize((&(pVal->samples)));
+	/*set data_format */
+	Analog_data_format_t_Initialize((&(pVal->data_format)));
+	/*set data_size */
+	T_UInt8_Initialize((&(pVal->data_size)));
+	/*set data_depth */
+	T_UInt8_Initialize((&(pVal->data_depth)));
 	/*set series */
 	T_UInt8_Initialize((&(pVal->series)));
 	/*set batch_size */
 	T_UInt32_Initialize((&(pVal->batch_size)));
 }
 
-flag AnalogMeasurement1K_IsConstraintValid(const AnalogMeasurement1K* pVal, int* pErrCode)
+flag AnalogSeriesDescriptor_IsConstraintValid(const AnalogSeriesDescriptor* pVal, int* pErrCode)
 {
     flag ret = TRUE;
     int i1;
 	
     ret = (-9223372036854775807LL <= pVal->attributes.timestamp);
-    *pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_TIMESTAMP; 
+    *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_TIMESTAMP; 
     if (ret) {
         ret = (((((pVal->attributes.validity == sample_empty)) || ((pVal->attributes.validity == sample_valid)))) || ((pVal->attributes.validity == sample_invalid)));
-        *pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_VALIDITY; 
+        *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_VALIDITY; 
         if (ret) {
             ret = (pVal->attributes.attributes.nCount <= 4);
-            *pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_ATTRIBUTES; 
+            *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_ATTRIBUTES; 
             if (ret) {
                 for(i1 = 0; ret && i1 < pVal->attributes.attributes.nCount; i1++) 
                 {
                 	ret = (pVal->attributes.attributes.arr[i1].attribute_key <= 255UL);
-                	*pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY; 
+                	*pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY; 
                 	if (ret) {
                 	    if (pVal->attributes.attributes.arr[i1].attribute_value.kind == discrete_value_PRESENT) {
                 	    	ret = (-9223372036854775807LL <= pVal->attributes.attributes.arr[i1].attribute_value.u.discrete_value);
-                	    	*pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE; 
+                	    	*pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE; 
                 	    }
                 	    if (ret) {
                 	        if (pVal->attributes.attributes.arr[i1].attribute_value.kind == real_value_PRESENT) {
                 	        	ret = ((-1.79769313486231570000E+308 <= pVal->attributes.attributes.arr[i1].attribute_value.u.real_value) && (pVal->attributes.attributes.arr[i1].attribute_value.u.real_value <= 1.79769313486231570000E+308));
-                	        	*pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE; 
+                	        	*pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE; 
                 	        }
                 	        if (ret) {
                 	            if (pVal->attributes.attributes.arr[i1].attribute_value.kind == string_value_PRESENT) {
                 	            	ret = (pVal->attributes.attributes.arr[i1].attribute_value.u.string_value.nCount <= 8);
-                	            	*pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE; 
+                	            	*pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE; 
                 	            }
                 	        }
                 	    }
@@ -113,21 +182,22 @@ flag AnalogMeasurement1K_IsConstraintValid(const AnalogMeasurement1K* pVal, int*
         }
     }
     if (ret) {
-        ret = (pVal->samples.nCount <= 1000);
-        *pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_SAMPLES; 
+        ret = (((((pVal->data_format == analog_data_f)) || ((pVal->data_format == analog_data_s)))) || ((pVal->data_format == analog_data_u)));
+        *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_DATA_FORMAT; 
         if (ret) {
-            for(i1 = 0; ret && i1 < pVal->samples.nCount; i1++) 
-            {
-            	ret = ((-3.40282346600000020000E+038 <= pVal->samples.arr[i1]) && (pVal->samples.arr[i1] <= 3.40282346600000020000E+038));
-            	*pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_SAMPLES_ELM; 
-            }
-        }
-        if (ret) {
-            ret = (pVal->series <= 255UL);
-            *pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_SERIES; 
+            ret = (pVal->data_size <= 255UL);
+            *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_DATA_SIZE; 
             if (ret) {
-                ret = (pVal->batch_size <= 4294967295UL);
-                *pErrCode = ret ? 0 :  ERR_ANALOGMEASUREMENT1K_BATCH_SIZE; 
+                ret = (pVal->data_depth <= 255UL);
+                *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_DATA_DEPTH; 
+                if (ret) {
+                    ret = (pVal->series <= 255UL);
+                    *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_SERIES; 
+                    if (ret) {
+                        ret = (pVal->batch_size <= 4294967295UL);
+                        *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_BATCH_SIZE; 
+                    }
+                }
             }
         }
     }
@@ -135,28 +205,30 @@ flag AnalogMeasurement1K_IsConstraintValid(const AnalogMeasurement1K* pVal, int*
 	return ret;
 }
 
-flag AnalogMeasurement1K_Encode(const AnalogMeasurement1K* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+flag AnalogSeriesDescriptor_Encode(const AnalogSeriesDescriptor* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
 {
     flag ret = TRUE;
-	int i1;
-	ret = bCheckConstraints ? AnalogMeasurement1K_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	ret = bCheckConstraints ? AnalogSeriesDescriptor_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret) {
 	    /*Encode attributes */
 	    ret = SampleAttributes_Encode((&(pVal->attributes)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
-	        /*Encode samples */
-	        BitStream_EncodeConstraintWholeNumber(pBitStrm, pVal->samples.nCount, 0, 1000);
-	        	
-	        for(i1=0; (i1 < (int)pVal->samples.nCount) && ret; i1++) 
-	        {
-	        	ret = T_Float_Encode((&(pVal->samples.arr[i1])), pBitStrm, pErrCode, FALSE);
-	        }
+	        /*Encode data_format */
+	        ret = Analog_data_format_t_Encode((&(pVal->data_format)), pBitStrm, pErrCode, FALSE);
 	        if (ret) {
-	            /*Encode series */
-	            ret = SeriesCount_Encode((&(pVal->series)), pBitStrm, pErrCode, FALSE);
+	            /*Encode data_size */
+	            ret = T_UInt8_Encode((&(pVal->data_size)), pBitStrm, pErrCode, FALSE);
 	            if (ret) {
-	                /*Encode batch_size */
-	                ret = BatchSize_Encode((&(pVal->batch_size)), pBitStrm, pErrCode, FALSE);
+	                /*Encode data_depth */
+	                ret = T_UInt8_Encode((&(pVal->data_depth)), pBitStrm, pErrCode, FALSE);
+	                if (ret) {
+	                    /*Encode series */
+	                    ret = SeriesCount_Encode((&(pVal->series)), pBitStrm, pErrCode, FALSE);
+	                    if (ret) {
+	                        /*Encode batch_size */
+	                        ret = BatchSize_Encode((&(pVal->batch_size)), pBitStrm, pErrCode, FALSE);
+	                    }
+	                }
 	            }
 	        }
 	    }
@@ -166,34 +238,33 @@ flag AnalogMeasurement1K_Encode(const AnalogMeasurement1K* pVal, BitStream* pBit
     return ret;
 }
 
-flag AnalogMeasurement1K_Decode(AnalogMeasurement1K* pVal, BitStream* pBitStrm, int* pErrCode)
+flag AnalogSeriesDescriptor_Decode(AnalogSeriesDescriptor* pVal, BitStream* pBitStrm, int* pErrCode)
 {
     flag ret = TRUE;
-	int i1;
-	asn1SccSint nCount;
 
 	/*Decode attributes */
 	ret = SampleAttributes_Decode((&(pVal->attributes)), pBitStrm, pErrCode);
 	if (ret) {
-	    /*Decode samples */
-	    ret = BitStream_DecodeConstraintWholeNumber(pBitStrm, &nCount, 0, 1000);
-	    *pErrCode = ret ? 0 : ERR_UPER_DECODE_ANALOGMEASUREMENT1K_SAMPLES;
-	    pVal->samples.nCount = (long)nCount;
-	    	
-	    for(i1=0; (i1 < (int)pVal->samples.nCount) && ret; i1++) 
-	    {
-	    	ret = T_Float_Decode((&(pVal->samples.arr[i1])), pBitStrm, pErrCode);
-	    }
+	    /*Decode data_format */
+	    ret = Analog_data_format_t_Decode((&(pVal->data_format)), pBitStrm, pErrCode);
 	    if (ret) {
-	        /*Decode series */
-	        ret = SeriesCount_Decode((&(pVal->series)), pBitStrm, pErrCode);
+	        /*Decode data_size */
+	        ret = T_UInt8_Decode((&(pVal->data_size)), pBitStrm, pErrCode);
 	        if (ret) {
-	            /*Decode batch_size */
-	            ret = BatchSize_Decode((&(pVal->batch_size)), pBitStrm, pErrCode);
+	            /*Decode data_depth */
+	            ret = T_UInt8_Decode((&(pVal->data_depth)), pBitStrm, pErrCode);
+	            if (ret) {
+	                /*Decode series */
+	                ret = SeriesCount_Decode((&(pVal->series)), pBitStrm, pErrCode);
+	                if (ret) {
+	                    /*Decode batch_size */
+	                    ret = BatchSize_Decode((&(pVal->batch_size)), pBitStrm, pErrCode);
+	                }
+	            }
 	        }
 	    }
 	}
 
-	return ret  && AnalogMeasurement1K_IsConstraintValid(pVal, pErrCode);
+	return ret  && AnalogSeriesDescriptor_IsConstraintValid(pVal, pErrCode);
 }
 

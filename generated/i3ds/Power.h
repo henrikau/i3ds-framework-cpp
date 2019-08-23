@@ -20,35 +20,35 @@ typedef struct {
 
 void PowerMask_Initialize(PowerMask* pVal);
 
-#define ERR_POWERMASK		3542  /**/
-#define ERR_POWERMASK_ELM		3531  /**/
+#define ERR_POWERMASK		3564  /**/
+#define ERR_POWERMASK_ELM		3553  /**/
 flag PowerMask_IsConstraintValid(const PowerMask* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_POWERMASK		3543  /**/
-#define ERR_UPER_ENCODE_POWERMASK_ELM_2		3538  /**/
+#define ERR_UPER_ENCODE_POWERMASK		3565  /**/
+#define ERR_UPER_ENCODE_POWERMASK_ELM_2		3560  /**/
 #define PowerMask_REQUIRED_BYTES_FOR_ENCODING       2 
 #define PowerMask_REQUIRED_BITS_FOR_ENCODING        16
 
 flag PowerMask_Encode(const PowerMask* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_POWERMASK		3544  /**/
-#define ERR_UPER_DECODE_POWERMASK_ELM_2		3539  /**/
+#define ERR_UPER_DECODE_POWERMASK		3566  /**/
+#define ERR_UPER_DECODE_POWERMASK_ELM_2		3561  /**/
 flag PowerMask_Decode(PowerMask* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint PowerOutput;
 
 
 void PowerOutput_Initialize(PowerOutput* pVal);
 
-#define ERR_POWEROUTPUT		3524  /**/
+#define ERR_POWEROUTPUT		3546  /**/
 flag PowerOutput_IsConstraintValid(const PowerOutput* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_POWEROUTPUT		3525  /**/
+#define ERR_UPER_ENCODE_POWEROUTPUT		3547  /**/
 #define PowerOutput_REQUIRED_BYTES_FOR_ENCODING       1 
 #define PowerOutput_REQUIRED_BITS_FOR_ENCODING        4
 
 flag PowerOutput_Encode(const PowerOutput* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_POWEROUTPUT		3526  /**/
+#define ERR_UPER_DECODE_POWEROUTPUT		3548  /**/
 flag PowerOutput_Decode(PowerOutput* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

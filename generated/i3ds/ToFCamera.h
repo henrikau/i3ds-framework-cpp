@@ -22,22 +22,22 @@ typedef struct {
 
 void ToFRange_Initialize(ToFRange* pVal);
 
-#define ERR_TOFRANGE		3198  /**/
-#define ERR_TOFRANGE_MIN_DEPTH		3176  /**/
-#define ERR_TOFRANGE_MAX_DEPTH		3187  /**/
+#define ERR_TOFRANGE		3220  /**/
+#define ERR_TOFRANGE_MIN_DEPTH		3198  /**/
+#define ERR_TOFRANGE_MAX_DEPTH		3209  /**/
 flag ToFRange_IsConstraintValid(const ToFRange* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_TOFRANGE		3199  /**/
-#define ERR_UPER_ENCODE_TOFRANGE_MIN_DEPTH_2		3183  /**/
-#define ERR_UPER_ENCODE_TOFRANGE_MAX_DEPTH_2		3194  /**/
+#define ERR_UPER_ENCODE_TOFRANGE		3221  /**/
+#define ERR_UPER_ENCODE_TOFRANGE_MIN_DEPTH_2		3205  /**/
+#define ERR_UPER_ENCODE_TOFRANGE_MAX_DEPTH_2		3216  /**/
 #define ToFRange_REQUIRED_BYTES_FOR_ENCODING       26 
 #define ToFRange_REQUIRED_BITS_FOR_ENCODING        208
 
 flag ToFRange_Encode(const ToFRange* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_TOFRANGE		3200  /**/
-#define ERR_UPER_DECODE_TOFRANGE_MIN_DEPTH_2		3184  /**/
-#define ERR_UPER_DECODE_TOFRANGE_MAX_DEPTH_2		3195  /**/
+#define ERR_UPER_DECODE_TOFRANGE		3222  /**/
+#define ERR_UPER_DECODE_TOFRANGE_MIN_DEPTH_2		3206  /**/
+#define ERR_UPER_DECODE_TOFRANGE_MAX_DEPTH_2		3217  /**/
 flag ToFRange_Decode(ToFRange* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- ToFRegion --------------------------------------------*/
 typedef struct {
@@ -48,26 +48,26 @@ typedef struct {
 
 void ToFRegion_Initialize(ToFRegion* pVal);
 
-#define ERR_TOFREGION		3169  /**/
-#define ERR_TOFREGION_ENABLE		3103  /**/
-#define ERR_TOFREGION_REGION		3158  /**/
-#define ERR_TOFREGION_REGION_OFFSET_X		3114  /**/
-#define ERR_TOFREGION_REGION_OFFSET_Y		3125  /**/
-#define ERR_TOFREGION_REGION_SIZE_X		3136  /**/
-#define ERR_TOFREGION_REGION_SIZE_Y		3147  /**/
+#define ERR_TOFREGION		3191  /**/
+#define ERR_TOFREGION_ENABLE		3125  /**/
+#define ERR_TOFREGION_REGION		3180  /**/
+#define ERR_TOFREGION_REGION_OFFSET_X		3136  /**/
+#define ERR_TOFREGION_REGION_OFFSET_Y		3147  /**/
+#define ERR_TOFREGION_REGION_SIZE_X		3158  /**/
+#define ERR_TOFREGION_REGION_SIZE_Y		3169  /**/
 flag ToFRegion_IsConstraintValid(const ToFRegion* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_TOFREGION		3170  /**/
-#define ERR_UPER_ENCODE_TOFREGION_ENABLE_2		3110  /**/
-#define ERR_UPER_ENCODE_TOFREGION_REGION_2		3165  /**/
+#define ERR_UPER_ENCODE_TOFREGION		3192  /**/
+#define ERR_UPER_ENCODE_TOFREGION_ENABLE_2		3132  /**/
+#define ERR_UPER_ENCODE_TOFREGION_REGION_2		3187  /**/
 #define ToFRegion_REQUIRED_BYTES_FOR_ENCODING       9 
 #define ToFRegion_REQUIRED_BITS_FOR_ENCODING        65
 
 flag ToFRegion_Encode(const ToFRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_TOFREGION		3171  /**/
-#define ERR_UPER_DECODE_TOFREGION_ENABLE_2		3111  /**/
-#define ERR_UPER_DECODE_TOFREGION_REGION_2		3166  /**/
+#define ERR_UPER_DECODE_TOFREGION		3193  /**/
+#define ERR_UPER_DECODE_TOFREGION_ENABLE_2		3133  /**/
+#define ERR_UPER_DECODE_TOFREGION_REGION_2		3188  /**/
 flag ToFRegion_Decode(ToFRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- ToFConfiguration --------------------------------------------*/
 typedef struct {
@@ -80,32 +80,32 @@ typedef struct {
 
 void ToFConfiguration_Initialize(ToFConfiguration* pVal);
 
-#define ERR_TOFCONFIGURATION		3293  /**/
-#define ERR_TOFCONFIGURATION_REGION_ENABLED		3205  /**/
-#define ERR_TOFCONFIGURATION_REGION		3260  /**/
-#define ERR_TOFCONFIGURATION_REGION_OFFSET_X		3216  /**/
-#define ERR_TOFCONFIGURATION_REGION_OFFSET_Y		3227  /**/
-#define ERR_TOFCONFIGURATION_REGION_SIZE_X		3238  /**/
-#define ERR_TOFCONFIGURATION_REGION_SIZE_Y		3249  /**/
-#define ERR_TOFCONFIGURATION_MIN_DEPTH		3271  /**/
-#define ERR_TOFCONFIGURATION_MAX_DEPTH		3282  /**/
+#define ERR_TOFCONFIGURATION		3315  /**/
+#define ERR_TOFCONFIGURATION_REGION_ENABLED		3227  /**/
+#define ERR_TOFCONFIGURATION_REGION		3282  /**/
+#define ERR_TOFCONFIGURATION_REGION_OFFSET_X		3238  /**/
+#define ERR_TOFCONFIGURATION_REGION_OFFSET_Y		3249  /**/
+#define ERR_TOFCONFIGURATION_REGION_SIZE_X		3260  /**/
+#define ERR_TOFCONFIGURATION_REGION_SIZE_Y		3271  /**/
+#define ERR_TOFCONFIGURATION_MIN_DEPTH		3293  /**/
+#define ERR_TOFCONFIGURATION_MAX_DEPTH		3304  /**/
 flag ToFConfiguration_IsConstraintValid(const ToFConfiguration* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_TOFCONFIGURATION		3294  /**/
-#define ERR_UPER_ENCODE_TOFCONFIGURATION_REGION_ENABLED_2		3212  /**/
-#define ERR_UPER_ENCODE_TOFCONFIGURATION_REGION_2		3267  /**/
-#define ERR_UPER_ENCODE_TOFCONFIGURATION_MIN_DEPTH_2		3278  /**/
-#define ERR_UPER_ENCODE_TOFCONFIGURATION_MAX_DEPTH_2		3289  /**/
+#define ERR_UPER_ENCODE_TOFCONFIGURATION		3316  /**/
+#define ERR_UPER_ENCODE_TOFCONFIGURATION_REGION_ENABLED_2		3234  /**/
+#define ERR_UPER_ENCODE_TOFCONFIGURATION_REGION_2		3289  /**/
+#define ERR_UPER_ENCODE_TOFCONFIGURATION_MIN_DEPTH_2		3300  /**/
+#define ERR_UPER_ENCODE_TOFCONFIGURATION_MAX_DEPTH_2		3311  /**/
 #define ToFConfiguration_REQUIRED_BYTES_FOR_ENCODING       35 
 #define ToFConfiguration_REQUIRED_BITS_FOR_ENCODING        273
 
 flag ToFConfiguration_Encode(const ToFConfiguration* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_TOFCONFIGURATION		3295  /**/
-#define ERR_UPER_DECODE_TOFCONFIGURATION_REGION_ENABLED_2		3213  /**/
-#define ERR_UPER_DECODE_TOFCONFIGURATION_REGION_2		3268  /**/
-#define ERR_UPER_DECODE_TOFCONFIGURATION_MIN_DEPTH_2		3279  /**/
-#define ERR_UPER_DECODE_TOFCONFIGURATION_MAX_DEPTH_2		3290  /**/
+#define ERR_UPER_DECODE_TOFCONFIGURATION		3317  /**/
+#define ERR_UPER_DECODE_TOFCONFIGURATION_REGION_ENABLED_2		3235  /**/
+#define ERR_UPER_DECODE_TOFCONFIGURATION_REGION_2		3290  /**/
+#define ERR_UPER_DECODE_TOFCONFIGURATION_MIN_DEPTH_2		3301  /**/
+#define ERR_UPER_DECODE_TOFCONFIGURATION_MAX_DEPTH_2		3312  /**/
 flag ToFConfiguration_Decode(ToFConfiguration* pVal, BitStream* pBitStrm, int* pErrCode);
 
  
