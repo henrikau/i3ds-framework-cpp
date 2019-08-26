@@ -12,6 +12,7 @@
 #define __I3DS_RECEIVER_HPP
 
 #include <thread>
+#include <atomic>
 
 #include <i3ds/communication.hpp>
 
@@ -58,7 +59,7 @@ private:
   const int timeout_ms_;
 
   // Running flag.
-  volatile bool running_;
+  std::atomic<bool> running_;
 
   // Worker thread.
   std::thread worker_;
