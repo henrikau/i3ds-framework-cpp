@@ -41,6 +41,11 @@ struct F
     imu_command_server.Start();
     client.set_timeout(1000);
     proxy.Start();
+
+    // Before we close, let other workers run, ::yield does not actually
+    // yield the cpu if the thread has more budget, so do a sleep that
+    // will force a sched_out
+    std::this_thread::sleep_for(std::chrono::microseconds(10000));
   }
 
   ~F()
@@ -96,8 +101,6 @@ subscriber_2_handle_measurement(IMU::MeasurementTopic::Data& data)
 
 BOOST_AUTO_TEST_CASE(pub_sub_test)
 {
-  // Sleep to allow address server time to start up
-  std::this_thread::sleep_for(std::chrono::microseconds(10000));
   subscriber_1_received_count = 0;
   subscriber_2_received_count = 0;
   Subscriber subscriber1(context);
