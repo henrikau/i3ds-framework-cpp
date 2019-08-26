@@ -34,6 +34,12 @@ std::string get_address(zmq::socket_t *socket, std::string input)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
+BOOST_AUTO_TEST_CASE(setup_address_server_nok)
+{
+  BOOST_REQUIRE_THROW(AddressServer server("test_addresses2.csv"),
+		      std::runtime_error);
+}
+
 struct F
 {
   F()
