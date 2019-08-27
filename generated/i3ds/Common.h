@@ -16,48 +16,48 @@ typedef T_Int64 Timepoint;
 
 void Timepoint_Initialize(Timepoint* pVal);
 
-#define ERR_TIMEPOINT		710  /**/
+#define ERR_TIMEPOINT		670  /**/
 flag Timepoint_IsConstraintValid(const Timepoint* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_TIMEPOINT_2		717  /**/
+#define ERR_UPER_ENCODE_TIMEPOINT_2		677  /**/
 #define Timepoint_REQUIRED_BYTES_FOR_ENCODING       8 
 #define Timepoint_REQUIRED_BITS_FOR_ENCODING        64
 
 flag Timepoint_Encode(const Timepoint* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_TIMEPOINT_2		718  /**/
+#define ERR_UPER_DECODE_TIMEPOINT_2		678  /**/
 flag Timepoint_Decode(Timepoint* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint NodeID;
 
 
 void NodeID_Initialize(NodeID* pVal);
 
-#define ERR_NODEID		696  /**/
+#define ERR_NODEID		656  /**/
 flag NodeID_IsConstraintValid(const NodeID* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_NODEID		697  /**/
+#define ERR_UPER_ENCODE_NODEID		657  /**/
 #define NodeID_REQUIRED_BYTES_FOR_ENCODING       3 
 #define NodeID_REQUIRED_BITS_FOR_ENCODING        24
 
 flag NodeID_Encode(const NodeID* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_NODEID		698  /**/
+#define ERR_UPER_DECODE_NODEID		658  /**/
 flag NodeID_Decode(NodeID* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint EndpointID;
 
 
 void EndpointID_Initialize(EndpointID* pVal);
 
-#define ERR_ENDPOINTID		703  /**/
+#define ERR_ENDPOINTID		663  /**/
 flag EndpointID_IsConstraintValid(const EndpointID* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_ENDPOINTID		704  /**/
+#define ERR_UPER_ENCODE_ENDPOINTID		664  /**/
 #define EndpointID_REQUIRED_BYTES_FOR_ENCODING       1 
 #define EndpointID_REQUIRED_BITS_FOR_ENCODING        8
 
 flag EndpointID_Encode(const EndpointID* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_ENDPOINTID		705  /**/
+#define ERR_UPER_DECODE_ENDPOINTID		665  /**/
 flag EndpointID_Decode(EndpointID* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef enum {
     success = 0,
@@ -80,16 +80,16 @@ typedef enum {
 
 void ResultCode_Initialize(ResultCode* pVal);
 
-#define ERR_RESULTCODE		721  /**/
+#define ERR_RESULTCODE		681  /**/
 flag ResultCode_IsConstraintValid(const ResultCode* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_RESULTCODE		722  /**/
+#define ERR_UPER_ENCODE_RESULTCODE		682  /**/
 #define ResultCode_REQUIRED_BYTES_FOR_ENCODING       1 
 #define ResultCode_REQUIRED_BITS_FOR_ENCODING        3
 
 flag ResultCode_Encode(const ResultCode* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_RESULTCODE		723  /**/
+#define ERR_UPER_DECODE_RESULTCODE		683  /**/
 flag ResultCode_Decode(ResultCode* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CommandResponse --------------------------------------------*/
 typedef struct {
@@ -100,22 +100,22 @@ typedef struct {
 
 void CommandResponse_Initialize(CommandResponse* pVal);
 
-#define ERR_COMMANDRESPONSE		750  /**/
-#define ERR_COMMANDRESPONSE_RESULT		728  /**/
-#define ERR_COMMANDRESPONSE_MESSAGE		739  /**/
+#define ERR_COMMANDRESPONSE		710  /**/
+#define ERR_COMMANDRESPONSE_RESULT		688  /**/
+#define ERR_COMMANDRESPONSE_MESSAGE		699  /**/
 flag CommandResponse_IsConstraintValid(const CommandResponse* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_COMMANDRESPONSE		751  /**/
-#define ERR_UPER_ENCODE_COMMANDRESPONSE_RESULT_2		735  /**/
-#define ERR_UPER_ENCODE_COMMANDRESPONSE_MESSAGE_2		746  /**/
+#define ERR_UPER_ENCODE_COMMANDRESPONSE		711  /**/
+#define ERR_UPER_ENCODE_COMMANDRESPONSE_RESULT_2		695  /**/
+#define ERR_UPER_ENCODE_COMMANDRESPONSE_MESSAGE_2		706  /**/
 #define CommandResponse_REQUIRED_BYTES_FOR_ENCODING       258 
 #define CommandResponse_REQUIRED_BITS_FOR_ENCODING        2060
 
 flag CommandResponse_Encode(const CommandResponse* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_COMMANDRESPONSE		752  /**/
-#define ERR_UPER_DECODE_COMMANDRESPONSE_RESULT_2		736  /**/
-#define ERR_UPER_DECODE_COMMANDRESPONSE_MESSAGE_2		747  /**/
+#define ERR_UPER_DECODE_COMMANDRESPONSE		712  /**/
+#define ERR_UPER_DECODE_COMMANDRESPONSE_RESULT_2		696  /**/
+#define ERR_UPER_DECODE_COMMANDRESPONSE_MESSAGE_2		707  /**/
 flag CommandResponse_Decode(CommandResponse* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

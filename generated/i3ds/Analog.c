@@ -47,96 +47,14 @@ flag SeriesCount_Decode(SeriesCount* pVal, BitStream* pBitStrm, int* pErrCode)
 
 
 
-void Analog_data_format_t_Initialize(Analog_data_format_t* pVal)
-{
-
-	(*(pVal)) = analog_data_f;
-}
-
-flag Analog_data_format_t_IsConstraintValid(const Analog_data_format_t* pVal, int* pErrCode)
-{
-    flag ret = TRUE;
-	
-    ret = ((((((*(pVal)) == analog_data_f)) || (((*(pVal)) == analog_data_s)))) || (((*(pVal)) == analog_data_u)));
-    *pErrCode = ret ? 0 :  ERR_ANALOG_DATA_FORMAT_T; 
-
-	return ret;
-}
-
-flag Analog_data_format_t_Encode(const Analog_data_format_t* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
-{
-    flag ret = TRUE;
-	ret = bCheckConstraints ? Analog_data_format_t_IsConstraintValid(pVal, pErrCode) : TRUE ;
-	if (ret) {
-	    switch((*(pVal))) 
-	    {
-	        case analog_data_f:   
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 0, 0, 2);
-	        	break;
-	        case analog_data_s:   
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 1, 0, 2);
-	        	break;
-	        case analog_data_u:   
-	            BitStream_EncodeConstraintWholeNumber(pBitStrm, 2, 0, 2);
-	        	break;
-	        default:                    /*COVERAGE_IGNORE*/
-	    	    *pErrCode = ERR_UPER_ENCODE_ANALOG_DATA_FORMAT_T; /*COVERAGE_IGNORE*/
-	    	    ret = FALSE;            /*COVERAGE_IGNORE*/
-	    }
-    } /*COVERAGE_IGNORE*/
-
-	
-    return ret;
-}
-
-flag Analog_data_format_t_Decode(Analog_data_format_t* pVal, BitStream* pBitStrm, int* pErrCode)
-{
-    flag ret = TRUE;
-
-	{
-	    asn1SccSint enumIndex;
-	    ret = BitStream_DecodeConstraintWholeNumber(pBitStrm, &enumIndex, 0, 2);
-	    *pErrCode = ret ? 0 : ERR_UPER_DECODE_ANALOG_DATA_FORMAT_T;
-	    if (ret) {
-	        switch(enumIndex) 
-	        {
-	            case 0: 
-	                (*(pVal)) = analog_data_f;
-	                break;
-	            case 1: 
-	                (*(pVal)) = analog_data_s;
-	                break;
-	            case 2: 
-	                (*(pVal)) = analog_data_u;
-	                break;
-	            default:                        /*COVERAGE_IGNORE*/
-		            *pErrCode = ERR_UPER_DECODE_ANALOG_DATA_FORMAT_T;     /*COVERAGE_IGNORE*/
-		            ret = FALSE;                /*COVERAGE_IGNORE*/
-	        }
-	    } else {
-	        (*(pVal)) = analog_data_f;             /*COVERAGE_IGNORE*/
-	    }
-	}
-
-	return ret  && Analog_data_format_t_IsConstraintValid(pVal, pErrCode);
-}
-
-
-
 void AnalogSeriesDescriptor_Initialize(AnalogSeriesDescriptor* pVal)
 {
 
 
 	/*set attributes */
 	SampleAttributes_Initialize((&(pVal->attributes)));
-	/*set data_format */
-	Analog_data_format_t_Initialize((&(pVal->data_format)));
-	/*set data_size */
-	T_UInt8_Initialize((&(pVal->data_size)));
-	/*set data_depth */
-	T_UInt8_Initialize((&(pVal->data_depth)));
-	/*set series */
-	T_UInt8_Initialize((&(pVal->series)));
+	/*set series_count */
+	T_UInt8_Initialize((&(pVal->series_count)));
 	/*set batch_size */
 	T_UInt32_Initialize((&(pVal->batch_size)));
 }
@@ -182,23 +100,11 @@ flag AnalogSeriesDescriptor_IsConstraintValid(const AnalogSeriesDescriptor* pVal
         }
     }
     if (ret) {
-        ret = (((((pVal->data_format == analog_data_f)) || ((pVal->data_format == analog_data_s)))) || ((pVal->data_format == analog_data_u)));
-        *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_DATA_FORMAT; 
+        ret = (pVal->series_count <= 255UL);
+        *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_SERIES_COUNT; 
         if (ret) {
-            ret = (pVal->data_size <= 255UL);
-            *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_DATA_SIZE; 
-            if (ret) {
-                ret = (pVal->data_depth <= 255UL);
-                *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_DATA_DEPTH; 
-                if (ret) {
-                    ret = (pVal->series <= 255UL);
-                    *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_SERIES; 
-                    if (ret) {
-                        ret = (pVal->batch_size <= 4294967295UL);
-                        *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_BATCH_SIZE; 
-                    }
-                }
-            }
+            ret = (pVal->batch_size <= 4294967295UL);
+            *pErrCode = ret ? 0 :  ERR_ANALOGSERIESDESCRIPTOR_BATCH_SIZE; 
         }
     }
 
@@ -213,23 +119,11 @@ flag AnalogSeriesDescriptor_Encode(const AnalogSeriesDescriptor* pVal, BitStream
 	    /*Encode attributes */
 	    ret = SampleAttributes_Encode((&(pVal->attributes)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
-	        /*Encode data_format */
-	        ret = Analog_data_format_t_Encode((&(pVal->data_format)), pBitStrm, pErrCode, FALSE);
+	        /*Encode series_count */
+	        ret = SeriesCount_Encode((&(pVal->series_count)), pBitStrm, pErrCode, FALSE);
 	        if (ret) {
-	            /*Encode data_size */
-	            ret = T_UInt8_Encode((&(pVal->data_size)), pBitStrm, pErrCode, FALSE);
-	            if (ret) {
-	                /*Encode data_depth */
-	                ret = T_UInt8_Encode((&(pVal->data_depth)), pBitStrm, pErrCode, FALSE);
-	                if (ret) {
-	                    /*Encode series */
-	                    ret = SeriesCount_Encode((&(pVal->series)), pBitStrm, pErrCode, FALSE);
-	                    if (ret) {
-	                        /*Encode batch_size */
-	                        ret = BatchSize_Encode((&(pVal->batch_size)), pBitStrm, pErrCode, FALSE);
-	                    }
-	                }
-	            }
+	            /*Encode batch_size */
+	            ret = BatchSize_Encode((&(pVal->batch_size)), pBitStrm, pErrCode, FALSE);
 	        }
 	    }
     } /*COVERAGE_IGNORE*/
@@ -245,23 +139,11 @@ flag AnalogSeriesDescriptor_Decode(AnalogSeriesDescriptor* pVal, BitStream* pBit
 	/*Decode attributes */
 	ret = SampleAttributes_Decode((&(pVal->attributes)), pBitStrm, pErrCode);
 	if (ret) {
-	    /*Decode data_format */
-	    ret = Analog_data_format_t_Decode((&(pVal->data_format)), pBitStrm, pErrCode);
+	    /*Decode series_count */
+	    ret = SeriesCount_Decode((&(pVal->series_count)), pBitStrm, pErrCode);
 	    if (ret) {
-	        /*Decode data_size */
-	        ret = T_UInt8_Decode((&(pVal->data_size)), pBitStrm, pErrCode);
-	        if (ret) {
-	            /*Decode data_depth */
-	            ret = T_UInt8_Decode((&(pVal->data_depth)), pBitStrm, pErrCode);
-	            if (ret) {
-	                /*Decode series */
-	                ret = SeriesCount_Decode((&(pVal->series)), pBitStrm, pErrCode);
-	                if (ret) {
-	                    /*Decode batch_size */
-	                    ret = BatchSize_Decode((&(pVal->batch_size)), pBitStrm, pErrCode);
-	                }
-	            }
-	        }
+	        /*Decode batch_size */
+	        ret = BatchSize_Decode((&(pVal->batch_size)), pBitStrm, pErrCode);
 	    }
 	}
 
