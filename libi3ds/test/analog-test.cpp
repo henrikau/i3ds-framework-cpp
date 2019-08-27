@@ -77,16 +77,15 @@ int received;
 void
 handle_measurement(Analog::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recived measurement with batch size: " << data.batch_size);
+  BOOST_TEST_MESSAGE("Recived measurement with batch size: " << data.descriptor.batch_size);
 
-  BOOST_CHECK_EQUAL(data.series, 3);
-  BOOST_CHECK_EQUAL(data.batch_size, 10);
+  BOOST_CHECK_EQUAL(data.descriptor.series_count, 3);
+  BOOST_CHECK_EQUAL(data.descriptor.batch_size, 10);
 
-  BOOST_CHECK_EQUAL(data.samples.nCount, data.batch_size * data.series);
+  BOOST_CHECK_EQUAL(data.samples.size(), data.descriptor.batch_size * data.descriptor.series_count);
 
-  for (int i = 0; i < data.samples.nCount; i++)
+  for (const float value : data.samples)
     {
-      const float value = data.samples.arr[i];
       BOOST_CHECK(0.0 <= value && value <= 20.0);
     }
 

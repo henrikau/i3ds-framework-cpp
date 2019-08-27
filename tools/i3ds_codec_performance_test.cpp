@@ -55,17 +55,6 @@ run_test(std::string name, std::shared_ptr<typename Codec::Data> data, unsigned 
     }
 }
 
-template <typename Codec>
-std::shared_ptr<typename Codec::Data>
-create_measurement()
-{
-  auto measurement = std::make_shared<typename Codec::Data>();
-  Codec::Initialize(*measurement);
-  measurement->attributes.timestamp = 123456789;
-  measurement->attributes.validity = sample_valid;
-  return measurement;
-}
-
 void
 camera_test(std::string name,
             unsigned int n_replications,
@@ -143,22 +132,20 @@ radar_test(unsigned int n_replications, unsigned int n_points)
   run_test<i3ds::DepthMapCodec>("radar", map, n_replications);
 }
 
-template <typename Codec>
 void
 analog_test(unsigned int n_replications, unsigned int n_points)
 {
-  auto analog_data = create_measurement<Codec>();
+  auto series = std::make_shared<i3ds::AnalogSeriesCodec::Data>();
 
   for (unsigned int i = 0; i < n_points; ++i)
     {
-      analog_data->samples.arr[i] = M_PI;
+      series->samples.push_back(M_PI);
     }
 
-  analog_data->samples.nCount = n_points;
-  analog_data->series = 1;
-  analog_data->batch_size = n_points;
+  series->descriptor.series_count = 1;
+  series->descriptor.batch_size = n_points;
 
-  run_test<Codec>("analog", analog_data, n_replications);
+  run_test<i3ds::AnalogSeriesCodec>("analog", series, n_replications);
 }
 
 int
@@ -189,8 +176,8 @@ main(int argc, char *argv[])
   radar_test(n_replications, 400000);
   std::cerr << " [done]" << std::endl;
 
-  std::cerr << "Analog 1K...";
-  analog_test<i3ds::AnalogMeasurement1KCodec>(n_replications, 1000);
+  std::cerr << "Analog 100K...";
+  analog_test(n_replications, 100000);
   std::cerr << " [done]" << std::endl;
 
   return 0;
