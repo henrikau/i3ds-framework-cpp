@@ -97,7 +97,24 @@ i3ds::EmulatedLIDAR::send_sample(unsigned long timestamp_us)
   frame_.descriptor.attributes.timestamp = timestamp_us;
   frame_.descriptor.attributes.validity = sample_valid;
 
+  std::normal_distribution<float> x(100.0, 10.0);
+  std::normal_distribution<float> y(0.0, 5.0);
+  std::normal_distribution<float> z(0.0, 10.0);
+
+  for (unsigned int i = 0; i < frame_.descriptor.width; i++)
+    {
+      PointXYZ p;
+
+      p.x = x(generator_);
+      p.y = y(generator_);
+      p.z = z(generator_);
+
+      frame_.points.push_back(p);
+    }
+
   publisher_.Send<MeasurementTopic>(frame_);
+
+  frame_.points.clear();
 
   return true;
 }

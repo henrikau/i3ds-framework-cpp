@@ -12,6 +12,7 @@
 #define __I3DS_EMULATED_TOF_CAMERA_HPP
 
 #include <memory>
+#include <random>
 
 #include <i3ds/topic.hpp>
 #include <i3ds/publisher.hpp>
@@ -61,12 +62,14 @@ private:
   bool region_enabled_;
   PlanarRegion region_;
 
-  double min_depth_, max_depth_;
+  float min_depth_, max_depth_;
 
   Sampler sampler_;
 
   Publisher publisher_;
   MeasurementTopic::Data frame_;
+
+  std::default_random_engine generator_;
 };
 
 } // namespace i3ds

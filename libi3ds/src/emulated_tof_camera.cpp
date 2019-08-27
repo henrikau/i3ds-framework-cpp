@@ -108,7 +108,19 @@ i3ds::EmulatedToFCamera::send_sample(unsigned long timestamp_us)
   frame_.descriptor.attributes.timestamp = timestamp_us;
   frame_.descriptor.attributes.validity = sample_valid;
 
+  std::uniform_real_distribution<float> d(min_depth_, max_depth_);
+
+  for (unsigned int i = 0; i < frame_.descriptor.width; i++)
+    {
+      for (unsigned int j = 0; j < frame_.descriptor.height; j++)
+	{
+	  frame_.depths.push_back(d(generator_));
+	}
+    }
+
   publisher_.Send<MeasurementTopic>(frame_);
+
+  frame_.depths.clear();
 
   return true;
 }
