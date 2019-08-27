@@ -39,7 +39,7 @@ i3ds::Sampler::Start(SamplePeriod period)
   int policy;
   pthread_getschedparam(worker_.native_handle(), &policy, &sch);
   sch.sched_priority = 20;
-  if (pthread_setschedparam(worker_.native_handle(), SCHED_FIFO, &sch))
+  if (pthread_setschedparam(worker_.native_handle(), SCHED_RR, &sch))
     {
       BOOST_LOG_TRIVIAL(warning) << "Failed to set thread priority: " << std::strerror(errno);
     }
