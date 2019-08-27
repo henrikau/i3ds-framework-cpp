@@ -36,7 +36,7 @@ struct DepthMapCodec
     DepthMapDescriptorCodec::Initialize(val.descriptor);
     val.descriptor.depth_format = depth_f;
     val.descriptor.depth_size = sizeof(float);
-    val.depths.empty();
+    val.depths.clear();
   };
 
   static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)

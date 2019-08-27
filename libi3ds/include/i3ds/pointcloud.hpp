@@ -45,7 +45,7 @@ struct PointCloudCodec
     PointCloudDescriptorCodec::Initialize(val.descriptor);
     val.descriptor.point_format = fields_xyz_f;
     val.descriptor.point_size = sizeof(PointXYZ);
-    val.points.empty();
+    val.points.clear();
   };
 
   static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
