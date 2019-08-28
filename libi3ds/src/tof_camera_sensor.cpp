@@ -24,13 +24,13 @@ i3ds::ToFCamera::Attach(Server& server)
 }
 
 void
-i3ds::ToFCamera::handle_region(RegionService::Data& command)
+i3ds::ToFCamera::handle_region(RegionService::Data& )
 {
   throw CommandError(error_unsupported, "Region of interest not supported");
 }
 
 void
-i3ds::ToFCamera::handle_range(RangeService::Data& command)
+i3ds::ToFCamera::handle_range(RangeService::Data& )
 {
   throw CommandError(error_unsupported, "Range setting not supported");
 }

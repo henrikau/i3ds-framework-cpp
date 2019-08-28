@@ -23,7 +23,7 @@ i3ds::LIDAR::Attach(Server& server)
 }
 
 void
-i3ds::LIDAR::handle_region(RegionService::Data& command)
+i3ds::LIDAR::handle_region(RegionService::Data&)
 {
   throw CommandError(error_unsupported, "Region of interest not supported");
 }

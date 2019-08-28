@@ -27,25 +27,25 @@ i3ds::Camera::Attach(Server& server)
 }
 
 void
-i3ds::Camera::handle_auto_exposure(AutoExposureService::Data& command)
+i3ds::Camera::handle_auto_exposure(AutoExposureService::Data&)
 {
   throw CommandError(error_unsupported, "Auto exposure not supported");
 }
 
 void
-i3ds::Camera::handle_region(RegionService::Data& command)
+i3ds::Camera::handle_region(RegionService::Data&)
 {
   throw CommandError(error_unsupported, "Region of interest not supported");
 }
 
 void
-i3ds::Camera::handle_flash(FlashService::Data& command)
+i3ds::Camera::handle_flash(FlashService::Data&)
 {
   throw CommandError(error_unsupported, "Region of interest not supported");
 }
 
 void
-i3ds::Camera::handle_pattern(PatternService::Data& command)
+i3ds::Camera::handle_pattern(PatternService::Data&)
 {
   throw CommandError(error_unsupported, "Pattern illumination not supported");
 }
