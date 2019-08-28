@@ -148,8 +148,7 @@ analog_test(unsigned int n_replications, unsigned int n_points)
   run_test<i3ds::AnalogSeriesCodec>("analog", series, n_replications);
 }
 
-int
-main(int argc, char *argv[])
+int main()
 {
   unsigned int n_replications = 100;
 
