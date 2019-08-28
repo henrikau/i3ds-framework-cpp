@@ -75,7 +75,7 @@ private:
 
   // Check the response, do nothing in general case.
   template<typename T>
-  void Check(T& response) {};
+  void Check(T& ) {}
 
   // Reset socket if receive fails.
   void Reset();
