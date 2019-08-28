@@ -83,7 +83,7 @@ int received;
 void
 handle_measurement(ToFCamera::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
+  BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp);
   received++;
 }
 

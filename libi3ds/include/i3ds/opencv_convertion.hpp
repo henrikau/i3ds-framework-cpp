@@ -12,8 +12,7 @@
 #define __I3DS_OPENCV_CONVERT_HPP
 
 #include <i3ds/frame.hpp>
-
-#include <i3ds/tof_camera_sensor.hpp>
+#include <i3ds/depthmap.hpp>
 
 #include <opencv2/core/core.hpp>
 
@@ -22,13 +21,13 @@ namespace i3ds
 
 
 
-// Creates a cv::Mat representation of a Frame.(For regular camera) No data is copied and
+// Creates a cv::Mat representation of a Frame.(For regular camera). No data is copied and
 // the returned object is only valid while the Frame is in scope.
 cv::Mat frame_to_cv_mat(const Frame& frame, int image_number);
 
-// Creates a cv::Mat representation of a Frame.(For ToF camera) No data is copied and
+// Creates a cv::Mat representation of a DepthMap. No data is copied and
 // the returned object is only valid while the Frame is in scope.
-cv::Mat frame_to_cv_mat(const i3ds::ToFCamera::MeasurementTopic::Data& frame, int image_number);
+cv::Mat frame_to_cv_mat(const DepthMap& frame, int image_number);
 
 
 // Sets the contents of a frame-descriptor from a cv::Mat

@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////\file
 ///
 ///   Copyright 2018 SINTEF AS
@@ -83,12 +84,8 @@ int received;
 void
 handle_measurement(Radar::MeasurementTopic::Data& data)
 {
-  BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
+  BOOST_TEST_MESSAGE("Recv: " << data.descriptor.attributes.timestamp);
 
-  BOOST_CHECK_EQUAL(data.region.offset_x, 400);
-  BOOST_CHECK_EQUAL(data.region.offset_y, 300);
-  BOOST_CHECK_EQUAL(data.region.size_x, 150);
-  BOOST_CHECK_EQUAL(data.region.size_y, 100);
   received++;
 }
 

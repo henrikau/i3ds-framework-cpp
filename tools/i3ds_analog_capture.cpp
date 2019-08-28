@@ -33,15 +33,18 @@ signal_handler(int signum)
 void
 handle_frame(i3ds::Analog::MeasurementTopic::Data& data)
 {
-  for (unsigned int i = 0; i < data.batch_size; i++)
+  const size_t N = data.descriptor.batch_size;
+  const size_t M = data.descriptor.series_count;
+  
+  for (unsigned int i = 0; i < N; i++)
     {
-      std::cout << data.attributes.timestamp <<  ',' << i << ',';
+      std::cout << data.descriptor.attributes.timestamp <<  ',' << i << ',';
 
-      for (unsigned int j = 0; j < data.series; j++)
+      for (unsigned int j = 0; j < M; j++)
         {
-          const double value = data.samples.arr[i * data.batch_size + j];
+          const double value = data.samples[i * N + j];
 
-          if (j < (data.series - 1))
+          if (j < (M - 1))
             {
               std::cout << value << ',';
             }

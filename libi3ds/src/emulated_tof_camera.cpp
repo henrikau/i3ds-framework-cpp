@@ -33,8 +33,8 @@ i3ds::EmulatedToFCamera::EmulatedToFCamera(Context::Ptr context, NodeID node)
 
   MeasurementTopic::Codec::Initialize(frame_);
 
-  frame_.region.size_x = region_.size_x;
-  frame_.region.size_y = region_.size_y;
+  frame_.descriptor.width = region_.size_x;
+  frame_.descriptor.height = region_.size_y;
 
   set_device_name("Emulated ToF camera");
 }
@@ -105,10 +105,22 @@ i3ds::EmulatedToFCamera::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated ToF camera with NodeID: " << node() << " sends sample at " << timestamp_us;
 
-  frame_.attributes.timestamp = timestamp_us;
-  frame_.attributes.validity = sample_valid;
+  frame_.descriptor.attributes.timestamp = timestamp_us;
+  frame_.descriptor.attributes.validity = sample_valid;
+
+  std::uniform_real_distribution<float> d(min_depth_, max_depth_);
+
+  for (unsigned int i = 0; i < frame_.descriptor.width; i++)
+    {
+      for (unsigned int j = 0; j < frame_.descriptor.height; j++)
+	{
+	  frame_.depths.push_back(d(generator_));
+	}
+    }
 
   publisher_.Send<MeasurementTopic>(frame_);
+
+  frame_.depths.clear();
 
   return true;
 }

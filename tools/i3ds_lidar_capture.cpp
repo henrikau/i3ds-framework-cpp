@@ -33,7 +33,7 @@ signal_handler(int signum)
 void
 handle_frame(i3ds::LIDAR::MeasurementTopic::Data& data)
 {
-  const int n = data.points.nCount;
+  const int n = data.points.size();
 
   double d_max = 0.0;
   double d_min = 1.0e10;
@@ -41,9 +41,9 @@ handle_frame(i3ds::LIDAR::MeasurementTopic::Data& data)
 
   for (int i = 0; i < n; i++)
     {
-      const double x = data.points.arr[i].arr[0];
-      const double y = data.points.arr[i].arr[1];
-      const double z = data.points.arr[i].arr[2];
+      const double x = data.points[i].x;
+      const double y = data.points[i].y;
+      const double z = data.points[i].z;
 
       const double d = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 

@@ -17,18 +17,17 @@
 #include <i3ds/sensor.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
+#include <i3ds/analogseries.hpp>
 
 namespace i3ds
 {
-
-CODEC(AnalogMeasurement1K);
 
 class Analog : public Sensor
 {
 public:
 
   // Topic definitions.
-  typedef Topic<128, AnalogMeasurement1KCodec> MeasurementTopic;
+  typedef Topic<128, AnalogSeriesCodec> MeasurementTopic;
 
   // Shared pointer for Analog interfaces.
   typedef std::shared_ptr<Analog> Ptr;

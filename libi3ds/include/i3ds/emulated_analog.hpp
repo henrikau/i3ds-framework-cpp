@@ -67,8 +67,8 @@ private:
   // Called periodically to accumulated and send samples.
   bool send_sample(unsigned long timestamp_us);
 
-  // Generat a single ADC reading with specified resolution.
-  std::vector<float> read_adc();
+  // Generate a single ADC reading with specified resolution.
+  void read_adc();
 
   // Periodic sample tread calling send_sample.
   Sampler sampler_;

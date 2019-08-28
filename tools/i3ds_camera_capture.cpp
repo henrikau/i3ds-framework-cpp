@@ -14,13 +14,11 @@
 #include <cstring>
 
 #include <i3ds/subscriber.hpp>
-
-#include <i3ds/tof_camera_sensor.hpp>
-
 #include <i3ds/camera_sensor.hpp>
-
-
+#include <i3ds/tof_camera_sensor.hpp>
 #include <i3ds/frame.hpp>
+#include <i3ds/depthmap.hpp>
+
 #include <i3ds/opencv_convertion.hpp>
 
 #include <boost/program_options.hpp>
@@ -49,8 +47,6 @@ signal_handler(int signum)
 {
   running = false;
 }
-
-
 
 template <typename T>
 void
@@ -90,19 +86,19 @@ handle_image(std::string window_name, const T& frame, int image_number, std::str
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
-bool is_tof_camera(ToFMeasurement400K &data) {
+bool is_tof_camera(i3ds::DepthMap& data) {
   return true;
 }
 
-bool is_tof_camera(i3ds::Camera::FrameTopic::Data &data) {
+bool is_tof_camera(i3ds::Frame& data) {
   return false;
 }
 
-int image_count(ToFMeasurement400K &data) {
+int image_count(i3ds::DepthMap& data) {
   return 1;
 }
 
-int image_count(i3ds::Camera::FrameTopic::Data &data) {
+int image_count(i3ds::Frame& data) {
   return data.descriptor.image_count;
 }
 

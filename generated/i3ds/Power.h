@@ -12,35 +12,44 @@ extern "C" {
 
 
 
-typedef struct {    
+
+typedef struct {
+    
     T_Boolean arr[16];
 } PowerMask;
 
+void PowerMask_Initialize(PowerMask* pVal);
+
+#define ERR_POWERMASK		3524  /**/
+#define ERR_POWERMASK_ELM		3513  /**/
+flag PowerMask_IsConstraintValid(const PowerMask* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_POWERMASK		3525  /**/
+#define ERR_UPER_ENCODE_POWERMASK_ELM_2		3520  /**/
 #define PowerMask_REQUIRED_BYTES_FOR_ENCODING       2 
 #define PowerMask_REQUIRED_BITS_FOR_ENCODING        16
-#define PowerMask_REQUIRED_BYTES_FOR_ACN_ENCODING   2 
-#define PowerMask_REQUIRED_BITS_FOR_ACN_ENCODING    16
-#define PowerMask_REQUIRED_BYTES_FOR_XER_ENCODING   311
 
-void PowerMask_Initialize(PowerMask* pVal);
-flag PowerMask_IsConstraintValid(const PowerMask* val, int* pErrCode);
-#ifndef ERR_PowerMask 
-#define ERR_PowerMask		1001  /*(SIZE(16))*/
-#endif
+flag PowerMask_Encode(const PowerMask* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
+#define ERR_UPER_DECODE_POWERMASK		3526  /**/
+#define ERR_UPER_DECODE_POWERMASK_ELM_2		3521  /**/
+flag PowerMask_Decode(PowerMask* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint PowerOutput;
 
-#define PowerOutput_REQUIRED_BYTES_FOR_ENCODING       1 
-#define PowerOutput_REQUIRED_BITS_FOR_ENCODING        4
-#define PowerOutput_REQUIRED_BYTES_FOR_ACN_ENCODING   1 
-#define PowerOutput_REQUIRED_BITS_FOR_ACN_ENCODING    4
-#define PowerOutput_REQUIRED_BYTES_FOR_XER_ENCODING   47
 
 void PowerOutput_Initialize(PowerOutput* pVal);
-flag PowerOutput_IsConstraintValid(const PowerOutput* val, int* pErrCode);
-#ifndef ERR_PowerOutput 
-#define ERR_PowerOutput		1002  /*(1 .. 16)*/
-#endif
+
+#define ERR_POWEROUTPUT		3506  /**/
+flag PowerOutput_IsConstraintValid(const PowerOutput* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_POWEROUTPUT		3507  /**/
+#define PowerOutput_REQUIRED_BYTES_FOR_ENCODING       1 
+#define PowerOutput_REQUIRED_BITS_FOR_ENCODING        4
+
+flag PowerOutput_Encode(const PowerOutput* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_POWEROUTPUT		3508  /**/
+flag PowerOutput_Decode(PowerOutput* pVal, BitStream* pBitStrm, int* pErrCode);
 
  
 
@@ -49,10 +58,7 @@ flag PowerOutput_IsConstraintValid(const PowerOutput* val, int* pErrCode);
  * have been declared first, in case of parameterized ACN encodings
  * ========================================================================= */
 
-flag PowerMask_Encode(const PowerMask* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag PowerMask_Decode(PowerMask* pVal, BitStream* pBitStrm, int* pErrCode);
-flag PowerOutput_Encode(const PowerOutput* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
-flag PowerOutput_Decode(PowerOutput* pVal, BitStream* pBitStrm, int* pErrCode); 
+ 
 
 
 #ifdef  __cplusplus

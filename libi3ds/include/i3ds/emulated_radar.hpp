@@ -12,6 +12,7 @@
 #define __I3DS_EMULATED_RADAR_HPP
 
 #include <memory>
+#include <random>
 
 #include <i3ds/topic.hpp>
 #include <i3ds/publisher.hpp>
@@ -62,6 +63,8 @@ private:
 
   Publisher publisher_;
   MeasurementTopic::Data frame_;
+
+  std::default_random_engine generator_;
 };
 
 } // namespace i3ds

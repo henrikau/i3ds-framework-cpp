@@ -124,42 +124,30 @@ i3ds::EmulatedAnalog::send_sample(unsigned long timestamp_us)
 {
   BOOST_LOG_TRIVIAL(trace) << "Emulated analog sensor with NodeID: " << node() << " samples " << timestamp_us;
 
-  std::vector<float> value = read_adc();
-
-  const int offset = batches_ * param_.series;
-
-  for (int i = 0; i < param_.series; i++)
-    {
-      frame_.samples.arr[offset + i] = value[i];
-    }
-
-  batches_++;
+  read_adc();
 
   if (batches_ >= batch_size())
     {
       BOOST_LOG_TRIVIAL(trace) << "Emulated tactile sensor with NodeID: " << node() << " sends sample at " << timestamp_us;
       BOOST_LOG_TRIVIAL(trace) << batches_ << " batches and " << param_.series << " series";
 
-      frame_.attributes.timestamp = timestamp_us;
-      frame_.attributes.validity = sample_valid;
-
-      frame_.samples.nCount = batches_ * param_.series;
-      frame_.series = param_.series;
-      frame_.batch_size = batches_;
+      frame_.descriptor.attributes.timestamp = timestamp_us;
+      frame_.descriptor.attributes.validity = sample_valid;
+      frame_.descriptor.series_count = param_.series;
+      frame_.descriptor.batch_size = batches_;
 
       publisher_.Send<MeasurementTopic>(frame_);
 
       batches_ = 0;
+      frame_.samples.clear();
     }
 
   return true;
 }
 
-std::vector<float>
+void
 i3ds::EmulatedAnalog::read_adc()
 {
-  std::vector<float> value(param_.series);
-
   for (int i = 0; i < param_.series; i++)
     {
       // Generate random value from distribution;
@@ -169,10 +157,10 @@ i3ds::EmulatedAnalog::read_adc()
       last_[i] = param_.smooth * last_[i] + (1.0 - param_.smooth) * x;
 
       // Generate value from scaling of discrete.
-      value[i] = param_.scale[i] * last_[i] + param_.offset[i];
+      const float v = param_.scale[i] * last_[i] + param_.offset[i];
 
-      BOOST_LOG_TRIVIAL(trace) << x << ' ' << last_[i] << ' ' << value[i];
+      frame_.samples.push_back(v);
     }
 
-  return value;
+  batches_++;
 }

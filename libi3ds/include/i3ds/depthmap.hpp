@@ -8,54 +8,45 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __I3DS_POINTCLOUD_HPP
-#define __I3DS_POINTCLOUD_HPP
+#ifndef __I3DS_DEPTHMAP_HPP
+#define __I3DS_DEPTHMAP_HPP
 
-
-#include <i3ds/PointCloud.h>
+#include <i3ds/DepthMap.h>
 #include <i3ds/taste-types.h>
 #include <i3ds/codec.hpp>
-
 #include <vector>
 
 namespace i3ds
 {
 
-CODEC(PointCloudDescriptor);
+CODEC(DepthMapDescriptor);
 
-struct PointXYZ
+struct DepthMap
 {
-  float x;
-  float y;
-  float z;
+  DepthMapDescriptor descriptor;
+  std::vector<float> depths;
 };
 
-struct PointCloud
+struct DepthMapCodec
 {
-  PointCloudDescriptor descriptor;
-  std::vector<PointXYZ> points;
-};
-
-struct PointCloudCodec
-{
-  typedef PointCloud Data;
+  typedef DepthMap Data;
 
   static inline void Initialize(Data& val)
   {
-    PointCloudDescriptorCodec::Initialize(val.descriptor);
-    val.descriptor.point_format = fields_xyz_f;
-    val.descriptor.point_size = sizeof(PointXYZ);
-    val.points.clear();
+    DepthMapDescriptorCodec::Initialize(val.descriptor);
+    val.descriptor.depth_format = depth_f;
+    val.descriptor.depth_size = sizeof(float);
+    val.depths.clear();
   };
 
   static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
   {
-    return PointCloudDescriptorCodec::Encode(&(val->descriptor), pBitStrm, pErrCode, bCheckConstraints);
+    return DepthMapDescriptorCodec::Encode(&(val->descriptor), pBitStrm, pErrCode, bCheckConstraints);
   }
 
   static inline flag Decode(Data* pVal, BitStream* pBitStrm, int* pErrCode)
   {
-    return PointCloudDescriptorCodec::Decode(&pVal->descriptor, pBitStrm, pErrCode);
+    return DepthMapDescriptorCodec::Decode(&pVal->descriptor, pBitStrm, pErrCode);
   }
 
 };
@@ -65,12 +56,12 @@ struct PointCloudCodec
 ////////////////////////////////////////////////////////////////////////////////
 
 template<>
-inline void Encode<PointCloudCodec>(Message& message, const PointCloudCodec::Data& data)
+inline void Encode<DepthMapCodec>(Message& message, const DepthMapCodec::Data& data)
 {
-  Encode<PointCloudDescriptorCodec>(message, data.descriptor);
+  Encode<DepthMapDescriptorCodec>(message, data.descriptor);
 
-  const byte* d = reinterpret_cast<const byte*>(data.points.data());
-  const size_t s = data.points.size() * sizeof(PointXYZ);
+  const byte* d = reinterpret_cast<const byte*>(data.depths.data());
+  const size_t s = data.depths.size() * sizeof(float);
   
   message.append_payload(d, s);
 }
@@ -80,14 +71,14 @@ inline void Encode<PointCloudCodec>(Message& message, const PointCloudCodec::Dat
 ////////////////////////////////////////////////////////////////////////////////
 
 template<>
-inline void Decode<PointCloudCodec>(const Message& message, PointCloudCodec::Data& data)
+inline void Decode<DepthMapCodec>(const Message& message, DepthMapCodec::Data& data)
 {
-  Decode<PointCloudDescriptorCodec>(message, data.descriptor);
+  Decode<DepthMapDescriptorCodec>(message, data.descriptor);
 
-  const PointXYZ* d = reinterpret_cast<const PointXYZ*>(message.data(1));
-  const size_t s = message.size(1) / sizeof(PointXYZ);
+  const float* d = reinterpret_cast<const float*>(message.data(1));
+  const size_t s = message.size(1) / sizeof(float);
 
-  data.points.assign(d, d + s);
+  data.depths.assign(d, d + s);
 }
 
 } // namespace i3ds
