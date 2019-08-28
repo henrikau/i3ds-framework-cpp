@@ -59,7 +59,7 @@ if [[ -z ${FAST} ]]; then
 	  -DBUILD_TESTS=ON \
 	  -DBUILD_BINDINGS=ON \
 	  -DGENERATE_ASN=OFF \
-	  -DNO_OPENCV=ON
+	  -DNO_OPENCV=OFF
 fi
 
 # Always trigger build, regardless of $FAST
