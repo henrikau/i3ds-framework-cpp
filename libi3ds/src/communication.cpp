@@ -10,9 +10,11 @@
 
 #include <i3ds/communication.hpp>
 #include <i3ds/exception.hpp>
+#include <i3ds/address_server.hpp>
 
 #include <iostream>
 #include <stdexcept>
+#include <cstdlib>
 
 void i3ds_message_free(void* data, void* hint)
 {
@@ -79,23 +81,44 @@ i3ds::Message::size(int i) const
   return i < payloads() ? payload_[i].size() : 0;
 }
 
-i3ds::Context::Context(std::string addr_srv_addr)
+
+const std::string i3ds::Context::DEFAULT_ADDR_SRV_URL = "tcp://localhost:" + 
+                                                        std::to_string(i3ds::AddressServer::DEFAULT_PORT);
+
+i3ds::Context::Context()
   : context_(1),
     address_socket_(context_, ZMQ_REQ),
-    addr_srv_addr_(addr_srv_addr),
-    connected_to_addr_srv(false)
+    connected_to_addr_srv_(false)
 {
+  const char* url_from_env = std::getenv("I3DS_ADDR_SRV_URL");
+  if (url_from_env != nullptr)
+    {
+      addr_srv_url_ = url_from_env;
+    }
+  else
+    {
+      addr_srv_url_ = DEFAULT_ADDR_SRV_URL;
+    }
+}
+
+i3ds::Context::Context(std::string addr_srv_url)
+    : Context()
+{
+  addr_srv_url_ = addr_srv_url;
 }
 
 std::string
 i3ds::Context::get_config(NodeID node, int type)
 {
-  if (!connected_to_addr_srv)
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!connected_to_addr_srv_)
     {
       int timeout_ms = 1000;
-      address_socket_.connect(addr_srv_addr_);
+      int linger = 0;
+      address_socket_.connect(addr_srv_url_);
       address_socket_.setsockopt(ZMQ_RCVTIMEO, &timeout_ms, sizeof(int));
-      connected_to_addr_srv = true;
+      address_socket_.setsockopt(ZMQ_LINGER, &linger, sizeof(int));
+      connected_to_addr_srv_ = true;
     }
 
   std::string query = std::to_string(node);
@@ -137,6 +160,12 @@ i3ds::Context::get_config(NodeID node, int type)
     }
 
   return reply_string;
+}
+
+std::string
+i3ds::Context::get_addr_srv_url() const
+{
+  return addr_srv_url_;
 }
 
 i3ds::Socket::Ptr
