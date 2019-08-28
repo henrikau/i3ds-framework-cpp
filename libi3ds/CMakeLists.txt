@@ -124,7 +124,7 @@ if (BUILD_TESTS)
     lidar-test
     star-tracker-test
     analog-test
-#    measurement-proxy-test
+    measurement-proxy-test
     pointcloud-test
     depthmap-test
     )
