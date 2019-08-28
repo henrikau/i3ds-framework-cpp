@@ -86,15 +86,15 @@ handle_image(std::string window_name, const T& frame, int image_number, std::str
   cv::waitKey(5); // Apparently needed to render image properly
 }
 
-bool is_tof_camera(i3ds::DepthMap& data) {
+bool is_tof_camera(i3ds::DepthMap&) {
   return true;
 }
 
-bool is_tof_camera(i3ds::Frame& data) {
+bool is_tof_camera(i3ds::Frame&) {
   return false;
 }
 
-int image_count(i3ds::DepthMap& data) {
+int image_count(i3ds::DepthMap&) {
   return 1;
 }
 
