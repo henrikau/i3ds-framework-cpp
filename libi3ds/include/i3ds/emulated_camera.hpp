@@ -116,7 +116,7 @@ protected:
   void load_images(std::string sample_dir);
   cv::Mat next_image();
 
-  bool generate_sample(unsigned long timestamp_us);
+  bool generate_sample();
 
   int64_t shutter_;
   double gain_;
