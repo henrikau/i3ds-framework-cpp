@@ -43,7 +43,7 @@ bool do_output = false, do_scale = false, do_size = false;
 unsigned int img_index = 0;
 
 void
-signal_handler(int signum)
+signal_handler(int)
 {
   running = false;
 }

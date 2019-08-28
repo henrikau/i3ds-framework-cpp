@@ -25,7 +25,7 @@ namespace po = boost::program_options;
 volatile bool running;
 
 void
-signal_handler(int signum)
+signal_handler(int)
 {
   running = false;
 }
