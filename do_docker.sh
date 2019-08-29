@@ -62,7 +62,7 @@ if [[ ! "${nodocker}" == "yes" ]]; then
     docker build --tag=hostbuild .
 fi
 
-docker run -it -v ${BPATH}/:/app \
+docker run -v ${BPATH}/:/app \
        --cap-add=sys_nice --ulimit rtprio=20 \
        -u $(id -u ${USER}):$(id -g ${USER}) \
        hostbuild ${params}
