@@ -29,7 +29,7 @@ namespace logging = boost::log;
 
 volatile bool running;
 
-void signal_handler(int signum)
+void signal_handler(int)
 {
   BOOST_LOG_TRIVIAL(info) << "SHUTDOWN";
   running = false;

@@ -154,7 +154,7 @@ i3ds::SessionReader::SessionReader(std::string filename) : input_file(filename, 
   hdr_file.read((char*)&_message_count, sizeof(uint32_t));
 
   hdr_file.close();
-};
+}
 
 i3ds::MessageRecord i3ds::SessionReader::get_message()
 {

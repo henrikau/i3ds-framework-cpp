@@ -18,7 +18,7 @@ namespace fs = boost::filesystem;
 
 i3ds::EmulatedCamera::EmulatedCamera(Context::Ptr context, NodeID node, Parameters param)
   : GigECamera(context, node, param),
-    sampler_(std::bind(&i3ds::EmulatedCamera::generate_sample, this, std::placeholders::_1))
+    sampler_(std::bind(&i3ds::EmulatedCamera::generate_sample, this))
 {
   BOOST_LOG_TRIVIAL(info) << "Create emulated camera with NodeID: " << node;
 
@@ -414,7 +414,7 @@ i3ds::EmulatedCamera::load_images(std::string sample_dir)
 }
 
 bool
-i3ds::EmulatedCamera::generate_sample(unsigned long timestamp_us)
+i3ds::EmulatedCamera::generate_sample()
 {
   // Get sample image from index.
   if (++current_image_index_ >= sample_images_.size())

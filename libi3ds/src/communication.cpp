@@ -16,7 +16,7 @@
 #include <stdexcept>
 #include <cstdlib>
 
-void i3ds_message_free(void* data, void* hint)
+void i3ds_message_free(void* data, void*)
 {
   free(data);
 }

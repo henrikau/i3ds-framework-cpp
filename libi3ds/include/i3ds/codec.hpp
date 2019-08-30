@@ -55,14 +55,14 @@ struct NullCodec
 
   static const int max_size = 0;
 
-  static inline void Initialize(Data& val) {};
+  static inline void Initialize(Data& ) {};
 
-  static inline flag Encode(const Data* val, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+  static inline flag Encode(const Data*, BitStream*, int*, flag)
   {
     return true;
   }
 
-  static inline flag Decode(Data* pVal, BitStream* pBitStrm, int* pErrCode)
+  static inline flag Decode(Data*, BitStream*, int*)
   {
     return true;
   }
@@ -123,7 +123,7 @@ void Encode(Message& message, const typename T::Data& data)
 ////////////////////////////////////////////////////////////////////////////////
 
 template<>
-inline void Encode<NullCodec>(Message& message, const NullCodec::Data& data)
+inline void Encode<NullCodec>(Message& , const NullCodec::Data& )
 {
 }
 
@@ -150,7 +150,7 @@ void Decode(const Message& message, typename T::Data& data)
 ////////////////////////////////////////////////////////////////////////////////
 
 template<>
-inline void Decode<NullCodec>(const Message& message, NullCodec::Data& data)
+inline void Decode<NullCodec>(const Message& message, NullCodec::Data&)
 {
   if (message.has_payload())
     {

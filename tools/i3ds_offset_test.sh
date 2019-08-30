@@ -22,5 +22,5 @@ do
 	i3ds_configure_trigger --node ${NODE} --generator ${GENERATOR} --trigger ${FLASH_OUTPUT} --width ${WIDTH} --delay ${delay}
 	sleep 5
 	let delay=$delay+$DELTA
-    done	  
+    done
 done

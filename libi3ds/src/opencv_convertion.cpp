@@ -20,7 +20,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 cv::Mat
-i3ds::frame_to_cv_mat(const DepthMap& frame, int image_number)
+i3ds::frame_to_cv_mat(const DepthMap& frame, int)
 {
   const int rows = frame.descriptor.height;
   const int cols = frame.descriptor.width;

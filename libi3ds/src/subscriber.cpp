@@ -47,7 +47,7 @@ i3ds::Subscriber::Create()
 }
 
 void
-i3ds::Subscriber::Handle(Message& message, Socket& socket)
+i3ds::Subscriber::Handle(Message& message, Socket& )
 {
   try
     {

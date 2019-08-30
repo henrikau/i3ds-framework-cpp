@@ -94,7 +94,7 @@ i3ds::EmulatedTrigger::handle_internal_channel(InternalChannelService::Data& com
 
 // Handler for trigger external channel command, must be overloaded.
 void
-i3ds::EmulatedTrigger::handle_external_channel(ExternalChannelService::Data& command)
+i3ds::EmulatedTrigger::handle_external_channel(ExternalChannelService::Data&)
 {
   BOOST_LOG_TRIVIAL(error) << "Handle external channel not implemented";
 }

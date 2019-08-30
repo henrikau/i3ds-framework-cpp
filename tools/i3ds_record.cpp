@@ -31,7 +31,7 @@ namespace logging = boost::log;
 volatile bool running;
 
 void
-signal_handler(int signum)
+signal_handler(int)
 {
   running = false;
 }
