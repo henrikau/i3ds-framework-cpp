@@ -2,6 +2,26 @@
 set -e
 BUILDPATH="docker_build"
 
+run_valgrind ()
+{
+    test -e ${2} || return 1
+    echo "Running ${2} under valgrind"
+
+    # For more info/noise, enable verbose:
+    # --verbose \
+
+    # If valgrind finds a problem in one of the core libraries, enable
+    # gen-suppressions and add a new rule:
+    # --gen-suppressions=all -v\
+    LD_LIBRARY_PATH=${1}/libi3ds.so.1.0 valgrind \
+    		   --leak-check=full \
+    		   --show-leak-kinds=all \
+		   --show-reachable=no \
+    		   --track-origins=yes \
+		   --suppressions=/valgrind-suppressions.supp \
+		   ${2}
+}
+
 run_test ()
 {
     test -e ${2} || return 1
@@ -14,17 +34,18 @@ run_test ()
 
 usage()
 {
-    echo "Usage: $0 [-c] [-t testtarget] -f -?" 1>&2;
+    echo "Usage: $0 [-c] [-t testtarget] [-f] [-v] [-?]"
     cat <<EOF
 -c          Force a full recompile of the entire project
 -f          Fast, avoid running cmake for configuration, useful when only minor changes since last build
 -t [target] Run tests, either 'all' or specific tests
+-v 	    Valgrind, run on specified test-target (or 'all' if -t is not set)
 -?          Show this help
 EOF
     exit 1;
 }
 
-while getopts ":cft:?" o; do
+while getopts ":cft:v?" o; do
     case "${o}" in
 	c)
 	    # Ensure clean compile, avoid stale objects
@@ -35,6 +56,9 @@ while getopts ":cft:?" o; do
 	    ;;
 	t)
 	    TEST_NAME=${OPTARG}
+	    ;;
+	v)
+	    RUN_VALGRIND=1
 	    ;;
 	?)
 	usage
@@ -97,6 +121,19 @@ if [[ ! -z ${TEST_NAME} ]]; then
 	    run_test ${BPATH} ${BINARY}
 	    popd > /dev/null
 	fi
+    fi
+fi
+
+if [[ ! -z ${RUN_VALGRIND} ]]; then
+    # If we list all (or no) tests, then run valgrind of all of them
+    if [[ -z ${TEST_NAME} || ${TEST_NAME} == "all" || ${TEST_NAME} == "test" || ${TEST_NAME} == "list" ]]; then
+	for tname in $(ls -1 ${BPATH}/*-test); do
+	    echo "Running valgrind for ${tname}"
+	    run_valgrind ${BPATH} ${tname}
+	done
+    else
+	BINARY=$(find $(pwd) -name ${TEST_NAME})
+	test ! -z ${BINARY} && run_valgrind ${BPATH} ${BINARY}
     fi
 fi
 popd > /dev/null

@@ -27,7 +27,8 @@ EOF
 
 SPECIFIC_TEST=""
 params=""
-while getopts "aAcDtT:?h" o; do
+testparams=""
+while getopts "aAcDtT:v?h" o; do
     case "${o}" in
 	a)
 	    params="-C -t all"
@@ -44,10 +45,13 @@ while getopts "aAcDtT:?h" o; do
 	    params="${params} -f"
 	    ;;
 	t)
-	    params="${params} -t all"
+	    testparams="${testparams} -t all"
 	    ;;
 	T)
-	    params="${params} -t ${OPTARG}"
+	    testparams="${testparams} -t ${OPTARG}"
+	    ;;
+	v)
+	    RUN_VALGRIND=1
 	    ;;
 	?|h)
 	usage
@@ -62,7 +66,24 @@ if [[ ! "${nodocker}" == "yes" ]]; then
     docker build --tag=hostbuild .
 fi
 
+# Compile
 docker run -v ${BPATH}/:/app \
        --cap-add=sys_nice --ulimit rtprio=20 \
        -u $(id -u ${USER}):$(id -g ${USER}) \
        hostbuild ${params}
+
+# Run tests
+if [[ ! -z ${testparams} ]]; then
+    docker run -v ${BPATH}/:/app \
+	   --cap-add=sys_nice --ulimit rtprio=20 \
+	   -u $(id -u ${USER}):$(id -g ${USER}) \
+	   hostbuild -f ${testparams}
+fi
+
+# Run valgrind
+if [[ ! -z ${RUN_VALGRIND} ]]; then
+    docker run -v ${BPATH}/:/app \
+	   --cap-add=sys_nice --ulimit rtprio=20 \
+	   -u $(id -u ${USER}):$(id -g ${USER}) \
+	   hostbuild -f -v ${testparams}
+fi

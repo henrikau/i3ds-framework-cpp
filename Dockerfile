@@ -7,7 +7,7 @@ MAINTAINER Henrik Austad <henrik.austad@sintef.no>
 RUN apt-get update
 RUN apt-get install -y gcc g++ cmake antlr3 libzmq3-dev \
     libboost-dev libboost-test-dev libboost-log-dev libboost-program-options-dev \
-    swig python3-dev python3-pip libopencv-dev
+    swig python3-dev python3-pip libopencv-dev valgrind
 RUN pip3 install --upgrade pip
 RUN pip3 install numpy
 
@@ -18,6 +18,7 @@ ENV HOME /
 RUN mkdir -p /app
 WORKDIR /app
 COPY scripts/hostmake.sh /
+COPY scripts/valgrind-suppressions.supp /
 
 # If we run as non-root, make sure anyone can exec
 RUN chmod a+x /hostmake.sh
