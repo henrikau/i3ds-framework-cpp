@@ -26,19 +26,19 @@ i3ds::Receiver::~Receiver()
 void
 i3ds::Receiver::Start()
 {
-  if (running_.load())
+  if (running_)
     {
       throw CommunicationError("Receiver is already running");
     }
 
-  running_.store(true);
+  running_ = true;
   worker_ = std::thread(&i3ds::Receiver::Run, this);
 }
 
 void
 i3ds::Receiver::Stop()
 {
-  running_.store(false);
+  running_ = false;
 
   if (worker_.joinable())
     {
@@ -53,7 +53,7 @@ i3ds::Receiver::Run()
 
   socket_ = Create();
 
-  while (running_.load())
+  while (running_)
     {
       try
         {
@@ -71,12 +71,12 @@ i3ds::Receiver::Run()
       catch(CommunicationError& e)
         {
           std::cerr << "Communication error: " << e.what() << std::endl;
-          running_.store(false);
+          running_ = false;
         }
       catch(std::exception& e)
         {
           std::cerr << "Exception: " << e.what() << std::endl;
-	  running_.store(false);
+	  running_ = false;
         }
     }
 

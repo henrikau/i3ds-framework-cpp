@@ -15,6 +15,7 @@
 #include <string>
 #include <map>
 #include <thread>
+#include <atomic>
 
 namespace i3ds
 {
@@ -37,7 +38,7 @@ private:
   zmq::context_t context_;
   zmq::socket_t socket_;
 
-  volatile bool running_;
+  std::atomic<bool> running_;
   std::thread worker_;
 
   void handle_query();

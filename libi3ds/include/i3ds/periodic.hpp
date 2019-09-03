@@ -13,6 +13,7 @@
 
 #include <thread>
 #include <functional>
+#include <atomic>
 
 #include <i3ds/sensor.hpp>
 #include <i3ds/time.hpp>
@@ -52,7 +53,7 @@ private:
   clock::duration period_;
 
   // Running flag.
-  volatile bool running_;
+  std::atomic<bool> running_;
 
   // Worker thread.
   std::thread worker_;

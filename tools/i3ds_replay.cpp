@@ -15,6 +15,7 @@
 #include <thread>
 #include <unordered_map>
 #include <cstdint>
+#include <atomic>
 
 #define BOOST_LOG_DYN_LINK
 
@@ -29,7 +30,7 @@
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
-volatile bool running;
+std::atomic<bool> running;
 
 void
 signal_handler(int)

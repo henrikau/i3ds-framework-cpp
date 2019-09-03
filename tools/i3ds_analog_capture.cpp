@@ -12,6 +12,7 @@
 #include <csignal>
 #include <cmath>
 #include <cstring>
+#include <atomic>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/analog_sensor.hpp>
@@ -22,7 +23,7 @@
 
 namespace po = boost::program_options;
 
-volatile bool running;
+std::atomic<bool> running;
 
 void
 signal_handler(int)

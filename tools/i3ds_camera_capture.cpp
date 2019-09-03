@@ -12,6 +12,7 @@
 #include <csignal>
 #include <cmath>
 #include <cstring>
+#include <atomic>
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/camera_sensor.hpp>
@@ -31,7 +32,7 @@
 
 namespace po = boost::program_options;
 
-volatile bool running;
+std::atomic<bool> running;
 
 std::chrono::time_point<std::chrono::high_resolution_clock>previous_time;
 float scale = 100;

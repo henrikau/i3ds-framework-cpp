@@ -30,11 +30,12 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+#include <atomic>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
-volatile bool running;
+std::atomic<bool> running;
 
 void signal_handler(int)
 {

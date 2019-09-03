@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <unistd.h>
+#include <atomic>
 
 #include <boost/program_options.hpp>
 
@@ -28,7 +29,7 @@
 namespace po = boost::program_options;
 namespace logging = boost::log;
 
-volatile bool running;
+std::atomic<bool> running;
 
 void signal_handler(int)
 {

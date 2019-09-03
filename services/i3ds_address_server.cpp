@@ -11,6 +11,7 @@
 #include <csignal>
 #include <iostream>
 #include <unistd.h>
+#include <atomic>
 
 #include <i3ds/address_server.hpp>
 
@@ -18,7 +19,7 @@
 
 namespace po = boost::program_options;
 
-volatile bool running;
+std::atomic<bool> running;
 
 void signal_handler(int)
 {
