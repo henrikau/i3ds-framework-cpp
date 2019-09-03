@@ -1,4 +1,5 @@
 build/
+build_petalinux/
 docker_build/
 *~
 *.swp
