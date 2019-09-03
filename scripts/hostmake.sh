@@ -75,7 +75,6 @@ test -d ${BUILDPATH} || mkdir -p ${BUILDPATH}
 pushd ${BUILDPATH} > /dev/null
 
 if [[ -z ${FAST} ]]; then
-    cmake --version
     cmake .. -DCMAKE_C_COMPILER="gcc" \
 	  -DCMAKE_CXX_COMPILER="g++" \
 	  -DBUILD_EMBEDDED=OFF \
