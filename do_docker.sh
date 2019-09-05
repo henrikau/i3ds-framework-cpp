@@ -2,6 +2,14 @@
 set -e
 BPATH="$(dirname `realpath $0`)"
 
+gen_archive_name()
+{
+    dirty=`test -z "$(git status -s|grep ^\ M)" || echo "-dirty"`
+    hash="$(git log --pretty=oneline -n1|awk '{$hash=substr($1, 0, 12); print $1}')"
+    name="libi3ds-$(date "+%Y-%m")-${hash}${dirty}.tar"
+    echo ${name}
+}
+
 # Options:
 # 1) Only compile
 # 2) Compile and run tests (default)
@@ -34,7 +42,7 @@ while getopts "aAcDtT:v?h" o; do
 	    params="-C -t all"
 	    ;;
 	A)
-	    archive="yes"
+	    params="${params} -A $(gen_archive_name) -I /tmp/foo"
 	    ;;
 	c)
 	    params="${params} -c"
