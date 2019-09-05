@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 BUILDPATH="docker_build"
+INSTALL_PATH=""
 
 run_valgrind ()
 {
@@ -34,10 +35,12 @@ run_test ()
 
 usage()
 {
-    echo "Usage: $0 [-c] [-t testtarget] [-f] [-v] [-?]"
+    echo "Usage: $0 [-A archive] [-c] [-t testtarget] [-f] [-v] [-?]"
     cat <<EOF
+-A [name]   Create tar-archive with i3ds-files
 -c          Force a full recompile of the entire project
 -f          Fast, avoid running cmake for configuration, useful when only minor changes since last build
+-I [PATH]   Set install-path
 -t [target] Run tests, either 'all' or specific tests
 -v 	    Valgrind, run on specified test-target (or 'all' if -t is not set)
 -?          Show this help
@@ -45,14 +48,20 @@ EOF
     exit 1;
 }
 
-while getopts ":cft:v?" o; do
+while getopts ":A:cfI:t:v?" o; do
     case "${o}" in
+	A)
+	    ARCHIVE=${OPTARG}
+	    ;;
 	c)
 	    # Ensure clean compile, avoid stale objects
 	    test -d ${BUILDPATH} && rm -rf ${BUILDPATH}/
 	    ;;
 	f)
 	    FAST=1
+	    ;;
+	I)
+	    INSTALL_PATH=${OPTARG}
 	    ;;
 	t)
 	    TEST_NAME=${OPTARG}
@@ -82,6 +91,7 @@ if [[ -z ${FAST} ]]; then
 	  -DBUILD_TESTS=ON \
 	  -DBUILD_BINDINGS=ON \
 	  -DGENERATE_ASN=OFF \
+	  -DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}" \
 	  -DNO_OPENCV=OFF
 fi
 
@@ -135,4 +145,15 @@ if [[ ! -z ${RUN_VALGRIND} ]]; then
 	test ! -z ${BINARY} && run_valgrind ${BPATH} ${BINARY}
     fi
 fi
+
+if [[ ! -z ${ARCHIVE} ]]; then
+    make VERBOSE=1 install DIR=${INSTALL_PATH}
+
+    pushd ${INSTALL_PATH} > /dev/null
+    tarname=$(basename ${ARCHIVE})
+    tar cf /app/${tarname} . --owner=root --group=root &>/dev/null
+    popd > /dev/null
+    echo "${tarname} created"
+fi
+
 popd > /dev/null
