@@ -1,12 +1,6 @@
+# Need to have unit_test_framework available here for ../test/ to link properly..
 if (BUILD_TESTS OR BUILD_TOOLS)
   find_package (Boost COMPONENTS program_options unit_test_framework log REQUIRED)
-
-  if (NO_OPENCV)
-    set(OpenCV_FOUND 0)
-  else()
-    find_package (OpenCV 3.0.0 QUIET)
-  endif()
-
 endif (BUILD_TESTS OR BUILD_TOOLS)
 
 file(GLOB ASN1_SRCS ../generated/i3ds/*.c)

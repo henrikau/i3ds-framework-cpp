@@ -1,11 +1,5 @@
 find_package (Boost COMPONENTS program_options log REQUIRED)
 
-if (NO_OPENCV)
-  set(OpenCV_FOUND 0)
-else()
-  find_package (OpenCV 3.0.0 QUIET)
-endif()
-
 set (SRCS
   )
 

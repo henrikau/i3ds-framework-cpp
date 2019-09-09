@@ -115,6 +115,12 @@ endif (NOT CMAKE_C_FLAGS)
 # Add subdirectories with sources of the framework
 ################################################################################
 
+if (NO_OPENCV)
+  set(OpenCV_FOUND 0)
+else()
+  find_package (OpenCV 3.0.0 QUIET)
+endif()
+
 include_directories (BEFORE "libi3ds/include/")
 include_directories (BEFORE "generated")
 
