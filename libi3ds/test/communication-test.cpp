@@ -137,6 +137,7 @@ BOOST_AUTO_TEST_CASE(create_id_message_test)
 {
   std::vector<addr_pair> addr_pairs;
 
+  addr_pairs.push_back({Address(), "00000000"});
   addr_pairs.push_back({Address(0,0), "00000000"});
   addr_pairs.push_back({Address(32413,45),"007E9D2D"});
   addr_pairs.push_back({Address(16777215,255), "FFFFFFFF"});
