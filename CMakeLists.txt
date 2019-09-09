@@ -128,3 +128,10 @@ endif (BUILD_TOOLS)
 if (BUILD_BINDINGS)
   add_subdirectory (bindings)
 endif (BUILD_BINDINGS)
+
+##############################################################################
+# Unit testing
+##############################################################################
+if (BUILD_TESTS)
+  add_subdirectory (test)
+endif (BUILD_TESTS)
