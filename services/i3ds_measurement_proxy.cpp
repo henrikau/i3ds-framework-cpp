@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
   po::options_description desc("Run a publish/subscribe proxy\n  Available options");
 
   desc.add_options()
+  ("sub,s",  po::value<int>(&sub_port)->default_value(9001), "Subscribe-port (publishers connect to this)")
+  ("pub,p",  po::value<int>(&pub_port)->default_value(9002), "Publish-port subscribers connect to this)")
   ("help,h", "Produce this message")
-  ("sub,s", po::value<int>(&sub_port)->default_value(9001), "Subscribe-port (publishers connect to this)")
-  ("pub,p", po::value<int>(&pub_port)->default_value(9002), "Publish-port subscribers connect to this)")
   ;
 
   po::variables_map vm;

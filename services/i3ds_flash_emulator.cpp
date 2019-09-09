@@ -44,10 +44,10 @@ int main(int argc, char** argv)
   po::options_description desc("Allowed flash emulator options");
 
   desc.add_options()
-  ("help", "Produce this message")
-  ("node,n", po::value(&node)->default_value(20), "Node ID of flash emulator")
+  ("node,n",    po::value(&node)->default_value(20), "Node ID of flash emulator")
   ("verbose,v", "Print verbose output")
-  ("quiet,q", "Quiet output")
+  ("quiet,q",   "Quiet output")
+  ("help,h",    "Produce this message")
   ;
 
   po::variables_map vm;

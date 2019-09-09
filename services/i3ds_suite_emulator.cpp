@@ -46,11 +46,11 @@ int main(int argc, char** argv)
   po::options_description desc("Allowed suite emulator options");
 
   desc.add_options()
-  ("help", "Produce this message")
-  ("base", po::value(&base_id)->default_value(10), "Base node ID of sensors")
-  ("samples", po::value(&sample_image_dir)->default_value(""), "Directory with sample images for HR and stereo camera")
+  ("base,b",    po::value(&base_id)->default_value(10), "Base node ID of sensors")
+  ("samples,s", po::value(&sample_image_dir)->default_value(""), "Directory with sample images for HR and stereo camera")
   ("verbose,v", "Print verbose output")
-  ("quiet,q", "Quiet output")
+  ("quiet,q",   "Quiet output")
+  ("help,h",    "Produce this message")
   ;
 
   po::variables_map vm;

@@ -34,9 +34,9 @@ int main(int argc, char *argv[])
   po::options_description desc("Run a service for querying zmq addresses for nodes on the network\n  Available options");
 
   desc.add_options()
-  ("help", "Produce this message")
-  ("config", po::value<std::string>(&filename)->default_value(""), "Config file with addresses")
-  ("port", po::value<int>(&port)->default_value(i3ds::AddressServer::DEFAULT_PORT), "Port to bind service to")
+  ("config,c", po::value<std::string>(&filename)->default_value(""), "Config file with addresses")
+  ("port,p",   po::value<int>(&port)->default_value(i3ds::AddressServer::DEFAULT_PORT), "Port to bind service to")
+  ("help,h",   "Produce this message")
   ;
 
   po::variables_map vm;
