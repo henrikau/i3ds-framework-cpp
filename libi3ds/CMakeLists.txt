@@ -48,7 +48,7 @@ set (LIB_SRCS
   src/flash.cpp
   src/flash_client.cpp
   src/measurement_proxy.cpp
-  src/sensor_configurator.cpp
+  src/configurator.cpp
   src/message_recording.cpp
   )
 

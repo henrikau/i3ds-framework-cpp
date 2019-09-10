@@ -38,7 +38,7 @@ public:
   SensorConfigurator() {}
   virtual ~SensorConfigurator() {}
 
-  void add_common_options(po::options_description& desc);
+  virtual void add_common_options(po::options_description& desc);
 
   void handle_sensor_commands(po::variables_map& vm, SensorClient& client);
 

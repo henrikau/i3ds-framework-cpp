@@ -12,7 +12,7 @@
 #include <cstdlib>
 
 #include <i3ds/trigger_client.hpp>
-#include <i3ds/sensor_configurator.hpp>
+#include <i3ds/configurator.hpp>
 
 #include <boost/program_options.hpp>
 
