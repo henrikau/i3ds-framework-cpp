@@ -14,6 +14,7 @@
 #include <cstdlib>
 
 #include <i3ds/power_client.hpp>
+#include <i3ds/configurator.hpp>
 
 #include <boost/program_options.hpp>
 
@@ -35,36 +36,17 @@ int main(int argc, char *argv[])
   bool set_ports = false;
   std::string addr_server;
 
+  i3ds::Configurator configurator;
   po::options_description desc("Allowed trigger control options");
-
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help", "Show help")
   ("node,n", po::value(&node_id)->default_value(299), "NodeID")
   ("enable,e", po::value(&enable_ports), "Enable power ports")
   ("disable,d", po::value(&disable_ports), "Disable power ports")
   ("set,s", po::bool_switch(&set_ports), "Turn on the enabled ports, turn off all others")
   ("addr-server,a", po::value(&addr_server)->default_value(""), "Address to the address-server")
-  ("verbose,v", "Print verbose output") ("quite,q", "Quiet output");
   ;
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help")) {
-    BOOST_LOG_TRIVIAL(info) << desc;
-    return -1;
-  }
-  if (vm.count ("quiet"))
-    {
-      logging::core::get ()->set_filter (
-	  logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count ("verbose"))
-    {
-      logging::core::get ()->set_filter (
-	  logging::trivial::severity >= logging::trivial::info);
-    }
+  configurator.parse_common_options(desc, argc, argv);
 
   i3ds::Context::Ptr context;
   if (addr_server.empty()) {
@@ -72,7 +54,6 @@ int main(int argc, char *argv[])
   } else {
     context = std::make_shared<i3ds::Context>(addr_server);
   }
-  
 
   BOOST_LOG_TRIVIAL(info) << "Connecting to power server with node ID: " << node_id;
   i3ds::PowerClient power_client(context, node_id);
@@ -83,7 +64,7 @@ int main(int argc, char *argv[])
     for (size_t i=0; i<enable_ports.size(); i++) {
       BOOST_LOG_TRIVIAL(info) << "  " << enable_ports[i];
     }
-    
+
     power_client.set_channels(i3ds::PowerOutputSet(enable_ports.begin(), enable_ports.end()));
     return 0;
   }
@@ -102,7 +83,6 @@ int main(int argc, char *argv[])
     }
     power_client.disable_channels(i3ds::PowerOutputSet(disable_ports.begin(), disable_ports.end()));
   }
-  
 
   return 0;
 }

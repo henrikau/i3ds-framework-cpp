@@ -31,6 +31,7 @@
 #include <i3ds/lidar_sensor.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
 #include <i3ds/imu_sensor.hpp>
+#include <i3ds/configurator.hpp>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -159,48 +160,20 @@ main(int argc, char *argv[])
   unsigned int max_measurements;
   std::string sensor_type;
   std::string output_file;
-
+  i3ds::Configurator configurator;
   po::options_description
-  desc("Measures message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
 
+  desc("Measures message timestamp and time of reception and stores the results in a CSV file.\n  Available options");
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help,h", "Produce this message")
   ("node,n", po::value(&node_id)->required(), "Node ID of sensor")
   ("type,t", po::value<std::string>(&sensor_type)->required(),
    "Type of sensor. Can be one of: cam, tof, lidar, radar, st or imu")
   ("max_measurements,m", po::value(&max_measurements)->default_value(0), "Number of measurements to record (not precise). 0 means no limit.")
   ("output,o", po::value<std::string>(&output_file)->default_value("out.csv"), "File name to write output. CSV format.")
-  ("verbose,v", "Print verbose output")
-  ("quiet,q", "Quiet ouput")
   ;
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
-  if (vm.count("quiet"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count("verbose"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-    }
-
-  try
-    {
-      po::notify(vm);
-    }
-  catch (std::exception& e)
-    {
-      std::cerr << "Error: " << e.what() << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   BOOST_LOG_TRIVIAL(info) << "Listening for messages of sensor type " << sensor_type
                           << " on node ID " << node_id;

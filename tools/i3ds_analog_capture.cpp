@@ -15,6 +15,7 @@
 #include <atomic>
 
 #include <i3ds/subscriber.hpp>
+#include <i3ds/configurator.hpp>
 #include <i3ds/analog_sensor.hpp>
 
 #define BOOST_LOG_DYN_LINK
@@ -36,7 +37,7 @@ handle_frame(i3ds::Analog::MeasurementTopic::Data& data)
 {
   const size_t N = data.descriptor.batch_size;
   const size_t M = data.descriptor.series_count;
-  
+
   for (unsigned int i = 0; i < N; i++)
     {
       std::cout << data.descriptor.attributes.timestamp <<  ',' << i << ',';
@@ -60,22 +61,14 @@ handle_frame(i3ds::Analog::MeasurementTopic::Data& data)
 int main(int argc, char *argv[])
 {
   int node;
+  i3ds::Configurator configurator;
   po::options_description desc("Displays measurements from analog sensor");
+  configurator.add_common_options(desc);
 
   desc.add_options()
-  ("help,h", "Produce this message")
   ("node,n", po::value<int>(&node)->default_value(10), "Node ID of analog sensor")
   ;
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Subscriber subscriber(context);

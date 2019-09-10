@@ -26,6 +26,7 @@
 
 #include <i3ds/communication.hpp>
 #include <i3ds/message_recording.hpp>
+#include <i3ds/configurator.hpp>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -60,51 +61,21 @@ int
 main(int argc, char *argv[])
 {
   std::string file_name;
-
-  po::options_description desc("Replays a log file recorded with i3ds_record\n  Available options");
-
   int node_offset;
   bool is_forced_node = false;
   NodeID forced_node;
   double speedup;
 
+  po::options_description desc("Replays a log file recorded with i3ds_record\n  Available options");
+  i3ds::Configurator configurator;
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help,h", "Produce this message")
   ("input,i", po::value<std::string>(&file_name)->required(), "Name of log file")
-  ("verbose,v", "Print verbose output")
   ("node,n", po::value<NodeID>(&forced_node), "Force the messages to be output on this node")
   ("node-offset,p", po::value<int>(&node_offset)->default_value(0), "Offset to the recorded nodes")
   ("speedup,s", po::value<double>(&speedup)->default_value(1.0), "Speedup of replay (1.0 = normal speed)")
-  ("quiet,q", "Quiet ouput")
   ;
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
-  if (vm.count("quiet"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count("verbose"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-    }
-
-  try
-    {
-      po::notify(vm);
-    }
-  catch (std::exception& e)
-    {
-      std::cerr << "Error: " << e.what() << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   i3ds::SessionReader recording(file_name);
   i3ds::MessageRecord r = recording.get_message();

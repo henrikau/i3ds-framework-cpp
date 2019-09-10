@@ -14,6 +14,7 @@
 #include <atomic>
 
 #include <i3ds/address_server.hpp>
+#include <i3ds/configurator.hpp>
 
 #include <boost/program_options.hpp>
 
@@ -32,22 +33,15 @@ int main(int argc, char *argv[])
   int port;
 
   po::options_description desc("Run a service for querying zmq addresses for nodes on the network\n  Available options");
+  i3ds::Configurator configurator;
 
+  configurator.add_common_options(desc);
   desc.add_options()
   ("config,c", po::value<std::string>(&filename)->default_value(""), "Config file with addresses")
   ("port,p",   po::value<int>(&port)->default_value(i3ds::AddressServer::DEFAULT_PORT), "Port to bind service to")
-  ("help,h",   "Produce this message")
   ;
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   running = true;
   signal(SIGINT, signal_handler);

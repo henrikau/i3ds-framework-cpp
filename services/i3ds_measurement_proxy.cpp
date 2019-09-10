@@ -14,6 +14,7 @@
 #include <atomic>
 
 #include <i3ds/measurement_proxy.hpp>
+#include <i3ds/configurator.hpp>
 
 #include <boost/program_options.hpp>
 
@@ -32,31 +33,13 @@ int main(int argc, char *argv[])
   int pub_port;
 
   po::options_description desc("Run a publish/subscribe proxy\n  Available options");
-
+  i3ds::Configurator configurator;
+  configurator.add_common_options(desc);
   desc.add_options()
   ("sub,s",  po::value<int>(&sub_port)->default_value(9001), "Subscribe-port (publishers connect to this)")
   ("pub,p",  po::value<int>(&pub_port)->default_value(9002), "Publish-port subscribers connect to this)")
-  ("help,h", "Produce this message")
   ;
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
-  try 
-    {
-      po::notify(vm);
-    }
-  catch (std::exception& e)
-    {
-      std::cerr << "Error: " << e.what() << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   running = true;
   signal(SIGINT, signal_handler);

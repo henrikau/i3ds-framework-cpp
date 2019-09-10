@@ -19,6 +19,7 @@
 #include <i3ds/communication.hpp>
 #include <i3ds/server.hpp>
 #include <i3ds/emulated_trigger.hpp>
+#include <i3ds/configurator.hpp>
 
 #define BOOST_LOG_DYN_LINK
 
@@ -42,33 +43,13 @@ int main(int argc, char** argv)
   unsigned int node;
 
   po::options_description desc("Allowed suite emulator options");
-
+  i3ds::Configurator configurator;
+  configurator.add_common_options(desc);
   desc.add_options()
   ("node,n",    po::value(&node)->default_value(20), "Node ID of trigger emulator")
-  ("verbose,v", "Print verbose output")
-  ("quiet,q",   "Quiet output")
-  ("help,h",    "Produce this message")
   ;
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
-  if (vm.count("quiet"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count("verbose"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-    }
-
-  po::notify(vm);
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   BOOST_LOG_TRIVIAL(trace) << "Create context";
   i3ds::Context::Ptr context = i3ds::Context::Create();;

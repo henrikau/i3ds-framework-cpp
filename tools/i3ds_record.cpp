@@ -25,6 +25,7 @@
 #include <i3ds/time.hpp>
 #include <i3ds/communication.hpp>
 #include <i3ds/message_recording.hpp>
+#include <i3ds/configurator.hpp>
 
 namespace po = boost::program_options;
 namespace logging = boost::log;
@@ -47,44 +48,16 @@ main(int argc, char *argv[])
   std::string file_name;
 
   po::options_description desc("Records measurements and stores them in a log file\n  Available options");
+  i3ds::Configurator configurator;
 
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help,h", "Produce this message")
   ("node,n", po::value(&node_ids)->required(), "Node ID of sensor")
   ("endpoint,e", po::value(&endpoint_id), "Endpoint ID of measurement. Subscribes to all messages if not specified")
   ("messages,m", po::value(&n_messages)->default_value(0), "Number of messages to record. 0 means no limit.")
   ("output,o", po::value<std::string>(&file_name)->default_value("out.log"), "File name to write output.")
-  ("verbose,v", "Print verbose output")
-  ("quiet,q", "Quiet ouput")
   ;
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
-  if (vm.count("quiet"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count("verbose"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-    }
-
-  try
-    {
-      po::notify(vm);
-    }
-  catch (std::exception& e)
-    {
-      std::cerr << "Error: " << e.what() << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   BOOST_LOG_TRIVIAL(trace) << "Recording messages from node IDs: ";
   for ( auto node_id : node_ids) {

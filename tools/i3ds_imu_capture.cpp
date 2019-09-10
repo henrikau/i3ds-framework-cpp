@@ -16,6 +16,7 @@
 
 #include <i3ds/subscriber.hpp>
 #include <i3ds/imu_sensor.hpp>
+#include <i3ds/configurator.hpp>
 
 #define BOOST_LOG_DYN_LINK
 #include <boost/log/trivial.hpp>
@@ -51,21 +52,13 @@ int main(int argc, char *argv[])
 {
   int node;
   po::options_description desc("Displays measurements from analog sensor");
-
+  i3ds::Configurator configurator;
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help,h", "Produce this message")
   ("node,n", po::value<int>(&node)->default_value(10), "Node ID of analog sensor")
   ;
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   i3ds::Context::Ptr context = i3ds::Context::Create();
   i3ds::Subscriber subscriber(context);

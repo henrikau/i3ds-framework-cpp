@@ -14,6 +14,7 @@
 #include <cstring>
 #include <atomic>
 
+#include <i3ds/configurator.hpp>
 #include <i3ds/subscriber.hpp>
 #include <i3ds/camera_sensor.hpp>
 #include <i3ds/tof_camera_sensor.hpp>
@@ -141,10 +142,11 @@ int main(int argc, char *argv[])
 {
   int node;
   bool tof_version = false;
+  i3ds::Configurator configurator;
   po::options_description desc("Displays mono or stereo video stream\n  Available options");
 
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help,h", "Produce this message")
   ("node,n", po::value<int>(&node)->default_value(10), "Node ID of camera")
   ("scale,x", po::value(&scale), "Camera scale [%]")
   ("width,w", po::value(&width), "Maximal image width [px]") 
@@ -154,16 +156,7 @@ int main(int argc, char *argv[])
   ("nogui,g", po::bool_switch(&headless_mode), "Headless mode") 
   ;
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
   if (vm.count("width")) {
     do_size = true;
     std::cout << "Scaling width to: " << width << " [px]" << std::endl;

@@ -19,6 +19,7 @@
 
 #include <i3ds/communication.hpp>
 #include <i3ds/emulated_camera.hpp>
+#include <i3ds/configurator.hpp>
 
 #define BOOST_LOG_DYN_LINK
 
@@ -50,6 +51,8 @@ int main(int argc, char** argv)
   i3ds::EmulatedCamera::Parameters param;
 
   po::options_description desc("Allowed camera control options");
+  i3ds::Configurator configurator;
+  configurator.add_common_options(desc);
 
   desc.add_options()
   ("node,n", po::value<unsigned int>(&node_id)->default_value(10), "Node ID of camera")
@@ -76,31 +79,10 @@ int main(int argc, char** argv)
   ("trigger-pattern-output", po::value<int>(&param.pattern_output)->default_value(6), "Trigger output for pattern.")
   ("trigger-pattern-offset", po::value<int>(&param.pattern_offset)->default_value(0), "Trigger offset for pattern (us).")
 
-  ("verbose,v", "Print verbose output")
-  ("quite,q",   "Quiet ouput")
   ("print",     "Print the camera configuration")
-  ("help,h",    "Produce this message")
   ;
 
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-
-  if (vm.count("help"))
-    {
-      std::cout << desc << std::endl;
-      return -1;
-    }
-
-  if (vm.count("quite"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count("verbose"))
-    {
-      logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-    }
-
-  po::notify(vm);
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   BOOST_LOG_TRIVIAL(info) << "Node ID:     " << node_id;
   BOOST_LOG_TRIVIAL(info) << "Camera name: " << param.camera_name;

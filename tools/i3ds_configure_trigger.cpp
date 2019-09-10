@@ -27,7 +27,8 @@ namespace logging = boost::log;
 
 int main(int argc, char *argv[])
 {
-  i3ds::SensorConfigurator configurator;
+  i3ds::Configurator configurator;
+  NodeID node_id;
   int generator;
   int trigger;
   uint32_t period;
@@ -39,10 +40,9 @@ int main(int argc, char *argv[])
   bool bypass;
 
   po::options_description desc("Allowed trigger control options");
-
+  configurator.add_common_options(desc);
   desc.add_options()
-  ("help", "Show help")
-  ("node", po::value(&configurator.node_id), "NodeID")
+  ("node", po::value(&node_id), "NodeID")
   ("generator", po::value(&generator), "Generator ID")
   ("period", po::value(&period), "Time between triggers")
   ("trigger", po::value(&trigger), "Trigger ID")
@@ -56,15 +56,10 @@ int main(int argc, char *argv[])
 
   po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
-  if (vm.count("help")) {
-    BOOST_LOG_TRIVIAL(info) << desc;
-    return -1;
-  }
-
   i3ds::Context::Ptr context(i3ds::Context::Create());
 
-  BOOST_LOG_TRIVIAL(info) << "Connecting to trigger with node ID: " << configurator.node_id << " context " << context;
-  i3ds::TriggerClient trigger_client(context, configurator.node_id);
+  BOOST_LOG_TRIVIAL(info) << "Connecting to trigger with node ID: " << node_id << " context " << context;
+  i3ds::TriggerClient trigger_client(context, node_id);
   BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
 
   // Configure region.
@@ -78,7 +73,7 @@ int main(int argc, char *argv[])
       TriggerGenerator gen = generator;
       TriggerPeriod per = period;
       trigger_client.set_generator(gen, per);
-      
+
       BOOST_LOG_TRIVIAL(trace) << "---> [OK]";
     }
   }

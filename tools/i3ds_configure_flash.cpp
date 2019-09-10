@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 #include <i3ds/flash_client.hpp>
+#include <i3ds/configurator.hpp>
 
 #include <boost/program_options.hpp>
 
@@ -32,34 +33,16 @@ int main(int argc, char *argv[])
   int duration;
 
 
+  i3ds::Configurator configurator;
   po::options_description desc("Allowed flash control options");
+  configurator.add_common_options(desc);
 
   desc.add_options()
-  ("help", "Show help")
   ("node,n", po::value(&node_id)->default_value(25), "NodeID")
   ("strength,s", po::value(&strength), "Flash strength (0-100%)")
   ("duration,d", po::value(&duration), "Duration of flash (10-3000000  us)\n(Be aware, there are some limitations between strength and duration.)")
-  ("verbose,v", "Print verbose output") ("quite,q", "Quiet output");
   ;
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
-
-  if (vm.count("help")) {
-    BOOST_LOG_TRIVIAL(info) << desc;
-    return -1;
-  }
-  if (vm.count ("quiet"))
-    {
-      logging::core::get ()->set_filter (
-	  logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count ("verbose"))
-    {
-      logging::core::get ()->set_filter (
-	  logging::trivial::severity >= logging::trivial::info);
-    }
+  po::variables_map vm = configurator.parse_common_options(desc, argc, argv);
 
   i3ds::Context::Ptr context;
 
