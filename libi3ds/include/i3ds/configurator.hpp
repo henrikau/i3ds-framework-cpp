@@ -8,8 +8,8 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __ADDRESS_SERVER_HPP
-#define __ADDRESS_SERVER_HPP
+#ifndef CONFIGURATOR_HPP
+#define CONFIGURATOR_HPP
 
 #include <i3ds/sensor_client.hpp>
 
