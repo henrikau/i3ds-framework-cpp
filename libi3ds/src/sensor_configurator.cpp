@@ -26,52 +26,56 @@ namespace po = boost::program_options;
 namespace logging = boost::log;
 
 void
-i3ds::SensorConfigurator::add_common_options(po::options_description& desc)
+i3ds::Configurator::add_common_options(po::options_description& desc)
 {
   desc.add_options()
-  ("help,h", "Produce this message")
-  ("node,n", po::value<NodeID>(&node_id)->required(), "Node ID")
-
-  ("activate", "Activate the sensor")
-  ("start", "Start the sensor")
-  ("stop", "Stop the sensor")
-  ("deactivate", "Deactivate the sensor")
-
-  ("period", po::value<SamplePeriod>(&period), "Sensor period in microseconds")
-
-  ("verbose,v", "Print verbose output")
-  ("quiet,q", "Quiet output")
-  ;
+  ("help,h",    "Show help")
+  ("verbose,v", "Verbose output")
+  ("quiet,q",   "Quiet output")
+    ;
 }
 
 po::variables_map
-i3ds::SensorConfigurator::parse_common_options(po::options_description desc, int argc, char *argv[])
+i3ds::Configurator::parse_common_options(po::options_description desc, int argc, char *argv[])
 {
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
-  if (vm.count("help"))
-    {
+
+  if (vm.count("help")) {
       std::cout << desc << std::endl;
       exit(0);
-    }
-  if (vm.count("quiet"))
-    {
+  }
+
+  if (vm.count("quiet")) {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::warning);
-    }
-  else if (!vm.count("verbose"))
-    {
+  } else if (!vm.count("verbose")) {
       logging::core::get()->set_filter(logging::trivial::severity >= logging::trivial::info);
-    }
-  try
-    {
+  }
+
+  try {
       po::notify(vm);
-    }
-  catch (std::exception& e)
-    {
+  } catch (std::exception& e) {
       std::cerr << "Error: " << e.what() << std::endl;
       exit(-1);
-    }
+  }
   return vm;
+}
+
+
+void
+i3ds::SensorConfigurator::add_common_options(po::options_description& desc)
+{
+  i3ds::Configurator::add_common_options(desc);
+  desc.add_options()
+  ("node,n", po::value<NodeID>(&node_id)->required(), "Node ID")
+
+  ("activate",   "Activate the sensor")
+  ("start",      "Start the sensor")
+  ("stop",       "Stop the sensor")
+  ("deactivate", "Deactivate the sensor")
+
+  ("period", po::value<SamplePeriod>(&period), "Sensor period in microseconds")
+  ;
 }
 
 void

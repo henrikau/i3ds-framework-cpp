@@ -20,7 +20,14 @@ namespace po = boost::program_options;
 namespace i3ds
 {
 
-class SensorConfigurator
+class Configurator
+{
+public:
+  void add_common_options(po::options_description& desc);
+  po::variables_map parse_common_options(po::options_description desc, int argc, char *argv[]);
+};
+
+class SensorConfigurator : public Configurator
 {
 private:
 
@@ -32,8 +39,6 @@ public:
   virtual ~SensorConfigurator() {}
 
   void add_common_options(po::options_description& desc);
-
-  po::variables_map parse_common_options(po::options_description desc, int argc, char *argv[]);
 
   void handle_sensor_commands(po::variables_map& vm, SensorClient& client);
 
