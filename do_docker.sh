@@ -6,7 +6,7 @@ gen_archive_name()
 {
     dirty=`test -z "$(git status -s|grep ^\ M)" || echo "-dirty"`
     hash="$(git log --pretty=oneline -n1|awk '{$hash=substr($1, 0, 12); print $1}')"
-    name="libi3ds-$(date "+%Y-%m")-${hash}${dirty}.tar"
+    name="i3ds-$(date "+%Y-%m")-${hash}${dirty}.tar"
     echo ${name}
 }
 
