@@ -6,6 +6,7 @@ set (SRCS
 set (LIBS
   ${Boost_LIBRARIES}
   i3ds
+  i3ds_emulators
   zmq
   pthread
   ${OpenCV_LIBS}

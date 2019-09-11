@@ -124,6 +124,11 @@ endif()
 include_directories (BEFORE "libi3ds/include/")
 include_directories (BEFORE "generated")
 
+if (BUILD_TESTS OR BUILD_TOOLS)
+  include_directories (BEFORE "emulators/include")
+  add_subdirectory(emulators)
+endif (BUILD_TESTS OR BUILD_TOOLS)
+
 add_subdirectory (libi3ds)
 
 if (BUILD_TOOLS)

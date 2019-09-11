@@ -10,7 +10,7 @@ file(GLOB ASN1_HDRS ../generated/i3ds/*.h)
 # libi3ds
 ################################################################################
 
-set (LIB_SRCS
+set (SRCS
   ${ASN1_SRCS} ${ASN1_HDRS}
   src/communication.cpp
   src/address_server.cpp
@@ -46,48 +46,12 @@ set (LIB_SRCS
   src/message_recording.cpp
   )
 
-set (EMULATOR_SRCS
-  src/emulator_factory.cpp
-  src/emulated_lidar.cpp
-  src/emulated_star_tracker.cpp
-  src/emulated_imu.cpp
-  src/emulated_radar.cpp
-  src/emulated_analog.cpp
-  src/emulated_trigger.cpp
-  src/emulated_flash.cpp
-  )
-
-set (CAMERA_EMULATOR_SRCS
-  src/emulated_camera.cpp
-  src/opencv_convertion.cpp
-  src/emulated_tof_camera.cpp
-  )
-
 set (LIBS
   zmq
   pthread
   ${Boost_LIBRARIES}
   ${OpenCV_LIBS}
   )
-
-set (SRCS ${LIB_SRCS} )
-
-# Add emulators to sources if tests are built.
-# Do not add camera emulators on embedded
-if (BUILD_TESTS OR BUILD_TOOLS)
-  if (OpenCV_FOUND)
-    set (SRCS
-      ${SRCS}
-      ${EMULATOR_SRCS}
-      ${CAMERA_EMULATOR_SRCS}
-      )
-  else (OpenCV_FOUND)
-    set (SRCS
-      ${SRCS}
-      ${EMULATOR_SRCS}
-      )
-  endif (OpenCV_FOUND)
-endif(BUILD_TESTS OR BUILD_TOOLS)
 
 add_library (i3ds SHARED ${SRCS})
 
@@ -97,8 +61,6 @@ set_target_properties (
   i3ds PROPERTIES
   VERSION ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION})
-
-target_compile_definitions(i3ds PRIVATE CAMERA_EMULATORS=${OpenCV_FOUND})
 
 install (TARGETS i3ds DESTINATION lib)
 install (DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.hpp")
