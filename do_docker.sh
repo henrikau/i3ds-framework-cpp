@@ -53,7 +53,6 @@ while getopts "aAcDftT:v?h" o; do
 	    ;;
 	D)
 	    nodocker=1
-	    echo "disabling docker-generator. ${nodocker}"
 	    ;;
 	t)
 	    testparams="${testparams} -t all"
