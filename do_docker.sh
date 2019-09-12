@@ -25,6 +25,7 @@ Foo
   -a   All, compile and run tests
   -A   Create archive of components for local install (assumes successful build)
   -c   Force compile project (includes clean)
+  -f   Run fast-ish (assume CMake is happy)
   -D   Docker: Do *not* create and update docker image, assume image is OK
   -t   Run tests only (assumes successful build)
   -T   Run specific test
@@ -36,7 +37,7 @@ EOF
 SPECIFIC_TEST=""
 params=""
 testparams=""
-while getopts "aAcDtT:v?h" o; do
+while getopts "aAcDftT:v?h" o; do
     case "${o}" in
 	a)
 	    params="-C -t all"
@@ -47,10 +48,12 @@ while getopts "aAcDtT:v?h" o; do
 	c)
 	    params="${params} -c"
 	    ;;
-	D)
-	    nodocker="yes"
-	    # trigger fast exec as well
+	f)
 	    params="${params} -f"
+	    ;;
+	D)
+	    nodocker=1
+	    echo "disabling docker-generator. ${nodocker}"
 	    ;;
 	t)
 	    testparams="${testparams} -t all"
@@ -70,7 +73,7 @@ while getopts "aAcDtT:v?h" o; do
     esac
 done
 
-if [[ ! "${nodocker}" == "yes" ]]; then
+if [[ -z ${nodocker} ]]; then
     docker build --tag=hostbuild .
 fi
 
