@@ -12,10 +12,12 @@ cmake .. -DCMAKE_C_COMPILER="aarch64-linux-gnu-gcc" \
       -DCMAKE_CXX_COMPILER="aarch64-linux-gnu-c++" \
       -DCMAKE_FIND_ROOT_PATH="$BSP_ROOT" \
       -DBUILD_EMBEDDED=ON \
+      -DBUILD_DEBUG=OFF \
       -DBUILD_TOOLS=ON \
       -DBUILD_TESTS=OFF \
       -DBUILD_BINDINGS=OFF \
       -DGENERATE_ASN=OFF \
       -DNO_OPENCV=ON
 
-make -j4
+test -z ${NUM_CPUS} && NUM_CPUS=$(grep ^cpu\ MHz /proc/cpuinfo | wc -l)
+make -j${NUM_CPUS}
