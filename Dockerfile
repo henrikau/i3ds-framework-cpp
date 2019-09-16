@@ -4,10 +4,14 @@ ENV DEBIAN_FRONTEND noninteractive
 MAINTAINER Henrik Austad <henrik.austad@sintef.no>
 
 # Install core dependencies
-RUN apt-get update
-RUN apt-get install -y gcc g++ cmake antlr3 libzmq3-dev \
-    libboost-dev libboost-test-dev libboost-log-dev libboost-program-options-dev \
-    swig python3-dev python3-pip libopencv-dev valgrind
+# This stage can fail with several 404s if the package list has been
+# updated but docker's caching prevents apt from updating properly.
+#
+# either add a --no-cache here, or do apt-get update && apt-get install -y
+RUN apt-get update && apt-get install -y gcc g++ cmake antlr3 libzmq3-dev \
+	libboost-dev libboost-test-dev libboost-log-dev \
+	libboost-program-options-dev swig python3-dev python3-pip \
+	libopencv-dev valgrind
 RUN pip3 install --upgrade pip
 RUN pip3 install numpy
 
