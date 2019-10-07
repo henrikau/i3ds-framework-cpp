@@ -12,7 +12,8 @@ This is the library containing the functionality of the I3DS C++
 framework, including the ASN.1 encoders and decoders that are
 generated using ASN1CC. It is organized in a standard way with headers
 under `include/i3ds`, source code under `src` and unit tests under
-`tests` using the Boost unit test framework.
+`tests` using the Boost unit test framework. Emulators used in testing
+and partial setups can be found under `emulators/`.
 
 The details of ZMQ are hidden in `communication.hpp`. This package
 also specifies the address consisting of a node and endpoint ID.
@@ -33,11 +34,11 @@ Basic sensor functionality with the state machine is defined in
 interfaces inherit from these again and override the service methods
 they support. The corresponding client classes (like `camera_client.hpp`
 can be used by client applications to send commands to the sensors.
-Emulated sensor are defined for all main classes. These
-allow for testing of commands and queries, but are not guaranteed to
-produce meaningful sensor data as of now. The emulated camera can be
-given a file path to a directory containing image files, and will send
-these images on loop.
+Emulated sensor are defined for all main classes and is found under
+`emulators`. These allow for testing of commands and queries, but are
+not guaranteed to produce meaningful sensor data as of now. The emulated
+camera can be given a file path to a directory containing image files,
+and will send these images on loop.
 
 ## Services
 
@@ -56,17 +57,17 @@ The following services are provided:
 
 Use the `--help` argument to get the detailed usage.
 
-## Tools 
+## Tools
 
 The following tools are provided:
 
-* `i3ds_camera_capture`: A camera capture tool for capturing 
+* `i3ds_camera_capture`: A camera capture tool for capturing
 image frames.
-* `i3ds_codec_performance_test`: A test suite to check the 
+* `i3ds_codec_performance_test`: A test suite to check the
 encoding and decoding times of different message types.
 * `i3ds_configure_camera`: Configuration tool for camera sensors.
 * `i3ds_configure_sensor`: Configuration tool for a generic sensor.
-* `i3ds_delay_recorder`: Tool for recording transport delays in 
+* `i3ds_delay_recorder`: Tool for recording transport delays in
 a CSV file.
 * `i3ds_record`: Tool for recording measurements and writing them
 to a log file.
@@ -76,6 +77,39 @@ to a log file.
 Use the `--help` argument to get the detailed usage.
 
 ## Building and installing
+
+### Building using docker for x86-64 systems
+
+A dockerized build environment is provided to make it easier to build
+and test the library. The only requirement is to have docker-io
+installed locally. The first invokation will take some time as a
+complete docker-image must be created. Once this is done, subsequent
+calls should only be delayed by the time it takes to compile the
+projcet.
+
+On a debian/ubuntu host:
+``` shell
+sudo aptitude install docker.io
+./do_docker.s -c -t all
+```
+
+To install the compiled library and header, invoke do_docker with the
+archiving option:
+
+``` shell
+./do_docker.sh -A
+```
+
+this will yield an archive called i3ds-2019-10-98a0d601488b.tar on the
+format 'i3ds-YYYY-MM-<sha1>.tar' to help distinguish between different
+archives. This can then be extracted like any normal archive:
+
+``` shell
+tar xvf i3ds-2019-10-98a0d601488b.tar -C /
+```
+
+
+### Building natively on host
 
 The framework has the following build dependencies:
 
@@ -90,7 +124,7 @@ The framework has the following build dependencies:
 On Ubuntu 16.04, the packages you should need are:
 * build-essential
 * cmake
-* antlr3 
+* antlr3
 * fsharp
 * libzmq3-dev
 * libboost-dev
