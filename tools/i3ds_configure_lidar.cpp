@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
   desc.add_options()
   ("print", "Print the LIDAR configuration")
 
-  ("region", po::value(&enable_region), "Enable LIDAR region of interest (ROI). All or no egion parameters must be set, or 0 will be used as default.")
-  ("region-size-x,w", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
-  ("region-size-y,h", po::value(&region.size_y)->default_value(0), "ROI vertical size")
+  ("region", po::value(&enable_region), "Enable LIDAR region of interest (ROI). All or no region parameters must be set, or 0 will be used as default.")
+  ("region-size-x,X", po::value(&region.size_x)->default_value(0), "ROI horisontal size")
+  ("region-size-y,Y", po::value(&region.size_y)->default_value(0), "ROI vertical size")
   ("region-offset-x,x", po::value(&region.offset_x)->default_value(0), "ROI horisontal offset from left")
   ("region-offset-y,y", po::value(&region.offset_y)->default_value(0), "ROI vertical offset from top")
   ;
