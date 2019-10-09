@@ -64,7 +64,6 @@ if (NOT CMAKE_CXX_FLAGS)
   endif ()
 
   set_cxx_flag("-std=c++17")
-  # set_cxx_flag("-std=c++11")
 
   check_cxx_compiler_flag ("-fpic" CXX_SUPPORT_FPIC_1)
   check_cxx_compiler_flag ("-fPIC" CXX_SUPPORT_FPIC_2)
@@ -89,6 +88,37 @@ if (NOT CMAKE_C_FLAGS)
 
   if (${BUILD_DEBUG})
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wpedantic -Wall -Werror -Wextra")
+    # catch most of what is undefined behavior
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wduplicated-cond -Wduplicated-branches")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmisleading-indentation -Wshadow")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-variadic-macros  -Wcast-align ")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wcast-qual -Wstrict-aliasing=2")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wframe-larger-than=32768 -Wno-strict-overflow")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wsync-nand -Wtrampolines -Wsign-compare")
+
+    # Will trigger a *lot* of warnings in generated asn.1
+    # set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=float-equal")
+
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=missing-braces")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=init-self -Werror=logical-op -Werror=write-strings")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=address -Werror=array-bounds -Werror=char-subscripts")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=enum-compare -Werror=implicit-int -Werror=empty-body")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=main -Werror=aggressive-loop-optimizations")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=nonnull -Werror=parentheses -Werror=pointer-sign")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=return-type -Werror=sequence-point -Werror=uninitialized")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=volatile-register-var -Werror=ignored-qualifiers")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=missing-parameter-type -Werror=old-style-declaration")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=maybe-uninitialized -Wno-unused-function -Wodr")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wformat-signedness -Wsuggest-final-types -Wsuggest-final-methods")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-ignored-attributes -Wno-missing-field-initializers")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wshift-overflow=2 -Wduplicated-cond ")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wduplicated-branches -Werror=restrict")
+
+    # Triggers in generated asn.1
+    # set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wdouble-promotion")
+
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wformat=2")
   else ()
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
   endif ()
