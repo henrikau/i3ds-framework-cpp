@@ -23,7 +23,8 @@ void PowerMask_Initialize(PowerMask* pVal)
 flag PowerMask_IsConstraintValid(const PowerMask* pVal, int* pErrCode)
 {
     flag ret = TRUE;
-	
+    /* -Werror=unused-parameter */
+    (void)pVal;
     ret = TRUE;
     *pErrCode = 0;
 

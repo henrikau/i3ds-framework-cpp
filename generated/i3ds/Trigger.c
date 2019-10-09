@@ -23,7 +23,9 @@ void TriggerMask_Initialize(TriggerMask* pVal)
 flag TriggerMask_IsConstraintValid(const TriggerMask* pVal, int* pErrCode)
 {
     flag ret = TRUE;
-	
+    /* -Werror=unused-parameter */
+    (void)pVal;
+
     ret = TRUE;
     *pErrCode = 0;
 
