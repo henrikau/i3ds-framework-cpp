@@ -74,7 +74,7 @@ i3ds::CameraClient::set_pattern(bool enable, PatternSequence sequence)
   Camera::PatternService::Data command;
 
   command.request.enable = enable;
-  command.request.sequence = sequence;
+  command.request.pattern_sequence = sequence;
 
   Call<Camera::PatternService>(command);
 }

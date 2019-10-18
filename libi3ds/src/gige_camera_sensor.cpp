@@ -582,12 +582,12 @@ i3ds::GigECamera::handle_pattern(PatternService::Data& command)
   if (command.request.enable)
     {
       // Only support one pattern sequence, not controllable as of now.
-      if (command.request.sequence != 1)
+      if (command.request.pattern_sequence != 1)
         {
           throw i3ds::CommandError(error_value, "Unsupported pattern sequence");
         }
 
-      pattern_sequence_ = command.request.sequence;
+      pattern_sequence_ = command.request.pattern_sequence;
 
       // Enable trigger for pattern projector.
       set_trigger(param_.pattern_output, param_.pattern_offset);

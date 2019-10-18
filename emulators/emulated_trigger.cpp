@@ -78,18 +78,18 @@ i3ds::EmulatedTrigger::enabled(TriggerOutput channel) const
 void
 i3ds::EmulatedTrigger::handle_generator(GeneratorService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "Handle generator " << command.request.generator
+  BOOST_LOG_TRIVIAL(info) << "Handle generator " << command.request.source
                           << " period " << command.request.period << " us";
 
-  generators_[command.request.generator - 1] = command.request.period;
+  generators_[command.request.source- 1] = command.request.period;
 }
 
 void
 i3ds::EmulatedTrigger::handle_internal_channel(InternalChannelService::Data& command)
 {
-  BOOST_LOG_TRIVIAL(info) << "Handle internal channel " << command.request.channel;
+  BOOST_LOG_TRIVIAL(info) << "Handle internal channel " << command.request.output_channel;
 
-  channels_[command.request.channel - 1] = command.request;
+  channels_[command.request.output_channel - 1] = command.request;
 }
 
 // Handler for trigger external channel command, must be overloaded.

@@ -224,7 +224,7 @@ i3ds::Sensor::handle_status(StatusService::Data& status)
 {
   try
     {
-      status.response.state = state();
+      status.response.current_state = state();
       status.response.temperature.kelvin = temperature();
     }
   catch (DeviceError& e)
@@ -241,7 +241,7 @@ i3ds::Sensor::handle_configuration(ConfigurationService::Data& config)
 
   try
     {
-      config.response.device = device_name();
+      config.response.device_name = device_name();
       config.response.period = period();
       config.response.batch_size = batch_size();
       config.response.batch_count = batch_count();
