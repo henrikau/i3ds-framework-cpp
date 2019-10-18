@@ -227,8 +227,8 @@ void GeneratorSetup_Initialize(GeneratorSetup* pVal)
 {
 
 
-	/*set generator */
-	TriggerGenerator_Initialize((&(pVal->generator)));
+	/*set source */
+	TriggerGenerator_Initialize((&(pVal->source)));
 	/*set period */
 	TriggerPeriod_Initialize((&(pVal->period)));
 }
@@ -237,8 +237,8 @@ flag GeneratorSetup_IsConstraintValid(const GeneratorSetup* pVal, int* pErrCode)
 {
     flag ret = TRUE;
 	
-    ret = ((1UL <= pVal->generator) && (pVal->generator <= 4UL));
-    *pErrCode = ret ? 0 :  ERR_GENERATORSETUP_GENERATOR; 
+    ret = ((1UL <= pVal->source) && (pVal->source <= 4UL));
+    *pErrCode = ret ? 0 :  ERR_GENERATORSETUP_SOURCE; 
     if (ret) {
         ret = (pVal->period <= 16777215UL);
         *pErrCode = ret ? 0 :  ERR_GENERATORSETUP_PERIOD; 
@@ -252,8 +252,8 @@ flag GeneratorSetup_Encode(const GeneratorSetup* pVal, BitStream* pBitStrm, int*
     flag ret = TRUE;
 	ret = bCheckConstraints ? GeneratorSetup_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret) {
-	    /*Encode generator */
-	    ret = TriggerGenerator_Encode((&(pVal->generator)), pBitStrm, pErrCode, FALSE);
+	    /*Encode source */
+	    ret = TriggerGenerator_Encode((&(pVal->source)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
 	        /*Encode period */
 	        ret = TriggerPeriod_Encode((&(pVal->period)), pBitStrm, pErrCode, FALSE);
@@ -268,8 +268,8 @@ flag GeneratorSetup_Decode(GeneratorSetup* pVal, BitStream* pBitStrm, int* pErrC
 {
     flag ret = TRUE;
 
-	/*Decode generator */
-	ret = TriggerGenerator_Decode((&(pVal->generator)), pBitStrm, pErrCode);
+	/*Decode source */
+	ret = TriggerGenerator_Decode((&(pVal->source)), pBitStrm, pErrCode);
 	if (ret) {
 	    /*Decode period */
 	    ret = TriggerPeriod_Decode((&(pVal->period)), pBitStrm, pErrCode);
@@ -364,8 +364,8 @@ void ChannelInternal_Initialize(ChannelInternal* pVal)
 {
 
 
-	/*set channel */
-	TriggerOutput_Initialize((&(pVal->channel)));
+	/*set output_channel */
+	TriggerOutput_Initialize((&(pVal->output_channel)));
 	/*set source */
 	TriggerGenerator_Initialize((&(pVal->source)));
 	/*set offset */
@@ -380,8 +380,8 @@ flag ChannelInternal_IsConstraintValid(const ChannelInternal* pVal, int* pErrCod
 {
     flag ret = TRUE;
 	
-    ret = ((1UL <= pVal->channel) && (pVal->channel <= 8UL));
-    *pErrCode = ret ? 0 :  ERR_CHANNELINTERNAL_CHANNEL; 
+    ret = ((1UL <= pVal->output_channel) && (pVal->output_channel <= 8UL));
+    *pErrCode = ret ? 0 :  ERR_CHANNELINTERNAL_OUTPUT_CHANNEL; 
     if (ret) {
         ret = ((1UL <= pVal->source) && (pVal->source <= 4UL));
         *pErrCode = ret ? 0 :  ERR_CHANNELINTERNAL_SOURCE; 
@@ -403,8 +403,8 @@ flag ChannelInternal_Encode(const ChannelInternal* pVal, BitStream* pBitStrm, in
     flag ret = TRUE;
 	ret = bCheckConstraints ? ChannelInternal_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret) {
-	    /*Encode channel */
-	    ret = TriggerOutput_Encode((&(pVal->channel)), pBitStrm, pErrCode, FALSE);
+	    /*Encode output_channel */
+	    ret = TriggerOutput_Encode((&(pVal->output_channel)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
 	        /*Encode source */
 	        ret = TriggerGenerator_Encode((&(pVal->source)), pBitStrm, pErrCode, FALSE);
@@ -431,8 +431,8 @@ flag ChannelInternal_Decode(ChannelInternal* pVal, BitStream* pBitStrm, int* pEr
 {
     flag ret = TRUE;
 
-	/*Decode channel */
-	ret = TriggerOutput_Decode((&(pVal->channel)), pBitStrm, pErrCode);
+	/*Decode output_channel */
+	ret = TriggerOutput_Decode((&(pVal->output_channel)), pBitStrm, pErrCode);
 	if (ret) {
 	    /*Decode source */
 	    ret = TriggerGenerator_Decode((&(pVal->source)), pBitStrm, pErrCode);
@@ -459,8 +459,8 @@ void ChannelExternal_Initialize(ChannelExternal* pVal)
 {
 
 
-	/*set channel */
-	TriggerOutput_Initialize((&(pVal->channel)));
+	/*set output_channel */
+	TriggerOutput_Initialize((&(pVal->output_channel)));
 	/*set source */
 	TriggerInput_Initialize((&(pVal->source)));
 	/*set offset */
@@ -477,8 +477,8 @@ flag ChannelExternal_IsConstraintValid(const ChannelExternal* pVal, int* pErrCod
 {
     flag ret = TRUE;
 	
-    ret = ((1UL <= pVal->channel) && (pVal->channel <= 8UL));
-    *pErrCode = ret ? 0 :  ERR_CHANNELEXTERNAL_CHANNEL; 
+    ret = ((1UL <= pVal->output_channel) && (pVal->output_channel <= 8UL));
+    *pErrCode = ret ? 0 :  ERR_CHANNELEXTERNAL_OUTPUT_CHANNEL; 
     if (ret) {
         ret = ((1UL <= pVal->source) && (pVal->source <= 4UL));
         *pErrCode = ret ? 0 :  ERR_CHANNELEXTERNAL_SOURCE; 
@@ -500,8 +500,8 @@ flag ChannelExternal_Encode(const ChannelExternal* pVal, BitStream* pBitStrm, in
     flag ret = TRUE;
 	ret = bCheckConstraints ? ChannelExternal_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret) {
-	    /*Encode channel */
-	    ret = TriggerOutput_Encode((&(pVal->channel)), pBitStrm, pErrCode, FALSE);
+	    /*Encode output_channel */
+	    ret = TriggerOutput_Encode((&(pVal->output_channel)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
 	        /*Encode source */
 	        ret = TriggerInput_Encode((&(pVal->source)), pBitStrm, pErrCode, FALSE);
@@ -532,8 +532,8 @@ flag ChannelExternal_Decode(ChannelExternal* pVal, BitStream* pBitStrm, int* pEr
 {
     flag ret = TRUE;
 
-	/*Decode channel */
-	ret = TriggerOutput_Decode((&(pVal->channel)), pBitStrm, pErrCode);
+	/*Decode output_channel */
+	ret = TriggerOutput_Decode((&(pVal->output_channel)), pBitStrm, pErrCode);
 	if (ret) {
 	    /*Decode source */
 	    ret = TriggerInput_Decode((&(pVal->source)), pBitStrm, pErrCode);

@@ -451,16 +451,16 @@ void CameraPattern_Initialize(CameraPattern* pVal)
 
 	/*set enable */
 	T_Boolean_Initialize((&(pVal->enable)));
-	/*set sequence */
-	T_UInt16_Initialize((&(pVal->sequence)));
+	/*set pattern_sequence */
+	T_UInt16_Initialize((&(pVal->pattern_sequence)));
 }
 
 flag CameraPattern_IsConstraintValid(const CameraPattern* pVal, int* pErrCode)
 {
     flag ret = TRUE;
 	
-    ret = (pVal->sequence <= 65535UL);
-    *pErrCode = ret ? 0 :  ERR_CAMERAPATTERN_SEQUENCE; 
+    ret = (pVal->pattern_sequence <= 65535UL);
+    *pErrCode = ret ? 0 :  ERR_CAMERAPATTERN_PATTERN_SEQUENCE; 
 
 	return ret;
 }
@@ -473,8 +473,8 @@ flag CameraPattern_Encode(const CameraPattern* pVal, BitStream* pBitStrm, int* p
 	    /*Encode enable */
 	    ret = T_Boolean_Encode((&(pVal->enable)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
-	        /*Encode sequence */
-	        ret = PatternSequence_Encode((&(pVal->sequence)), pBitStrm, pErrCode, FALSE);
+	        /*Encode pattern_sequence */
+	        ret = PatternSequence_Encode((&(pVal->pattern_sequence)), pBitStrm, pErrCode, FALSE);
 	    }
     } /*COVERAGE_IGNORE*/
 
@@ -489,8 +489,8 @@ flag CameraPattern_Decode(CameraPattern* pVal, BitStream* pBitStrm, int* pErrCod
 	/*Decode enable */
 	ret = T_Boolean_Decode((&(pVal->enable)), pBitStrm, pErrCode);
 	if (ret) {
-	    /*Decode sequence */
-	    ret = PatternSequence_Decode((&(pVal->sequence)), pBitStrm, pErrCode);
+	    /*Decode pattern_sequence */
+	    ret = PatternSequence_Decode((&(pVal->pattern_sequence)), pBitStrm, pErrCode);
 	}
 
 	return ret  && CameraPattern_IsConstraintValid(pVal, pErrCode);

@@ -100,7 +100,7 @@ flag TriggerPeriod_Encode(const TriggerPeriod* pVal, BitStream* pBitStrm, int* p
 flag TriggerPeriod_Decode(TriggerPeriod* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- GeneratorSetup --------------------------------------------*/
 typedef struct {
-    TriggerGenerator generator;
+    TriggerGenerator source;
     TriggerPeriod period;
 
 } GeneratorSetup;
@@ -108,12 +108,12 @@ typedef struct {
 void GeneratorSetup_Initialize(GeneratorSetup* pVal);
 
 #define ERR_GENERATORSETUP		3364  /**/
-#define ERR_GENERATORSETUP_GENERATOR		3342  /**/
+#define ERR_GENERATORSETUP_SOURCE		3342  /**/
 #define ERR_GENERATORSETUP_PERIOD		3353  /**/
 flag GeneratorSetup_IsConstraintValid(const GeneratorSetup* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_GENERATORSETUP		3365  /**/
-#define ERR_UPER_ENCODE_GENERATORSETUP_GENERATOR_2		3349  /**/
+#define ERR_UPER_ENCODE_GENERATORSETUP_SOURCE_2		3349  /**/
 #define ERR_UPER_ENCODE_GENERATORSETUP_PERIOD_2		3360  /**/
 #define GeneratorSetup_REQUIRED_BYTES_FOR_ENCODING       4 
 #define GeneratorSetup_REQUIRED_BITS_FOR_ENCODING        26
@@ -121,7 +121,7 @@ flag GeneratorSetup_IsConstraintValid(const GeneratorSetup* pVal, int* pErrCode)
 flag GeneratorSetup_Encode(const GeneratorSetup* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_UPER_DECODE_GENERATORSETUP		3366  /**/
-#define ERR_UPER_DECODE_GENERATORSETUP_GENERATOR_2		3350  /**/
+#define ERR_UPER_DECODE_GENERATORSETUP_SOURCE_2		3350  /**/
 #define ERR_UPER_DECODE_GENERATORSETUP_PERIOD_2		3361  /**/
 flag GeneratorSetup_Decode(GeneratorSetup* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint TriggerOffset;
@@ -158,7 +158,7 @@ flag TriggerDuration_Encode(const TriggerDuration* pVal, BitStream* pBitStrm, in
 flag TriggerDuration_Decode(TriggerDuration* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- ChannelInternal --------------------------------------------*/
 typedef struct {
-    TriggerOutput channel;
+    TriggerOutput output_channel;
     TriggerGenerator source;
     TriggerOffset offset;
     TriggerDuration duration;
@@ -169,7 +169,7 @@ typedef struct {
 void ChannelInternal_Initialize(ChannelInternal* pVal);
 
 #define ERR_CHANNELINTERNAL		3426  /**/
-#define ERR_CHANNELINTERNAL_CHANNEL		3371  /**/
+#define ERR_CHANNELINTERNAL_OUTPUT_CHANNEL		3371  /**/
 #define ERR_CHANNELINTERNAL_SOURCE		3382  /**/
 #define ERR_CHANNELINTERNAL_OFFSET		3393  /**/
 #define ERR_CHANNELINTERNAL_DURATION		3404  /**/
@@ -177,7 +177,7 @@ void ChannelInternal_Initialize(ChannelInternal* pVal);
 flag ChannelInternal_IsConstraintValid(const ChannelInternal* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_CHANNELINTERNAL		3427  /**/
-#define ERR_UPER_ENCODE_CHANNELINTERNAL_CHANNEL_2		3378  /**/
+#define ERR_UPER_ENCODE_CHANNELINTERNAL_OUTPUT_CHANNEL_2		3378  /**/
 #define ERR_UPER_ENCODE_CHANNELINTERNAL_SOURCE_2		3389  /**/
 #define ERR_UPER_ENCODE_CHANNELINTERNAL_OFFSET_2		3400  /**/
 #define ERR_UPER_ENCODE_CHANNELINTERNAL_DURATION_2		3411  /**/
@@ -188,7 +188,7 @@ flag ChannelInternal_IsConstraintValid(const ChannelInternal* pVal, int* pErrCod
 flag ChannelInternal_Encode(const ChannelInternal* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_UPER_DECODE_CHANNELINTERNAL		3428  /**/
-#define ERR_UPER_DECODE_CHANNELINTERNAL_CHANNEL_2		3379  /**/
+#define ERR_UPER_DECODE_CHANNELINTERNAL_OUTPUT_CHANNEL_2		3379  /**/
 #define ERR_UPER_DECODE_CHANNELINTERNAL_SOURCE_2		3390  /**/
 #define ERR_UPER_DECODE_CHANNELINTERNAL_OFFSET_2		3401  /**/
 #define ERR_UPER_DECODE_CHANNELINTERNAL_DURATION_2		3412  /**/
@@ -196,7 +196,7 @@ flag ChannelInternal_Encode(const ChannelInternal* pVal, BitStream* pBitStrm, in
 flag ChannelInternal_Decode(ChannelInternal* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- ChannelExternal --------------------------------------------*/
 typedef struct {
-    TriggerOutput channel;
+    TriggerOutput output_channel;
     TriggerInput source;
     TriggerOffset offset;
     TriggerDuration duration;
@@ -208,7 +208,7 @@ typedef struct {
 void ChannelExternal_Initialize(ChannelExternal* pVal);
 
 #define ERR_CHANNELEXTERNAL		3499  /**/
-#define ERR_CHANNELEXTERNAL_CHANNEL		3433  /**/
+#define ERR_CHANNELEXTERNAL_OUTPUT_CHANNEL		3433  /**/
 #define ERR_CHANNELEXTERNAL_SOURCE		3444  /**/
 #define ERR_CHANNELEXTERNAL_OFFSET		3455  /**/
 #define ERR_CHANNELEXTERNAL_DURATION		3466  /**/
@@ -217,7 +217,7 @@ void ChannelExternal_Initialize(ChannelExternal* pVal);
 flag ChannelExternal_IsConstraintValid(const ChannelExternal* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_CHANNELEXTERNAL		3500  /**/
-#define ERR_UPER_ENCODE_CHANNELEXTERNAL_CHANNEL_2		3440  /**/
+#define ERR_UPER_ENCODE_CHANNELEXTERNAL_OUTPUT_CHANNEL_2		3440  /**/
 #define ERR_UPER_ENCODE_CHANNELEXTERNAL_SOURCE_2		3451  /**/
 #define ERR_UPER_ENCODE_CHANNELEXTERNAL_OFFSET_2		3462  /**/
 #define ERR_UPER_ENCODE_CHANNELEXTERNAL_DURATION_2		3473  /**/
@@ -229,7 +229,7 @@ flag ChannelExternal_IsConstraintValid(const ChannelExternal* pVal, int* pErrCod
 flag ChannelExternal_Encode(const ChannelExternal* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_UPER_DECODE_CHANNELEXTERNAL		3501  /**/
-#define ERR_UPER_DECODE_CHANNELEXTERNAL_CHANNEL_2		3441  /**/
+#define ERR_UPER_DECODE_CHANNELEXTERNAL_OUTPUT_CHANNEL_2		3441  /**/
 #define ERR_UPER_DECODE_CHANNELEXTERNAL_SOURCE_2		3452  /**/
 #define ERR_UPER_DECODE_CHANNELEXTERNAL_OFFSET_2		3463  /**/
 #define ERR_UPER_DECODE_CHANNELEXTERNAL_DURATION_2		3474  /**/

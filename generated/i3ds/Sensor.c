@@ -200,8 +200,8 @@ void SensorConfiguration_Initialize(SensorConfiguration* pVal)
 {
 
 
-	/*set device */
-	T_String_Initialize((&(pVal->device)));
+	/*set device_name */
+	T_String_Initialize((&(pVal->device_name)));
 	/*set period */
 	T_UInt32_Initialize((&(pVal->period)));
 	/*set batch_size */
@@ -214,8 +214,8 @@ flag SensorConfiguration_IsConstraintValid(const SensorConfiguration* pVal, int*
 {
     flag ret = TRUE;
 	
-    ret = (pVal->device.nCount <= 256);
-    *pErrCode = ret ? 0 :  ERR_SENSORCONFIGURATION_DEVICE; 
+    ret = (pVal->device_name.nCount <= 256);
+    *pErrCode = ret ? 0 :  ERR_SENSORCONFIGURATION_DEVICE_NAME; 
     if (ret) {
         ret = (pVal->period <= 4294967295UL);
         *pErrCode = ret ? 0 :  ERR_SENSORCONFIGURATION_PERIOD; 
@@ -237,8 +237,8 @@ flag SensorConfiguration_Encode(const SensorConfiguration* pVal, BitStream* pBit
     flag ret = TRUE;
 	ret = bCheckConstraints ? SensorConfiguration_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret) {
-	    /*Encode device */
-	    ret = T_String_Encode((&(pVal->device)), pBitStrm, pErrCode, FALSE);
+	    /*Encode device_name */
+	    ret = T_String_Encode((&(pVal->device_name)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
 	        /*Encode period */
 	        ret = SamplePeriod_Encode((&(pVal->period)), pBitStrm, pErrCode, FALSE);
@@ -261,8 +261,8 @@ flag SensorConfiguration_Decode(SensorConfiguration* pVal, BitStream* pBitStrm, 
 {
     flag ret = TRUE;
 
-	/*Decode device */
-	ret = T_String_Decode((&(pVal->device)), pBitStrm, pErrCode);
+	/*Decode device_name */
+	ret = T_String_Decode((&(pVal->device_name)), pBitStrm, pErrCode);
 	if (ret) {
 	    /*Decode period */
 	    ret = SamplePeriod_Decode((&(pVal->period)), pBitStrm, pErrCode);
@@ -367,8 +367,8 @@ void SensorStatus_Initialize(SensorStatus* pVal)
 {
 
 
-	/*set state */
-	SensorState_Initialize((&(pVal->state)));
+	/*set current_state */
+	SensorState_Initialize((&(pVal->current_state)));
 	/*set temperature */
 	Temperature_Initialize((&(pVal->temperature)));
 }
@@ -377,8 +377,8 @@ flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode)
 {
     flag ret = TRUE;
 	
-    ret = (((((((pVal->state == inactive)) || ((pVal->state == standby)))) || ((pVal->state == operational)))) || ((pVal->state == failure)));
-    *pErrCode = ret ? 0 :  ERR_SENSORSTATUS_STATE; 
+    ret = (((((((pVal->current_state == inactive)) || ((pVal->current_state == standby)))) || ((pVal->current_state == operational)))) || ((pVal->current_state == failure)));
+    *pErrCode = ret ? 0 :  ERR_SENSORSTATUS_CURRENT_STATE; 
     if (ret) {
         ret = ((-1.79769313486231570000E+308 <= pVal->temperature.kelvin) && (pVal->temperature.kelvin <= 1.79769313486231570000E+308));
         *pErrCode = ret ? 0 :  ERR_SENSORSTATUS_TEMPERATURE_KELVIN; 
@@ -392,8 +392,8 @@ flag SensorStatus_Encode(const SensorStatus* pVal, BitStream* pBitStrm, int* pEr
     flag ret = TRUE;
 	ret = bCheckConstraints ? SensorStatus_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret) {
-	    /*Encode state */
-	    ret = SensorState_Encode((&(pVal->state)), pBitStrm, pErrCode, FALSE);
+	    /*Encode current_state */
+	    ret = SensorState_Encode((&(pVal->current_state)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
 	        /*Encode temperature */
 	        ret = Temperature_Encode((&(pVal->temperature)), pBitStrm, pErrCode, FALSE);
@@ -408,8 +408,8 @@ flag SensorStatus_Decode(SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode)
 {
     flag ret = TRUE;
 
-	/*Decode state */
-	ret = SensorState_Decode((&(pVal->state)), pBitStrm, pErrCode);
+	/*Decode current_state */
+	ret = SensorState_Decode((&(pVal->current_state)), pBitStrm, pErrCode);
 	if (ret) {
 	    /*Decode temperature */
 	    ret = Temperature_Decode((&(pVal->temperature)), pBitStrm, pErrCode);
