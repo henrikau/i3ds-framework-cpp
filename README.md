@@ -78,6 +78,31 @@ Use the `--help` argument to get the detailed usage.
 
 ## Building and installing
 
+### Downloading source and picking the right branch
+
+All the source code is contained in a git repository, and there
+are 2 branches of particular interest. For a more stable release-cycle,
+look there are a few tagged releases on the type "v1.1", "v1.2-rc0" and
+so on.
+
+* Tagged releases: these are releases that we have tested and run
+  through different scenarios and they should be stable. An -rc-release
+  will see a few updates before a final (non-rc) release is tagged. Once
+  released, new development will be pushed to the next dot-release.
+
+* master: this is the stable branch, a bit more live than a tagged
+  release, but it should be fairly safe to use.
+
+* next: this is our main integration branch. It should be stable, but
+  please note that this may break on occasions.
+
+Any other branches must be considered development branches and they may,
+at the owner's discretion be rebased, deleted or otherwise (temporarily)
+broken. Please do not use these for anything but bleeding edge
+development.
+
+
+
 ### Building using docker for x86-64 systems
 
 A dockerized build environment is provided to make it easier to build
