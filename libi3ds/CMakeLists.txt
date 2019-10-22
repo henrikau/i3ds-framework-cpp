@@ -15,32 +15,19 @@ set (SRCS
   src/communication.cpp
   src/address_server.cpp
   src/receiver.cpp
-  src/client.cpp
   src/server.cpp
   src/publisher.cpp
   src/subscriber.cpp
   src/periodic.cpp
   src/sensor.cpp
-  src/sensor_client.cpp
-  src/client_factory.cpp
   src/camera_sensor.cpp
   src/gige_camera_sensor.cpp
-  src/camera_client.cpp
   src/tof_camera_sensor.cpp
-  src/tof_camera_client.cpp
-  src/imu_client.cpp
   src/radar_sensor.cpp
-  src/radar_client.cpp
   src/lidar_sensor.cpp
-  src/lidar_client.cpp
-  src/star_tracker_client.cpp
-  src/analog_client.cpp
   src/trigger.cpp
-  src/trigger_client.cpp
   src/power.cpp
-  src/power_client.cpp
   src/flash.cpp
-  src/flash_client.cpp
   src/measurement_proxy.cpp
   src/configurator.cpp
   src/message_recording.cpp

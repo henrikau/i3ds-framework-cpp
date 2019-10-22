@@ -7,6 +7,7 @@ set (LIBS
   ${Boost_LIBRARIES}
   i3ds
   i3ds_emulators
+  i3ds_clients
   zmq
   pthread
   )

@@ -160,6 +160,8 @@ if (BUILD_TESTS OR BUILD_TOOLS)
   add_subdirectory(emulators)
 endif (BUILD_TESTS OR BUILD_TOOLS)
 
+include_directories (BEFORE "clients/include")
+add_subdirectory (clients)
 add_subdirectory (libi3ds)
 
 if (BUILD_TOOLS)

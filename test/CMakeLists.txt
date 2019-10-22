@@ -25,7 +25,7 @@ configure_file(files/test_addresses.csv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 foreach(t ${TESTS})
   add_executable (${t} ${t}.cpp)
-  target_link_libraries (${t} i3ds i3ds_emulators)
+  target_link_libraries (${t} i3ds i3ds_emulators i3ds_clients)
   add_test(${t} ${CMAKE_CURRENT_BINARY_DIR}/${t})
 endforeach(t)
 
