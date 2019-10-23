@@ -121,7 +121,7 @@ if [[ ! -z ${TEST_NAME} ]]; then
 	make help | grep test
     else
 	if [[ ${TEST_NAME} == "all" || ${TEST_NAME} == "test" ]]; then
-	    make test
+	    env CTEST_OUTPUT_ON_FAILURE=1 make test
 	else
 	    # need to jump through some hoops as some of the
 	    # test-binaries are placed elsewhere (i.e. tools/)
