@@ -40,6 +40,11 @@ if (SWIG_FOUND)
       RENAME _i3ds_binding.so
       DESTINATION ${CMAKE_INSTALL_PREFIX}${Python3_SITELIB}
       )
+
+    add_custom_command(TARGET _i3ds_python
+      POST_BUILD
+      COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/_i3ds_python.so ${CMAKE_CURRENT_BINARY_DIR}/_i3ds_binding.so
+      )
   endif (Python3_FOUND)
 
 endif (SWIG_FOUND)

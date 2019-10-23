@@ -5,6 +5,7 @@ try:
     import i3ds_binding
 except ModuleNotFoundError as e:
     print("Python bindings not found!")
+    print(sys.path)
     sys.exit(1)
 
 if __name__ == "__main__":

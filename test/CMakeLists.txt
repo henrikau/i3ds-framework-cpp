@@ -38,22 +38,20 @@ if (BASH_PROGRAM)
   add_test (recording_test ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/test_recording.sh)
 endif (BASH_PROGRAM)
 
-# Python bindings rename _i3ds_python to _i3ds_binding, so make a local
-# copy and update PATH
+if (BUILD_BINDINGS)
+  file(COPY python-test.py
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    FILE_PERMISSIONS USE_SOURCE_PERMISSIONS)
 
-# copy python-test
-file(COPY python-test.py
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-  FILE_PERMISSIONS USE_SOURCE_PERMISSIONS)
+  file(COPY python-test.py
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    FILE_PERMISSIONS USE_SOURCE_PERMISSIONS)
 
-file(COPY python-test.py
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-  FILE_PERMISSIONS USE_SOURCE_PERMISSIONS)
+  add_test (NAME python-test
+    COMMAND python-test.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_test (NAME python-test
-  COMMAND python-test.py
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-configure_file(${CMAKE_CURRENT_BINARY_DIR}/../bindings/_i3ds_python.so
-  ${CMAKE_CURRENT_BINARY_DIR}/_i3ds_binding.so COPYONLY)
-set_tests_properties(python-test
-  PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}:{CMAKE_CURRENT_BINARY_DIR}/../bindings:$ENV{PYTHONPATH}")
+  set_tests_properties(python-test
+    PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/../bindings:$ENV{PYTHONPATH}")
+
+endif (BUILD_BINDINGS)
