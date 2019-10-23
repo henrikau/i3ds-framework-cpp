@@ -31,5 +31,9 @@ endforeach(t)
 
 find_program (BASH_PROGRAM bash)
 if (BASH_PROGRAM)
+  # To make it possible to re-run the test manually later, copy the script into the build-folder
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test_recording.sh
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    FILE_PERMISSIONS USE_SOURCE_PERMISSIONS)
   add_test (recording_test ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/test_recording.sh)
 endif (BASH_PROGRAM)
