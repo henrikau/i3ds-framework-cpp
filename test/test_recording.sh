@@ -1,10 +1,11 @@
 #!/bin/bash
-
+set -e
 SUITE=../services/i3ds_suite_emulator
 RECORD=../tools/i3ds_record
 REPLAY=../tools/i3ds_replay
 TMP_FILE=tmp_file.log
 TMP_FILE2=tmp_file2.log
+EXIT_CODE=1
 
 echo "Starting sensor emulator:"
 $SUITE > /dev/null &
@@ -17,7 +18,21 @@ if [[ ${count} -eq 0 ]]; then
 fi
 echo "Started suite."
 
-echo "Activating sensors 10, 11 and 12:"
+function cleanup() {
+    echo "Cleaning up... looking for pid ${suite_pid}"
+    if [[ -d /prod/${suite_pid}} ]]; then
+	kill -INT ${suite_pid}
+	while kill -0 ${suite_pid} 2>/dev/null; do
+	    sleep 0.1
+	done
+	exit ${EXIT_CODE}
+    fi
+}
+# we've addet 'set -e', so trap cleanup to make sure we kill off
+# i3ds_suite_emulator
+trap cleanup EXIT
+
+echo "Activating sensors: TIR, HR and Stereo camera"
 NODES=(10 11 12)
 for node in ${NODES[@]}; do
     ../tools/i3ds_configure_sensor --node $node --activate
@@ -35,10 +50,9 @@ echo "Started recording with PID: ${record_pid}"
 count=$(ps | grep "${record_pid}[^[]" | wc -l)
 if [[ ${count} -eq 0 ]]; then
     echo "Could not start recorder"
-    kill ${suite_pid}
-    exit 1
+    EXIT_CODE=1
+    cleanup
 fi
-
 
 echo "Starting nodes"
 for node in ${NODES[@]}; do
@@ -119,4 +133,4 @@ fi
 
 rm ${TMP_FILE} ${TMP_FILE2}
 
-exit ${EXIT_CODE}
+# cleanup() will return with EXIT_CODE
