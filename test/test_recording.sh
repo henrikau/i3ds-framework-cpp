@@ -33,7 +33,7 @@ function cleanup() {
 trap cleanup EXIT
 
 echo "Activating sensors: TIR, HR and Stereo camera"
-NODES=(10 11 12)
+NODES=(12 13 14)
 for node in ${NODES[@]}; do
     ../tools/i3ds_configure_sensor --node $node --activate
 done
