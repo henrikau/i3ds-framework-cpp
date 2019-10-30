@@ -20,7 +20,7 @@ i3ds::TriggerClient::set_generator(TriggerGenerator generator, TriggerPeriod per
 {
   Trigger::GeneratorService::Data command;
 
-  command.request.generator = generator;
+  command.request.source = generator;
   command.request.period = period;
 
   Call<Trigger::GeneratorService>(command);
@@ -34,7 +34,7 @@ i3ds::TriggerClient::set_internal_channel(TriggerOutput channel, TriggerGenerato
 
   Trigger::InternalChannelService::Initialize(command);
 
-  command.request.channel = channel;
+  command.request.output_channel = channel;
   command.request.source = source;
   command.request.offset = offset;
   command.request.duration = duration;
@@ -52,7 +52,7 @@ i3ds::TriggerClient::set_external_channel(TriggerOutput channel, TriggerInput so
 
   Trigger::ExternalChannelService::Initialize(command);
 
-  command.request.channel = channel;
+  command.request.output_channel = channel;
   command.request.source = source;
   command.request.offset = offset;
   command.request.duration = duration;

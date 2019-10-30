@@ -93,7 +93,7 @@ flag SampleCommand_Encode(const SampleCommand* pVal, BitStream* pBitStrm, int* p
 flag SampleCommand_Decode(SampleCommand* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- SensorConfiguration --------------------------------------------*/
 typedef struct {
-    T_String device;
+    T_String device_name;
     T_UInt32 period;
     T_UInt32 batch_size;
     T_UInt32 batch_count;
@@ -103,14 +103,14 @@ typedef struct {
 void SensorConfiguration_Initialize(SensorConfiguration* pVal);
 
 #define ERR_SENSORCONFIGURATION		1570  /**/
-#define ERR_SENSORCONFIGURATION_DEVICE		1514  /**/
+#define ERR_SENSORCONFIGURATION_DEVICE_NAME		1514  /**/
 #define ERR_SENSORCONFIGURATION_PERIOD		1525  /**/
 #define ERR_SENSORCONFIGURATION_BATCH_SIZE		1540  /**/
 #define ERR_SENSORCONFIGURATION_BATCH_COUNT		1555  /**/
 flag SensorConfiguration_IsConstraintValid(const SensorConfiguration* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_SENSORCONFIGURATION		1571  /**/
-#define ERR_UPER_ENCODE_SENSORCONFIGURATION_DEVICE_2		1521  /**/
+#define ERR_UPER_ENCODE_SENSORCONFIGURATION_DEVICE_NAME_2		1521  /**/
 #define ERR_UPER_ENCODE_SENSORCONFIGURATION_PERIOD_2_2		1536  /**/
 #define ERR_UPER_ENCODE_SENSORCONFIGURATION_BATCH_SIZE_2_2		1551  /**/
 #define ERR_UPER_ENCODE_SENSORCONFIGURATION_BATCH_COUNT_2_2		1566  /**/
@@ -120,7 +120,7 @@ flag SensorConfiguration_IsConstraintValid(const SensorConfiguration* pVal, int*
 flag SensorConfiguration_Encode(const SensorConfiguration* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_UPER_DECODE_SENSORCONFIGURATION		1572  /**/
-#define ERR_UPER_DECODE_SENSORCONFIGURATION_DEVICE_2		1522  /**/
+#define ERR_UPER_DECODE_SENSORCONFIGURATION_DEVICE_NAME_2		1522  /**/
 #define ERR_UPER_DECODE_SENSORCONFIGURATION_PERIOD_2_2		1537  /**/
 #define ERR_UPER_DECODE_SENSORCONFIGURATION_BATCH_SIZE_2_2		1552  /**/
 #define ERR_UPER_DECODE_SENSORCONFIGURATION_BATCH_COUNT_2_2		1567  /**/
@@ -153,7 +153,7 @@ flag SensorState_Encode(const SensorState* pVal, BitStream* pBitStrm, int* pErrC
 flag SensorState_Decode(SensorState* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- SensorStatus --------------------------------------------*/
 typedef struct {
-    SensorState state;
+    SensorState current_state;
     Temperature temperature;
 
 } SensorStatus;
@@ -161,13 +161,13 @@ typedef struct {
 void SensorStatus_Initialize(SensorStatus* pVal);
 
 #define ERR_SENSORSTATUS		1422  /**/
-#define ERR_SENSORSTATUS_STATE		1389  /**/
+#define ERR_SENSORSTATUS_CURRENT_STATE		1389  /**/
 #define ERR_SENSORSTATUS_TEMPERATURE		1411  /**/
 #define ERR_SENSORSTATUS_TEMPERATURE_KELVIN		1400  /**/
 flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_SENSORSTATUS		1423  /**/
-#define ERR_UPER_ENCODE_SENSORSTATUS_STATE_2		1396  /**/
+#define ERR_UPER_ENCODE_SENSORSTATUS_CURRENT_STATE_2		1396  /**/
 #define ERR_UPER_ENCODE_SENSORSTATUS_TEMPERATURE_2		1418  /**/
 #define SensorStatus_REQUIRED_BYTES_FOR_ENCODING       14 
 #define SensorStatus_REQUIRED_BITS_FOR_ENCODING        106
@@ -175,7 +175,7 @@ flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode);
 flag SensorStatus_Encode(const SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_UPER_DECODE_SENSORSTATUS		1424  /**/
-#define ERR_UPER_DECODE_SENSORSTATUS_STATE_2		1397  /**/
+#define ERR_UPER_DECODE_SENSORSTATUS_CURRENT_STATE_2		1397  /**/
 #define ERR_UPER_DECODE_SENSORSTATUS_TEMPERATURE_2		1419  /**/
 flag SensorStatus_Decode(SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef enum {

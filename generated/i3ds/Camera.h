@@ -208,7 +208,7 @@ flag CameraRegion_Decode(CameraRegion* pVal, BitStream* pBitStrm, int* pErrCode)
 /*-- CameraPattern --------------------------------------------*/
 typedef struct {
     T_Boolean enable;
-    T_UInt16 sequence;
+    T_UInt16 pattern_sequence;
 
 } CameraPattern;
 
@@ -216,12 +216,12 @@ void CameraPattern_Initialize(CameraPattern* pVal);
 
 #define ERR_CAMERAPATTERN		1849  /**/
 #define ERR_CAMERAPATTERN_ENABLE		1823  /**/
-#define ERR_CAMERAPATTERN_SEQUENCE		1834  /**/
+#define ERR_CAMERAPATTERN_PATTERN_SEQUENCE		1834  /**/
 flag CameraPattern_IsConstraintValid(const CameraPattern* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_CAMERAPATTERN		1850  /**/
 #define ERR_UPER_ENCODE_CAMERAPATTERN_ENABLE_2		1830  /**/
-#define ERR_UPER_ENCODE_CAMERAPATTERN_SEQUENCE_2_2		1845  /**/
+#define ERR_UPER_ENCODE_CAMERAPATTERN_PATTERN_SEQUENCE_2_2		1845  /**/
 #define CameraPattern_REQUIRED_BYTES_FOR_ENCODING       3 
 #define CameraPattern_REQUIRED_BITS_FOR_ENCODING        17
 
@@ -229,7 +229,7 @@ flag CameraPattern_Encode(const CameraPattern* pVal, BitStream* pBitStrm, int* p
 
 #define ERR_UPER_DECODE_CAMERAPATTERN		1851  /**/
 #define ERR_UPER_DECODE_CAMERAPATTERN_ENABLE_2		1831  /**/
-#define ERR_UPER_DECODE_CAMERAPATTERN_SEQUENCE_2_2		1846  /**/
+#define ERR_UPER_DECODE_CAMERAPATTERN_PATTERN_SEQUENCE_2_2		1846  /**/
 flag CameraPattern_Decode(CameraPattern* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- CameraConfiguration --------------------------------------------*/
 typedef struct {
