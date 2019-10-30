@@ -13,6 +13,7 @@
 
 #include <i3ds/taste-types.h>
 #include <i3ds/codec.hpp>
+#include <i3ds/Analog.h>
 
 #include <vector>
 
@@ -26,7 +27,7 @@ struct AnalogSeries
   typedef float Sample;
 
   AnalogSeriesDescriptor descriptor;
-  std::vector<float> samples;
+  std::vector<Sample> samples;
 };
 
 struct AnalogSeriesCodec
