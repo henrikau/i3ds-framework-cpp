@@ -177,9 +177,7 @@ void T_Boolean_Initialize(T_Boolean* pVal)
 flag T_Boolean_IsConstraintValid(const T_Boolean* pVal, int* pErrCode)
 {
     flag ret = TRUE;
-    /* -Werror=unused-parameter */
-    (void)pVal;
-
+	
     ret = TRUE;
     *pErrCode = 0;
 

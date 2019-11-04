@@ -154,7 +154,7 @@ flag SensorState_Decode(SensorState* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- SensorStatus --------------------------------------------*/
 typedef struct {
     SensorState current_state;
-    Temperature temperature;
+    Temperature device_temperature;
 
 } SensorStatus;
 
@@ -162,13 +162,13 @@ void SensorStatus_Initialize(SensorStatus* pVal);
 
 #define ERR_SENSORSTATUS		1422  /**/
 #define ERR_SENSORSTATUS_CURRENT_STATE		1389  /**/
-#define ERR_SENSORSTATUS_TEMPERATURE		1411  /**/
-#define ERR_SENSORSTATUS_TEMPERATURE_KELVIN		1400  /**/
+#define ERR_SENSORSTATUS_DEVICE_TEMPERATURE		1411  /**/
+#define ERR_SENSORSTATUS_DEVICE_TEMPERATURE_KELVIN		1400  /**/
 flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_SENSORSTATUS		1423  /**/
 #define ERR_UPER_ENCODE_SENSORSTATUS_CURRENT_STATE_2		1396  /**/
-#define ERR_UPER_ENCODE_SENSORSTATUS_TEMPERATURE_2		1418  /**/
+#define ERR_UPER_ENCODE_SENSORSTATUS_DEVICE_TEMPERATURE_2		1418  /**/
 #define SensorStatus_REQUIRED_BYTES_FOR_ENCODING       14 
 #define SensorStatus_REQUIRED_BITS_FOR_ENCODING        106
 
@@ -176,7 +176,7 @@ flag SensorStatus_Encode(const SensorStatus* pVal, BitStream* pBitStrm, int* pEr
 
 #define ERR_UPER_DECODE_SENSORSTATUS		1424  /**/
 #define ERR_UPER_DECODE_SENSORSTATUS_CURRENT_STATE_2		1397  /**/
-#define ERR_UPER_DECODE_SENSORSTATUS_TEMPERATURE_2		1419  /**/
+#define ERR_UPER_DECODE_SENSORSTATUS_DEVICE_TEMPERATURE_2		1419  /**/
 flag SensorStatus_Decode(SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef enum {
     activate = 0,

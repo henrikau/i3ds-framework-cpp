@@ -225,7 +225,7 @@ i3ds::Sensor::handle_status(StatusService::Data& status)
   try
     {
       status.response.current_state = state();
-      status.response.temperature.kelvin = temperature();
+      status.response.device_temperature.kelvin = temperature();
     }
   catch (DeviceError& e)
     {

@@ -369,8 +369,8 @@ void SensorStatus_Initialize(SensorStatus* pVal)
 
 	/*set current_state */
 	SensorState_Initialize((&(pVal->current_state)));
-	/*set temperature */
-	Temperature_Initialize((&(pVal->temperature)));
+	/*set device_temperature */
+	Temperature_Initialize((&(pVal->device_temperature)));
 }
 
 flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode)
@@ -380,8 +380,8 @@ flag SensorStatus_IsConstraintValid(const SensorStatus* pVal, int* pErrCode)
     ret = (((((((pVal->current_state == inactive)) || ((pVal->current_state == standby)))) || ((pVal->current_state == operational)))) || ((pVal->current_state == failure)));
     *pErrCode = ret ? 0 :  ERR_SENSORSTATUS_CURRENT_STATE; 
     if (ret) {
-        ret = ((-1.79769313486231570000E+308 <= pVal->temperature.kelvin) && (pVal->temperature.kelvin <= 1.79769313486231570000E+308));
-        *pErrCode = ret ? 0 :  ERR_SENSORSTATUS_TEMPERATURE_KELVIN; 
+        ret = ((-1.79769313486231570000E+308 <= pVal->device_temperature.kelvin) && (pVal->device_temperature.kelvin <= 1.79769313486231570000E+308));
+        *pErrCode = ret ? 0 :  ERR_SENSORSTATUS_DEVICE_TEMPERATURE_KELVIN; 
     }
 
 	return ret;
@@ -395,8 +395,8 @@ flag SensorStatus_Encode(const SensorStatus* pVal, BitStream* pBitStrm, int* pEr
 	    /*Encode current_state */
 	    ret = SensorState_Encode((&(pVal->current_state)), pBitStrm, pErrCode, FALSE);
 	    if (ret) {
-	        /*Encode temperature */
-	        ret = Temperature_Encode((&(pVal->temperature)), pBitStrm, pErrCode, FALSE);
+	        /*Encode device_temperature */
+	        ret = Temperature_Encode((&(pVal->device_temperature)), pBitStrm, pErrCode, FALSE);
 	    }
     } /*COVERAGE_IGNORE*/
 
@@ -411,8 +411,8 @@ flag SensorStatus_Decode(SensorStatus* pVal, BitStream* pBitStrm, int* pErrCode)
 	/*Decode current_state */
 	ret = SensorState_Decode((&(pVal->current_state)), pBitStrm, pErrCode);
 	if (ret) {
-	    /*Decode temperature */
-	    ret = Temperature_Decode((&(pVal->temperature)), pBitStrm, pErrCode);
+	    /*Decode device_temperature */
+	    ret = Temperature_Decode((&(pVal->device_temperature)), pBitStrm, pErrCode);
 	}
 
 	return ret  && SensorStatus_IsConstraintValid(pVal, pErrCode);
