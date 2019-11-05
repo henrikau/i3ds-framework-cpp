@@ -26,16 +26,16 @@ typedef enum {
 
 void SampleValidity_Initialize(SampleValidity* pVal);
 
-#define ERR_SAMPLEVALIDITY		2680  /**/
+#define ERR_SAMPLEVALIDITY		10537  /**/
 flag SampleValidity_IsConstraintValid(const SampleValidity* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_SAMPLEVALIDITY		2681  /**/
+#define ERR_UPER_ENCODE_SAMPLEVALIDITY		10538  /**/
 #define SampleValidity_REQUIRED_BYTES_FOR_ENCODING       1 
 #define SampleValidity_REQUIRED_BITS_FOR_ENCODING        2
 
 flag SampleValidity_Encode(const SampleValidity* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_SAMPLEVALIDITY		2682  /**/
+#define ERR_UPER_DECODE_SAMPLEVALIDITY		10539  /**/
 flag SampleValidity_Decode(SampleValidity* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef struct {
     int nCount; 
@@ -46,16 +46,16 @@ typedef struct {
 
 void T_String8_Initialize(T_String8* pVal);
 
-#define ERR_T_STRING8		2687  /**/
+#define ERR_T_STRING8		10544  /**/
 flag T_String8_IsConstraintValid(const T_String8* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_STRING8		2688  /**/
+#define ERR_UPER_ENCODE_T_STRING8		10545  /**/
 #define T_String8_REQUIRED_BYTES_FOR_ENCODING       9 
 #define T_String8_REQUIRED_BITS_FOR_ENCODING        68
 
 flag T_String8_Encode(const T_String8* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_STRING8		2689  /**/
+#define ERR_UPER_DECODE_T_STRING8		10546  /**/
 flag T_String8_Decode(T_String8* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- Attribute_value_t --------------------------------------------*/
 
@@ -81,28 +81,28 @@ typedef struct {
 
 void Attribute_value_t_Initialize(Attribute_value_t* pVal);
 
-#define ERR_ATTRIBUTE_VALUE_T		2738  /**/
-#define ERR_ATTRIBUTE_VALUE_T_BOOLEAN_VALUE		2694  /**/
-#define ERR_ATTRIBUTE_VALUE_T_DISCRETE_VALUE		2705  /**/
-#define ERR_ATTRIBUTE_VALUE_T_REAL_VALUE		2716  /**/
-#define ERR_ATTRIBUTE_VALUE_T_STRING_VALUE		2727  /**/
+#define ERR_ATTRIBUTE_VALUE_T		10595  /**/
+#define ERR_ATTRIBUTE_VALUE_T_BOOLEAN_VALUE		10551  /**/
+#define ERR_ATTRIBUTE_VALUE_T_DISCRETE_VALUE		10562  /**/
+#define ERR_ATTRIBUTE_VALUE_T_REAL_VALUE		10573  /**/
+#define ERR_ATTRIBUTE_VALUE_T_STRING_VALUE		10584  /**/
 flag Attribute_value_t_IsConstraintValid(const Attribute_value_t* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T		2739  /**/
-#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_BOOLEAN_VALUE_2		2701  /**/
-#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_DISCRETE_VALUE_2		2712  /**/
-#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_REAL_VALUE_2		2723  /**/
-#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_STRING_VALUE_2		2734  /**/
+#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T		10596  /**/
+#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_BOOLEAN_VALUE_2		10558  /**/
+#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_DISCRETE_VALUE_2		10569  /**/
+#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_REAL_VALUE_2		10580  /**/
+#define ERR_UPER_ENCODE_ATTRIBUTE_VALUE_T_STRING_VALUE_2		10591  /**/
 #define Attribute_value_t_REQUIRED_BYTES_FOR_ENCODING       14 
 #define Attribute_value_t_REQUIRED_BITS_FOR_ENCODING        106
 
 flag Attribute_value_t_Encode(const Attribute_value_t* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T		2740  /**/
-#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_BOOLEAN_VALUE_2		2702  /**/
-#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_DISCRETE_VALUE_2		2713  /**/
-#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_REAL_VALUE_2		2724  /**/
-#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_STRING_VALUE_2		2735  /**/
+#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T		10597  /**/
+#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_BOOLEAN_VALUE_2		10559  /**/
+#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_DISCRETE_VALUE_2		10570  /**/
+#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_REAL_VALUE_2		10581  /**/
+#define ERR_UPER_DECODE_ATTRIBUTE_VALUE_T_STRING_VALUE_2		10592  /**/
 flag Attribute_value_t_Decode(Attribute_value_t* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- Sample_attribute_t --------------------------------------------*/
 typedef struct {
@@ -113,26 +113,26 @@ typedef struct {
 
 void Sample_attribute_t_Initialize(Sample_attribute_t* pVal);
 
-#define ERR_SAMPLE_ATTRIBUTE_T		2811  /**/
-#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY		2745  /**/
-#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE		2800  /**/
-#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_BOOLEAN_VALUE		2756  /**/
-#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_DISCRETE_VALUE		2767  /**/
-#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_REAL_VALUE		2778  /**/
-#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_STRING_VALUE		2789  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T		10668  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY		10602  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE		10657  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_BOOLEAN_VALUE		10613  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_DISCRETE_VALUE		10624  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_REAL_VALUE		10635  /**/
+#define ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_STRING_VALUE		10646  /**/
 flag Sample_attribute_t_IsConstraintValid(const Sample_attribute_t* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_SAMPLE_ATTRIBUTE_T		2812  /**/
-#define ERR_UPER_ENCODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY_2		2752  /**/
-#define ERR_UPER_ENCODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_2		2807  /**/
+#define ERR_UPER_ENCODE_SAMPLE_ATTRIBUTE_T		10669  /**/
+#define ERR_UPER_ENCODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY_2		10609  /**/
+#define ERR_UPER_ENCODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_2		10664  /**/
 #define Sample_attribute_t_REQUIRED_BYTES_FOR_ENCODING       15 
 #define Sample_attribute_t_REQUIRED_BITS_FOR_ENCODING        114
 
 flag Sample_attribute_t_Encode(const Sample_attribute_t* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_SAMPLE_ATTRIBUTE_T		2813  /**/
-#define ERR_UPER_DECODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY_2		2753  /**/
-#define ERR_UPER_DECODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_2		2808  /**/
+#define ERR_UPER_DECODE_SAMPLE_ATTRIBUTE_T		10670  /**/
+#define ERR_UPER_DECODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY_2		10610  /**/
+#define ERR_UPER_DECODE_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_2		10665  /**/
 flag Sample_attribute_t_Decode(Sample_attribute_t* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- SampleAttributes --------------------------------------------*/
 
@@ -152,34 +152,34 @@ typedef struct {
 void SampleAttributes_attributes_Initialize(SampleAttributes_attributes* pVal);
 void SampleAttributes_Initialize(SampleAttributes* pVal);
 
-#define ERR_SAMPLEATTRIBUTES		2928  /**/
-#define ERR_SAMPLEATTRIBUTES_TIMESTAMP		2818  /**/
-#define ERR_SAMPLEATTRIBUTES_VALIDITY		2833  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES		2921  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM		2910  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY		2844  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE		2899  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_BOOLEAN_VALUE		2855  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE		2866  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE		2877  /**/
-#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE		2888  /**/
+#define ERR_SAMPLEATTRIBUTES		10785  /**/
+#define ERR_SAMPLEATTRIBUTES_TIMESTAMP		10675  /**/
+#define ERR_SAMPLEATTRIBUTES_VALIDITY		10690  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES		10778  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM		10767  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY		10701  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE		10756  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_BOOLEAN_VALUE		10712  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE		10723  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE		10734  /**/
+#define ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE		10745  /**/
 flag SampleAttributes_IsConstraintValid(const SampleAttributes* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES		2929  /**/
-#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_TIMESTAMP_2_2		2829  /**/
-#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_VALIDITY_2		2840  /**/
-#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_ATTRIBUTES		2922  /**/
-#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_2		2917  /**/
+#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES		10786  /**/
+#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_TIMESTAMP_2_2		10686  /**/
+#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_VALIDITY_2		10697  /**/
+#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_ATTRIBUTES		10779  /**/
+#define ERR_UPER_ENCODE_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_2		10774  /**/
 #define SampleAttributes_REQUIRED_BYTES_FOR_ENCODING       66 
 #define SampleAttributes_REQUIRED_BITS_FOR_ENCODING        525
 
 flag SampleAttributes_Encode(const SampleAttributes* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_SAMPLEATTRIBUTES		2930  /**/
-#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_TIMESTAMP_2_2		2830  /**/
-#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_VALIDITY_2		2841  /**/
-#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_ATTRIBUTES		2923  /**/
-#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_2		2918  /**/
+#define ERR_UPER_DECODE_SAMPLEATTRIBUTES		10787  /**/
+#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_TIMESTAMP_2_2		10687  /**/
+#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_VALIDITY_2		10698  /**/
+#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_ATTRIBUTES		10780  /**/
+#define ERR_UPER_DECODE_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_2		10775  /**/
 flag SampleAttributes_Decode(SampleAttributes* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

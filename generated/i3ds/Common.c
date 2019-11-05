@@ -18,8 +18,8 @@ flag Timepoint_IsConstraintValid(const Timepoint* pVal, int* pErrCode)
 {
     flag ret = TRUE;
 	
-    ret = (-9223372036854775807LL <= (*(pVal)));
-    *pErrCode = ret ? 0 :  ERR_TIMEPOINT; 
+    ret = TRUE;
+    *pErrCode = 0;
 
 	return ret;
 }
@@ -244,7 +244,7 @@ flag CommandResponse_IsConstraintValid(const CommandResponse* pVal, int* pErrCod
     ret = (((((((((((((pVal->result == success)) || ((pVal->result == error_node_id)))) || ((pVal->result == error_endpoint_id)))) || ((pVal->result == error_unsupported)))) || ((pVal->result == error_state)))) || ((pVal->result == error_value)))) || ((pVal->result == error_other)));
     *pErrCode = ret ? 0 :  ERR_COMMANDRESPONSE_RESULT; 
     if (ret) {
-        ret = (pVal->message.nCount <= 256);
+        ret = (pVal->message.nCount <= 40);
         *pErrCode = ret ? 0 :  ERR_COMMANDRESPONSE_MESSAGE; 
     }
 

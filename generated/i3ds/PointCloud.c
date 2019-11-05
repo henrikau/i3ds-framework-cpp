@@ -93,38 +93,28 @@ flag PointCloudDescriptor_IsConstraintValid(const PointCloudDescriptor* pVal, in
     flag ret = TRUE;
     int i1;
 	
-    ret = (-9223372036854775807LL <= pVal->attributes.timestamp);
-    *pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_TIMESTAMP; 
+    ret = (((((pVal->attributes.validity == sample_empty)) || ((pVal->attributes.validity == sample_valid)))) || ((pVal->attributes.validity == sample_invalid)));
+    *pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_VALIDITY; 
     if (ret) {
-        ret = (((((pVal->attributes.validity == sample_empty)) || ((pVal->attributes.validity == sample_valid)))) || ((pVal->attributes.validity == sample_invalid)));
-        *pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_VALIDITY; 
+        ret = (pVal->attributes.attributes.nCount <= 4);
+        *pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES; 
         if (ret) {
-            ret = (pVal->attributes.attributes.nCount <= 4);
-            *pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES; 
-            if (ret) {
-                for(i1 = 0; ret && i1 < pVal->attributes.attributes.nCount; i1++) 
-                {
-                	ret = (pVal->attributes.attributes.arr[i1].attribute_key <= 255UL);
-                	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY; 
-                	if (ret) {
-                	    if (pVal->attributes.attributes.arr[i1].attribute_value.kind == discrete_value_PRESENT) {
-                	    	ret = (-9223372036854775807LL <= pVal->attributes.attributes.arr[i1].attribute_value.u.discrete_value);
-                	    	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE; 
-                	    }
-                	    if (ret) {
-                	        if (pVal->attributes.attributes.arr[i1].attribute_value.kind == real_value_PRESENT) {
-                	        	ret = ((-1.79769313486231570000E+308 <= pVal->attributes.attributes.arr[i1].attribute_value.u.real_value) && (pVal->attributes.attributes.arr[i1].attribute_value.u.real_value <= 1.79769313486231570000E+308));
-                	        	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE; 
-                	        }
-                	        if (ret) {
-                	            if (pVal->attributes.attributes.arr[i1].attribute_value.kind == string_value_PRESENT) {
-                	            	ret = (pVal->attributes.attributes.arr[i1].attribute_value.u.string_value.nCount <= 8);
-                	            	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE; 
-                	            }
-                	        }
-                	    }
-                	}
-                }
+            for(i1 = 0; ret && i1 < pVal->attributes.attributes.nCount; i1++) 
+            {
+            	ret = (pVal->attributes.attributes.arr[i1].attribute_key <= 255UL);
+            	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY; 
+            	if (ret) {
+            	    if (pVal->attributes.attributes.arr[i1].attribute_value.kind == real_value_PRESENT) {
+            	    	ret = ((-1.79769313486231570000E+308 <= pVal->attributes.attributes.arr[i1].attribute_value.u.real_value) && (pVal->attributes.attributes.arr[i1].attribute_value.u.real_value <= 1.79769313486231570000E+308));
+            	    	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE; 
+            	    }
+            	    if (ret) {
+            	        if (pVal->attributes.attributes.arr[i1].attribute_value.kind == string_value_PRESENT) {
+            	        	ret = (pVal->attributes.attributes.arr[i1].attribute_value.u.string_value.nCount <= 8);
+            	        	*pErrCode = ret ? 0 :  ERR_POINTCLOUDDESCRIPTOR_ATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE; 
+            	        }
+            	    }
+            	}
             }
         }
     }

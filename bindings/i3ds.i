@@ -57,7 +57,7 @@ typedef struct {
 
 typedef struct {
     T_Double kelvin;
-} Temperature;
+} Base_Temperature;
 
 typedef asn1SccUint NodeId;
 typedef asn1SccUint EndpointId;
@@ -157,7 +157,7 @@ public:
   void set_sampling(SamplePeriod period, BatchSize batch_size = 1, BatchCount batch_count = 0);
 
   SensorState state() const;
-  Temperature temperature() const;
+  Base_Temperature temperature() const;
   SamplePeriod period() const;
   BatchSize batch_size() const;
   BatchCount batch_count() const;

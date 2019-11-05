@@ -78,10 +78,10 @@ handle_measurement(StarTracker::MeasurementTopic::Data& data)
 {
   BOOST_TEST_MESSAGE("Recv: " << data.attributes.timestamp);
 
-  BOOST_CHECK_EQUAL(data.position.arr[0], 1.0);
-  BOOST_CHECK_EQUAL(data.position.arr[1], 2.0);
-  BOOST_CHECK_EQUAL(data.position.arr[2], 3.0);
-  BOOST_CHECK_EQUAL(data.position.arr[3], 4.0);
+  BOOST_CHECK_EQUAL(data.position.im.arr[0], 1.0);
+  BOOST_CHECK_EQUAL(data.position.im.arr[1], 2.0);
+  BOOST_CHECK_EQUAL(data.position.im.arr[2], 3.0);
+  BOOST_CHECK_EQUAL(data.position.re, 4.0);
   received++;
 }
 

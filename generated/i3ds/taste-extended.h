@@ -11,124 +11,150 @@ extern "C" {
 #endif
 
 
+/*-- T_Time --------------------------------------------*/
+typedef struct {
+    T_UInt32 secs;
+    T_UInt32 nsecs;
+
+} T_Time;
+
+void T_Time_Initialize(T_Time* pVal);
+
+#define ERR_T_TIME		8291  /**/
+#define ERR_T_TIME_SECS		8269  /**/
+#define ERR_T_TIME_NSECS		8280  /**/
+flag T_Time_IsConstraintValid(const T_Time* pVal, int* pErrCode);
+
+#define ERR_UPER_ENCODE_T_TIME		8292  /**/
+#define ERR_UPER_ENCODE_T_TIME_SECS_2		8276  /**/
+#define ERR_UPER_ENCODE_T_TIME_NSECS_2		8287  /**/
+#define T_Time_REQUIRED_BYTES_FOR_ENCODING       8 
+#define T_Time_REQUIRED_BITS_FOR_ENCODING        64
+
+flag T_Time_Encode(const T_Time* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+
+#define ERR_UPER_DECODE_T_TIME		8293  /**/
+#define ERR_UPER_DECODE_T_TIME_SECS_2		8277  /**/
+#define ERR_UPER_DECODE_T_TIME_NSECS_2		8288  /**/
+flag T_Time_Decode(T_Time* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1Real T_Double;
 
 
 void T_Double_Initialize(T_Double* pVal);
 
-#define ERR_T_DOUBLE		349  /**/
+#define ERR_T_DOUBLE		8220  /**/
 flag T_Double_IsConstraintValid(const T_Double* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_DOUBLE		350  /**/
+#define ERR_UPER_ENCODE_T_DOUBLE		8221  /**/
 #define T_Double_REQUIRED_BYTES_FOR_ENCODING       13 
 #define T_Double_REQUIRED_BITS_FOR_ENCODING        104
 
 flag T_Double_Encode(const T_Double* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_DOUBLE		351  /**/
+#define ERR_UPER_DECODE_T_DOUBLE		8222  /**/
 flag T_Double_Decode(T_Double* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1Real T_Float;
 
 
 void T_Float_Initialize(T_Float* pVal);
 
-#define ERR_T_FLOAT		356  /**/
+#define ERR_T_FLOAT		8227  /**/
 flag T_Float_IsConstraintValid(const T_Float* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_FLOAT		357  /**/
+#define ERR_UPER_ENCODE_T_FLOAT		8228  /**/
 #define T_Float_REQUIRED_BYTES_FOR_ENCODING       13 
 #define T_Float_REQUIRED_BITS_FOR_ENCODING        104
 
 flag T_Float_Encode(const T_Float* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_FLOAT		358  /**/
+#define ERR_UPER_DECODE_T_FLOAT		8229  /**/
 flag T_Float_Decode(T_Float* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccSint T_Int16;
 
 
 void T_Int16_Initialize(T_Int16* pVal);
 
-#define ERR_T_INT16		363  /**/
+#define ERR_T_INT16		8234  /**/
 flag T_Int16_IsConstraintValid(const T_Int16* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_INT16		364  /**/
+#define ERR_UPER_ENCODE_T_INT16		8235  /**/
 #define T_Int16_REQUIRED_BYTES_FOR_ENCODING       2 
 #define T_Int16_REQUIRED_BITS_FOR_ENCODING        16
 
 flag T_Int16_Encode(const T_Int16* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_INT16		365  /**/
+#define ERR_UPER_DECODE_T_INT16		8236  /**/
 flag T_Int16_Decode(T_Int16* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint T_UInt16;
 
 
 void T_UInt16_Initialize(T_UInt16* pVal);
 
-#define ERR_T_UINT16		370  /**/
+#define ERR_T_UINT16		8241  /**/
 flag T_UInt16_IsConstraintValid(const T_UInt16* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_UINT16		371  /**/
+#define ERR_UPER_ENCODE_T_UINT16		8242  /**/
 #define T_UInt16_REQUIRED_BYTES_FOR_ENCODING       2 
 #define T_UInt16_REQUIRED_BITS_FOR_ENCODING        16
 
 flag T_UInt16_Encode(const T_UInt16* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_UINT16		372  /**/
+#define ERR_UPER_DECODE_T_UINT16		8243  /**/
 flag T_UInt16_Decode(T_UInt16* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint T_UInt64;
 
 
 void T_UInt64_Initialize(T_UInt64* pVal);
 
-#define ERR_T_UINT64		377  /**/
+#define ERR_T_UINT64		8248  /**/
 flag T_UInt64_IsConstraintValid(const T_UInt64* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_UINT64		378  /**/
+#define ERR_UPER_ENCODE_T_UINT64		8249  /**/
 #define T_UInt64_REQUIRED_BYTES_FOR_ENCODING       8 
-#define T_UInt64_REQUIRED_BITS_FOR_ENCODING        63
+#define T_UInt64_REQUIRED_BITS_FOR_ENCODING        64
 
 flag T_UInt64_Encode(const T_UInt64* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_UINT64		379  /**/
+#define ERR_UPER_DECODE_T_UINT64		8250  /**/
 flag T_UInt64_Decode(T_UInt64* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccSint T_Int64;
 
 
 void T_Int64_Initialize(T_Int64* pVal);
 
-#define ERR_T_INT64		384  /**/
+#define ERR_T_INT64		8255  /**/
 flag T_Int64_IsConstraintValid(const T_Int64* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_INT64		385  /**/
+#define ERR_UPER_ENCODE_T_INT64		8256  /**/
 #define T_Int64_REQUIRED_BYTES_FOR_ENCODING       8 
 #define T_Int64_REQUIRED_BITS_FOR_ENCODING        64
 
 flag T_Int64_Encode(const T_Int64* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_INT64		386  /**/
+#define ERR_UPER_DECODE_T_INT64		8257  /**/
 flag T_Int64_Decode(T_Int64* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef struct {
     int nCount; 
     
-    byte arr[256];
+    byte arr[40];
 } T_String;
 
 
 void T_String_Initialize(T_String* pVal);
 
-#define ERR_T_STRING		391  /**/
+#define ERR_T_STRING		8262  /**/
 flag T_String_IsConstraintValid(const T_String* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_T_STRING		392  /**/
-#define T_String_REQUIRED_BYTES_FOR_ENCODING       258 
-#define T_String_REQUIRED_BITS_FOR_ENCODING        2057
+#define ERR_UPER_ENCODE_T_STRING		8263  /**/
+#define T_String_REQUIRED_BYTES_FOR_ENCODING       41 
+#define T_String_REQUIRED_BITS_FOR_ENCODING        326
 
 flag T_String_Encode(const T_String* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_T_STRING		393  /**/
+#define ERR_UPER_DECODE_T_STRING		8264  /**/
 flag T_String_Decode(T_String* pVal, BitStream* pBitStrm, int* pErrCode);
 
-extern const T_UInt32 maxSize_T_String; 
+extern const T_UInt32 numT_String; 
 
 /* ================= Encoding/Decoding function prototypes =================
  * These functions are placed at the end of the file to make sure all types

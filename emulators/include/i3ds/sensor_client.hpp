@@ -50,7 +50,7 @@ public:
   void set_sampling(SamplePeriod period, BatchSize batch_size = 1, BatchCount batch_count = 0);
 
   SensorState state() const {return status_.response.current_state;}
-  Temperature temperature() const {return status_.response.device_temperature;}
+  Base_Temperature temperature() const {return status_.response.device_temperature;}
   SamplePeriod period() const {return config_.response.period;}
   BatchSize batch_size() const {return config_.response.batch_size;}
   BatchCount batch_count() const {return config_.response.batch_count;}

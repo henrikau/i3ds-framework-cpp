@@ -22,28 +22,28 @@ typedef struct {
 
 void PlanarRegion_Initialize(PlanarRegion* pVal);
 
-#define ERR_PLANARREGION		2622  /**/
-#define ERR_PLANARREGION_OFFSET_X		2578  /**/
-#define ERR_PLANARREGION_OFFSET_Y		2589  /**/
-#define ERR_PLANARREGION_SIZE_X		2600  /**/
-#define ERR_PLANARREGION_SIZE_Y		2611  /**/
+#define ERR_PLANARREGION		10479  /**/
+#define ERR_PLANARREGION_OFFSET_X		10435  /**/
+#define ERR_PLANARREGION_OFFSET_Y		10446  /**/
+#define ERR_PLANARREGION_SIZE_X		10457  /**/
+#define ERR_PLANARREGION_SIZE_Y		10468  /**/
 flag PlanarRegion_IsConstraintValid(const PlanarRegion* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_PLANARREGION		2623  /**/
-#define ERR_UPER_ENCODE_PLANARREGION_OFFSET_X_2		2585  /**/
-#define ERR_UPER_ENCODE_PLANARREGION_OFFSET_Y_2		2596  /**/
-#define ERR_UPER_ENCODE_PLANARREGION_SIZE_X_2		2607  /**/
-#define ERR_UPER_ENCODE_PLANARREGION_SIZE_Y_2		2618  /**/
+#define ERR_UPER_ENCODE_PLANARREGION		10480  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_OFFSET_X_2		10442  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_OFFSET_Y_2		10453  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_SIZE_X_2		10464  /**/
+#define ERR_UPER_ENCODE_PLANARREGION_SIZE_Y_2		10475  /**/
 #define PlanarRegion_REQUIRED_BYTES_FOR_ENCODING       8 
 #define PlanarRegion_REQUIRED_BITS_FOR_ENCODING        64
 
 flag PlanarRegion_Encode(const PlanarRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_PLANARREGION		2624  /**/
-#define ERR_UPER_DECODE_PLANARREGION_OFFSET_X_2		2586  /**/
-#define ERR_UPER_DECODE_PLANARREGION_OFFSET_Y_2		2597  /**/
-#define ERR_UPER_DECODE_PLANARREGION_SIZE_X_2		2608  /**/
-#define ERR_UPER_DECODE_PLANARREGION_SIZE_Y_2		2619  /**/
+#define ERR_UPER_DECODE_PLANARREGION		10481  /**/
+#define ERR_UPER_DECODE_PLANARREGION_OFFSET_X_2		10443  /**/
+#define ERR_UPER_DECODE_PLANARREGION_OFFSET_Y_2		10454  /**/
+#define ERR_UPER_DECODE_PLANARREGION_SIZE_X_2		10465  /**/
+#define ERR_UPER_DECODE_PLANARREGION_SIZE_Y_2		10476  /**/
 flag PlanarRegion_Decode(PlanarRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- PolarRegion --------------------------------------------*/
 typedef struct {
@@ -56,28 +56,28 @@ typedef struct {
 
 void PolarRegion_Initialize(PolarRegion* pVal);
 
-#define ERR_POLARREGION		2673  /**/
-#define ERR_POLARREGION_OFFSET_X		2629  /**/
-#define ERR_POLARREGION_OFFSET_Y		2640  /**/
-#define ERR_POLARREGION_SIZE_X		2651  /**/
-#define ERR_POLARREGION_SIZE_Y		2662  /**/
+#define ERR_POLARREGION		10530  /**/
+#define ERR_POLARREGION_OFFSET_X		10486  /**/
+#define ERR_POLARREGION_OFFSET_Y		10497  /**/
+#define ERR_POLARREGION_SIZE_X		10508  /**/
+#define ERR_POLARREGION_SIZE_Y		10519  /**/
 flag PolarRegion_IsConstraintValid(const PolarRegion* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_POLARREGION		2674  /**/
-#define ERR_UPER_ENCODE_POLARREGION_OFFSET_X_2		2636  /**/
-#define ERR_UPER_ENCODE_POLARREGION_OFFSET_Y_2		2647  /**/
-#define ERR_UPER_ENCODE_POLARREGION_SIZE_X_2		2658  /**/
-#define ERR_UPER_ENCODE_POLARREGION_SIZE_Y_2		2669  /**/
+#define ERR_UPER_ENCODE_POLARREGION		10531  /**/
+#define ERR_UPER_ENCODE_POLARREGION_OFFSET_X_2		10493  /**/
+#define ERR_UPER_ENCODE_POLARREGION_OFFSET_Y_2		10504  /**/
+#define ERR_UPER_ENCODE_POLARREGION_SIZE_X_2		10515  /**/
+#define ERR_UPER_ENCODE_POLARREGION_SIZE_Y_2		10526  /**/
 #define PolarRegion_REQUIRED_BYTES_FOR_ENCODING       52 
 #define PolarRegion_REQUIRED_BITS_FOR_ENCODING        416
 
 flag PolarRegion_Encode(const PolarRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_POLARREGION		2675  /**/
-#define ERR_UPER_DECODE_POLARREGION_OFFSET_X_2		2637  /**/
-#define ERR_UPER_DECODE_POLARREGION_OFFSET_Y_2		2648  /**/
-#define ERR_UPER_DECODE_POLARREGION_SIZE_X_2		2659  /**/
-#define ERR_UPER_DECODE_POLARREGION_SIZE_Y_2		2670  /**/
+#define ERR_UPER_DECODE_POLARREGION		10532  /**/
+#define ERR_UPER_DECODE_POLARREGION_OFFSET_X_2		10494  /**/
+#define ERR_UPER_DECODE_POLARREGION_OFFSET_Y_2		10505  /**/
+#define ERR_UPER_DECODE_POLARREGION_SIZE_X_2		10516  /**/
+#define ERR_UPER_DECODE_POLARREGION_SIZE_Y_2		10527  /**/
 flag PolarRegion_Decode(PolarRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

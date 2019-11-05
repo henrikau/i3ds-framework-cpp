@@ -256,6 +256,6 @@ i3ds::Sensor::handle_configuration(ConfigurationService::Data& config)
 void
 i3ds::Sensor::set_device_name(std::string device_name)
 {
-  strncpy((char*)device_name_.arr, device_name.c_str(), 256);
+  strncpy((char*)device_name_.arr, device_name.c_str(), 40);
   device_name_.nCount = strlen((const char*)device_name_.arr);
 }

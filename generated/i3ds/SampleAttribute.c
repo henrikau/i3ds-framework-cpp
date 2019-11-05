@@ -153,20 +153,14 @@ flag Attribute_value_t_IsConstraintValid(const Attribute_value_t* pVal, int* pEr
 {
     flag ret = TRUE;
 	
-    if (pVal->kind == discrete_value_PRESENT) {
-    	ret = (-9223372036854775807LL <= pVal->u.discrete_value);
-    	*pErrCode = ret ? 0 :  ERR_ATTRIBUTE_VALUE_T_DISCRETE_VALUE; 
+    if (pVal->kind == real_value_PRESENT) {
+    	ret = ((-1.79769313486231570000E+308 <= pVal->u.real_value) && (pVal->u.real_value <= 1.79769313486231570000E+308));
+    	*pErrCode = ret ? 0 :  ERR_ATTRIBUTE_VALUE_T_REAL_VALUE; 
     }
     if (ret) {
-        if (pVal->kind == real_value_PRESENT) {
-        	ret = ((-1.79769313486231570000E+308 <= pVal->u.real_value) && (pVal->u.real_value <= 1.79769313486231570000E+308));
-        	*pErrCode = ret ? 0 :  ERR_ATTRIBUTE_VALUE_T_REAL_VALUE; 
-        }
-        if (ret) {
-            if (pVal->kind == string_value_PRESENT) {
-            	ret = (pVal->u.string_value.nCount <= 8);
-            	*pErrCode = ret ? 0 :  ERR_ATTRIBUTE_VALUE_T_STRING_VALUE; 
-            }
+        if (pVal->kind == string_value_PRESENT) {
+        	ret = (pVal->u.string_value.nCount <= 8);
+        	*pErrCode = ret ? 0 :  ERR_ATTRIBUTE_VALUE_T_STRING_VALUE; 
         }
     }
 
@@ -260,20 +254,14 @@ flag Sample_attribute_t_IsConstraintValid(const Sample_attribute_t* pVal, int* p
     ret = (pVal->attribute_key <= 255UL);
     *pErrCode = ret ? 0 :  ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_KEY; 
     if (ret) {
-        if (pVal->attribute_value.kind == discrete_value_PRESENT) {
-        	ret = (-9223372036854775807LL <= pVal->attribute_value.u.discrete_value);
-        	*pErrCode = ret ? 0 :  ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_DISCRETE_VALUE; 
+        if (pVal->attribute_value.kind == real_value_PRESENT) {
+        	ret = ((-1.79769313486231570000E+308 <= pVal->attribute_value.u.real_value) && (pVal->attribute_value.u.real_value <= 1.79769313486231570000E+308));
+        	*pErrCode = ret ? 0 :  ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_REAL_VALUE; 
         }
         if (ret) {
-            if (pVal->attribute_value.kind == real_value_PRESENT) {
-            	ret = ((-1.79769313486231570000E+308 <= pVal->attribute_value.u.real_value) && (pVal->attribute_value.u.real_value <= 1.79769313486231570000E+308));
-            	*pErrCode = ret ? 0 :  ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_REAL_VALUE; 
-            }
-            if (ret) {
-                if (pVal->attribute_value.kind == string_value_PRESENT) {
-                	ret = (pVal->attribute_value.u.string_value.nCount <= 8);
-                	*pErrCode = ret ? 0 :  ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_STRING_VALUE; 
-                }
+            if (pVal->attribute_value.kind == string_value_PRESENT) {
+            	ret = (pVal->attribute_value.u.string_value.nCount <= 8);
+            	*pErrCode = ret ? 0 :  ERR_SAMPLE_ATTRIBUTE_T_ATTRIBUTE_VALUE_STRING_VALUE; 
             }
         }
     }
@@ -342,38 +330,28 @@ flag SampleAttributes_IsConstraintValid(const SampleAttributes* pVal, int* pErrC
     flag ret = TRUE;
     int i1;
 	
-    ret = (-9223372036854775807LL <= pVal->timestamp);
-    *pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_TIMESTAMP; 
+    ret = (((((pVal->validity == sample_empty)) || ((pVal->validity == sample_valid)))) || ((pVal->validity == sample_invalid)));
+    *pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_VALIDITY; 
     if (ret) {
-        ret = (((((pVal->validity == sample_empty)) || ((pVal->validity == sample_valid)))) || ((pVal->validity == sample_invalid)));
-        *pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_VALIDITY; 
+        ret = (pVal->attributes.nCount <= 4);
+        *pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES; 
         if (ret) {
-            ret = (pVal->attributes.nCount <= 4);
-            *pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES; 
-            if (ret) {
-                for(i1 = 0; ret && i1 < pVal->attributes.nCount; i1++) 
-                {
-                	ret = (pVal->attributes.arr[i1].attribute_key <= 255UL);
-                	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY; 
-                	if (ret) {
-                	    if (pVal->attributes.arr[i1].attribute_value.kind == discrete_value_PRESENT) {
-                	    	ret = (-9223372036854775807LL <= pVal->attributes.arr[i1].attribute_value.u.discrete_value);
-                	    	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_DISCRETE_VALUE; 
-                	    }
-                	    if (ret) {
-                	        if (pVal->attributes.arr[i1].attribute_value.kind == real_value_PRESENT) {
-                	        	ret = ((-1.79769313486231570000E+308 <= pVal->attributes.arr[i1].attribute_value.u.real_value) && (pVal->attributes.arr[i1].attribute_value.u.real_value <= 1.79769313486231570000E+308));
-                	        	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE; 
-                	        }
-                	        if (ret) {
-                	            if (pVal->attributes.arr[i1].attribute_value.kind == string_value_PRESENT) {
-                	            	ret = (pVal->attributes.arr[i1].attribute_value.u.string_value.nCount <= 8);
-                	            	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE; 
-                	            }
-                	        }
-                	    }
-                	}
-                }
+            for(i1 = 0; ret && i1 < pVal->attributes.nCount; i1++) 
+            {
+            	ret = (pVal->attributes.arr[i1].attribute_key <= 255UL);
+            	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_KEY; 
+            	if (ret) {
+            	    if (pVal->attributes.arr[i1].attribute_value.kind == real_value_PRESENT) {
+            	    	ret = ((-1.79769313486231570000E+308 <= pVal->attributes.arr[i1].attribute_value.u.real_value) && (pVal->attributes.arr[i1].attribute_value.u.real_value <= 1.79769313486231570000E+308));
+            	    	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_REAL_VALUE; 
+            	    }
+            	    if (ret) {
+            	        if (pVal->attributes.arr[i1].attribute_value.kind == string_value_PRESENT) {
+            	        	ret = (pVal->attributes.arr[i1].attribute_value.u.string_value.nCount <= 8);
+            	        	*pErrCode = ret ? 0 :  ERR_SAMPLEATTRIBUTES_ATTRIBUTES_ELM_ATTRIBUTE_VALUE_STRING_VALUE; 
+            	        }
+            	    }
+            	}
             }
         }
     }
