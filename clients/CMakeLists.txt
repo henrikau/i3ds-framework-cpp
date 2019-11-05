@@ -14,6 +14,7 @@ set (SRCS
   trigger_client.cpp
   power_client.cpp
   flash_client.cpp
+  pose_estimator_client.cpp
   )
 
 set (LIBS ${Boost_LIBRARIES} ${OpenCV_LIBS})

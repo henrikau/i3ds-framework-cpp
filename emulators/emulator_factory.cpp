@@ -17,6 +17,7 @@
 #include <i3ds/emulated_analog.hpp>
 #include <i3ds/emulated_trigger.hpp>
 #include <i3ds/emulated_flash.hpp>
+#include <i3ds/emulated_pose_estimator.hpp>
 
 #if CAMERA_EMULATORS
 #include <i3ds/emulated_camera.hpp>
@@ -70,6 +71,12 @@ i3ds::Analog::Ptr
 i3ds::EmulatorFactory::CreateForceTorque()
 {
   return EmulatedAnalog::CreateForceTorque(context_, next_id_++);
+}
+
+i3ds::PoseEstimator::Ptr
+i3ds::EmulatorFactory::CreatePoseEstimator()
+{
+  return std::make_shared<EmulatedPoseEstimator>(context_, next_id_++);
 }
 
 i3ds::Trigger::Ptr

@@ -18,6 +18,7 @@
 #include <i3ds/imu_sensor.hpp>
 #include <i3ds/analog_sensor.hpp>
 #include <i3ds/star_tracker_sensor.hpp>
+#include <i3ds/pose_estimator_sensor.hpp>
 #include <i3ds/trigger.hpp>
 #include <i3ds/flash.hpp>
 
@@ -45,6 +46,7 @@ public:
   Analog::Ptr CreateForceTorque();
   Trigger::Ptr CreateTrigger();
   Flash::Ptr CreateFlash();
+  PoseEstimator::Ptr CreatePoseEstimator();
 
 #if CAMERA_EMULATORS
   Camera::Ptr CreateTIRCamera(std::string sample_dir = "");

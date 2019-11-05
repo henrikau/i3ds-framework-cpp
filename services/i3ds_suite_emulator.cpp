@@ -104,6 +104,9 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(trace) << "Create force/torque sensor";
   sensors.push_back(factory.CreateForceTorque());
 
+  BOOST_LOG_TRIVIAL(trace) << "Create pose estimator";
+  sensors.push_back(factory.CreatePoseEstimator());
+
   for (auto s : sensors)
     {
       BOOST_LOG_TRIVIAL(trace) << "Attach sensor " << s->node() << " to server 1";

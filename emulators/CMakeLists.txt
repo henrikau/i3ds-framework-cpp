@@ -9,6 +9,7 @@ set (EMULATOR_SRCS
   emulated_analog.cpp
   emulated_trigger.cpp
   emulated_flash.cpp
+  emulated_pose_estimator.cpp
   )
 
 set (CAMERA_EMULATOR_SRCS

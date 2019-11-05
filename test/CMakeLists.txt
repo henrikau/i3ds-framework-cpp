@@ -11,6 +11,7 @@ set(TESTS
   measurement-proxy-test
   pointcloud-test
   depthmap-test
+  pose-estimator-test
   )
 
 if (OpenCV_FOUND)

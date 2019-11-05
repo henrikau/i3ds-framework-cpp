@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////\file
 ///
-///   Copyright 2018 SINTEF AS
+///   Copyright 2019 SINTEF AS
 ///
 ///   This Source Code Form is subject to the terms of the Mozilla
 ///   Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -8,25 +8,25 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef __I3DS_STAR_TRACKER_CLIENT_HPP
-#define __I3DS_STAR_TRACKER_CLIENT_HPP
+#ifndef __I3DS_POSE_ESTIMATOR_CLIENT_HPP
+#define __I3DS_POSE_ESTIMATOR_CLIENT_HPP
 
 #include <i3ds/sensor_client.hpp>
 
 namespace i3ds
 {
 
-class StarTrackerClient : public SensorClient
+class PoseEstimatorClient : public SensorClient
 {
 public:
 
-  typedef std::shared_ptr<StarTrackerClient> Ptr;
+  typedef std::shared_ptr<PoseEstimatorClient> Ptr;
   static Ptr Create(Context::Ptr context, NodeID id)
   {
-    return std::make_shared<StarTrackerClient>(context, id);
+    return std::make_shared<PoseEstimatorClient>(context, id);
   }
 
-  StarTrackerClient(Context::Ptr context, NodeID sensor);
+  PoseEstimatorClient(Context::Ptr context, NodeID sensor);
 };
 
 } // namespace i3ds
