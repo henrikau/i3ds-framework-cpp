@@ -1,3 +1,4 @@
+build/
 petalinux_build/
 docker_build/
 *~
