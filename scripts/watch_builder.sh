@@ -8,6 +8,7 @@ BUILDPATH=$(grep "BUILDPATH=" scripts/hostmake.sh | cut -d '=' -f2|sed 's/\"//g'
 test -z ${NUM_CPUS} && NUM_CPUS=$(grep ^cpu\ MHz /proc/cpuinfo | wc -l)
 
 dirs=$(for f in $(find . -name "*.[c|h][pp]?" -o -name "CMakeLists.txt"); do dirname ${f}; done|grep -v _build|sort|uniq)
+dirs="${dirs} ./generated/i3ds/"
 
 if [[ -z ${dirs} ]]; then
     echo "Could not find any source-files, try to move to the root of the project!"
