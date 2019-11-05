@@ -115,6 +115,12 @@ if (NOT CMAKE_C_FLAGS)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wshift-overflow=2 -Wduplicated-cond ")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wduplicated-branches -Werror=restrict")
 
+    # Disable unused-parameter warning. Especially generated/ is strife
+    # with this, but due to how generated is included, it is more mess
+    # to suppress it just for generated/ rather than for all. So, cave
+    # and disable for all
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-parameter")
+
     # Triggers in generated asn.1
     # set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wdouble-promotion")
 
