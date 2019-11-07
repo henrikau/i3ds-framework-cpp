@@ -39,7 +39,12 @@ if (BASH_PROGRAM)
   add_test (recording_test ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/test_recording.sh)
 endif (BASH_PROGRAM)
 
-if (BUILD_BINDINGS)
+# Depends on bindings being built, but also on other
+# bindings-dependencies (SWIG in particular).
+#
+# We set this flag in bindings/CMakeLists.txt to indicate that we are
+# actually able to build the bindings.
+if (BUILD_PYTHON_BINDINGS_TEST)
   file(COPY python-test.py
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
     FILE_PERMISSIONS USE_SOURCE_PERMISSIONS)
@@ -55,4 +60,4 @@ if (BUILD_BINDINGS)
   set_tests_properties(python-test
     PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/../bindings:$ENV{PYTHONPATH}")
 
-endif (BUILD_BINDINGS)
+endif (BUILD_PYTHON_BINDINGS_TEST)

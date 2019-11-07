@@ -45,6 +45,11 @@ if (SWIG_FOUND)
       POST_BUILD
       COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/_i3ds_python.so ${CMAKE_CURRENT_BINARY_DIR}/_i3ds_binding.so
       )
+
+    # test/ use this to determine if the python-bindings test should be
+    # built and run
+    set (BUILD_PYTHON_BINDINGS_TEST True PARENT_SCOPE)
+
   endif (Python3_FOUND)
 
 endif (SWIG_FOUND)
