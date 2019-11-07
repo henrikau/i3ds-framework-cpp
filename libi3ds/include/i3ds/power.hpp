@@ -13,6 +13,7 @@
 
 #include <i3ds/Power.h>
 
+#include <i3ds/node.hpp>
 #include <i3ds/server.hpp>
 #include <i3ds/service.hpp>
 #include <i3ds/codec.hpp>
@@ -22,7 +23,7 @@ namespace i3ds
 
 CODEC(PowerMask);
 
-class Power
+class Power : public Node
 {
 public:
 
@@ -35,13 +36,10 @@ public:
   typedef Command<3, PowerMaskCodec>         ChannelsSetService;
 
   // Constructor for trigger.
-  Power(NodeID node) : node_(node) {};
+  Power(NodeID node) : Node(node) {};
 
   // Destructor for trigger.
   virtual ~Power() {};
-
-  // Get the node ID.
-  inline NodeID node() const {return node_;}
 
   // Attach handlers to the server.
   virtual void Attach(Server& server);
@@ -59,7 +57,6 @@ protected:
 
 private:
 
-  NodeID node_;
 };
 
 } // namespace i3ds
