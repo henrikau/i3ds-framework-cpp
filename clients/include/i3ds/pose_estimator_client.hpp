@@ -12,6 +12,7 @@
 #define __I3DS_POSE_ESTIMATOR_CLIENT_HPP
 
 #include <i3ds/sensor_client.hpp>
+#include <i3ds/pose_estimator_sensor.hpp>
 
 namespace i3ds
 {
@@ -27,6 +28,17 @@ public:
   }
 
   PoseEstimatorClient(Context::Ptr context, NodeID sensor);
+
+  void set_imaging_mode(bool imaging_mode);
+  void set_selected_camera(uint8_t camera);
+  
+  bool imaging_mode() const {return config_.response.imaging_mode;}
+  uint8_t selected_camera() const {return config_.response.camera_select;}
+
+  virtual void load_config();
+
+private:
+  PoseEstimator::ConfigurationService::Data config_;
 };
 
 } // namespace i3ds

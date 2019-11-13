@@ -21,26 +21,26 @@ typedef struct {
 
 void RadarRegion_Initialize(RadarRegion* pVal);
 
-#define ERR_RADARREGION		10355  /**/
-#define ERR_RADARREGION_ENABLE		10289  /**/
-#define ERR_RADARREGION_REGION		10344  /**/
-#define ERR_RADARREGION_REGION_OFFSET_X		10300  /**/
-#define ERR_RADARREGION_REGION_OFFSET_Y		10311  /**/
-#define ERR_RADARREGION_REGION_SIZE_X		10322  /**/
-#define ERR_RADARREGION_REGION_SIZE_Y		10333  /**/
+#define ERR_RADARREGION		10628  /**/
+#define ERR_RADARREGION_ENABLE		10562  /**/
+#define ERR_RADARREGION_REGION		10617  /**/
+#define ERR_RADARREGION_REGION_OFFSET_X		10573  /**/
+#define ERR_RADARREGION_REGION_OFFSET_Y		10584  /**/
+#define ERR_RADARREGION_REGION_SIZE_X		10595  /**/
+#define ERR_RADARREGION_REGION_SIZE_Y		10606  /**/
 flag RadarRegion_IsConstraintValid(const RadarRegion* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_RADARREGION		10356  /**/
-#define ERR_UPER_ENCODE_RADARREGION_ENABLE_2		10296  /**/
-#define ERR_UPER_ENCODE_RADARREGION_REGION_2		10351  /**/
+#define ERR_UPER_ENCODE_RADARREGION		10629  /**/
+#define ERR_UPER_ENCODE_RADARREGION_ENABLE_2		10569  /**/
+#define ERR_UPER_ENCODE_RADARREGION_REGION_2		10624  /**/
 #define RadarRegion_REQUIRED_BYTES_FOR_ENCODING       9 
 #define RadarRegion_REQUIRED_BITS_FOR_ENCODING        65
 
 flag RadarRegion_Encode(const RadarRegion* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_RADARREGION		10357  /**/
-#define ERR_UPER_DECODE_RADARREGION_ENABLE_2		10297  /**/
-#define ERR_UPER_DECODE_RADARREGION_REGION_2		10352  /**/
+#define ERR_UPER_DECODE_RADARREGION		10630  /**/
+#define ERR_UPER_DECODE_RADARREGION_ENABLE_2		10570  /**/
+#define ERR_UPER_DECODE_RADARREGION_REGION_2		10625  /**/
 flag RadarRegion_Decode(RadarRegion* pVal, BitStream* pBitStrm, int* pErrCode);
 /*-- RadarConfiguration --------------------------------------------*/
 typedef struct {
@@ -51,26 +51,26 @@ typedef struct {
 
 void RadarConfiguration_Initialize(RadarConfiguration* pVal);
 
-#define ERR_RADARCONFIGURATION		10428  /**/
-#define ERR_RADARCONFIGURATION_REGION_ENABLED		10362  /**/
-#define ERR_RADARCONFIGURATION_REGION		10417  /**/
-#define ERR_RADARCONFIGURATION_REGION_OFFSET_X		10373  /**/
-#define ERR_RADARCONFIGURATION_REGION_OFFSET_Y		10384  /**/
-#define ERR_RADARCONFIGURATION_REGION_SIZE_X		10395  /**/
-#define ERR_RADARCONFIGURATION_REGION_SIZE_Y		10406  /**/
+#define ERR_RADARCONFIGURATION		10701  /**/
+#define ERR_RADARCONFIGURATION_REGION_ENABLED		10635  /**/
+#define ERR_RADARCONFIGURATION_REGION		10690  /**/
+#define ERR_RADARCONFIGURATION_REGION_OFFSET_X		10646  /**/
+#define ERR_RADARCONFIGURATION_REGION_OFFSET_Y		10657  /**/
+#define ERR_RADARCONFIGURATION_REGION_SIZE_X		10668  /**/
+#define ERR_RADARCONFIGURATION_REGION_SIZE_Y		10679  /**/
 flag RadarConfiguration_IsConstraintValid(const RadarConfiguration* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_RADARCONFIGURATION		10429  /**/
-#define ERR_UPER_ENCODE_RADARCONFIGURATION_REGION_ENABLED_2		10369  /**/
-#define ERR_UPER_ENCODE_RADARCONFIGURATION_REGION_2		10424  /**/
+#define ERR_UPER_ENCODE_RADARCONFIGURATION		10702  /**/
+#define ERR_UPER_ENCODE_RADARCONFIGURATION_REGION_ENABLED_2		10642  /**/
+#define ERR_UPER_ENCODE_RADARCONFIGURATION_REGION_2		10697  /**/
 #define RadarConfiguration_REQUIRED_BYTES_FOR_ENCODING       9 
 #define RadarConfiguration_REQUIRED_BITS_FOR_ENCODING        65
 
 flag RadarConfiguration_Encode(const RadarConfiguration* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_RADARCONFIGURATION		10430  /**/
-#define ERR_UPER_DECODE_RADARCONFIGURATION_REGION_ENABLED_2		10370  /**/
-#define ERR_UPER_DECODE_RADARCONFIGURATION_REGION_2		10425  /**/
+#define ERR_UPER_DECODE_RADARCONFIGURATION		10703  /**/
+#define ERR_UPER_DECODE_RADARCONFIGURATION_REGION_ENABLED_2		10643  /**/
+#define ERR_UPER_DECODE_RADARCONFIGURATION_REGION_2		10698  /**/
 flag RadarConfiguration_Decode(RadarConfiguration* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

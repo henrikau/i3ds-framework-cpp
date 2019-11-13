@@ -31,6 +31,7 @@ set (SRCS
   src/measurement_proxy.cpp
   src/configurator.cpp
   src/message_recording.cpp
+  src/pose_estimator_sensor.cpp
   )
 
 set (LIBS

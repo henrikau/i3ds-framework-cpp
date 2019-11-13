@@ -20,22 +20,22 @@ typedef struct {
 
 void FlashSetup_Initialize(FlashSetup* pVal);
 
-#define ERR_FLASHSETUP		11436  /**/
-#define ERR_FLASHSETUP_DURATION		11406  /**/
-#define ERR_FLASHSETUP_STRENGTH		11421  /**/
+#define ERR_FLASHSETUP		11709  /**/
+#define ERR_FLASHSETUP_DURATION		11679  /**/
+#define ERR_FLASHSETUP_STRENGTH		11694  /**/
 flag FlashSetup_IsConstraintValid(const FlashSetup* pVal, int* pErrCode);
 
-#define ERR_UPER_ENCODE_FLASHSETUP		11437  /**/
-#define ERR_UPER_ENCODE_FLASHSETUP_DURATION_2_2		11417  /**/
-#define ERR_UPER_ENCODE_FLASHSETUP_STRENGTH_2_2		11432  /**/
+#define ERR_UPER_ENCODE_FLASHSETUP		11710  /**/
+#define ERR_UPER_ENCODE_FLASHSETUP_DURATION_2_2		11690  /**/
+#define ERR_UPER_ENCODE_FLASHSETUP_STRENGTH_2_2		11705  /**/
 #define FlashSetup_REQUIRED_BYTES_FOR_ENCODING       5 
 #define FlashSetup_REQUIRED_BITS_FOR_ENCODING        40
 
 flag FlashSetup_Encode(const FlashSetup* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
-#define ERR_UPER_DECODE_FLASHSETUP		11438  /**/
-#define ERR_UPER_DECODE_FLASHSETUP_DURATION_2_2		11418  /**/
-#define ERR_UPER_DECODE_FLASHSETUP_STRENGTH_2_2		11433  /**/
+#define ERR_UPER_DECODE_FLASHSETUP		11711  /**/
+#define ERR_UPER_DECODE_FLASHSETUP_DURATION_2_2		11691  /**/
+#define ERR_UPER_DECODE_FLASHSETUP_STRENGTH_2_2		11706  /**/
 flag FlashSetup_Decode(FlashSetup* pVal, BitStream* pBitStrm, int* pErrCode);
 
  

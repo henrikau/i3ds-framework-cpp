@@ -109,3 +109,142 @@ flag PoseEstimatorMeasurement_Decode(PoseEstimatorMeasurement* pVal, BitStream* 
 	return ret  && PoseEstimatorMeasurement_IsConstraintValid(pVal, pErrCode);
 }
 
+
+
+void PoseEstimatorImagingMode_Initialize(PoseEstimatorImagingMode* pVal)
+{
+
+
+	/*set imaging_mode */
+	T_Boolean_Initialize((&(pVal->imaging_mode)));
+}
+
+flag PoseEstimatorImagingMode_IsConstraintValid(const PoseEstimatorImagingMode* pVal, int* pErrCode)
+{
+    flag ret = TRUE;
+	
+    ret = TRUE;
+    *pErrCode = 0;
+
+	return ret;
+}
+
+flag PoseEstimatorImagingMode_Encode(const PoseEstimatorImagingMode* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+{
+    flag ret = TRUE;
+	ret = bCheckConstraints ? PoseEstimatorImagingMode_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	if (ret) {
+	    /*Encode imaging_mode */
+	    ret = T_Boolean_Encode((&(pVal->imaging_mode)), pBitStrm, pErrCode, FALSE);
+    } /*COVERAGE_IGNORE*/
+
+	
+    return ret;
+}
+
+flag PoseEstimatorImagingMode_Decode(PoseEstimatorImagingMode* pVal, BitStream* pBitStrm, int* pErrCode)
+{
+    flag ret = TRUE;
+
+	/*Decode imaging_mode */
+	ret = T_Boolean_Decode((&(pVal->imaging_mode)), pBitStrm, pErrCode);
+
+	return ret  && PoseEstimatorImagingMode_IsConstraintValid(pVal, pErrCode);
+}
+
+
+
+void PoseEstimatorCameraSelect_Initialize(PoseEstimatorCameraSelect* pVal)
+{
+
+
+	/*set camera_select */
+	T_UInt8_Initialize((&(pVal->camera_select)));
+}
+
+flag PoseEstimatorCameraSelect_IsConstraintValid(const PoseEstimatorCameraSelect* pVal, int* pErrCode)
+{
+    flag ret = TRUE;
+	
+    ret = (pVal->camera_select <= 255UL);
+    *pErrCode = ret ? 0 :  ERR_POSEESTIMATORCAMERASELECT_CAMERA_SELECT; 
+
+	return ret;
+}
+
+flag PoseEstimatorCameraSelect_Encode(const PoseEstimatorCameraSelect* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+{
+    flag ret = TRUE;
+	ret = bCheckConstraints ? PoseEstimatorCameraSelect_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	if (ret) {
+	    /*Encode camera_select */
+	    ret = T_UInt8_Encode((&(pVal->camera_select)), pBitStrm, pErrCode, FALSE);
+    } /*COVERAGE_IGNORE*/
+
+	
+    return ret;
+}
+
+flag PoseEstimatorCameraSelect_Decode(PoseEstimatorCameraSelect* pVal, BitStream* pBitStrm, int* pErrCode)
+{
+    flag ret = TRUE;
+
+	/*Decode camera_select */
+	ret = T_UInt8_Decode((&(pVal->camera_select)), pBitStrm, pErrCode);
+
+	return ret  && PoseEstimatorCameraSelect_IsConstraintValid(pVal, pErrCode);
+}
+
+
+
+void PoseEstimatorConfiguration_Initialize(PoseEstimatorConfiguration* pVal)
+{
+
+
+	/*set imaging_mode */
+	T_Boolean_Initialize((&(pVal->imaging_mode)));
+	/*set camera_select */
+	T_UInt8_Initialize((&(pVal->camera_select)));
+}
+
+flag PoseEstimatorConfiguration_IsConstraintValid(const PoseEstimatorConfiguration* pVal, int* pErrCode)
+{
+    flag ret = TRUE;
+	
+    ret = (pVal->camera_select <= 255UL);
+    *pErrCode = ret ? 0 :  ERR_POSEESTIMATORCONFIGURATION_CAMERA_SELECT; 
+
+	return ret;
+}
+
+flag PoseEstimatorConfiguration_Encode(const PoseEstimatorConfiguration* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+{
+    flag ret = TRUE;
+	ret = bCheckConstraints ? PoseEstimatorConfiguration_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	if (ret) {
+	    /*Encode imaging_mode */
+	    ret = T_Boolean_Encode((&(pVal->imaging_mode)), pBitStrm, pErrCode, FALSE);
+	    if (ret) {
+	        /*Encode camera_select */
+	        ret = T_UInt8_Encode((&(pVal->camera_select)), pBitStrm, pErrCode, FALSE);
+	    }
+    } /*COVERAGE_IGNORE*/
+
+	
+    return ret;
+}
+
+flag PoseEstimatorConfiguration_Decode(PoseEstimatorConfiguration* pVal, BitStream* pBitStrm, int* pErrCode)
+{
+    flag ret = TRUE;
+
+	/*Decode imaging_mode */
+	ret = T_Boolean_Decode((&(pVal->imaging_mode)), pBitStrm, pErrCode);
+	if (ret) {
+	    /*Decode camera_select */
+	    ret = T_UInt8_Decode((&(pVal->camera_select)), pBitStrm, pErrCode);
+	}
+
+	return ret  && PoseEstimatorConfiguration_IsConstraintValid(pVal, pErrCode);
+}
+
