@@ -18,7 +18,6 @@ option(BUILD_TOOLS    "Build services" ON)
 option(BUILD_TESTS    "Build tests and emulators" ON)
 option(BUILD_DEBUG    "Build with debug enabled" OFF)
 option(BUILD_BINDINGS "Build bindings" ON)
-option(GENERATE_ASN   "Generate ASN files (instead of using pregenerated)" ON)
 option(NO_OPENCV      "Force OpenCV detection off" OFF)
 
 if (BUILD_EMBEDDED)
