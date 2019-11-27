@@ -365,6 +365,7 @@ i3ds::EmulatedCamera::load_images(std::string sample_dir)
 {
   if (sample_dir.size() > 0)
     {
+      int imread_mode = param_.frame_mode == mode_rgb ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE;
       try
         {
           std::vector<std::string> file_names;
@@ -387,7 +388,7 @@ i3ds::EmulatedCamera::load_images(std::string sample_dir)
 
               for (std::string file_name : file_names)
                 {
-                  sample_images_.push_back(cv::imread(file_name, CV_LOAD_IMAGE_GRAYSCALE));
+                  sample_images_.push_back(cv::imread(file_name, imread_mode));
                   BOOST_LOG_TRIVIAL(trace) << "Emulated camera loaded file: " << file_name;
                 }
             }
@@ -401,12 +402,32 @@ i3ds::EmulatedCamera::load_images(std::string sample_dir)
   else
     {
       BOOST_LOG_TRIVIAL(trace) << "Emulated camera generating noise images";
+      int cv_type = CV_16UC1;
+
+      if (param_.frame_mode == mode_rgb)
+      {
+          if (param_.pixel_size == 3) { cv_type = CV_8UC3; }
+          if (param_.pixel_size == 6) { cv_type = CV_16UC3; }
+      }
+      else
+      {
+          if (param_.pixel_size == 1) { cv_type = CV_8UC1; }
+          if (param_.pixel_size == 2) { cv_type = CV_16UC1; }
+      }
 
       for (int i = 0; i < 10; i++)
         {
-          cv::Mat img(getSensorHeight(), getSensorWidth(), CV_16UC1, cv::Scalar(0));
+          cv::Mat img(getSensorHeight(), getSensorWidth(), cv_type, cv::Scalar(0));
 
-          cv::randu(img, cv::Scalar(0), cv::Scalar((1 << param_.data_depth) - 1));
+          int max_pixel_val = (1 << param_.data_depth) - 1;
+          if (param_.frame_mode == mode_rgb)
+            {
+              cv::randu(img, cv::Scalar(0,0,0), cv::Scalar(max_pixel_val, max_pixel_val, max_pixel_val));
+            }
+          else
+            {
+              cv::randu(img, cv::Scalar(0), cv::Scalar(max_pixel_val));
+            }
 
           sample_images_.push_back(img);
         }
