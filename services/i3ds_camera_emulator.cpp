@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////\file
 ///
-///   Copyright 2018 SINTEF AS
+///   Copyright 2018-2019 SINTEF AS
 ///
 ///   This Source Code Form is subject to the terms of the Mozilla
 ///   Public License, v. 2.0. If a copy of the MPL was not distributed
@@ -49,6 +49,7 @@ int main(int argc, char** argv)
   unsigned int node_id;
 
   i3ds::EmulatedCamera::Parameters param;
+  bool rgb;
 
   po::options_description desc("Allowed camera control options");
   i3ds::Configurator configurator;
@@ -63,6 +64,11 @@ int main(int argc, char** argv)
   ("package-size,p",  po::value<int>(&param.packet_size)->default_value(8192), "Transport-layer buffersize (MTU).")
   ("package-delay,d", po::value<int>(&param.packet_delay)->default_value(20), "Inter-package delay parameter of camera.")
 
+  ("rgb",            po::bool_switch(&rgb)->default_value(false), "RGB output for the camera.")
+  ("depth",          po::value<int>(&param.data_depth)->default_value(12), "Data depth for camera")
+  ("width",          po::value<long>(&param.width)->default_value(2048), "Horizontal resolution for camera")
+  ("height",         po::value<long>(&param.height)->default_value(2048), "Vertical resolution for camera")
+    
   ("trigger",        po::bool_switch(&param.external_trigger)->default_value(false), "External trigger.")
   ("trigger-node",   po::value<NodeID>(&param.trigger_node)->default_value(20), "Node ID of trigger service.")
   ("trigger-source", po::value<int>(&param.trigger_source)->default_value(1), "Trigger generator for camera.")
@@ -88,12 +94,24 @@ int main(int argc, char** argv)
   BOOST_LOG_TRIVIAL(info) << "Camera name: " << param.camera_name;
   BOOST_LOG_TRIVIAL(info) << "Camera type: Emulated HR";
 
-  // TODO: Read these from input?
-  param.frame_mode = mode_mono;
-  param.data_depth = 12;
-  param.pixel_size = 2;
-  param.width = 2048;
-  param.height = 2048;
+  param.pixel_size = (param.data_depth - 1) / 8 + 1;
+
+  if (rgb)
+    {
+      param.pixel_size = param.pixel_size * 3;
+      param.frame_mode = mode_rgb;
+      BOOST_LOG_TRIVIAL(info) << "Camera mode: RGB";
+    }
+  else
+    {
+      param.frame_mode = mode_mono;
+      BOOST_LOG_TRIVIAL(info) << "Camera mode: monochrome";
+    }
+
+  BOOST_LOG_TRIVIAL(info) << "Pixel depth: " << param.data_depth;
+  BOOST_LOG_TRIVIAL(info) << "Pixel size:  " << param.pixel_size;
+  BOOST_LOG_TRIVIAL(info) << "Sensor size: " << param.width << "x" << param.width << " px";
+  
   param.image_count = 1;
 
   i3ds::Context::Ptr context = i3ds::Context::Create();;
