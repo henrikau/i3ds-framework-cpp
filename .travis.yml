@@ -1,0 +1,4 @@
+language: bash
+
+script:
+- ./do_docker.sh -c -t all
