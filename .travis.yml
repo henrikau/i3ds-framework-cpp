@@ -1,0 +1,15 @@
+language: bash
+
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#i3ds"
+    on_success: always
+    on_failure: always
+    template:
+      - "%{repository_slug} : %{message}"
+      - "%{commit} : %{author} : %{commit_subject}"
+      - "Build details: %{build_url}"
+
+script:
+- ./do_docker.sh -c -t all
